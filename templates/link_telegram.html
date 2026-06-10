@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Читательство — привязать Telegram</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #faf6f0; color: #2c2416; margin: 0; padding: 24px; line-height: 1.6; }
+    .wrap { max-width: 520px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    h1 { font-size: 1.4rem; margin-top: 0; }
+    .btn { display: inline-block; background: #2aabee; color: #fff; text-decoration: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; margin: 16px 0; }
+    .btn:hover { background: #229ad9; }
+    .ok { background: #e8f5e9; color: #2e7d32; padding: 12px; border-radius: 8px; }
+    ol { padding-left: 1.2rem; }
+    .back { color: #6b5d4d; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Привязать Telegram</h1>
+    <p>Здравствуйте, {{ parent_name }}!</p>
+
+    {% if already_linked %}
+    <div class="ok">Telegram уже привязан. Уведомления будут приходить в бот{% if bot_username %} @{{ bot_username }}{% endif %}.</div>
+    {% elif deep_link %}
+    <p>Нажмите кнопку — откроется бот, нажмите <strong>Start</strong>:</p>
+    <a class="btn" href="{{ deep_link }}">Открыть бота в Telegram</a>
+    <p>Или вручную:</p>
+    <ol>
+      <li>Откройте Telegram</li>
+      <li>Найдите бота {% if bot_username %}<strong>@{{ bot_username }}</strong>{% endif %}</li>
+      <li>Нажмите <strong>Start</strong> — привязка произойдёт автоматически</li>
+    </ol>
+    {% else %}
+    <p>Telegram-бот пока не настроен на сервере. Используйте <a href="{{ progress_url }}">личную страницу прогресса</a> или email.</p>
+    {% endif %}
+
+    <p class="back"><a href="{{ progress_url }}">← Вернуться к прогрессу</a></p>
+  </div>
+</body>
+</html>

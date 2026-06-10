@@ -1,0 +1,62 @@
+import os
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(ROOT / ".env")
+except ImportError:
+    pass
+
+# --- API ---
+WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "").strip()
+API_HOST = os.getenv("API_HOST", "0.0.0.0")
+API_PORT = int(os.getenv("API_PORT", "8000"))
+PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/")
+RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "120"))
+
+# --- Database ---
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+psycopg://literary:literary@localhost:5432/literary_school",
+)
+
+# --- Redis ---
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+QUEUE_KEY = os.getenv("QUEUE_KEY", "literary_school:jobs")
+
+# --- Gamification ---
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
+USE_LLM = os.getenv("USE_LLM", "1").strip().lower() in ("1", "true", "yes")
+
+# --- Telegram ---
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "").strip()
+TELEGRAM_WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
+
+# --- Email (SMTP) ---
+SMTP_HOST = os.getenv("SMTP_HOST", "").strip()
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "").strip()
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "").strip()
+SMTP_FROM = os.getenv("SMTP_FROM", "school@example.com").strip()
+SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "1").strip().lower() in ("1", "true", "yes")
+
+# Каналы: email | telegram | both | web
+# web = только личная страница прогресса (без push)
+DEFAULT_NOTIFICATION_CHANNEL = os.getenv("DEFAULT_NOTIFICATION_CHANNEL", "email")
+
+# --- Плеер урока ---
+LESSON_SIGNING_SECRET = os.getenv("LESSON_SIGNING_SECRET", WEBHOOK_SECRET).strip()
+LESSON_LINK_TTL_SECONDS = int(os.getenv("LESSON_LINK_TTL_SECONDS", str(60 * 60 * 24 * 90)))
+VIDEO_WATCH_THRESHOLD = float(os.getenv("VIDEO_WATCH_THRESHOLD", "0.8"))
+
+# --- Yandex Object Storage (видео) ---
+YANDEX_ACCESS_KEY = os.getenv("YANDEX_ACCESS_KEY", "").strip()
+YANDEX_SECRET_KEY = os.getenv("YANDEX_SECRET_KEY", "").strip()
+YANDEX_BUCKET = os.getenv("YANDEX_BUCKET", "").strip()
+YANDEX_ENDPOINT = os.getenv("YANDEX_ENDPOINT", "https://storage.yandexcloud.net").strip()
+YANDEX_PUBLIC_BASE = os.getenv("YANDEX_PUBLIC_BASE", "").strip()
+YANDEX_PRESIGN_TTL = int(os.getenv("YANDEX_PRESIGN_TTL", "14400"))

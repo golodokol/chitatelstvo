@@ -1,0 +1,12 @@
+{
+  "event_type": "comprehension",
+  "learner": {
+    "child_name": "Маша",
+    "current_level": "Юный читатель",
+    "current_badges": ["Первый шаг", "Читатель"],
+    "total_points": 4,
+    "tale_title": "Колобок",
+    "module_week": 1
+  },
+  "notes": "Ответила на все 5 вопросов, пересказала начало сказки своими словами."
+}

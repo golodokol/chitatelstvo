@@ -1,0 +1,12 @@
+{
+  "slug": "kolobok",
+  "title": "Колобок",
+  "module_week": 1,
+  "video": {
+    "type": "yandex",
+    "object_key": "lessons/kolobok.mp4",
+    "presign": true,
+    "title": "Сказка «Колобок»"
+  },
+  "_comment": "Альтернатива Kinescope. Нужны YANDEX_* в .env. Или укажите прямой src: https://storage.yandexcloud.net/BUCKET/lessons/kolobok.mp4"
+}

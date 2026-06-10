@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Читательство · {{ lesson.title }}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #faf6f0; color: #2c2416; margin: 0; padding: 20px; line-height: 1.5; }
+    .wrap { max-width: 800px; margin: 0 auto; }
+    h1 { font-family: Georgia, serif; }
+    .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    .step { border-left: 4px solid #c9a86c; padding-left: 14px; margin-bottom: 8px; }
+    .step.done { border-color: #4caf50; opacity: .85; }
+    .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
+    .video-wrap iframe, .video-wrap video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .q { margin: 12px 0; }
+    .q label { display: block; margin: 4px 0; cursor: pointer; }
+    button { background: #5a4a38; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .msg { padding: 10px 14px; border-radius: 8px; margin-top: 10px; }
+    .msg.ok { background: #e8f5e9; color: #2e7d32; }
+    .msg.err { background: #ffebee; color: #c62828; }
+    .msg.info { background: #e3f2fd; color: #1565c0; }
+    .manual { background: #fff8e8; border: 1px dashed #c9a86c; }
+    .badge-step { font-size: .8rem; color: #7a6a58; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Читательство · {{ lesson.title }}</h1>
+    <p>Привет, <strong>{{ child_name }}</strong>! Неделя {{ lesson.module_week }}. Видео и вопросы засчитываются сами — иди в своём темпе.</p>
+
+    <div class="card step" id="step-video">
+      <div class="badge-step">Шаг 1 · автоматически</div>
+      <h2>Видео-урок</h2>
+      <div class="video-wrap" id="player-container"></div>
+      <div id="video-msg" class="msg info" style="display:none"></div>
+    </div>
+
+    <div class="card step" id="step-comprehension">
+      <div class="badge-step">Шаг 2 · автоматически</div>
+      <h2>{{ comprehension_quiz.title }}</h2>
+      <form id="form-comprehension"></form>
+      <button type="button" id="btn-comprehension" disabled>Отправить ответы</button>
+      <div id="comprehension-msg"></div>
+    </div>
+
+    <div class="card step" id="step-meaning">
+      <div class="badge-step">Шаг 3 · автоматически</div>
+      <h2>{{ meaning_quiz.title }}</h2>
+      <form id="form-meaning"></form>
+      <button type="button" id="btn-meaning" disabled>Отправить ответы</button>
+      <div id="meaning-msg"></div>
+    </div>
+
+    <div class="card manual">
+      <div class="badge-step">Шаг 4–5 · вручную</div>
+      <h2>Творчество и встреча</h2>
+      <p>Эти шаги отмечает родитель, когда ребёнок действительно их сделал.</p>
+      <p>
+        <button type="button" id="btn-creative">Творческое задание выполнено</button>
+        <button type="button" id="btn-meeting" style="margin-left:8px;background:#2aabee">Живая встреча была</button>
+      </p>
+      <textarea id="manual-notes" rows="2" style="width:100%;margin-top:8px" placeholder="Комментарий (необязательно)"></textarea>
+      <div id="manual-msg"></div>
+    </div>
+  </div>
+
+  <script>
+    const CFG = {
+      slug: {{ slug|tojson }},
+      childId: {{ child_id|tojson }},
+      exp: {{ exp }},
+      sig: {{ sig|tojson }},
+      threshold: {{ video_threshold }},
+      video: {{ lesson.video|tojson }},
+      videoSrc: {{ video_src|tojson }},
+      comprehension: {{ comprehension_quiz|tojson }},
+      meaning: {{ meaning_quiz|tojson }},
+    };
+
+    let videoSent = false;
+    let maxPercent = 0;
+
+    function authBody(extra = {}) {
+      return { child_id: CFG.childId, exp: CFG.exp, sig: CFG.sig, ...extra };
+    }
+
+    function showMsg(elId, text, type) {
+      const el = document.getElementById(elId);
+      el.className = 'msg ' + type;
+      el.textContent = text;
+      el.style.display = 'block';
+    }
+
+    function markDone(stepId) {
+      document.getElementById(stepId).classList.add('done');
+    }
+
+    async function postJson(url, body) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      return res.json();
+    }
+
+    function renderQuiz(formId, quiz) {
+      const form = document.getElementById(formId);
+      quiz.questions.forEach((q, idx) => {
+        const div = document.createElement('div');
+        div.className = 'q';
+        div.innerHTML = '<strong>' + (idx + 1) + '. ' + q.text + '</strong>';
+        q.options.forEach(opt => {
+          const id = formId + '-' + q.id + '-' + opt.id;
+          const label = document.createElement('label');
+          label.innerHTML = '<input type="radio" name="' + q.id + '" value="' + opt.id + '" id="' + id + '"> ' + opt.text;
+          div.appendChild(label);
+        });
+        form.appendChild(div);
+      });
+    }
+
+    function collectAnswers(formId, quiz) {
+      const answers = {};
+      for (const q of quiz.questions) {
+        const picked = document.querySelector('#' + formId + ' input[name="' + q.id + '"]:checked');
+        if (!picked) return null;
+        answers[q.id] = picked.value;
+      }
+      return answers;
+    }
+
+    async function sendVideoComplete(percent) {
+      if (videoSent) return;
+      videoSent = true;
+      const data = await postJson('/api/lesson/' + CFG.slug + '/video-complete', authBody({ percent }));
+      if (data.status === 'accepted' || data.status === 'duplicate') {
+        showMsg('video-msg', data.message + ' Баллы начисляются — загляните на страницу прогресса.', 'ok');
+        markDone('step-video');
+        document.getElementById('btn-comprehension').disabled = false;
+      } else {
+        videoSent = false;
+        showMsg('video-msg', data.message || 'Ошибка', 'err');
+      }
+    }
+
+    function initYouTube() {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+      window.onYouTubeIframeAPIReady = function() {
+        const player = new YT.Player('player-container', {
+          videoId: CFG.video.id,
+          playerVars: { rel: 0 },
+          events: {
+            onStateChange: function(e) {
+              if (e.data === YT.PlayerState.PLAYING) pollTime(player);
+            },
+          },
+        });
+        function pollTime(p) {
+          if (videoSent || !p.getDuration) return;
+          const cur = p.getCurrentTime();
+          const dur = p.getDuration();
+          if (dur > 0) {
+            maxPercent = Math.max(maxPercent, cur / dur);
+            if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
+          }
+          if (!videoSent) setTimeout(() => pollTime(p), 2000);
+        }
+      };
+      document.getElementById('player-container').innerHTML = '';
+    }
+
+    function trackPercent(percent) {
+      if (videoSent) return;
+      maxPercent = Math.max(maxPercent, percent);
+      if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
+    }
+
+    function initHtml5(src) {
+      const container = document.getElementById('player-container');
+      container.innerHTML = '<video id="html5-video" controls playsinline preload="metadata" src="' + src + '"></video>';
+      const v = document.getElementById('html5-video');
+      v.addEventListener('timeupdate', function() {
+        if (!v.duration) return;
+        trackPercent(v.currentTime / v.duration);
+      });
+      v.addEventListener('ended', function() {
+        if (!videoSent) sendVideoComplete(Math.max(maxPercent, 1));
+      });
+    }
+
+    function initYandex(src) {
+      initHtml5(src);
+    }
+
+    function initKinescope() {
+      const container = document.getElementById('player-container');
+      container.innerHTML = '<div id="kinescope-player" style="position:absolute;inset:0;width:100%;height:100%"></div>';
+
+      function bindPlayer(player) {
+        player.on(player.Events.TimeUpdate, function(event) {
+          const pct = event.data.percent != null ? event.data.percent / 100 : 0;
+          trackPercent(pct);
+        });
+        player.on(player.Events.Ended, function() {
+          if (!videoSent) sendVideoComplete(Math.max(maxPercent, 1));
+        });
+        player.on(player.Events.Error, function(event) {
+          showMsg('video-msg', 'Ошибка загрузки видео Kinescope. Проверьте ID в lessons/kolobok.json', 'err');
+        });
+      }
+
+      function createPlayer(playerFactory) {
+        const videoUrl = CFG.video.url || ('https://kinescope.io/' + CFG.video.id);
+        playerFactory.create('kinescope-player', {
+          url: videoUrl,
+          size: { width: '100%', height: '100%' },
+        }).then(bindPlayer).catch(function() {
+          showMsg('video-msg', 'Не удалось создать плеер Kinescope', 'err');
+        });
+      }
+
+      window.onKinescopeIframeAPIReady = createPlayer;
+
+      if (window.Kinescope && window.Kinescope.IframePlayer) {
+        createPlayer(window.Kinescope.IframePlayer);
+        return;
+      }
+
+      if (!document.querySelector('script[src*="iframe.player.js"]')) {
+        const tag = document.createElement('script');
+        tag.src = 'https://player.kinescope.io/latest/iframe.player.js';
+        document.head.appendChild(tag);
+      }
+    }
+
+    function initVimeo() {
+      const container = document.getElementById('player-container');
+      container.innerHTML = '<iframe id="vimeo-frame" src="https://player.vimeo.com/video/' + CFG.video.id + '" frameborder="0" allowfullscreen></iframe>';
+      const tag = document.createElement('script');
+      tag.src = 'https://player.vimeo.com/api/player.js';
+      tag.onload = function() {
+        const player = new Vimeo.Player(document.getElementById('vimeo-frame'));
+        player.on('timeupdate', function(data) {
+          if (videoSent) return;
+          maxPercent = Math.max(maxPercent, data.percent);
+          if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
+        });
+      };
+      document.head.appendChild(tag);
+    }
+
+    async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {
+      const answers = collectAnswers(formId, quiz);
+      if (!answers) {
+        showMsg(msgId, 'Ответьте на все вопросы', 'err');
+        return;
+      }
+      document.getElementById(btnId).disabled = true;
+      const data = await postJson('/api/lesson/' + CFG.slug + '/quiz', authBody({ quiz_type: quizType, answers }));
+      if (data.status === 'failed') {
+        showMsg(msgId, data.message + ' (' + data.score + '/' + data.total + ')', 'err');
+        document.getElementById(btnId).disabled = false;
+        return;
+      }
+      showMsg(msgId, data.message, 'ok');
+      markDone(quizType === 'comprehension' ? 'step-comprehension' : 'step-meaning');
+      if (nextBtnId) document.getElementById(nextBtnId).disabled = false;
+    }
+
+    async function manualMark(eventType) {
+      const notes = document.getElementById('manual-notes').value;
+      const data = await postJson('/api/lesson/' + CFG.slug + '/manual', authBody({ event_type: eventType, notes }));
+      showMsg('manual-msg', data.message, data.status === 'failed' ? 'err' : 'ok');
+    }
+
+    renderQuiz('form-comprehension', CFG.comprehension);
+    renderQuiz('form-meaning', CFG.meaning);
+
+    document.getElementById('btn-comprehension').addEventListener('click', () =>
+      submitQuiz('comprehension', 'form-comprehension', CFG.comprehension, 'btn-comprehension', 'comprehension-msg', 'btn-meaning'));
+    document.getElementById('btn-meaning').addEventListener('click', () =>
+      submitQuiz('meaning_analysis', 'form-meaning', CFG.meaning, 'btn-meaning', 'meaning-msg', null));
+    document.getElementById('btn-creative').addEventListener('click', () => manualMark('creative_task'));
+    document.getElementById('btn-meeting').addEventListener('click', () => manualMark('live_meeting'));
+
+    const PLACEHOLDER_IDS = ['KINESCOPE_VIDEO_ID', 'YOUTUBE_VIDEO_ID'];
+
+    if (CFG.video.type === 'kinescope' && CFG.video.id && !PLACEHOLDER_IDS.includes(CFG.video.id)) {
+      initKinescope();
+    } else if (CFG.video.type === 'yandex' && CFG.videoSrc) {
+      initYandex(CFG.videoSrc);
+    } else if (CFG.video.type === 'youtube' && CFG.video.id && !PLACEHOLDER_IDS.includes(CFG.video.id)) {
+      initYouTube();
+    } else if (CFG.video.type === 'vimeo' && CFG.video.id) {
+      initVimeo();
+    } else if ((CFG.video.type === 'html5' || CFG.video.type === 'yandex') && CFG.videoSrc) {
+      initHtml5(CFG.videoSrc);
+    } else {
+      document.getElementById('player-container').innerHTML =
+        '<p style="padding:20px;color:#fff">Укажите Kinescope ID или Yandex URL в lessons/kolobok.json</p>';
+      document.getElementById('btn-comprehension').disabled = false;
+    }
+  </script>
+</body>
+</html>
