@@ -1,5 +1,6 @@
 .env
 scripts/git-author.env
+scripts/deploy.env
 .venv/
 venv/
 __pycache__/
