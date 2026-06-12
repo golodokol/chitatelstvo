@@ -9,5 +9,6 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 *.log
+backups/
 .DS_Store
 Thumbs.db

@@ -367,6 +367,53 @@ docker compose exec api python scripts/set_telegram_webhook.py
 
 ---
 
+## Шаг 12. Volume Postgres и бэкапы
+
+### Проверка volume
+
+В `docker-compose.yml` данные Postgres лежат в именованном volume `pgdata` → `/var/lib/postgresql/data`.  
+При `docker compose restart postgres` или `docker compose up -d` данные **не пропадают**.
+
+На сервере после `git pull`:
+
+```bash
+cd /root/chitatelstvo
+chmod +x scripts/*.sh
+bash scripts/verify_postgres_volume.sh
+```
+
+Должно быть: volume найден, `families` отвечает, в конце `OK`.
+
+Жёсткая проверка (по желанию): запомните число семей, затем `docker compose restart postgres` и снова `verify_postgres_volume.sh` — число не изменится.
+
+### Ежедневный бэкап
+
+```bash
+cd /root/chitatelstvo
+bash scripts/backup_postgres.sh
+ls -lh backups/postgres/
+```
+
+Автоматически каждый день в 03:00:
+
+```bash
+bash scripts/install_backup_cron.sh
+```
+
+Дампы: `backups/postgres/literary_school_ГГГГММДД_ЧЧММСС.sql.gz`, хранятся **14 дней**.
+
+Лог cron: `/var/log/chitatelstvo-backup.log`
+
+Восстановление (если понадобится):
+
+```bash
+bash scripts/restore_postgres.sh backups/postgres/literary_school_20260609_030001.sql.gz
+```
+
+Рекомендуется раз в неделю скачивать последний `.sql.gz` на свой компьютер (WinSCP) или включить снимки диска в панели Timeweb.
+
+---
+
 ## Полезные команды
 
 ```bash
@@ -374,6 +421,7 @@ cd /root/chitatelstvo
 docker compose logs -f api      # логи API
 docker compose logs -f worker # логи worker
 docker compose restart api worker
+bash scripts/backup_postgres.sh
 ```
 
 ---
@@ -384,6 +432,8 @@ docker compose restart api worker
 - [ ] `https://api.chitatelstvo.ru/health` отвечает
 - [ ] `.env` с паролями и секретами
 - [ ] `init_db.py` выполнен
+- [ ] `verify_postgres_volume.sh` — OK
+- [ ] `install_backup_cron.sh` — бэкап по расписанию
 - [ ] Kinescope ID в `kolobok.json`
 - [ ] Tilda webhook настроен
 - [ ] Тест регистрации → страница прогресса → урок «Колобок»
