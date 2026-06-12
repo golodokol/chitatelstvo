@@ -1,4 +1,5 @@
 .env
+scripts/git-author.env
 .venv/
 venv/
 __pycache__/
