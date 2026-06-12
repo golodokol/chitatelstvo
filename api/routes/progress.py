@@ -5,10 +5,11 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from config.settings import ROOT
+from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, ROOT
 from db import repository as repo
 from db.session import get_db
 from api.lesson_signing import build_lesson_url
+from lessons.access import lesson_access_info
 from lessons.loader import list_lessons
 from notifications.telegram_bot import build_link_url
 
@@ -31,10 +32,18 @@ def family_progress(
     for child in family.children:
         events = repo.get_child_events(db, child.id, limit=20)
         badges = [b.badge_name for b in child.badges]
-        lesson_links = [
-            {"title": les["title"], "url": build_lesson_url(child.id, les["slug"])}
-            for les in available_lessons
-        ]
+        lesson_links = []
+        for les in available_lessons:
+            access = lesson_access_info(child, les, week_days=LESSON_WEEK_DAYS)
+            link = {
+                "title": les["title"],
+                "module_week": access["module_week"],
+                "unlocked": access["unlocked"],
+                "opens_on": access["opens_on"],
+            }
+            if access["unlocked"]:
+                link["url"] = build_lesson_url(child.id, les["slug"])
+            lesson_links.append(link)
         children_data.append(
             {
                 "name": child.name,
@@ -68,6 +77,9 @@ def family_progress(
             "telegram_link": telegram_link,
             "link_page": link_page,
             "children": children_data,
+            "module_start_date": (
+                MODULE_START_DATE.strftime("%d.%m.%Y") if MODULE_START_DATE else None
+            ),
             "notifications": [
                 {
                     "message": n.message,

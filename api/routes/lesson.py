@@ -12,9 +12,10 @@ from sqlalchemy.orm import Session
 
 from api.deps import rate_limit
 from api.lesson_signing import verify_lesson_access
-from config.settings import ROOT, VIDEO_WATCH_THRESHOLD
+from config.settings import LESSON_WEEK_DAYS, ROOT, VIDEO_WATCH_THRESHOLD
 from db import repository as repo
 from db.session import get_db
+from lessons.access import is_lesson_unlocked
 from lessons.loader import get_lesson, quiz_for_client, score_quiz
 from api.event_types import MANUAL_MARK_ONLY
 from services.events import submit_learning_event
@@ -57,6 +58,16 @@ def _get_child_or_404(db: Session, child_id: uuid.UUID):
     return child
 
 
+def _require_lesson_unlocked(db: Session, child_id: uuid.UUID, lesson: dict) -> None:
+    child = _get_child_or_404(db, child_id)
+    if not is_lesson_unlocked(child, lesson, week_days=LESSON_WEEK_DAYS):
+        week = lesson.get("module_week", 1)
+        raise HTTPException(
+            403,
+            f"Урок недели {week} ещё закрыт. Новая сказка откроется по расписанию модуля.",
+        )
+
+
 @router.get("/lesson/{slug}", response_class=HTMLResponse)
 def lesson_page(
     slug: str,
@@ -73,6 +84,7 @@ def lesson_page(
     if not lesson:
         raise HTTPException(404, "Урок не найден")
 
+    _require_lesson_unlocked(db, child, lesson)
     child_row = _get_child_or_404(db, child)
 
     video = lesson.get("video", {})
@@ -113,6 +125,8 @@ def video_complete(
     if not lesson:
         raise HTTPException(404, "Урок не найден")
 
+    _require_lesson_unlocked(db, child_id, lesson)
+
     if body.percent < VIDEO_WATCH_THRESHOLD:
         raise HTTPException(400, f"Нужно досмотреть минимум {int(VIDEO_WATCH_THRESHOLD * 100)}%")
 
@@ -146,6 +160,8 @@ def quiz_submit(
     lesson = get_lesson(slug)
     if not lesson:
         raise HTTPException(404, "Урок не найден")
+
+    _require_lesson_unlocked(db, child_id, lesson)
 
     quiz_key = "comprehension_quiz" if body.quiz_type == "comprehension" else "meaning_quiz"
     quiz = lesson[quiz_key]
@@ -192,6 +208,8 @@ def manual_mark(
     lesson = get_lesson(slug)
     if not lesson:
         raise HTTPException(404, "Урок не найден")
+
+    _require_lesson_unlocked(db, child_id, lesson)
 
     if body.event_type not in MANUAL_MARK_ONLY:
         raise HTTPException(400, "Этот тип события только для ручной отметки")

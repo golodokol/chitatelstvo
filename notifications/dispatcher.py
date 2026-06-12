@@ -11,6 +11,7 @@ from config.settings import PUBLIC_BASE_URL
 from db import repository as repo
 from db.models import Child, Family, ParentNotification
 from notifications.email_channel import send_email
+from notifications.email_templates import SUBJECT_PROGRESS, SUBJECT_WELCOME, build_progress_message
 from notifications.telegram_channel import send_telegram
 
 logger = logging.getLogger(__name__)
@@ -18,12 +19,12 @@ logger = logging.getLogger(__name__)
 
 def _format_parent_message(child: Child, family: Family, parent_message: str, next_action: str) -> str:
     progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
-    return (
-        f"Здравствуйте, {family.parent_name}!\n\n"
-        f"Ребёнок: {child.name}\n"
-        f"{parent_message}\n\n"
-        f"Следующий шаг: {next_action}\n\n"
-        f"Все обновления также на личной странице:\n{progress_url}"
+    return build_progress_message(
+        parent_name=family.parent_name,
+        child_name=child.name,
+        parent_message=parent_message,
+        next_action=next_action,
+        progress_url=progress_url,
     )
 
 
@@ -99,9 +100,10 @@ def send_pending_notification(db: Session, notification_id: uuid.UUID) -> None:
 
     try:
         if note.channel == "email":
+            subject = SUBJECT_WELCOME if note.event_id is None else SUBJECT_PROGRESS
             send_email(
                 family.parent_email,
-                subject="Читательство — прогресс ребёнка",
+                subject=subject,
                 body=note.message,
             )
         elif note.channel == "telegram":

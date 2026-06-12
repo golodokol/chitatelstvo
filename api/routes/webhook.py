@@ -17,6 +17,7 @@ from config.settings import PUBLIC_BASE_URL
 from db import repository as repo
 from db.session import get_db
 from job_queue.redis_queue import enqueue
+from notifications.email_templates import build_welcome_message
 from notifications.telegram_bot import build_link_url
 from services.events import submit_learning_event
 
@@ -107,13 +108,15 @@ async def webhook_register(
     link_telegram_page = f"{PUBLIC_BASE_URL}/link-telegram/{family.progress_token}/page"
     telegram_deep_link = build_link_url(family.progress_token)
 
-    welcome = (
-        f"Добро пожаловать в Читательство!\n"
-        f"Ребёнок {child.name} зарегистрирован.\n"
-        f"Личная страница прогресса:\n{progress_url}"
+    welcome = build_welcome_message(
+        parent_name=body.parent_name,
+        child_name=child.name,
+        progress_url=progress_url,
+        link_telegram_page=link_telegram_page,
+        include_telegram=bool(
+            telegram_deep_link and body.notification_channel in ("telegram", "both")
+        ),
     )
-    if telegram_deep_link and body.notification_channel in ("telegram", "both"):
-        welcome += f"\n\nПривязать Telegram:\n{link_telegram_page}"
     repo.store_notification(
         db,
         family_id=family.id,

@@ -143,7 +143,7 @@ def fallback_messages(
     tale_title: str,
     reward: dict,
 ) -> dict[str, str]:
-    """Короткие шаблонные сообщения без LLM."""
+    """Короткие шаблонные сообщения без LLM (тон — docs/TILDA_TEXTS.md §10)."""
     name = child_name.strip() or "Читатель"
     tale = f" «{tale_title}»" if tale_title else ""
     badge = reward.get("badge_name")
@@ -156,11 +156,52 @@ def fallback_messages(
     else:
         child = f"{name}, ты на верном пути{tale}! Продолжай в своём темпе."
 
-    if badge:
-        parent = f"Ребёнок получил бейдж «{badge}» за событие «{event_type}»."
-    elif points:
-        parent = f"Начислено {points} баллов за событие «{event_type}»."
-    else:
-        parent = f"Зафиксирован прогресс по событию «{event_type}»."
+    parent = _parent_progress_line(name, event_type, tale, badge, points)
 
     return {"child_message": child, "parent_message": parent}
+
+
+def _parent_progress_line(
+    child_name: str,
+    event_type: str,
+    tale: str,
+    badge: str | None,
+    points: int,
+) -> str:
+    """Текст для родителя в письме / на странице прогресса."""
+    pts = f" +{points} балла." if points else ""
+    badge_part = f" Бейдж «{badge}»." if badge else ""
+
+    templates: dict[str, str] = {
+        "lesson_complete": (
+            f"{child_name} досмотрел(а) видео по сказке{tale} в Читательстве.{pts}"
+        ),
+        "comprehension": (
+            f"{child_name} ответил(а) на вопросы по тексту{tale}.{badge_part}{pts}"
+        ),
+        "meaning_analysis": (
+            f"{child_name} разобрал(а) смысл сказки{tale}.{badge_part}{pts}"
+        ),
+        "creative_task": (
+            f"Творческое задание по сказке{tale} отмечено.{badge_part}{pts}"
+            f" Можно пересказать историю за ужином — просто для удовольствия."
+        ),
+        "live_meeting": (
+            f"{child_name} был(а) на живой встрече по сказке{tale}.{badge_part}{pts}"
+        ),
+        "retelling": f"{child_name} пересказал(а) сказку{tale}.{badge_part}{pts}",
+        "module_complete": (
+            f"Модуль завершён — отличная работа, {child_name}!{badge_part}"
+        ),
+        "streak_3": f"{child_name} читает три дня подряд — классная серия!{badge_part}{pts}",
+        "streak_5": f"Пять дней подряд в Читательстве — так держать, {child_name}!{pts}",
+    }
+
+    if event_type in templates:
+        return templates[event_type].strip()
+
+    if badge:
+        return f"{child_name} получил(а) бейдж «{badge}»{tale}.{pts}".strip()
+    if points:
+        return f"Новый прогресс{tale}: +{points} балла.".strip()
+    return f"Зафиксирован прогресс{tale}.".strip()

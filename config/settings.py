@@ -1,4 +1,5 @@
 import os
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -52,6 +53,19 @@ DEFAULT_NOTIFICATION_CHANNEL = os.getenv("DEFAULT_NOTIFICATION_CHANNEL", "email"
 LESSON_SIGNING_SECRET = os.getenv("LESSON_SIGNING_SECRET", WEBHOOK_SECRET).strip()
 LESSON_LINK_TTL_SECONDS = int(os.getenv("LESSON_LINK_TTL_SECONDS", str(60 * 60 * 24 * 90)))
 VIDEO_WATCH_THRESHOLD = float(os.getenv("VIDEO_WATCH_THRESHOLD", "0.8"))
+# Новая сказка открывается каждые N дней (обычно 7 = понедельник)
+LESSON_WEEK_DAYS = int(os.getenv("LESSON_WEEK_DAYS", "7"))
+# Общий старт модуля для всех семей (понедельник): YYYY-MM-DD
+_MODULE_START_RAW = os.getenv("MODULE_START_DATE", "").strip()
+
+
+def _parse_module_start_date(raw: str) -> date | None:
+    if not raw:
+        return None
+    return date.fromisoformat(raw)
+
+
+MODULE_START_DATE = _parse_module_start_date(_MODULE_START_RAW)
 
 # --- Yandex Object Storage (видео) ---
 YANDEX_ACCESS_KEY = os.getenv("YANDEX_ACCESS_KEY", "").strip()

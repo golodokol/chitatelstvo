@@ -18,7 +18,7 @@ def list_lessons() -> list[dict[str, Any]]:
                 "module_week": data.get("module_week", 1),
             }
         )
-    return items
+    return sorted(items, key=lambda x: x.get("module_week", 1))
 
 
 def get_lesson(slug: str) -> dict[str, Any] | None:
