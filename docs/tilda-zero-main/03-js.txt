@@ -9,6 +9,34 @@ function chitReady(fn) {
   }
 }
 
+function fixTildaLayout() {
+  var main = document.getElementById('chit-main');
+  if (!main) return;
+  var rec = main.closest('.t-rec');
+  var nodes = rec
+    ? rec.querySelectorAll('.t396, .t396__artboard, .t396__carrier, .t396__filter, .tn-elem')
+    : [];
+  nodes.forEach(function(el) {
+    el.style.setProperty('transform', 'none', 'important');
+    el.style.setProperty('zoom', '1', 'important');
+    el.style.setProperty('width', '100%', 'important');
+    el.style.setProperty('max-width', '100%', 'important');
+    el.style.setProperty('left', '0', 'important');
+  });
+  var elem = main.closest('.tn-elem');
+  if (elem) {
+    elem.style.setProperty('left', '0', 'important');
+    elem.style.setProperty('top', '0', 'important');
+  }
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
+}
+
+function runChitLayoutSync() {
+  fixTildaLayout();
+  syncChitArtboardHeight();
+}
+
 function syncChitArtboardHeight() {
   var main = document.getElementById('chit-main');
   if (!main) return;
@@ -154,7 +182,7 @@ function buildAccordion(containerId, items) {
     el.querySelectorAll('.acc-head').forEach(function(h) { h.classList.remove('is-open'); });
     el.querySelectorAll('.acc-body').forEach(function(b) { b.classList.remove('is-open'); });
     if (!open) { head.classList.add('is-open'); body.classList.add('is-open'); }
-    syncChitArtboardHeight();
+    runChitLayoutSync();
   });
 }
 
@@ -169,7 +197,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   document.querySelectorAll('.faq-q').forEach(function(x) { x.classList.remove('is-open'); });
   document.querySelectorAll('.faq-a').forEach(function(x) { x.classList.remove('is-open'); });
   if (!open) { q.classList.add('is-open'); a.classList.add('is-open'); }
-  syncChitArtboardHeight();
+  runChitLayoutSync();
 });
 
 (function () {
@@ -559,8 +587,9 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     var bg = section && section.querySelector('.final-cta__bg');
     if (!scroller || !section || !bg) return;
 
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
+    if (isMobile || reducedMotion) {
       section.classList.add('is-active');
       return;
     }
@@ -605,13 +634,25 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     });
   })();
 
-  syncChitArtboardHeight();
-  window.addEventListener('resize', syncChitArtboardHeight);
-  setTimeout(syncChitArtboardHeight, 400);
-  setTimeout(syncChitArtboardHeight, 1500);
+  runChitLayoutSync();
+  window.addEventListener('resize', runChitLayoutSync);
+  window.addEventListener('load', function() {
+    setTimeout(runChitLayoutSync, 100);
+    setTimeout(runChitLayoutSync, 800);
+    setTimeout(runChitLayoutSync, 2500);
+  });
+  setTimeout(runChitLayoutSync, 400);
+  setTimeout(runChitLayoutSync, 1500);
+  setTimeout(runChitLayoutSync, 3000);
+  setTimeout(runChitLayoutSync, 5000);
   if ('ResizeObserver' in window) {
-    var ro = new ResizeObserver(function() { syncChitArtboardHeight(); });
+    var ro = new ResizeObserver(function() { runChitLayoutSync(); });
     ro.observe(document.getElementById('chit-main'));
+  }
+  var artboard = document.getElementById('chit-main') && document.getElementById('chit-main').closest('.t396__artboard');
+  if (artboard && 'MutationObserver' in window) {
+    var mo = new MutationObserver(function() { runChitLayoutSync(); });
+    mo.observe(artboard, { attributes: true, attributeFilter: ['style', 'class'] });
   }
 })();
 });

@@ -8,28 +8,89 @@ function chitReady(fn) {
   }
 }
 
+function chitSetAutoHeight(el) {
+  if (!el) return;
+  el.style.setProperty('height', 'auto', 'important');
+  el.style.setProperty('max-height', 'none', 'important');
+  el.style.setProperty('overflow', 'visible', 'important');
+  el.style.setProperty('display', 'block', 'important');
+}
+
+function fixTildaLayout() {
+  var main = document.getElementById('chit-main');
+  if (!main) return;
+  var rec = main.closest('.t-rec');
+  var nodes = rec
+    ? rec.querySelectorAll('.t396, .t396__artboard, .t396__carrier, .t396__filter, .tn-elem, .tn-atom, .tn-atom__html')
+    : [];
+  nodes.forEach(function(el) {
+    el.style.setProperty('transform', 'none', 'important');
+    el.style.setProperty('zoom', '1', 'important');
+    el.style.setProperty('width', '100%', 'important');
+    el.style.setProperty('max-width', '100%', 'important');
+    el.style.setProperty('left', '0', 'important');
+    chitSetAutoHeight(el);
+  });
+  var elem = main.closest('.tn-elem');
+  if (elem) {
+    elem.style.setProperty('left', '0', 'important');
+    elem.style.setProperty('top', '0', 'important');
+  }
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
+}
+
+var _chitLayoutBusy = false;
+var _chitLastArtboardH = 0;
+var _chitLayoutRaf = 0;
+
+function runChitLayoutSync() {
+  if (_chitLayoutBusy) return;
+  _chitLayoutBusy = true;
+  try {
+    fixTildaLayout();
+    syncChitArtboardHeight();
+  } finally {
+    _chitLayoutBusy = false;
+  }
+}
+
+function scheduleChitLayoutSync() {
+  if (_chitLayoutRaf) return;
+  _chitLayoutRaf = requestAnimationFrame(function() {
+    _chitLayoutRaf = 0;
+    runChitLayoutSync();
+  });
+}
+
 function syncChitArtboardHeight() {
   var main = document.getElementById('chit-main');
   if (!main) return;
   var artboard = main.closest('.t396__artboard');
   if (!artboard) return;
   var h = Math.ceil(main.getBoundingClientRect().height) + 32;
+  if (!h || h === _chitLastArtboardH) return;
+  _chitLastArtboardH = h;
+  chitSetAutoHeight(artboard);
   artboard.style.setProperty('min-height', h + 'px', 'important');
-  artboard.style.removeProperty('height');
   var carrier = artboard.querySelector('.t396__carrier');
   var filter = artboard.querySelector('.t396__filter');
   if (carrier) {
+    chitSetAutoHeight(carrier);
     carrier.style.setProperty('min-height', h + 'px', 'important');
-    carrier.style.removeProperty('height');
   }
   if (filter) {
+    chitSetAutoHeight(filter);
     filter.style.setProperty('min-height', h + 'px', 'important');
-    filter.style.removeProperty('height');
   }
   var elem = main.closest('.tn-elem');
   if (elem) {
+    chitSetAutoHeight(elem);
     elem.style.setProperty('min-height', h + 'px', 'important');
-    elem.style.removeProperty('height');
+  }
+  var rec = main.closest('.t-rec');
+  if (rec) {
+    chitSetAutoHeight(rec);
   }
 }
 
@@ -153,23 +214,28 @@ function buildAccordion(containerId, items) {
     el.querySelectorAll('.acc-head').forEach(function(h) { h.classList.remove('is-open'); });
     el.querySelectorAll('.acc-body').forEach(function(b) { b.classList.remove('is-open'); });
     if (!open) { head.classList.add('is-open'); body.classList.add('is-open'); }
-    syncChitArtboardHeight();
+    _chitLastArtboardH = 0;
+    scheduleChitLayoutSync();
   });
 }
 
 buildAccordion('acc-basic', PROGRAMS.basic);
 buildAccordion('acc-extra', PROGRAMS.extra);
 
-document.getElementById('faq-list').addEventListener('click', function(e) {
-  var q = e.target.closest('.faq-q');
-  if (!q) return;
-  var a = q.nextElementSibling;
-  var open = q.classList.contains('is-open');
-  document.querySelectorAll('.faq-q').forEach(function(x) { x.classList.remove('is-open'); });
-  document.querySelectorAll('.faq-a').forEach(function(x) { x.classList.remove('is-open'); });
-  if (!open) { q.classList.add('is-open'); a.classList.add('is-open'); }
-  syncChitArtboardHeight();
-});
+var faqList = document.getElementById('faq-list');
+if (faqList) {
+  faqList.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-q');
+    if (!q) return;
+    var a = q.nextElementSibling;
+    var open = q.classList.contains('is-open');
+    document.querySelectorAll('.faq-q').forEach(function(x) { x.classList.remove('is-open'); });
+    document.querySelectorAll('.faq-a').forEach(function(x) { x.classList.remove('is-open'); });
+    if (!open) { q.classList.add('is-open'); a.classList.add('is-open'); }
+    _chitLastArtboardH = 0;
+    scheduleChitLayoutSync();
+  });
+}
 
 (function () {
   var MODULES = {
@@ -183,11 +249,107 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
   var STAGE_LABEL = { '1': 'Старт курса 22 июня', '2': 'Старт 20 июля' };
-  var ORDER_LINKS = {
-    single: '#order:Читательство · Разовое =1490',
-    self_paced: '#order:Читательство · Индивидуальное =1990',
-    with_teacher: '#order:Читательство · С преподавателем =4990'
+  var ORDER_PRODUCTS = {
+    single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
+    self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
+    with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022', lid: '776534181255', sku: 'SKU0003' }
   };
+  var ST100_RECID = '2379461281';
+  var orderConfigReady = Promise.resolve();
+
+  function applyOrderConfig(cfg) {
+    if (!cfg || !cfg.products) return;
+    Object.keys(ORDER_PRODUCTS).forEach(function(key) {
+      var src = cfg.products[key];
+      if (!src) return;
+      if (src.title) ORDER_PRODUCTS[key].title = src.title;
+      if (src.price) ORDER_PRODUCTS[key].price = src.price;
+      if (src.uid) ORDER_PRODUCTS[key].uid = String(src.uid);
+      if (src.lid) ORDER_PRODUCTS[key].lid = String(src.lid);
+      if (src.sku) ORDER_PRODUCTS[key].sku = String(src.sku);
+    });
+  }
+
+  function ensureCatalogBridge() {
+    if (document.getElementById('chit-catalog-bridge')) return;
+    var host = document.getElementById('rec' + ST100_RECID) || document.body;
+    var wrap = document.createElement('div');
+    wrap.id = 'chit-catalog-bridge';
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;';
+    Object.keys(ORDER_PRODUCTS).forEach(function(key) {
+      var p = ORDER_PRODUCTS[key];
+      if (!p || !p.uid) return;
+      var card = document.createElement('div');
+      card.className = 'js-product t-store__card-one';
+      card.setAttribute('data-product-uid', p.uid);
+      card.setAttribute('data-product-lid', p.lid || p.uid);
+      card.setAttribute('data-product-gen-uid', p.uid);
+      card.setAttribute('data-product-inv', '');
+      var nameEl = document.createElement('div');
+      nameEl.className = 'js-product-name';
+      nameEl.textContent = p.title;
+      var priceEl = document.createElement('div');
+      priceEl.className = 'js-product-price js-store-prod-price-val';
+      priceEl.setAttribute('data-product-price-range-val', String(p.price));
+      priceEl.textContent = String(p.price);
+      var link = document.createElement('a');
+      link.href = '#order:' + p.title + '=' + p.price + ':::uid=' + p.uid;
+      link.setAttribute('aria-hidden', 'true');
+      card.appendChild(nameEl);
+      card.appendChild(priceEl);
+      card.appendChild(link);
+      wrap.appendChild(card);
+    });
+    host.appendChild(wrap);
+  }
+
+  function buildOrderHashes(tariff) {
+    var p = ORDER_PRODUCTS[tariff];
+    if (!p) return [];
+    var title = p.title;
+    var price = p.price;
+    var uid = p.uid;
+    var sku = p.sku;
+    var shortTitle = title.replace(/^Читательство\s·\s/, '');
+    var hashes = [];
+
+    if (uid) {
+      hashes.push('order:' + title + '=' + price + ':::uid=' + uid);
+      hashes.push('order:::uid=' + uid);
+    }
+    if (sku) {
+      hashes.push('order:' + title + '=' + price + ':::sku=' + sku);
+      hashes.push('order:' + title + '=' + price + ':::externalid=' + sku);
+      hashes.push('order:' + price + ':' + title + ':::sku=' + sku);
+    }
+    hashes.push('order:' + price + ':' + title);
+    hashes.push('order:' + price + ':' + shortTitle);
+    hashes.push('order:' + title + '=' + price);
+    hashes.push('order:' + title + ' =' + price);
+    hashes.push('order:' + title.replace(/\s·\s/g, ' - ') + '=' + price);
+    return hashes.filter(function(h, i, arr) { return arr.indexOf(h) === i; });
+  }
+
+  function triggerOrderHash(hashBody) {
+    if (window.location.hash) {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    var root = document.getElementById('rec' + ST100_RECID) || document.querySelector('.t706') || document.body;
+    var link = document.createElement('a');
+    link.href = '#' + hashBody;
+    link.setAttribute('aria-hidden', 'true');
+    link.style.cssText = 'position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+    root.appendChild(link);
+    link.click();
+    root.removeChild(link);
+    try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
+  }
+
+  orderConfigReady = fetch('https://api.chitatelstvo.ru/assets/order-config.json?v=4', { cache: 'no-store' })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(applyOrderConfig)
+    .catch(function() {});
   var TALES = {
     'grade-1': {
       '1': ['Царевна лягушка', 'Рассказы из Азбуки Л.Н. Толстой', 'Рассказы Н. Носова (Ступеньки, Заплатка, Затейники, Шляпа)', 'Кот в сапогах, Мальчик с пальчик Ш. Перро'],
@@ -235,23 +397,23 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     else if (state.tariff) ready = ready && state.stage;
     if (ready && TARIFF_PRICE[state.tariff]) {
       payBtn.disabled = false;
-      payBtn.textContent = 'Записаться — ' + formatPrice(TARIFF_PRICE[state.tariff]);
+      payBtn.textContent = 'Оплатить — ' + formatPrice(TARIFF_PRICE[state.tariff]);
     } else {
       payBtn.disabled = true;
-      payBtn.textContent = 'Записаться';
+      payBtn.textContent = 'Оплатить';
     }
   }
 
   function pushField(name, val) {
     var v = val == null ? '' : String(val);
     var sels = [
-      '.t706 input[name="' + name + '"]',
+      '.t706 input[name="' + name + '"]:not([type="checkbox"])',
       '.t706 select[name="' + name + '"]',
       '.t706 textarea[name="' + name + '"]',
-      '.t-store input[name="' + name + '"]',
+      '.t-store input[name="' + name + '"]:not([type="checkbox"])',
       '.t-store select[name="' + name + '"]',
       '.t-store textarea[name="' + name + '"]',
-      'form[data-formcart="y"] input[name="' + name + '"]',
+      'form[data-formcart="y"] input[name="' + name + '"]:not([type="checkbox"])',
       'form[data-formcart="y"] select[name="' + name + '"]'
     ];
     sels.forEach(function(sel) {
@@ -265,6 +427,186 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     });
   }
 
+  function pushCheckbox(name, checked) {
+    var sels = [
+      '.t706 input[name="' + name + '"][type="checkbox"]',
+      '.t-store input[name="' + name + '"][type="checkbox"]',
+      'form[data-formcart="y"] input[name="' + name + '"][type="checkbox"]'
+    ];
+    sels.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(function(cb) {
+        if (cb.closest('#chit-main')) return;
+        if (!!cb.checked === !!checked) return;
+        cb.checked = !!checked;
+        try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+      });
+    });
+  }
+
+  function catalogBlocksOnPage() {
+    if (document.querySelector('[data-record-type="205"]')) return true;
+    var cards = document.querySelectorAll('.t-store__card, .js-product[data-product-uid]');
+    for (var i = 0; i < cards.length; i++) {
+      if (!cards[i].closest('#chit-catalog-bridge')) return true;
+    }
+    return false;
+  }
+
+  function hasConfiguredUids() {
+    return Object.keys(ORDER_PRODUCTS).some(function(key) {
+      return !!(ORDER_PRODUCTS[key].uid);
+    });
+  }
+
+  function parseProductPrice(el) {
+    if (!el) return 0;
+    var raw = el.getAttribute('data-product-price-range-val') || el.textContent || '';
+    return parseInt(String(raw).replace(/\D/g, ''), 10) || 0;
+  }
+
+  function resolveProductUid(tariff) {
+    var p = ORDER_PRODUCTS[tariff];
+    if (!p) return '';
+    if (p.uid) return String(p.uid);
+    var cards = document.querySelectorAll('.js-product[data-product-uid], [data-product-uid]');
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var uid = card.getAttribute('data-product-uid');
+      if (!uid) continue;
+      var nameEl = card.querySelector('.js-product-name');
+      var name = nameEl ? nameEl.textContent.trim() : '';
+      var price = parseProductPrice(card.querySelector('.js-product-price, .js-catalog-prod-price-val, .js-store-prod-price-val'));
+      if (name === p.title || price === p.price) {
+        p.uid = String(uid);
+        return p.uid;
+      }
+    }
+    return '';
+  }
+
+  function showCatalogSetupAlert() {
+    alert(
+      'Не удалось добавить товар в корзину.\n\n' +
+      'В Tilda на главной добавьте 3 блока ST205 (Магазин → карточка товара) ' +
+      'и укажите Product ID из каталога. Затем «Опубликовать».\n\n' +
+      'Подробнее: docs/tilda-zero-main/TILDA-CATALOG-LINK.md\n' +
+      'Поддержка: info@chitatelstvo.ru'
+    );
+  }
+
+  function showCatalogPaymentAlert() {
+    alert(
+      'Оплату блокирует Tilda: каталог не связан с корзиной ST100.\n\n' +
+      '1. Главная → + Блок → ST205 «Карточка товара» — 3 штуки (внизу страницы)\n' +
+      '2. В каждом ST205 → ID товара в каталоге (Product ID из CSV)\n' +
+      '3. Каталог → проверьте, что у услуг есть остаток (не «0 шт.»)\n' +
+      '4. Опубликовать главную → Ctrl+F5\n\n' +
+      'Без ST205 будет «нет в наличии» при оплате.'
+    );
+  }
+
+  function checkCatalogBlock() {
+    var warn = document.getElementById('chit-catalog-warning');
+    if (!warn) return;
+    warn.hidden = catalogBlocksOnPage();
+  }
+
+  function waitTcartReady(cb, attempt) {
+    if (typeof window.tcart__addProduct === 'function' && window.tcart) {
+      cb();
+      return;
+    }
+    if ((attempt || 0) >= 40) return;
+    setTimeout(function() { waitTcartReady(cb, (attempt || 0) + 1); }, 150);
+  }
+
+  function clearTcart() {
+    if (!window.tcart) window.tcart = { products: [], amount: 0, total: 0, prodamount: 0 };
+    window.tcart.products = [];
+    window.tcart.amount = 0;
+    window.tcart.total = 0;
+    window.tcart.prodamount = 0;
+    if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
+      window.tcart__updateTotalProductsinCartObj();
+    }
+    if (typeof window.tcart__saveLocalObj === 'function') {
+      window.tcart__saveLocalObj();
+    }
+    if (typeof window.tcart__reDrawCartIcon === 'function') {
+      window.tcart__reDrawCartIcon();
+    }
+    if (typeof window.tcart__reDrawProducts === 'function') {
+      window.tcart__reDrawProducts();
+    }
+  }
+
+  function addProductDirect(tariff) {
+    var p = ORDER_PRODUCTS[tariff];
+    if (!p || typeof window.tcart__addProduct !== 'function') return false;
+    var uid = resolveProductUid(tariff);
+    if (!uid) return false;
+    if (!window.tcart) window.tcart = { products: [], amount: 0, total: 0, prodamount: 0 };
+    clearTcart();
+    var item = {
+      name: p.title,
+      price: p.price,
+      amount: p.price,
+      quantity: 1,
+      recid: ST100_RECID,
+      sku: p.sku || '',
+      uid: uid,
+      lid: p.lid || uid
+    };
+    window.tcart__addProduct(item);
+    window.tcart.updated = Math.floor(Date.now() / 1000);
+    if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
+      window.tcart__updateTotalProductsinCartObj();
+    }
+    if (typeof window.tcart__saveLocalObj === 'function') {
+      window.tcart__saveLocalObj();
+    }
+    if (typeof window.tcart__reDrawCartIcon === 'function') {
+      window.tcart__reDrawCartIcon();
+    }
+    if (typeof window.tcart__reDrawProducts === 'function') {
+      window.tcart__reDrawProducts();
+    }
+    if (typeof window.tcart__reDrawTotal === 'function') {
+      window.tcart__reDrawTotal();
+    }
+    return !!(window.tcart.products && window.tcart.products.length);
+  }
+
+  function cartHasItems() {
+    if (window.tcart && window.tcart.products && window.tcart.products.length > 0) return true;
+    var counter = document.querySelector('.js-carticon-counter, .t706__carticon-counter');
+    if (counter) {
+      var n = parseInt(String(counter.textContent || '').replace(/\D/g, ''), 10);
+      if (n > 0) return true;
+    }
+    var list = document.querySelector('.t706__cartwin-products');
+    if (list && list.querySelector('.t706__product, .t706__cartitem, [data-product-id]')) return true;
+    return false;
+  }
+
+  function openCartModal() {
+    if (typeof window.tcart__openCart === 'function') {
+      window.tcart__openCart();
+    } else if (window.tcart && typeof window.tcart.open === 'function') {
+      window.tcart.open();
+    } else {
+      var icon = document.querySelector('.t706__carticon');
+      if (icon) icon.click();
+    }
+    if (typeof window.tcart__reDrawProducts === 'function') {
+      window.tcart__reDrawProducts();
+    }
+    if (typeof window.tcart__reDrawTotal === 'function') {
+      window.tcart__reDrawTotal();
+    }
+    return true;
+  }
+
   function syncToCartForm() {
     pushField('module_id', hidMid ? hidMid.value : '');
     pushField('chosen_stage', hidStage ? hidStage.value : '');
@@ -273,6 +615,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (el) pushField(name, el.value);
     });
+    pushCheckbox('legal_consent', true);
   }
 
   function findSt100Root() {
@@ -308,16 +651,74 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
 
   function openCart(tariff) {
     if (!window.chitValidateProgram()) return;
-    syncToCartForm();
-    var link = ORDER_LINKS[tariff];
-    if (!link) return;
-    var hash = link.replace(/^#/, '');
-    if (window.location.hash !== hash) window.location.hash = hash;
-    try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
-    setTimeout(function() {
-      if (window.tcart && typeof window.tcart.open === 'function') window.tcart.open();
-      scrollToCheckout();
-    }, 200);
+    orderConfigReady.finally(function() {
+      ensureCatalogBridge();
+      syncToCartForm();
+      waitTcartReady(function() {
+        var hashes = buildOrderHashes(tariff);
+        var hashIdx = 0;
+        var directTry = 0;
+        var hashWait = 0;
+        var phase = resolveProductUid(tariff) ? 'direct' : 'hash';
+
+        function openWhenReady() {
+          syncToCartForm();
+          if (cartHasItems()) {
+            openCartModal();
+            checkCatalogBlock();
+            return;
+          }
+          if (phase === 'direct') {
+            if (!addProductDirect(tariff)) {
+              if (!catalogBlocksOnPage() && !hasConfiguredUids()) {
+                showCatalogSetupAlert();
+                return;
+              }
+              phase = 'hash';
+              hashWait = 0;
+              if (hashes.length) triggerOrderHash(hashes[hashIdx]);
+              setTimeout(openWhenReady, 300);
+              return;
+            }
+            directTry += 1;
+            if (directTry >= 4 || cartHasItems()) {
+              if (cartHasItems()) {
+                openCartModal();
+                checkCatalogBlock();
+                return;
+              }
+              phase = 'hash';
+              hashWait = 0;
+              if (hashes.length) triggerOrderHash(hashes[hashIdx]);
+            }
+            setTimeout(openWhenReady, 300);
+            return;
+          }
+          if (phase === 'hash') {
+            hashWait += 1;
+            if (cartHasItems()) {
+              openCartModal();
+              checkCatalogBlock();
+              return;
+            }
+            if (hashWait >= 6) {
+              hashWait = 0;
+              hashIdx += 1;
+              if (hashIdx < hashes.length) {
+                triggerOrderHash(hashes[hashIdx]);
+                setTimeout(openWhenReady, 300);
+                return;
+              }
+              showCatalogSetupAlert();
+              return;
+            }
+            setTimeout(openWhenReady, 300);
+          }
+        }
+
+        openWhenReady();
+      });
+    });
   }
 
   function syncToTildaForm() {
@@ -411,16 +812,41 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     });
   }
 
+  document.querySelectorAll('[data-tariff-jump]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var tariff = btn.getAttribute('data-tariff-jump');
+      var card = document.querySelector('#chit-tariffs [data-tariff="' + tariff + '"]');
+      if (card) card.click();
+      var program = document.getElementById('program');
+      if (program) program.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
   document.addEventListener('DOMContentLoaded', function() {
     syncToCartForm();
   });
   setInterval(syncToCartForm, 500);
 
+  function chitValidateCatalogPayment() {
+    ensureCatalogBridge();
+    if (catalogBlocksOnPage()) return true;
+    showCatalogPaymentAlert();
+    checkCatalogBlock();
+    scrollToCheckout();
+    return false;
+  }
+
   document.addEventListener('click', function(e) {
     var cartBtn = e.target.closest('.t706 .t-submit, .t706 button[type="submit"], .t-store__submit-btn');
-    if (cartBtn && !window.chitValidateProgram()) {
-      e.preventDefault();
-      e.stopPropagation();
+    if (cartBtn) {
+      if (!window.chitValidateProgram() || !chitValidateCatalogPayment()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      syncToCartForm();
+      pushCheckbox('legal_consent', true);
     }
   }, true);
 
@@ -428,11 +854,12 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     var form = e.target;
     if (!form || !form.closest) return;
     if (form.closest('.t706') || form.closest('.t-form') || form.closest('.t-store')) {
-      if (!window.chitValidateProgram()) {
+      if (!window.chitValidateProgram() || !chitValidateCatalogPayment()) {
         e.preventDefault();
         e.stopPropagation();
       } else {
         syncToCartForm();
+        pushCheckbox('legal_consent', true);
       }
     }
   }, true);
@@ -459,8 +886,14 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   };
 
   bindContactSync();
+  ensureCatalogBridge();
   checkSt100Block();
-  setTimeout(checkSt100Block, 1500);
+  checkCatalogBlock();
+  setTimeout(function() {
+    ensureCatalogBridge();
+    checkSt100Block();
+    checkCatalogBlock();
+  }, 1500);
 })();
 
 (function initInteractive() {
@@ -558,8 +991,9 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     var bg = section && section.querySelector('.final-cta__bg');
     if (!scroller || !section || !bg) return;
 
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
+    if (isMobile || reducedMotion) {
       section.classList.add('is-active');
       return;
     }
@@ -604,13 +1038,29 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     });
   })();
 
-  syncChitArtboardHeight();
-  window.addEventListener('resize', syncChitArtboardHeight);
-  setTimeout(syncChitArtboardHeight, 400);
-  setTimeout(syncChitArtboardHeight, 1500);
+  runChitLayoutSync();
+  window.addEventListener('resize', function() {
+    _chitLastArtboardH = 0;
+    scheduleChitLayoutSync();
+  });
+  window.addEventListener('load', function() {
+    _chitLastArtboardH = 0;
+    setTimeout(runChitLayoutSync, 100);
+    setTimeout(runChitLayoutSync, 800);
+    setTimeout(runChitLayoutSync, 2500);
+  });
+  setTimeout(runChitLayoutSync, 400);
+  setTimeout(function() { _chitLastArtboardH = 0; runChitLayoutSync(); }, 1500);
+  setTimeout(function() { _chitLastArtboardH = 0; runChitLayoutSync(); }, 3000);
   if ('ResizeObserver' in window) {
-    var ro = new ResizeObserver(function() { syncChitArtboardHeight(); });
-    ro.observe(document.getElementById('chit-main'));
+    var mainEl = document.getElementById('chit-main');
+    if (mainEl) {
+      var ro = new ResizeObserver(function() {
+        _chitLastArtboardH = 0;
+        scheduleChitLayoutSync();
+      });
+      ro.observe(mainEl);
+    }
   }
 })();
 });

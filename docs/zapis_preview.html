@@ -1056,14 +1056,6 @@
       font-size: 22px; font-weight: 800; color: var(--blue);
       margin: 0 0 20px; text-align: center;
     }
-    .enroll-checkout {
-      margin-top: 32px; padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-    .enroll-checkout h3 {
-      font-size: 22px; font-weight: 800; color: var(--blue);
-      margin: 0 0 12px; text-align: center;
-    }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
     .form-field label {
@@ -1771,13 +1763,33 @@
         <input type="hidden" name="chosen_tale_number" id="chosen_tale_number" value="">
       </div>
 
-      <div class="enroll-checkout">
+      <form class="form-section t-form" id="mock-form" onsubmit="return handleSubmit(event)">
         <h3>Запись в Читательство</h3>
-        <p class="form-intro">Выберите программу выше, затем нажмите «Записаться» — откроется корзина с оплатой через Т‑Банк.</p>
-        <button type="button" class="btn btn--block btn--pay" id="chit-pay-btn" disabled>Записаться</button>
-        <p class="pay-note">Контакты и оплата — в корзине ниже на странице (блок ST100)</p>
-        <p class="form-consent">Нажимая «Записаться», вы соглашаетесь на обработку данных для занятий в Читательстве.</p>
-      </div>
+        <p class="form-intro">Заполните форму — создадим личную страницу прогресса и пришлём ссылку на email.</p>
+        <div class="form-grid">
+          <div class="form-field"><label for="parent_name">Имя родителя</label><input type="text" id="parent_name" name="parent_name" placeholder="Мария" required></div>
+          <div class="form-field"><label for="parent_email">Email для новостей</label><input type="email" id="parent_email" name="parent_email" placeholder="mama@example.com" required></div>
+          <div class="form-field"><label for="parent_telegram">Telegram <span style="font-weight:400;color:var(--muted)">(необязательно)</span></label><input type="text" id="parent_telegram" name="parent_telegram" placeholder="@username"></div>
+          <div class="form-field"><label for="child_name">Имя ребёнка</label><input type="text" id="child_name" name="child_name" placeholder="Саша" required></div>
+          <div class="form-field"><label for="child_age">Возраст ребёнка <span style="font-weight:400;color:var(--muted)">(необязательно)</span></label><input type="number" id="child_age" name="child_age" placeholder="7" min="5" max="14"></div>
+          <div class="form-field"><label for="notification_channel">Как присылать новости</label>
+            <select id="notification_channel" name="notification_channel" required>
+              <option value="email">На email</option>
+              <option value="telegram">В Telegram</option>
+              <option value="both">Email и Telegram</option>
+              <option value="web">Только личная страница</option>
+            </select>
+          </div>
+        </div>
+        <input type="hidden" name="module_id" value="">
+        <input type="hidden" name="chosen_stage" value="">
+        <input type="hidden" name="chosen_tale_number" value="">
+        <div style="margin-top:20px">
+          <button type="submit" class="btn btn--block btn--pay" id="pay-btn" disabled>Записаться</button>
+          <p class="pay-note">Оплата картой через Т‑Банк · после оплаты — письмо со ссылкой на личную страницу</p>
+          <p class="form-consent">Нажимая «Записаться», вы соглашаетесь на обработку данных для занятий в Читательстве. Мы не передаём данные третьим лицам и не рассылаем рекламу.</p>
+        </div>
+      </form>
     </div>
   </div>
 </section>
@@ -1848,7 +1860,7 @@
       <img class="founder__photo" src="images/founder-olga.jpg" alt="Рощина Ольга Владимировна" width="220" height="260">
       <div class="founder__body">
         <h3 class="founder__name">Рощина Ольга Владимировна</h3>
-        <p class="founder__bio">Основатель онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. Мама четырёх детей, основатель книжного в Москве <strong>ДоброLavka</strong></p>
+        <p class="founder__bio">Основатель онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. Мама четырёх детей, основатель книжного в Москве <a href="https://blog.dobrolavka.ru/" target="_blank" rel="noopener"><strong>ДоброЛавка</strong></a></p>
       </div>
     </div>
   </div>
@@ -2024,11 +2036,6 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
   var STAGE_LABEL = { '1': 'Старт курса 22 июня', '2': 'Старт 20 июля' };
-  var ORDER_LINKS = {
-    single: '#order:Читательство · Разовое =1490',
-    self_paced: '#order:Читательство · Индивидуальное =1990',
-    with_teacher: '#order:Читательство · С преподавателем =4990'
-  };
   var TALES = {
     'grade-1': {
       '1': ['Царевна лягушка', 'Рассказы из Азбуки Л.Н. Толстой', 'Рассказы Н. Носова (Ступеньки, Заплатка, Затейники, Шляпа)', 'Кот в сапогах, Мальчик с пальчик Ш. Перро'],
@@ -2063,7 +2070,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   var hidMid = document.getElementById('module_id');
   var hidStage = document.getElementById('chosen_stage');
   var hidTale = document.getElementById('chosen_tale_number');
-  var payBtn = document.getElementById('chit-pay-btn');
+  var payBtn = document.getElementById('pay-btn');
 
   function formatPrice(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
@@ -2083,59 +2090,18 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     }
   }
 
-  function pushField(name, val) {
-    var v = val == null ? '' : String(val);
-    var sels = [
-      '.t706 input[name="' + name + '"]',
-      '.t706 select[name="' + name + '"]',
-      '.t706 textarea[name="' + name + '"]',
-      '.t-store input[name="' + name + '"]',
-      '.t-store select[name="' + name + '"]',
-      '.t-store textarea[name="' + name + '"]',
-      'form[data-formcart="y"] input[name="' + name + '"]',
-      'form[data-formcart="y"] select[name="' + name + '"]'
-    ];
-    sels.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(dst) {
-        if (dst.closest('#chit-main')) return;
-        if (dst.value === v) return;
-        dst.value = v;
-        try { dst.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
-        try { dst.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
-      });
+  function updateDebug() {
+    document.querySelectorAll('.t-form input[name="module_id"], .t-form input[name="chosen_stage"], .t-form input[name="chosen_tale_number"]').forEach(function(inp) {
+      var src = document.getElementById(inp.name);
+      if (src) inp.value = src.value;
     });
-  }
-
-  function syncToCartForm() {
-    pushField('module_id', hidMid ? hidMid.value : '');
-    pushField('chosen_stage', hidStage ? hidStage.value : '');
-    pushField('chosen_tale_number', hidTale ? hidTale.value : '');
-  }
-
-  function openCart(tariff) {
-    if (!window.chitValidateProgram()) return;
-    syncToCartForm();
-    var link = ORDER_LINKS[tariff];
-    if (!link) return;
-    var hash = link.replace(/^#/, '');
-    if (window.location.hash !== hash) window.location.hash = hash;
-    try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
-    setTimeout(function() {
-      if (window.tcart && typeof window.tcart.open === 'function') window.tcart.open();
-      document.getElementById('program').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 200);
-  }
-
-  function syncToTildaForm() {
-    syncToCartForm();
   }
 
   function syncHidden() {
     hidMid.value = (state.group && state.tariff && MODULES[state.group]) ? MODULES[state.group][state.tariff] : '';
     hidStage.value = state.stage || '';
     hidTale.value = state.tariff === 'single' && state.taleNum ? String(state.taleNum) : '';
-    syncToTildaForm();
-    syncToCartForm();
+    updateDebug();
     if (!state.group || !state.tariff) {
       elSummary.classList.add('is-empty');
       elSummary.innerHTML = '<span class="summary-empty">Выберите класс и формат</span>';
@@ -2211,47 +2177,23 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     renderTales(); syncHidden();
   };
 
-  if (payBtn) {
-    payBtn.addEventListener('click', function() {
-      openCart(state.tariff);
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    syncToCartForm();
-  });
-  setInterval(syncToCartForm, 500);
-
-  document.addEventListener('click', function(e) {
-    var cartBtn = e.target.closest('.t706 .t-submit, .t706 button[type="submit"], .t-store__submit-btn');
-    if (cartBtn && !window.chitValidateProgram()) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, true);
-
-  document.addEventListener('submit', function(e) {
-    var form = e.target;
-    if (!form || !form.closest) return;
-    if (form.closest('.t706') || form.closest('.t-form') || form.closest('.t-store')) {
-      if (!window.chitValidateProgram()) {
-        e.preventDefault();
-        e.stopPropagation();
-      } else {
-        syncToCartForm();
-      }
-    }
-  }, true);
-
   window.chitValidateProgram = function() {
     if (!hidMid.value) { alert('Выберите класс и формат.'); document.getElementById('program').scrollIntoView({behavior:'smooth'}); return false; }
     if (state.tariff === 'single' && (!hidStage.value || !hidTale.value)) { alert('Выберите дату и сказку.'); elDateBox.classList.add('is-visible'); return false; }
     if (state.tariff !== 'single' && !hidStage.value) { alert('Выберите дату старта.'); elDateBox.classList.add('is-visible'); return false; }
-    syncToTildaForm();
-    syncToCartForm();
     return true;
   };
 })();
+
+function handleSubmit(e) {
+  e.preventDefault();
+  if (!window.chitValidateProgram()) return false;
+  var dbg = 'module_id: ' + (document.getElementById('module_id').value || '—') +
+    ' · chosen_stage: ' + (document.getElementById('chosen_stage').value || '—') +
+    ' · chosen_tale_number: ' + (document.getElementById('chosen_tale_number').value || '—');
+  alert('Пробная страница — оплата через Т‑Банк не подключена.\n\nНа Tilda: ST100 + корзина.\n\n' + document.getElementById('pay-btn').textContent + '\n' + dbg);
+  return false;
+}
 
 (function initInteractive() {
   var HERO_QUOTES = [

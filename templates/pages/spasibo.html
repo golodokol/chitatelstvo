@@ -1,0 +1,20 @@
+{% extends "legal/layout.html" %}
+
+{% block title %}Спасибо за запись — Читательство{% endblock %}
+
+{% block content %}
+<h1>Вы в Читательстве!</h1>
+<p class="sub">Оплата прошла успешно. Добро пожаловать в онлайн-школу литературного чтения.</p>
+
+<p>На email, который вы указали при записи, придёт письмо со <strong>ссылкой на личную страницу</strong> ребёнка. Сохраните её в закладки браузера — там будут уроки, баллы и прогресс.</p>
+
+<p>Если письма нет в течение 10–15 минут, проверьте папку «Спам» или напишите нам:</p>
+<ul>
+  <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+  <li><a href="tel:{{ contact_phone_tel }}">{{ contact_phone }}</a></li>
+</ul>
+
+<p style="margin-top: 32px;">
+  <a href="{{ site_url }}" style="display:inline-block;padding:12px 24px;background:#5b7fa6;color:#fff;border-radius:10px;text-decoration:none;font-family:'Nunito',sans-serif;font-weight:700;">На главную</a>
+</p>
+{% endblock %}

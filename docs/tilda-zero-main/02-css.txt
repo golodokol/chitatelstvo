@@ -60,7 +60,7 @@
   width: 100%;
   max-width: none;
   margin: 0;
-  overflow-x: clip;
+  overflow-x: hidden;
   scroll-behavior: smooth;
   font-family: 'Nunito', system-ui, sans-serif;
   color: var(--text);
@@ -173,18 +173,25 @@
     .section--pale { background: #FAFBFC; }
     .section__inner { max-width: var(--max); margin: 0 auto; padding-left: 24px; padding-right: 24px; }
 
-    /* Фон секций на всю ширину экрана (без белых полей по бокам) */
+    /* Секции на всю ширину родителя (без 100vw — он ломает мобилу) */
     .preview-strip,
     .hero,
     .section,
     .footer,
     .pattern-strip,
-    .final-cta-scroller {
-      width: 100vw;
-      max-width: 100vw;
-      margin-left: calc(50% - 50vw);
-      margin-right: calc(50% - 50vw);
+    .final-cta-scroller,
+    .benefits,
+    .quote-marquee {
+      width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
+    }
+
+    #chit-main img,
+    #chit-main video,
+    #chit-main svg {
+      max-width: 100%;
+      height: auto;
     }
     .section__chapter {
       display: block; text-align: center;
@@ -1430,12 +1437,28 @@
       .feedback-tab__panel { width: 100%; right: 0; }
     }
 
-    /* Tilda: Zero Block на всю ширину + перебить оранжевые ссылки #allrecords */
+    /* Tilda: фон страницы, без горизонтального скролла */
+    html,
+    body,
+    .t-body,
+    #allrecords,
+    #allrecords .t-records,
+    #allrecords .t-rec {
+      background-color: #F6F4F9;
+      overflow-x: hidden !important;
+      max-width: 100%;
+    }
+    .t396,
+    .t396__artboard,
+    .t396__carrier,
+    .t396__filter,
     .tn-elem[data-elem-type="html"] {
-      left: 0 !important;
       transform: none !important;
+      zoom: 1 !important;
+      left: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
+      min-width: 0 !important;
     }
     #allrecords #chit-main a { color: inherit; text-decoration: none; }
     #allrecords #chit-main .site-nav a { color: var(--muted) !important; }
@@ -1443,4 +1466,95 @@
     #allrecords #chit-main .header-cta { color: #fff !important; }
     #allrecords #chit-main .faq-a { display: none; }
     #allrecords #chit-main .faq-a.is-open { display: block; }
+
+    /* ── Мобильная версия ── */
+    @media (max-width: 960px) {
+      #chit-main {
+        font-size: 16px;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+
+      /* full-bleed убран глобально — здесь только типографика и отступы */
+      .section { padding: 48px 16px; }
+      .section__inner { padding-left: 0; padding-right: 0; }
+      .hero { padding: 28px 16px 36px; }
+
+      .section__title { font-size: 28px; margin-bottom: 12px; }
+      .section__lead { font-size: 16px; margin-bottom: 32px; }
+
+      .logo__img { height: 52px; }
+      .site-header__inner { padding: 10px 16px; gap: 12px; }
+      .header-cta { padding: 8px 16px; font-size: 14px; white-space: nowrap; }
+
+      .btn { padding: 14px 22px; font-size: 16px; }
+      .hero__subtitle { font-size: 18px; }
+      .hero__price strong { font-size: 24px; }
+      .hero__actions { flex-direction: column; align-items: stretch; }
+      .hero__actions .btn { width: 100%; }
+
+      .footer { padding: 36px 16px 48px; }
+      .footer__logo { width: 200px; }
+
+      .benefit:nth-child(n) { transform: none; }
+      .benefits__grid::before { display: none; }
+
+      .for-whom__item {
+        padding: 88px 20px 20px;
+        text-align: center;
+      }
+      .for-whom__icon-wrap {
+        left: 50%; top: 14px;
+        transform: translateX(-50%);
+      }
+
+      /* Tilda scale — дублируем на мобиле (Tilda иногда перезаписывает после init) */
+      .t396,
+      .t396__artboard,
+      .t396__carrier,
+      .t396__filter,
+      .tn-elem[data-elem-type="html"] {
+        transform: none !important;
+        zoom: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        left: 0 !important;
+      }
+      .t396__artboard { min-width: 0 !important; }
+
+      /* Блок с «прилипанием» на мобиле ломает скролл */
+      .final-cta-scroller { height: auto !important; }
+      .final-cta {
+        position: relative !important;
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 48px 16px 56px;
+      }
+      .final-cta__frame {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .final-cta__bg { transform: none !important; }
+
+      .pull-quote {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+      }
+      .pull-quote__avatar { margin: 0 auto; }
+
+      .enroll-panel { padding: 28px 16px; }
+      .tariff-card { padding: 24px 18px; }
+    }
+
+    @media (max-width: 480px) {
+      .section__title { font-size: 24px; }
+      .hero h1 { font-size: 30px; }
+      .hero__subtitle { font-size: 17px; }
+      .section { padding: 40px 14px; }
+      .preview-strip { font-size: 12px; padding: 8px 12px; }
+      .acc-head { font-size: 16px; padding: 16px 18px; }
+      .tale-card { padding: 18px 16px; }
+    }
   

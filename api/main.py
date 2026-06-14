@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from config.settings import ROOT
-from api.routes import admin, legal, lesson, progress, telegram, webhook
+from api.routes import admin, legal, lesson, pages, progress, telegram, webhook
 
 app = FastAPI(
     title="Литературная школа онлайн",
@@ -13,6 +13,7 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory=str(ROOT / "static")), name="static")
 
 app.include_router(admin.router)
+app.include_router(pages.router)
 app.include_router(legal.router)
 app.include_router(webhook.router)
 app.include_router(lesson.router)

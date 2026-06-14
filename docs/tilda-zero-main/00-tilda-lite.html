@@ -1,7 +1,7 @@
 <!-- Читательство · lite (CSS/JS грузятся с API, вставлять целиком) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260614d">
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260609r">
 <div id="chit-main">
 <header class="site-header">
   <div class="site-header__inner">
@@ -460,6 +460,12 @@
           </div>
         </div>
 
+        <div class="st100-warning" id="chit-catalog-warning" hidden>
+          <strong>Каталог не связан с оплатой.</strong>
+          Добавьте на главную 3 блока <em>ST205</em> с Product ID из каталога и опубликуйте страницу
+          (см. TILDA-CATALOG-LINK.md). Иначе при «Оплатить» будет «нет в наличии».
+        </div>
+
         <div class="st100-warning" id="chit-st100-warning" hidden>
           <strong>Оплата пока не подключена.</strong>
           В редакторе Tilda добавьте блок <em>ST100 «Корзина с формой»</em> под Zero Block
@@ -540,7 +546,7 @@
       <img class="founder__photo" src="https://api.chitatelstvo.ru/assets/founder-olga.jpg" alt="Рощина Ольга Владимировна" width="220" height="260">
       <div class="founder__body">
         <h3 class="founder__name">Рощина Ольга Владимировна</h3>
-        <p class="founder__bio">Основатель онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. Мама четырёх детей, основатель книжного в Москве <strong>ДоброLavka</strong></p>
+        <p class="founder__bio">Основатель онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. Мама четырёх детей, основатель книжного в Москве <a href="https://blog.dobrolavka.ru/" target="_blank" rel="noopener"><strong>ДоброЛавка</strong></a></p>
       </div>
     </div>
   </div>
@@ -579,4 +585,4 @@
   </button>
 </div>
 </div>
-<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260614d"></script>
+<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260609r"></script>
