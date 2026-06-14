@@ -55,7 +55,7 @@ class RegisterWebhook(BaseModel):
     telegram_chat_id: int | None = None
     notification_channel: NotificationChannel = "email"
     child_name: str = Field(min_length=1, max_length=100)
-    child_age: int | None = Field(default=None, ge=5, le=14)
+    child_age: int | None = Field(default=None)
     module_id: int | None = Field(default=None, ge=1, le=18)
     chosen_stage: str | None = Field(default=None, max_length=50)
     chosen_tale_number: int | None = Field(default=None, ge=1, le=4)
@@ -102,7 +102,7 @@ class RegisterWebhook(BaseModel):
         key = str(value).strip().lower()
         return _CHANNEL_ALIASES.get(key, key)
 
-    @field_validator("module_id", "chosen_tale_number", mode="before")
+    @field_validator("module_id", "chosen_tale_number", "child_age", mode="before")
     @classmethod
     def coerce_optional_int(cls, value: object) -> object:
         if value is None or value == "":
