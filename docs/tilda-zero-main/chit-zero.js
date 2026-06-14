@@ -444,12 +444,43 @@ if (faqList) {
   }
 
   function catalogBlocksOnPage() {
-    if (document.querySelector('[data-record-type="205"]')) return true;
-    var cards = document.querySelectorAll('.t-store__card, .js-product[data-product-uid]');
+    if (document.querySelector('[data-record-type="205"], [data-record-type="762"]')) return true;
+    var cards = document.querySelectorAll(
+      '.js-store-product[data-product-gen-uid], .js-product[data-product-uid], .t-store__card'
+    );
     for (var i = 0; i < cards.length; i++) {
       if (!cards[i].closest('#chit-catalog-bridge')) return true;
     }
     return false;
+  }
+
+  function findStoreProductCard(tariff) {
+    var p = ORDER_PRODUCTS[tariff];
+    if (!p || !p.uid) return null;
+    var cards = document.querySelectorAll(
+      '.js-store-product[data-product-gen-uid], .js-product[data-product-gen-uid], .js-product[data-product-uid]'
+    );
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      if (card.closest('#chit-catalog-bridge')) continue;
+      var genUid = card.getAttribute('data-product-gen-uid') || card.getAttribute('data-product-uid');
+      if (genUid && String(genUid) === String(p.uid)) return card;
+    }
+    return null;
+  }
+
+  function triggerStoreBuy(tariff) {
+    var card = findStoreProductCard(tariff);
+    if (!card) return false;
+    var rec = card.closest('.t-rec');
+    var root = rec || card;
+    var btn = root.querySelector(
+      'a[href^="#order"], a.t762__btn, .js-store-prod-buy-btn, .t-store__prod-popup__btn, .t-store__card__btn'
+    );
+    if (!btn) return false;
+    btn.click();
+    try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
+    return true;
   }
 
   function hasConfiguredUids() {
@@ -467,15 +498,21 @@ if (faqList) {
   function resolveProductUid(tariff) {
     var p = ORDER_PRODUCTS[tariff];
     if (!p) return '';
+    var card = findStoreProductCard(tariff);
+    if (card) {
+      var pageUid = card.getAttribute('data-product-gen-uid') || card.getAttribute('data-product-uid');
+      if (pageUid) return String(pageUid);
+    }
     if (p.uid) return String(p.uid);
     var cards = document.querySelectorAll('.js-product[data-product-uid], [data-product-uid]');
     for (var i = 0; i < cards.length; i++) {
-      var card = cards[i];
-      var uid = card.getAttribute('data-product-uid');
+      var c = cards[i];
+      if (c.closest('#chit-catalog-bridge')) continue;
+      var uid = c.getAttribute('data-product-uid');
       if (!uid) continue;
-      var nameEl = card.querySelector('.js-product-name');
+      var nameEl = c.querySelector('.js-product-name');
       var name = nameEl ? nameEl.textContent.trim() : '';
-      var price = parseProductPrice(card.querySelector('.js-product-price, .js-catalog-prod-price-val, .js-store-prod-price-val'));
+      var price = parseProductPrice(c.querySelector('.js-product-price, .js-catalog-prod-price-val, .js-store-prod-price-val'));
       if (name === p.title || price === p.price) {
         p.uid = String(uid);
         return p.uid;
@@ -487,21 +524,22 @@ if (faqList) {
   function showCatalogSetupAlert() {
     alert(
       'Не удалось добавить товар в корзину.\n\n' +
-      'В Tilda на главной добавьте 3 блока ST205 (Магазин → карточка товара) ' +
-      'и укажите Product ID из каталога. Затем «Опубликовать».\n\n' +
-      'Подробнее: docs/tilda-zero-main/TILDA-CATALOG-LINK.md\n' +
-      'Поддержка: info@chitatelstvo.ru'
+      'На главной нужны 3 карточки товара из каталога (ST205 или блок «Товар» T762) ' +
+      'с Product ID из CSV. После настройки — «Опубликовать».\n\n' +
+      'Если на карточке «Studio Headphones» или цена 100 — товар из каталога не подтянулся, ' +
+      'откройте блок заново и выберите услугу из каталога.\n\n' +
+      'Подробнее: docs/tilda-zero-main/TILDA-CATALOG-LINK.md'
     );
   }
 
   function showCatalogPaymentAlert() {
     alert(
-      'Оплату блокирует Tilda: каталог не связан с корзиной ST100.\n\n' +
-      '1. Главная → + Блок → ST205 «Карточка товара» — 3 штуки (внизу страницы)\n' +
-      '2. В каждом ST205 → ID товара в каталоге (Product ID из CSV)\n' +
-      '3. Каталог → проверьте, что у услуг есть остаток (не «0 шт.»)\n' +
-      '4. Опубликовать главную → Ctrl+F5\n\n' +
-      'Без ST205 будет «нет в наличии» при оплате.'
+      'Каталог на странице не готов к оплате.\n\n' +
+      'Проверьте 3 карточки товара внизу главной:\n' +
+      '• название «Читательство · …», не «Studio Headphones»\n' +
+      '• цены 1490 / 1990 / 4990, не 100\n' +
+      '• Product ID из каталога в настройках блока\n\n' +
+      'Исправьте → Опубликовать → Ctrl+F5'
     );
   }
 
@@ -659,13 +697,35 @@ if (faqList) {
         var hashIdx = 0;
         var directTry = 0;
         var hashWait = 0;
-        var phase = resolveProductUid(tariff) ? 'direct' : 'hash';
+        var storeTry = 0;
+        var phase = findStoreProductCard(tariff) ? 'store' : (resolveProductUid(tariff) ? 'direct' : 'hash');
 
         function openWhenReady() {
           syncToCartForm();
           if (cartHasItems()) {
             openCartModal();
             checkCatalogBlock();
+            return;
+          }
+          if (phase === 'store') {
+            if (storeTry === 0) clearTcart();
+            if (!triggerStoreBuy(tariff) && storeTry === 0) {
+              phase = 'direct';
+              setTimeout(openWhenReady, 300);
+              return;
+            }
+            storeTry += 1;
+            if (storeTry >= 12 || cartHasItems()) {
+              if (cartHasItems()) {
+                openCartModal();
+                checkCatalogBlock();
+                return;
+              }
+              phase = 'hash';
+              hashWait = 0;
+              if (hashes.length) triggerOrderHash(hashes[hashIdx]);
+            }
+            setTimeout(openWhenReady, 400);
             return;
           }
           if (phase === 'direct') {
@@ -830,11 +890,24 @@ if (faqList) {
 
   function chitValidateCatalogPayment() {
     ensureCatalogBridge();
-    if (catalogBlocksOnPage()) return true;
-    showCatalogPaymentAlert();
-    checkCatalogBlock();
-    scrollToCheckout();
-    return false;
+    if (!catalogBlocksOnPage()) {
+      showCatalogPaymentAlert();
+      checkCatalogBlock();
+      scrollToCheckout();
+      return false;
+    }
+    var card = findStoreProductCard(state.tariff);
+    if (card) {
+      var nameEl = card.querySelector('.js-product-name');
+      var name = nameEl ? nameEl.textContent.trim() : '';
+      var price = parseProductPrice(card.querySelector('.js-store-prod-price-val, .js-product-price'));
+      var p = ORDER_PRODUCTS[state.tariff];
+      if (p && (name.indexOf('Studio Headphones') >= 0 || (price > 0 && price < 1000 && price !== p.price))) {
+        showCatalogPaymentAlert();
+        return false;
+      }
+    }
+    return true;
   }
 
   document.addEventListener('click', function(e) {

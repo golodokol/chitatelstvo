@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260609r"
+VERSION = "20260609s"
 API = "https://api.chitatelstvo.ru/assets"
 
 
