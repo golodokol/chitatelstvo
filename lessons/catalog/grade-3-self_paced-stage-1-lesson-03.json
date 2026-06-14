@@ -1,0 +1,22 @@
+{
+  "slug": "grade-3-self_paced-stage-1-lesson-03",
+  "title": "Черная курица или Подземные жители А. Погорельский",
+  "tale_title": "Черная курица или Подземные жители А. Погорельский",
+  "module_id": 8,
+  "group_code": "grade-3",
+  "group_label": "3 класс",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 38,
+  "tale_number": 3,
+  "tale_slug": "grade-3-stage1-tale-03",
+  "module_week": 3,
+  "meeting_number": 0,
+  "badge": "Следопыт",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

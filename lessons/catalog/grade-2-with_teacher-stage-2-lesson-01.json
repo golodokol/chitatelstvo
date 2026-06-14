@@ -1,0 +1,22 @@
+{
+  "slug": "grade-2-with_teacher-stage-2-lesson-01",
+  "title": "Филипок + Азбука Л.Н. Толстой",
+  "tale_title": "Филипок + Азбука Л.Н. Толстой",
+  "module_id": 6,
+  "group_code": "grade-2",
+  "group_label": "2 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-2",
+  "stage_label": "Этап 2",
+  "lesson_number": 31,
+  "tale_number": 1,
+  "tale_slug": "grade-2-stage2-tale-01",
+  "module_week": 5,
+  "meeting_number": 5,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 2: ещё 4 занятия через месяц после этапа 1"
+}

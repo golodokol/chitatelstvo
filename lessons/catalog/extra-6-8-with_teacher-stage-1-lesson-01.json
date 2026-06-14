@@ -1,0 +1,22 @@
+{
+  "slug": "extra-6-8-with_teacher-stage-1-lesson-01",
+  "title": "Плюшевый заяц или как игрушки становятся настоящими У. Марджери",
+  "tale_title": "Плюшевый заяц или как игрушки становятся настоящими У. Марджери",
+  "module_id": 15,
+  "group_code": "extra-6-8",
+  "group_label": "Внеклассное чтение 6–8 лет",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 78,
+  "tale_number": 1,
+  "tale_slug": "extra-6-8-stage1-tale-01",
+  "module_week": 1,
+  "meeting_number": 1,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

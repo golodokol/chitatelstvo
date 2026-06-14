@@ -1,0 +1,22 @@
+{
+  "slug": "grade-3-with_teacher-stage-2-lesson-02",
+  "title": "Серебряный рубль В. Одоевский",
+  "tale_title": "Серебряный рубль В. Одоевский",
+  "module_id": 9,
+  "group_code": "grade-3",
+  "group_label": "3 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-2",
+  "stage_label": "Этап 2",
+  "lesson_number": 49,
+  "tale_number": 2,
+  "tale_slug": "grade-3-stage2-tale-02",
+  "module_week": 6,
+  "meeting_number": 6,
+  "badge": "Читатель",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 2: ещё 4 занятия через месяц после этапа 1"
+}

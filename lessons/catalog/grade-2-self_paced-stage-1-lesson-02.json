@@ -1,0 +1,22 @@
+{
+  "slug": "grade-2-self_paced-stage-1-lesson-02",
+  "title": "Цветик-семицветик В.П. Катаев",
+  "tale_title": "Цветик-семицветик В.П. Катаев",
+  "module_id": 5,
+  "group_code": "grade-2",
+  "group_label": "2 класс",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 20,
+  "tale_number": 2,
+  "tale_slug": "grade-2-stage1-tale-02",
+  "module_week": 2,
+  "meeting_number": 0,
+  "badge": "Читатель",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

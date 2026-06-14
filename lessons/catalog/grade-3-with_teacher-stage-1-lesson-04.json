@@ -1,0 +1,22 @@
+{
+  "slug": "grade-3-with_teacher-stage-1-lesson-04",
+  "title": "Чудесный доктор А. Куприн",
+  "tale_title": "Чудесный доктор А. Куприн",
+  "module_id": 9,
+  "group_code": "grade-3",
+  "group_label": "3 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 47,
+  "tale_number": 4,
+  "tale_slug": "grade-3-stage1-tale-04",
+  "module_week": 4,
+  "meeting_number": 4,
+  "badge": "Мастер пересказа",
+  "points": 3,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

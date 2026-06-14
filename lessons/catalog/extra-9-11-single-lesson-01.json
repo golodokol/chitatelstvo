@@ -1,0 +1,22 @@
+{
+  "slug": "extra-9-11-single-lesson-01",
+  "title": "Разовое занятие — Внеклассное чтение 9–11 лет",
+  "tale_title": null,
+  "module_id": 16,
+  "group_code": "extra-9-11",
+  "group_label": "Внеклассное чтение 9–11 лет",
+  "tariff_code": "single",
+  "tariff_label": "Разовое занятие",
+  "stage": "stage-1",
+  "stage_label": "Этап 1 или Этап 2 (выбор)",
+  "lesson_number": 86,
+  "tale_number": null,
+  "tale_slug": null,
+  "module_week": 1,
+  "meeting_number": 1,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Разовое занятие: при записи выбирают этап (1 или 2) и любую сказку № 1–4 этого этапа"
+}

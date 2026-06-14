@@ -1,0 +1,22 @@
+{
+  "slug": "grade-1-with_teacher-stage-1-lesson-02",
+  "title": "Рассказы из Азбуки Л.Н. Толстой",
+  "tale_title": "Рассказы из Азбуки Л.Н. Толстой",
+  "module_id": 3,
+  "group_code": "grade-1",
+  "group_label": "1 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 11,
+  "tale_number": 2,
+  "tale_slug": "grade-1-stage1-tale-02",
+  "module_week": 2,
+  "meeting_number": 2,
+  "badge": "Читатель",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

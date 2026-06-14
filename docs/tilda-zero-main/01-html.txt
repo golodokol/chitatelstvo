@@ -1,0 +1,531 @@
+<!-- Читательство · главная · вкладка HTML Zero Block -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<div id="chit-main">
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="logo" href="#top" id="site-logo" aria-label="Читательство — наверх">
+      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="180" height="180">
+    </a>
+    <nav class="site-nav" aria-label="Разделы страницы">
+      <a href="#how-it-works">Как устроено</a>
+      <a href="#programs">Программы</a>
+      <a href="#tariffs">Тарифы</a>
+      <a href="#faq">Вопросы</a>
+    </nav>
+    <div class="site-header__right">
+      <a class="header-cta" href="#program">Записаться</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero paper-bg" id="top">
+  <div class="hero__inner">
+    <div class="hero__copy">
+      <div class="hero__badge"><em>ЧИТАТЕЛЬСТВО</em> · онлайн-школа литературного чтения для детей</div>
+      <h1>Понимать книги — с удовольствием</h1>
+    </div>
+
+    <div class="hero__showcase is-active" id="hero-books">
+      <p class="hero__showcase-label">Выберите формат — нажмите на книгу</p>
+      <div class="book-stack" role="group" aria-label="Три формата курса">
+        <button type="button" class="book" data-idx="0" aria-label="Разовое — одна сказка">
+          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
+        </button>
+        <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа — 8 сказок">
+          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
+        </button>
+        <button type="button" class="book" data-idx="2" aria-label="Блок — 4 сказки">
+          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
+        </button>
+      </div>
+      <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>22 июня</strong> и <strong>20 июля</strong></p>
+      <p class="hero__visual-hint">нажмите на книгу — текст изменится</p>
+    </div>
+
+    <div class="hero__copy">
+      <p class="hero__subtitle">Видеоуроки по сказкам и задания на понимание текста — ребёнок читает с удовольствием, а вы видите результат на личной странице</p>
+      <p class="hero__price">от <strong>1 490 ₽</strong> · одна сказка или блок из 4</p>
+      <div class="hero__actions">
+        <a class="btn" href="#program">Записаться на курс</a>
+        <a class="btn btn--outline" href="#programs">Смотреть программы</a>
+      </div>
+    </div>
+  </div>
+  <p class="hero__scroll"><a href="#quote-hero">↓ листайте вниз — там программы и запись</a></p>
+</section>
+
+<!-- HERO QUOTE -->
+<section class="quote-hero" id="quote-hero" title="Нажмите для другой цитаты">
+  <blockquote id="quote-hero-text">«Книги нужны, чтобы детям стало чуть менее одиноко — нашёлся кто-то, кто их понимает»</blockquote>
+  <cite id="quote-hero-cite">мы строим курс на этом же — понять героя, а не зазубрить пересказ</cite>
+  <span class="quote-hero__hint">нажмите — другая цитата</span>
+</section>
+
+<!-- MARQUEE -->
+<div class="quote-marquee" aria-hidden="true">
+  <div class="quote-marquee__track">
+    <span class="quote-marquee__item"><span>Кот в сапогах</span>«Господин, я привёз вам подарки»</span>
+    <span class="quote-marquee__item"><span>Пеппи</span>«Что, правда-правда, что я самая сильная?»</span>
+    <span class="quote-marquee__item"><span>Толстой</span>«Лето — это маленькая жизнь»</span>
+    <span class="quote-marquee__item"><span>Цветик-семицветик</span>«Семицветик, исполни моё желание!»</span>
+    <span class="quote-marquee__item"><span>Муми-тролль</span>«Все смотрели на небо и думали свои думы»</span>
+    <span class="quote-marquee__item"><span>Кот в сапогах</span>«Господин, я привёз вам подарки»</span>
+    <span class="quote-marquee__item"><span>Пеппи</span>«Что, правда-правда, что я самая сильная?»</span>
+    <span class="quote-marquee__item"><span>Толстой</span>«Лето — это маленькая жизнь»</span>
+    <span class="quote-marquee__item"><span>Цветик-семицветик</span>«Семицветик, исполни моё желание!»</span>
+    <span class="quote-marquee__item"><span>Муми-тролль</span>«Все смотрели на небо и думали свои думы»</span>
+  </div>
+</div>
+
+<!-- BENEFITS -->
+<div class="benefits reveal">
+  <div class="benefits__inner">
+    <p class="benefits__lead">четыре закладки — коротко о главном</p>
+    <div class="benefits__grid">
+      <article class="benefit">
+        <span class="benefit__tag">закладка 1</span>
+        <p class="benefit__text">Видео и задания — прогресс засчитывается сам</p>
+      </article>
+      <article class="benefit">
+        <span class="benefit__tag">закладка 2</span>
+        <p class="benefit__text">Баллы, бейджи и личная страница прогресса</p>
+      </article>
+      <article class="benefit">
+        <span class="benefit__tag">закладка 3</span>
+        <p class="benefit__text">Программы для 1–4 класса и детей 6–11 лет</p>
+      </article>
+      <article class="benefit">
+        <span class="benefit__tag">закладка 4</span>
+        <p class="benefit__text">Можно начать с одной сказки</p>
+      </article>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section reveal">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 1</em> · о школе</span>
+    <h2 class="section__title">ЧИТАТЕЛЬСТВО — это не просто «прочитать текст»</h2>
+    <div class="about-text">
+      <p><strong>ЧИТАТЕЛЬСТВО</strong> — онлайн-школа литературного чтения для детей. Мы помогаем понимать книги глубже — через видео, вопросы на понимание и задания на смысл. Родитель получает личную страницу: там виден прогресс и открытые сказки — можно начать занятие в один клик.</p>
+      <p><strong>Базовый курс</strong> — для 1–4 класса, <strong>внеклассное чтение</strong> — для детей 6–11 лет. <strong>12 сказок за лето</strong> — три блока по 4: старт <strong>22 июня</strong>, продолжение <strong>20 июля</strong> и <strong>внеклассная программа</strong>. Оплата — за блок из 4 сказок или за одну, если хотите попробовать.</p>
+    </div>
+    <div class="summer-timeline" id="timeline">
+      <div class="summer-timeline__track">
+        <div class="summer-timeline__node">
+          <span class="summer-timeline__date">22 июня</span>
+          <span class="summer-timeline__label">4 сказки · 4 недели</span>
+        </div>
+        <span class="summer-timeline__arrow" aria-hidden="true">→</span>
+        <div class="summer-timeline__node">
+          <span class="summer-timeline__date">20 июля</span>
+          <span class="summer-timeline__label">ещё 4 сказки · 4 недели</span>
+        </div>
+        <span class="summer-timeline__arrow" aria-hidden="true">→</span>
+        <div class="summer-timeline__node summer-timeline__node--extra">
+          <span class="summer-timeline__date">внеклассное</span>
+          <span class="summer-timeline__label">ещё 4 сказки · 6–11 лет</span>
+        </div>
+        <span class="summer-timeline__total">= 12 сказок за лето</span>
+      </div>
+    </div>
+    <div class="pull-quote">
+      <div class="pull-quote__body">
+        <p>«У читателя есть право не понимать сразу — и вернуться к книге, когда появится настоящий вопрос»</p>
+        <cite>Даниэль Пеннак · мы учим разговаривать с героем, а не зубрить пересказ</cite>
+      </div>
+      <img class="pull-quote__illus" src="https://api.chitatelstvo.ru/assets/vignette-reading-corner.png" alt="" width="112" height="112">
+    </div>
+  </div>
+</section>
+
+<!-- FOR WHOM -->
+<section class="section section--pale reveal">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 2</em> · для кого</span>
+    <h2 class="section__title">Сегодня школа работает для…</h2>
+    <div class="for-whom">
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--kids">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-kids.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        детей 1–4 класса и ребят 6–11 лет
+      </div>
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--family">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-family.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        семей, которым важно системное чтение, а не случайные тексты
+      </div>
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--pace">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-pace.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        тех, кому нужен свой темп — без давления и оценок
+      </div>
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--parents">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-parents.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        родителей, которым интересны живые обсуждения с преподавателем
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW LESSON WORKS -->
+<section class="section reveal" id="how-it-works">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 3</em> · урок</span>
+    <h2 class="section__title">Как проходит урок</h2>
+    <p class="section__lead">Одна сказка — один мини-курс: видео, вопросы и творчество в своём темпе</p>
+    <div class="lesson-steps">
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-video.png" alt="Этап 1" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-quiz-text.png" alt="Этап 2" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-quiz-meaning.png" alt="Этап 3" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-creative.png" alt="Этап 4" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-retell.png" alt="Этап 5" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+    </div>
+    <p class="lesson-steps-note">Видео и квизы засчитываются сами — вам ничего отмечать не нужно</p>
+  </div>
+</section>
+
+<!-- GAMIFICATION -->
+<section class="section section--cream reveal" id="rewards">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 4</em> · награды</span>
+    <h2 class="section__title">Баллы, уровни и бейджи</h2>
+    <p class="section__lead">Баллы и бейджи на личной странице — прогресс виден сразу, без оценок и сравнений с другими</p>
+
+    <h3 class="gamify__subtitle">Пять уровней</h3>
+    <div class="gamify-levels" aria-label="Уровни прогресса">
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-start.png" alt="Уровень Старт" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Старт</figcaption>
+      </figure>
+      <figure class="gamify-item gamify-item--scale-up">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-young-reader.png" alt="Уровень Юный читатель" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Юный читатель</figcaption>
+      </figure>
+      <figure class="gamify-item gamify-item--scale-up-sm">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-explorer.png" alt="Уровень Исследователь" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Исследователь</figcaption>
+      </figure>
+      <figure class="gamify-item gamify-item--scale-up">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-word-master.png" alt="Уровень Мастер слова" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Мастер слова</figcaption>
+      </figure>
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-detective.png" alt="Уровень Литературный детектив" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Литературный детектив</figcaption>
+      </figure>
+    </div>
+
+    <h3 class="gamify__subtitle">Бейджи</h3>
+    <div class="gamify-badges" aria-label="Примеры бейджей">
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-meaning.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+      </figure>
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-storyteller.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+      </figure>
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-tracker.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+      </figure>
+    </div>
+    <p class="gamify-badges-note">В коллекции — <strong>9 бейджей</strong>. Собирайте их по мере уроков — так чтение становится увлекательнее.</p>
+  </div>
+</section>
+
+<!-- TARIFFS -->
+<section class="section reveal" id="tariffs">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 5</em> · формат</span>
+    <h2 class="section__title">Выберите свой путь</h2>
+    <p class="section__lead">Все форматы — с выбором даты старта: 22 июня или 20 июля</p>
+    <div class="tariffs-grid">
+      <div class="tariff-card">
+        <h3 class="tariff-card__name">Разовое</h3>
+        <p class="tariff-card__mood">Одна сказка — знакомство без обязательств</p>
+        <ul class="tariff-card__list">
+          <li>1 сказка на выбор</li>
+          <li>Видео и интерактивные задания</li>
+          <li>Личная страница прогресса</li>
+          <li>Без живых встреч</li>
+        </ul>
+        <div class="tariff-card__price">1 490 ₽</div>
+        <div class="tariff-card__note">за 1 занятие</div>
+        <a class="btn btn--block" href="#program">Оплатить</a>
+      </div>
+      <div class="tariff-card tariff-card--featured">
+        <h3 class="tariff-card__name">Индивидуальное</h3>
+        <p class="tariff-card__mood">4 сказки — целое летнее путешествие</p>
+        <ul class="tariff-card__list">
+          <li>4 сказки — один период</li>
+          <li>Свой темп, без расписания</li>
+          <li>Видео и задания на каждую сказку</li>
+          <li>Личная страница прогресса</li>
+        </ul>
+        <div class="tariff-card__price">1 990 ₽</div>
+        <div class="tariff-card__note">за блок из 4 сказок</div>
+        <a class="btn btn--block" href="#program">Оплатить</a>
+      </div>
+      <div class="tariff-card">
+        <h3 class="tariff-card__name">С преподавателем</h3>
+        <p class="tariff-card__mood">4 сказки и живые разговоры о книге</p>
+        <ul class="tariff-card__list">
+          <li>4 сказки + 4 живые встречи</li>
+          <li>Обсуждение и игра в группе</li>
+          <li>Видео и задания между встречами</li>
+          <li>Личная страница прогресса</li>
+        </ul>
+        <p class="tariff-card__meet">Встречи по четвергам, мини-группы до 6 детей. Точное время — после формирования групп.</p>
+        <div class="tariff-card__price">4 990 ₽</div>
+        <div class="tariff-card__note">за блок из 4 сказок</div>
+        <a class="btn btn--block" href="#program">Оплатить</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section class="section section--cream paper-bg reveal" id="programs">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 6</em> · полка сказок</span>
+    <h2 class="section__title">Сказки по классам</h2>
+    <p class="section__lead">Полная программа — 8 сказок. Оплата — за блок из 4 или за одну сказку</p>
+    <div class="prog-shelf" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/programs-shelf-strip.png" alt="" width="900" height="300"></div>
+
+    <div class="prog-block">
+      <h3 class="prog-block__title">Базовый курс</h3>
+      <p class="prog-block__sub">Для учеников 1–4 класса</p>
+      <p class="prog-block__note">Эти сказки чаще всего встречаются в летних списках обязательного чтения — мы поможем ребёнку разобрать и понять каждую.</p>
+      <div class="acc" id="acc-basic"></div>
+    </div>
+    <div class="prog-block">
+      <h3 class="prog-block__title">Внеклассное чтение</h3>
+      <p class="prog-block__sub">Для детей 6–8 и 9–11 лет</p>
+      <div class="acc" id="acc-extra"></div>
+    </div>
+  </div>
+</section>
+
+<div class="pattern-strip" aria-hidden="true"></div>
+
+<!-- ENROLLMENT -->
+<section class="section section--pale reveal" id="program">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 7</em> · запись</span>
+    <div class="enroll-panel" id="chit-program">
+      <h2 class="enroll-panel__title">Выберите свой путь</h2>
+      <p class="enroll-panel__lead">Подберите программу, укажите контакты — и откройте первую сказку</p>
+
+      <div class="step-block">
+        <div class="step-label"><em>шаг 1</em> · класс</div>
+        <div class="group-block">
+          <h4 class="group-title">Базовый курс</h4>
+          <div class="pills" id="chit-groups-basic">
+            <button type="button" class="pill" data-group="grade-1">1 класс</button>
+            <button type="button" class="pill" data-group="grade-2">2 класс</button>
+            <button type="button" class="pill" data-group="grade-3">3 класс</button>
+            <button type="button" class="pill" data-group="grade-4">4 класс</button>
+          </div>
+        </div>
+        <div class="group-block">
+          <h4 class="group-title">Внеклассное чтение</h4>
+          <div class="pills" id="chit-groups-extra">
+            <button type="button" class="pill" data-group="extra-6-8">6–8 лет</button>
+            <button type="button" class="pill" data-group="extra-9-11">9–11 лет</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-label"><em>шаг 2</em> · формат</div>
+        <div class="tariff-pick" id="chit-tariffs">
+          <div class="pick-card" data-tariff="single">
+            <div class="pick-card__tag">Попробовать</div>
+            <div class="pick-card__name">Разовое</div>
+            <div class="pick-card__price">1 490 ₽</div>
+          </div>
+          <div class="pick-card" data-tariff="self_paced">
+            <div class="pick-card__tag">Основной</div>
+            <div class="pick-card__name">Индивидуальное</div>
+            <div class="pick-card__price">1 990 ₽</div>
+          </div>
+          <div class="pick-card" data-tariff="with_teacher">
+            <div class="pick-card__tag">С поддержкой</div>
+            <div class="pick-card__name">С преподавателем</div>
+            <div class="pick-card__price">4 990 ₽</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-block date-box" id="chit-date-box">
+        <div class="step-label"><em>шаг 3</em> · когда начать</div>
+        <div class="stage-row" id="chit-stages">
+          <button type="button" class="pill" data-stage="1">Старт курса 22 июня</button>
+          <button type="button" class="pill" data-stage="2">Старт 20 июля</button>
+        </div>
+        <div class="tales" id="chit-tales"></div>
+        <div class="block-preview" id="chit-block-preview" style="display:none"></div>
+      </div>
+
+      <div class="step-block step-block--choice">
+        <div class="step-label"><em>ваш выбор</em> · записка на полях</div>
+        <div class="summary is-empty" id="chit-summary">
+          <span class="summary-empty">Выберите класс и формат</span>
+        </div>
+      </div>
+
+      <div class="chit-hidden">
+        <input type="hidden" name="module_id" id="module_id" value="">
+        <input type="hidden" name="chosen_stage" id="chosen_stage" value="">
+        <input type="hidden" name="chosen_tale_number" id="chosen_tale_number" value="">
+      </div>
+
+      <div class="enroll-checkout">
+        <h3>Запись в Читательство</h3>
+        <p class="form-intro">Выберите программу выше, затем нажмите «Записаться» — откроется корзина с оплатой через Т‑Банк.</p>
+        <button type="button" class="btn btn--block btn--pay" id="chit-pay-btn" disabled>Записаться</button>
+        <p class="pay-note">Контакты и оплата — в корзине ниже на странице (блок ST100)</p>
+        <p class="form-consent">Нажимая «Записаться», вы соглашаетесь на обработку данных для занятий в Читательстве.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section reveal" id="faq">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 8</em> · и наши ответы</span>
+    <h2 class="section__title">Вопросы от родителей</h2>
+    <div class="faq-list" id="faq-list">
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Когда начинается курс?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Два старта: <strong>22 июня</strong> и <strong>20 июля</strong>. Каждый — блок из 4 сказок (4 недели). При записи вы выбираете один период. Полная программа класса — 8 сказок, если пройти оба блока.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Что будет после оплаты?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс. На странице есть справка: как устроены занятия и за что начисляются баллы. Сохраните ссылку в закладки браузера.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Можно ли начать с одной сказки?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 1 490 ₽ за одну сказку на выбор из любого периода. Удобный способ познакомиться с форматом.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Чем отличаются тарифы?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Разовое — 1 сказка. Индивидуальное — 4 сказки в своём темпе (1 990 ₽). С преподавателем — те же 4 сказки плюс 4 живые встречи (4 990 ₽).</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Когда проходят занятия с преподавателем?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>По четвергам, в мини-группах до 6 детей. Точное время сообщим после формирования групп.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="final-cta-scroller" id="final-cta-scroller">
+  <section class="final-cta" id="final-cta">
+    <div class="final-cta__bg" aria-hidden="true"></div>
+    <div class="final-cta__frame">
+      <h2>Почему бы не открыть первую сказку?</h2>
+      <p>Запись займёт пару минут. После оплаты на email придёт ссылка на личную страницу ребёнка.</p>
+      <a class="btn" href="#program">Записаться на курс</a>
+    </div>
+  </section>
+</div>
+
+<!-- FOUNDER -->
+<section class="section founder reveal">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 9</em> · основатель</span>
+    <h2 class="section__title">Кто стоит за школой</h2>
+    <div class="founder__card">
+      <img class="founder__photo" src="https://api.chitatelstvo.ru/assets/founder-olga.jpg" alt="Рощина Ольга Владимировна" width="220" height="260">
+      <div class="founder__body">
+        <h3 class="founder__name">Рощина Ольга Владимировна</h3>
+        <p class="founder__bio">Основатель онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. Мама четырёх детей, основатель книжного в Москве <strong>ДоброLavka</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <img class="footer__logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="256" height="256">
+    <p class="footer__warm">С теплом, команда Читательства</p>
+    <p class="footer__copy">© Читательство · chitatelstvo.ru</p>
+  </div>
+</footer>
+
+<div class="feedback-tab" id="feedback-tab">
+  <div class="feedback-tab__panel" id="feedback-tab-panel" role="dialog" aria-label="Обратная связь" aria-hidden="true">
+    <p class="feedback-tab__title">Обратная связь</p>
+    <p class="feedback-tab__text">Если возникли вопросы — напишите, ответим в ближайшее время</p>
+    <div class="feedback-tab__links">
+      <a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a>
+      <a href="#faq">Частые вопросы</a>
+    </div>
+  </div>
+  <button type="button" class="feedback-tab__toggle" id="feedback-tab-toggle" aria-expanded="false" aria-controls="feedback-tab-panel">
+    <span class="feedback-tab__toggle-icon" aria-hidden="true">✉</span>
+    Есть вопросы?
+  </button>
+</div>
+</div>

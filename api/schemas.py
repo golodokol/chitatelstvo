@@ -41,6 +41,9 @@ _REGISTER_FIELDS = frozenset(
         "notification_channel",
         "child_name",
         "child_age",
+        "module_id",
+        "chosen_stage",
+        "chosen_tale_number",
     }
 )
 
@@ -53,6 +56,9 @@ class RegisterWebhook(BaseModel):
     notification_channel: NotificationChannel = "email"
     child_name: str = Field(min_length=1, max_length=100)
     child_age: int | None = Field(default=None, ge=5, le=14)
+    module_id: int | None = Field(default=None, ge=1, le=18)
+    chosen_stage: str | None = Field(default=None, max_length=50)
+    chosen_tale_number: int | None = Field(default=None, ge=1, le=4)
 
     @model_validator(mode="before")
     @classmethod
@@ -63,8 +69,19 @@ class RegisterWebhook(BaseModel):
             "name": "parent_name",
             "email": "parent_email",
             "phone": "parent_telegram",
+            "telegram": "parent_telegram",
             "selectbox": "notification_channel",
             "select": "notification_channel",
+            "module": "module_id",
+            "module_id": "module_id",
+            "tariff": "module_id",
+            "stage": "chosen_stage",
+            "chosen_stage": "chosen_stage",
+            "tale_number": "chosen_tale_number",
+            "chosen_tale_number": "chosen_tale_number",
+            "tale": "chosen_tale_number",
+            "child": "child_name",
+            "age": "child_age",
         }
         out: dict = {}
         for key, value in data.items():
@@ -84,6 +101,29 @@ class RegisterWebhook(BaseModel):
             return "email"
         key = str(value).strip().lower()
         return _CHANNEL_ALIASES.get(key, key)
+
+    @field_validator("module_id", "chosen_tale_number", mode="before")
+    @classmethod
+    def coerce_optional_int(cls, value: object) -> object:
+        if value is None or value == "":
+            return None
+        return int(value)
+
+    @field_validator("chosen_stage", mode="before")
+    @classmethod
+    def normalize_stage(cls, value: object) -> object:
+        if value is None or value == "":
+            return None
+        raw = str(value).strip().lower()
+        if raw in ("1", "stage-1", "stage_1", "june", "22", "22.06", "22 июня"):
+            return "1"
+        if raw in ("2", "stage-2", "stage_2", "july", "20", "20.07", "20 июля"):
+            return "2"
+        if "22" in raw and "июн" in raw:
+            return "1"
+        if "20" in raw and "июл" in raw:
+            return "2"
+        return str(value).strip()
 
 
 class EventWebhook(BaseModel):
@@ -111,3 +151,5 @@ class RegisterResponse(BaseModel):
     link_telegram_page: str
     telegram_deep_link: str | None = None
     notification_channel: str
+    module_id: int | None = None
+    module_title: str | None = None

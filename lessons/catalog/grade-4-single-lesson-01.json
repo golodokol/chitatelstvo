@@ -1,0 +1,22 @@
+{
+  "slug": "grade-4-single-lesson-01",
+  "title": "Разовое занятие — 4 класс",
+  "tale_title": null,
+  "module_id": 10,
+  "group_code": "grade-4",
+  "group_label": "4 класс",
+  "tariff_code": "single",
+  "tariff_label": "Разовое занятие",
+  "stage": "stage-1",
+  "stage_label": "Этап 1 или Этап 2 (выбор)",
+  "lesson_number": 52,
+  "tale_number": null,
+  "tale_slug": null,
+  "module_week": 1,
+  "meeting_number": 1,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Разовое занятие: при записи выбирают этап (1 или 2) и любую сказку № 1–4 этого этапа"
+}

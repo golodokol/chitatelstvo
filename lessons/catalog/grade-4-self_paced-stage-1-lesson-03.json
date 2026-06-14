@@ -1,0 +1,22 @@
+{
+  "slug": "grade-4-self_paced-stage-1-lesson-03",
+  "title": "Три толстяка Ю. Олеша",
+  "tale_title": "Три толстяка Ю. Олеша",
+  "module_id": 11,
+  "group_code": "grade-4",
+  "group_label": "4 класс",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 55,
+  "tale_number": 3,
+  "tale_slug": "grade-4-stage1-tale-03",
+  "module_week": 3,
+  "meeting_number": 0,
+  "badge": "Следопыт",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

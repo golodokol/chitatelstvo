@@ -9,8 +9,9 @@ from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, ROOT
 from db import repository as repo
 from db.session import get_db
 from api.lesson_signing import build_lesson_url
+from catalog.loader import get_module
 from lessons.access import lesson_access_info
-from lessons.loader import list_lessons
+from lessons.enrollment_access import get_active_enrollment, list_lessons_for_child
 from notifications.telegram_bot import build_link_url
 
 router = APIRouter(tags=["progress"])
@@ -27,21 +28,28 @@ def family_progress(
     if not family:
         raise HTTPException(404, "Страница не найдена")
 
-    available_lessons = list_lessons()
     children_data = []
     for child in family.children:
         events = repo.get_child_events(db, child.id, limit=20)
         badges = [b.badge_name for b in child.badges]
+        enrollment = get_active_enrollment(child)
+        module_title = None
+        if enrollment:
+            module = get_module(enrollment.module_id)
+            module_title = module["title"] if module else None
+
         lesson_links = []
-        for les in available_lessons:
+        for les in list_lessons_for_child(child):
             access = lesson_access_info(child, les, week_days=LESSON_WEEK_DAYS)
             link = {
                 "title": les["title"],
                 "module_week": access["module_week"],
                 "unlocked": access["unlocked"],
                 "opens_on": access["opens_on"],
+                "stage_label": les.get("stage_label"),
+                "ready": les.get("active", True),
             }
-            if access["unlocked"]:
+            if access["unlocked"] and les.get("active", True):
                 link["url"] = build_lesson_url(child.id, les["slug"])
             lesson_links.append(link)
         children_data.append(
@@ -51,6 +59,7 @@ def family_progress(
                 "points": child.total_points,
                 "badges": badges,
                 "lessons": lesson_links,
+                "module_title": module_title,
                 "events": [
                     {
                         "type": e.event_type,

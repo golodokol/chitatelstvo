@@ -16,6 +16,7 @@ from config.settings import LESSON_WEEK_DAYS, ROOT, VIDEO_WATCH_THRESHOLD
 from db import repository as repo
 from db.session import get_db
 from lessons.access import is_lesson_unlocked
+from lessons.enrollment_access import child_can_access_lesson, get_active_enrollment
 from lessons.loader import get_lesson, quiz_for_client, score_quiz
 from api.event_types import MANUAL_MARK_ONLY
 from services.events import submit_learning_event
@@ -60,12 +61,17 @@ def _get_child_or_404(db: Session, child_id: uuid.UUID):
 
 def _require_lesson_unlocked(db: Session, child_id: uuid.UUID, lesson: dict) -> None:
     child = _get_child_or_404(db, child_id)
+    enrollment = get_active_enrollment(child)
+    if not child_can_access_lesson(child, lesson, enrollment):
+        raise HTTPException(403, "Этот урок недоступен для вашего модуля.")
     if not is_lesson_unlocked(child, lesson, week_days=LESSON_WEEK_DAYS):
         week = lesson.get("module_week", 1)
         raise HTTPException(
             403,
             f"Урок недели {week} ещё закрыт. Новая сказка откроется по расписанию модуля.",
         )
+    if lesson.get("module_id") is not None and not lesson.get("active", True):
+        raise HTTPException(403, "Урок ещё готовится — скоро появится на странице прогресса.")
 
 
 @router.get("/lesson/{slug}", response_class=HTMLResponse)
@@ -92,6 +98,9 @@ def lesson_page(
     if video.get("type") in ("yandex", "html5"):
         video_src = resolve_video_src(video)
 
+    comprehension = lesson.get("comprehension_quiz")
+    meaning = lesson.get("meaning_quiz")
+
     return templates.TemplateResponse(
         request,
         "lesson.html",
@@ -104,8 +113,8 @@ def lesson_page(
             "sig": sig,
             "video_threshold": VIDEO_WATCH_THRESHOLD,
             "video_src": video_src,
-            "comprehension_quiz": quiz_for_client(lesson["comprehension_quiz"]),
-            "meaning_quiz": quiz_for_client(lesson["meaning_quiz"]),
+            "comprehension_quiz": quiz_for_client(comprehension) if comprehension else None,
+            "meaning_quiz": quiz_for_client(meaning) if meaning else None,
         },
     )
 
@@ -164,7 +173,9 @@ def quiz_submit(
     _require_lesson_unlocked(db, child_id, lesson)
 
     quiz_key = "comprehension_quiz" if body.quiz_type == "comprehension" else "meaning_quiz"
-    quiz = lesson[quiz_key]
+    quiz = lesson.get(quiz_key)
+    if not quiz:
+        raise HTTPException(404, "Квиз для этого урока ещё не настроен")
     correct, total = score_quiz(quiz, body.answers)
     passed = correct >= int(quiz.get("pass_score", total))
 

@@ -19,19 +19,40 @@ from db.session import get_db
 from job_queue.redis_queue import enqueue
 from notifications.email_templates import build_welcome_message
 from notifications.telegram_bot import build_link_url
+from services.enrollment import create_enrollment_from_registration
 from services.events import submit_learning_event
 
 logger = logging.getLogger(__name__)
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
 
+def _flatten_tilda_payload(raw: dict) -> dict:
+    """ST100 / Tilda Forms: поля могут быть вложены или в массиве inputs."""
+    out = dict(raw)
+    for key in ("fields", "inputs", "data", "form"):
+        nested = raw.get(key)
+        if isinstance(nested, dict):
+            out.update(nested)
+        elif isinstance(nested, list):
+            for item in nested:
+                if not isinstance(item, dict):
+                    continue
+                name = item.get("name") or item.get("title") or item.get("variable")
+                val = item.get("value")
+                if name is not None and val not in (None, ""):
+                    out[str(name)] = val
+    return out
+
+
 async def _read_form_or_json(request: Request) -> dict:
     content_type = request.headers.get("content-type", "").lower()
     if "application/json" in content_type:
         raw = await request.json()
-        return raw if isinstance(raw, dict) else {}
-    form = await request.form()
-    return {key: value for key, value in form.items() if value not in (None, "")}
+        data = raw if isinstance(raw, dict) else {}
+    else:
+        form = await request.form()
+        data = {key: value for key, value in form.items() if value not in (None, "")}
+    return _flatten_tilda_payload(data)
 
 
 async def _parse_webhook_body(request: Request, model: type[ModelT]) -> ModelT:
@@ -104,6 +125,8 @@ async def webhook_register(
         telegram_chat_id=body.telegram_chat_id,
     )
 
+    module_id, module_title = create_enrollment_from_registration(db, child, body)
+
     progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
     link_telegram_page = f"{PUBLIC_BASE_URL}/link-telegram/{family.progress_token}/page"
     telegram_deep_link = build_link_url(family.progress_token)
@@ -116,6 +139,7 @@ async def webhook_register(
         include_telegram=bool(
             telegram_deep_link and body.notification_channel in ("telegram", "both")
         ),
+        module_title=module_title,
     )
     repo.store_notification(
         db,
@@ -160,6 +184,8 @@ async def webhook_register(
         link_telegram_page=link_telegram_page,
         telegram_deep_link=telegram_deep_link,
         notification_channel=family.notification_channel,
+        module_id=module_id,
+        module_title=module_title,
     )
 
 

@@ -7,7 +7,7 @@ from datetime import date, datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from db.models import Child, ChildBadge, Event, Family, ParentNotification, Reward
+from db.models import Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward
 from gamification.engine import GamificationResponse
 
 
@@ -64,6 +64,42 @@ def register_family(
     return family, child
 
 
+def create_enrollment(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    module_id: int,
+    chosen_stage: str | None = None,
+    chosen_tale_number: int | None = None,
+    chosen_tale_slug: str | None = None,
+    chosen_tale_title: str | None = None,
+    start_date: date | None = None,
+) -> Enrollment:
+    enrollment = Enrollment(
+        child_id=child_id,
+        module_id=module_id,
+        status="active",
+        start_date=start_date,
+        chosen_stage=chosen_stage,
+        chosen_tale_number=chosen_tale_number,
+        chosen_tale_slug=chosen_tale_slug,
+        chosen_tale_title=chosen_tale_title,
+    )
+    db.add(enrollment)
+    db.commit()
+    db.refresh(enrollment)
+    return enrollment
+
+
+def get_active_enrollment(db: Session, child_id: uuid.UUID) -> Enrollment | None:
+    stmt = (
+        select(Enrollment)
+        .where(Enrollment.child_id == child_id, Enrollment.status == "active")
+        .order_by(Enrollment.created_at.desc())
+    )
+    return db.scalars(stmt).first()
+
+
 def find_child(
     db: Session,
     *,
@@ -82,7 +118,11 @@ def find_child(
                 Child.name.ilike(child_name.strip()),
                 Family.parent_email == parent_email.strip().lower(),
             )
-            .options(joinedload(Child.family), joinedload(Child.badges))
+            .options(
+                joinedload(Child.family),
+                joinedload(Child.badges),
+                joinedload(Child.enrollments),
+            )
         )
         return db.scalars(stmt).first()
 
@@ -90,7 +130,11 @@ def find_child(
         stmt = (
             select(Child)
             .where(Child.name.ilike(child_name.strip()))
-            .options(joinedload(Child.family), joinedload(Child.badges))
+            .options(
+                joinedload(Child.family),
+                joinedload(Child.badges),
+                joinedload(Child.enrollments),
+            )
         )
         return db.scalars(stmt).first()
 
@@ -101,7 +145,11 @@ def get_child_with_family(db: Session, child_id: uuid.UUID) -> Child | None:
     stmt = (
         select(Child)
         .where(Child.id == child_id)
-        .options(joinedload(Child.family), joinedload(Child.badges))
+        .options(
+            joinedload(Child.family),
+            joinedload(Child.badges),
+            joinedload(Child.enrollments),
+        )
     )
     return db.scalars(stmt).first()
 
@@ -271,7 +319,10 @@ def get_family_by_token(db: Session, token: str) -> Family | None:
     stmt = (
         select(Family)
         .where(Family.progress_token == token)
-        .options(joinedload(Family.children).joinedload(Child.badges))
+        .options(
+            joinedload(Family.children).joinedload(Child.badges),
+            joinedload(Family.children).joinedload(Child.enrollments),
+        )
     )
     return db.scalars(stmt).first()
 

@@ -1,0 +1,22 @@
+{
+  "slug": "grade-2-self_paced-stage-2-lesson-04",
+  "title": "Маленькая Бабая-Яга, Маленький водяной О. Пройслер",
+  "tale_title": "Маленькая Бабая-Яга, Маленький водяной О. Пройслер",
+  "module_id": 5,
+  "group_code": "grade-2",
+  "group_label": "2 класс",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-2",
+  "stage_label": "Этап 2",
+  "lesson_number": 26,
+  "tale_number": 4,
+  "tale_slug": "grade-2-stage2-tale-04",
+  "module_week": 8,
+  "meeting_number": 0,
+  "badge": "Мастер пересказа",
+  "points": 3,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 2: ещё 4 занятия через месяц после этапа 1"
+}

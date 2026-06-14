@@ -38,6 +38,7 @@
       <div id="video-msg" class="msg info" style="display:none"></div>
     </div>
 
+    {% if comprehension_quiz %}
     <div class="card step" id="step-comprehension">
       <div class="badge-step">Шаг 2 · автоматически</div>
       <h2>{{ comprehension_quiz.title }}</h2>
@@ -45,14 +46,17 @@
       <button type="button" id="btn-comprehension" disabled>Отправить ответы</button>
       <div id="comprehension-msg"></div>
     </div>
+    {% endif %}
 
+    {% if meaning_quiz %}
     <div class="card step" id="step-meaning">
-      <div class="badge-step">Шаг 3 · автоматически</div>
+      <div class="badge-step">Шаг {% if comprehension_quiz %}3{% else %}2{% endif %} · автоматически</div>
       <h2>{{ meaning_quiz.title }}</h2>
       <form id="form-meaning"></form>
       <button type="button" id="btn-meaning" disabled>Отправить ответы</button>
       <div id="meaning-msg"></div>
     </div>
+    {% endif %}
 
     <div class="card manual">
       <div class="badge-step">Шаг 4–5 · вручную</div>
@@ -133,6 +137,13 @@
       return answers;
     }
 
+    function enableNextAfterVideo() {
+      const btnComp = document.getElementById('btn-comprehension');
+      const btnMean = document.getElementById('btn-meaning');
+      if (btnComp) btnComp.disabled = false;
+      else if (btnMean) btnMean.disabled = false;
+    }
+
     async function sendVideoComplete(percent) {
       if (videoSent) return;
       videoSent = true;
@@ -140,7 +151,7 @@
       if (data.status === 'accepted' || data.status === 'duplicate') {
         showMsg('video-msg', data.message + ' Баллы начисляются — загляните на страницу прогресса.', 'ok');
         markDone('step-video');
-        document.getElementById('btn-comprehension').disabled = false;
+        enableNextAfterVideo();
       } else {
         videoSent = false;
         showMsg('video-msg', data.message || 'Ошибка', 'err');
@@ -279,13 +290,16 @@
       showMsg('manual-msg', data.message, data.status === 'failed' ? 'err' : 'ok');
     }
 
-    renderQuiz('form-comprehension', CFG.comprehension);
-    renderQuiz('form-meaning', CFG.meaning);
-
-    document.getElementById('btn-comprehension').addEventListener('click', () =>
-      submitQuiz('comprehension', 'form-comprehension', CFG.comprehension, 'btn-comprehension', 'comprehension-msg', 'btn-meaning'));
-    document.getElementById('btn-meaning').addEventListener('click', () =>
-      submitQuiz('meaning_analysis', 'form-meaning', CFG.meaning, 'btn-meaning', 'meaning-msg', null));
+    if (CFG.comprehension) {
+      renderQuiz('form-comprehension', CFG.comprehension);
+      document.getElementById('btn-comprehension').addEventListener('click', () =>
+        submitQuiz('comprehension', 'form-comprehension', CFG.comprehension, 'btn-comprehension', 'comprehension-msg', CFG.meaning ? 'btn-meaning' : null));
+    }
+    if (CFG.meaning) {
+      renderQuiz('form-meaning', CFG.meaning);
+      document.getElementById('btn-meaning').addEventListener('click', () =>
+        submitQuiz('meaning_analysis', 'form-meaning', CFG.meaning, 'btn-meaning', 'meaning-msg', null));
+    }
     document.getElementById('btn-creative').addEventListener('click', () => manualMark('creative_task'));
     document.getElementById('btn-meeting').addEventListener('click', () => manualMark('live_meeting'));
 
@@ -303,8 +317,8 @@
       initHtml5(CFG.videoSrc);
     } else {
       document.getElementById('player-container').innerHTML =
-        '<p style="padding:20px;color:#fff">Укажите Kinescope ID или Yandex URL в lessons/kolobok.json</p>';
-      document.getElementById('btn-comprehension').disabled = false;
+        '<p style="padding:20px;color:#fff">Видео для этого урока ещё не добавлено.</p>';
+      enableNextAfterVideo();
     }
   </script>
 </body>

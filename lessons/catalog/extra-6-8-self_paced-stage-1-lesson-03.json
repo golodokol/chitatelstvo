@@ -1,0 +1,22 @@
+{
+  "slug": "extra-6-8-self_paced-stage-1-lesson-03",
+  "title": "Шляпа волшебника Т. Янссон",
+  "tale_title": "Шляпа волшебника Т. Янссон",
+  "module_id": 14,
+  "group_code": "extra-6-8",
+  "group_label": "Внеклассное чтение 6–8 лет",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 72,
+  "tale_number": 3,
+  "tale_slug": "extra-6-8-stage1-tale-03",
+  "module_week": 3,
+  "meeting_number": 0,
+  "badge": "Следопыт",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

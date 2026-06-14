@@ -1,0 +1,22 @@
+{
+  "slug": "grade-4-with_teacher-stage-1-lesson-02",
+  "title": "Сказка о потерянном времени Е. Шварц",
+  "tale_title": "Сказка о потерянном времени Е. Шварц",
+  "module_id": 12,
+  "group_code": "grade-4",
+  "group_label": "4 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 62,
+  "tale_number": 2,
+  "tale_slug": "grade-4-stage1-tale-02",
+  "module_week": 2,
+  "meeting_number": 2,
+  "badge": "Читатель",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

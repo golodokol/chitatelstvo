@@ -26,6 +26,25 @@
     .lesson-btn { display: inline-block; margin: 6px 8px 0 0; padding: 8px 14px; background: #5a4a38; color: #fff; text-decoration: none; border-radius: 8px; font-size: .9rem; }
     .lesson-locked { display: inline-block; margin: 6px 8px 0 0; padding: 8px 14px; background: #e8e0d6; color: #8a7a68; border-radius: 8px; font-size: .85rem; cursor: default; }
     .lesson-hint { font-size: .8rem; color: #8a7a68; margin-top: 4px; }
+
+    .guide-title { font-size: 1.05rem; margin: 0 0 12px; color: #2c2416; }
+    .guide-sub { font-size: .95rem; color: #6b5d4d; margin: 0 0 16px; line-height: 1.55; }
+    .guide-steps { margin: 0 0 16px; padding-left: 20px; font-size: .95rem; color: #444; }
+    .guide-steps li { margin-bottom: 10px; }
+    .guide-steps strong { color: #5a4a38; }
+    .guide-list { margin: 0 0 16px; padding-left: 20px; font-size: .95rem; color: #444; }
+    .guide-list li { margin-bottom: 6px; }
+    .points-table { width: 100%; border-collapse: collapse; font-size: .95rem; margin-top: 8px; }
+    .points-table th, .points-table td { padding: 10px 0; border-bottom: 1px solid #f0ebe3; text-align: left; vertical-align: top; }
+    .points-table th { color: #5a4a38; font-weight: normal; width: 72%; padding-right: 12px; }
+    .points-table td { font-weight: bold; color: #5a4a38; white-space: nowrap; }
+    .levels { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
+    .level-pill { background: #f5efe6; border: 1px solid #e8e0d6; border-radius: 20px; padding: 6px 12px; font-size: .82rem; color: #5a4a38; }
+    .badge-examples { margin-top: 8px; }
+    .guide-note { font-size: .88rem; color: #8a7a68; margin: 12px 0 0; line-height: 1.5; }
+    .empty-lessons { text-align: center; margin-top: 16px; padding: 8px 0 4px; }
+    .empty-lessons img { width: 140px; height: auto; margin-bottom: 10px; opacity: .95; }
+    .empty-lessons p { font-size: .92rem; color: #6b5d4d; margin: 0; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -69,6 +88,11 @@
         {% endfor %}
       </div>
       {% endif %}
+      {% if child.module_title %}
+      <div class="meta" style="margin-top:8px">
+        <span>Модуль: <strong>{{ child.module_title }}</strong></span>
+      </div>
+      {% endif %}
       {% if child.lessons %}
       <div style="margin-top:12px">
         <strong>Уроки модуля:</strong>
@@ -80,12 +104,19 @@
           {% endif %}
         </p>
         {% for les in child.lessons %}
-          {% if les.unlocked %}
-        <a class="lesson-btn" href="{{ les.url }}">Неделя {{ les.module_week }} · {{ les.title }}</a>
+          {% if les.url %}
+        <a class="lesson-btn" href="{{ les.url }}">{% if les.stage_label %}{{ les.stage_label }} · {% endif %}Неделя {{ les.module_week }} · {{ les.title }}</a>
+          {% elif les.unlocked and not les.ready %}
+        <span class="lesson-locked">{% if les.stage_label %}{{ les.stage_label }} · {% endif %}Неделя {{ les.module_week }} · {{ les.title }} — скоро</span>
           {% else %}
-        <span class="lesson-locked">Неделя {{ les.module_week }} · {{ les.title }} — с {{ les.opens_on }}</span>
+        <span class="lesson-locked">{% if les.stage_label %}{{ les.stage_label }} · {% endif %}Неделя {{ les.module_week }} · {{ les.title }} — с {{ les.opens_on }}</span>
           {% endif %}
         {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-lessons">
+        <img src="/static/images/empty-no-lessons-yet.png" alt="" width="140" height="140">
+        <p>Первая сказка скоро откроется — книга уже ждёт на столе.</p>
       </div>
       {% endif %}
       {% if child.events %}
@@ -100,6 +131,65 @@
       {% endif %}
     </div>
     {% endfor %}
+
+    <div class="card">
+      <div class="guide-title">Как проходит урок</div>
+      <p class="guide-sub">Откройте сказку кнопкой в карточке ребёнка выше. Ребёнок проходит урок сам — в своём темпе, частями или за один раз. Квизы проверяются автоматически, вам не нужно ничего отправлять.</p>
+      <ol class="guide-steps">
+        <li><strong>Видео по сказке</strong> — разбор текста: герои, события, важные детали. Досмотрел до конца — +2 балла.</li>
+        <li><strong>Квиз «Понимание сказки»</strong> — вопросы по тексту: кто что сделал, что произошло и в каком порядке. +2 балла, бейдж «Следопыт».</li>
+        <li><strong>Квиз «Смысл сказки»</strong> — почему герой так поступил, что чувствовал, что хотел сказать автор; метафоры и фразеологизмы. +2 балла, бейдж «Ловец смысла».</li>
+        <li><strong>Творческое задание</strong> — придумать, нарисовать, дописать. Отметьте выполнение одной кнопкой в уроке. +3 балла.</li>
+        <li><strong>Пересказ или встреча</strong> — пересказ дома или живая встреча с преподавателем (на соответствующем тарифе).</li>
+      </ol>
+      <p class="guide-note">Сравнения с другими детьми нет — только личный прогресс вашего ребёнка.</p>
+    </div>
+
+    <div class="card">
+      <div class="guide-title">Задания в уроке</div>
+      <ul class="guide-list">
+        <li><strong>Понимание текста</strong> — сюжет, герои, последовательность событий</li>
+        <li><strong>Смысл, метафоры и фразеологизмы</strong> — подтекст и язык книги</li>
+        <li><strong>Эмоции героев</strong> — что персонажи чувствуют и почему</li>
+        <li><strong>Творческая часть</strong> — воображение и закрепление материала</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="guide-title">За что начисляются баллы</div>
+      <table class="points-table">
+        <tr><th>Досмотрел видеоурок</th><td>+2 балла</td></tr>
+        <tr><th>Квиз «Понимание сказки»</th><td>+2 балла</td></tr>
+        <tr><th>Квиз «Смысл сказки»</th><td>+2 балла</td></tr>
+        <tr><th>Творческое задание</th><td>+3 балла</td></tr>
+        <tr><th>Пересказ сказки</th><td>+3 балла</td></tr>
+        <tr><th>Живая встреча с преподавателем</th><td>+2 балла</td></tr>
+        <tr><th>3 дня подряд в Читательстве</th><td>+3 балла и бейдж</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="guide-title">Уровни и бейджи</div>
+      <p class="guide-sub">Уровень растёт по мере прохождения уроков. Бейджи появляются в карточке ребёнка выше.</p>
+      <div class="levels">
+        <span class="level-pill">Старт</span>
+        <span class="level-pill">Юный читатель</span>
+        <span class="level-pill">Исследователь</span>
+        <span class="level-pill">Мастер слова</span>
+        <span class="level-pill">Литературный детектив</span>
+      </div>
+      <div class="badge-examples">
+        <span class="badge">Первый шаг</span>
+        <span class="badge">Читатель</span>
+        <span class="badge">Следопыт</span>
+        <span class="badge">Ловец смысла</span>
+        <span class="badge">Сказочник</span>
+        <span class="badge">Мастер пересказа</span>
+        <span class="badge">Слушатель</span>
+        <span class="badge">Непрерывная серия</span>
+        <span class="badge">Исследователь сказки</span>
+      </div>
+    </div>
 
     <div class="card">
       <strong>Лента для родителей</strong>

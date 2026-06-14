@@ -1,0 +1,22 @@
+{
+  "slug": "extra-6-8-with_teacher-stage-1-lesson-04",
+  "title": "Приключения медвежонка Паддингтона М. Бонд",
+  "tale_title": "Приключения медвежонка Паддингтона М. Бонд",
+  "module_id": 15,
+  "group_code": "extra-6-8",
+  "group_label": "Внеклассное чтение 6–8 лет",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 81,
+  "tale_number": 4,
+  "tale_slug": "extra-6-8-stage1-tale-04",
+  "module_week": 4,
+  "meeting_number": 4,
+  "badge": "Мастер пересказа",
+  "points": 3,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

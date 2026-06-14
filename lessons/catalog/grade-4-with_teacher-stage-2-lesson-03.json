@@ -1,0 +1,22 @@
+{
+  "slug": "grade-4-with_teacher-stage-2-lesson-03",
+  "title": "Пеппи Длинный чулок А. Линдгрен",
+  "tale_title": "Пеппи Длинный чулок А. Линдгрен",
+  "module_id": 12,
+  "group_code": "grade-4",
+  "group_label": "4 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-2",
+  "stage_label": "Этап 2",
+  "lesson_number": 67,
+  "tale_number": 3,
+  "tale_slug": "grade-4-stage2-tale-03",
+  "module_week": 7,
+  "meeting_number": 7,
+  "badge": "Следопыт",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 2: ещё 4 занятия через месяц после этапа 1"
+}

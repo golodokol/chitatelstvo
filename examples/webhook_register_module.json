@@ -1,0 +1,10 @@
+{
+  "parent_name": "Анна",
+  "parent_email": "anna@example.com",
+  "parent_telegram": "@anna",
+  "notification_channel": "email",
+  "child_name": "Маша",
+  "child_age": 8,
+  "module_id": 2,
+  "chosen_stage": "1"
+}

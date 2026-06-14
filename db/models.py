@@ -42,6 +42,24 @@ class Child(Base):
 
     family: Mapped[Family] = relationship(back_populates="children")
     badges: Mapped[list[ChildBadge]] = relationship(back_populates="child")
+    enrollments: Mapped[list[Enrollment]] = relationship(back_populates="child")
+
+
+class Enrollment(Base):
+    __tablename__ = "enrollments"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"))
+    module_id: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="active")
+    start_date: Mapped[date | None] = mapped_column(Date)
+    chosen_stage: Mapped[str | None] = mapped_column(Text)
+    chosen_tale_number: Mapped[int | None] = mapped_column(SmallInteger)
+    chosen_tale_slug: Mapped[str | None] = mapped_column(Text)
+    chosen_tale_title: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+    child: Mapped[Child] = relationship(back_populates="enrollments")
 
 
 class ChildBadge(Base):

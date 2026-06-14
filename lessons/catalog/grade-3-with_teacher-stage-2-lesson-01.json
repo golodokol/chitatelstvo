@@ -1,0 +1,22 @@
+{
+  "slug": "grade-3-with_teacher-stage-2-lesson-01",
+  "title": "Сказка о молодильных яблоках и живой воде, Волшебное кольцо",
+  "tale_title": "Сказка о молодильных яблоках и живой воде, Волшебное кольцо",
+  "module_id": 9,
+  "group_code": "grade-3",
+  "group_label": "3 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-2",
+  "stage_label": "Этап 2",
+  "lesson_number": 48,
+  "tale_number": 1,
+  "tale_slug": "grade-3-stage2-tale-01",
+  "module_week": 5,
+  "meeting_number": 5,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 2: ещё 4 занятия через месяц после этапа 1"
+}

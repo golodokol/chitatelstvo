@@ -1,0 +1,22 @@
+{
+  "slug": "grade-1-self_paced-stage-1-lesson-03",
+  "title": "Рассказы Н. Носова (Ступеньки, Заплатка, Затейники, Шляпа)",
+  "tale_title": "Рассказы Н. Носова (Ступеньки, Заплатка, Затейники, Шляпа)",
+  "module_id": 2,
+  "group_code": "grade-1",
+  "group_label": "1 класс",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 4,
+  "tale_number": 3,
+  "tale_slug": "grade-1-stage1-tale-03",
+  "module_week": 3,
+  "meeting_number": 0,
+  "badge": "Следопыт",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}

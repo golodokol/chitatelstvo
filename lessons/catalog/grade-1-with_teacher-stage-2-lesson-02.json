@@ -1,0 +1,22 @@
+{
+  "slug": "grade-1-with_teacher-stage-2-lesson-02",
+  "title": "Сказка о мёртвой царевне и о семи богатырях А.С. Пушкин",
+  "tale_title": "Сказка о мёртвой царевне и о семи богатырях А.С. Пушкин",
+  "module_id": 3,
+  "group_code": "grade-1",
+  "group_label": "1 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-2",
+  "stage_label": "Этап 2",
+  "lesson_number": 15,
+  "tale_number": 2,
+  "tale_slug": "grade-1-stage2-tale-02",
+  "module_week": 6,
+  "meeting_number": 6,
+  "badge": "Читатель",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 2: ещё 4 занятия через месяц после этапа 1"
+}

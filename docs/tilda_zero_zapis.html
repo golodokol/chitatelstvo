@@ -1,0 +1,554 @@
+<!-- Читательство · Zero Block для Tilda Business
+     Вставить: Zero Block → HTML
+     Якорь блока: program
+     Ниже — форма Tilda с hidden: module_id, chosen_stage, chosen_tale_number
+-->
+<style>
+  .chit-wrap {
+    font-family: 'Nunito', 'PT Sans', system-ui, sans-serif;
+    color: #3D5266;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 8px 0 32px;
+  }
+  .chit-wrap h2 {
+    font-family: 'Nunito', 'Montserrat', system-ui, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #5B7FA6;
+  }
+  .chit-wrap .chit-lead {
+    color: #6B8499;
+    font-size: 16px;
+    line-height: 1.55;
+    margin-bottom: 32px;
+  }
+  .chit-step-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #E9B85B;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .chit-section { margin-bottom: 36px; }
+  .chit-group-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #5B7FA6;
+    margin: 0 0 12px;
+  }
+  .chit-group-block { margin-bottom: 20px; }
+  .chit-group-block:last-child { margin-bottom: 0; }
+
+  .chit-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chit-pill {
+    border: 1.5px solid #D4E2EF;
+    background: #fff;
+    color: #5B7FA6;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .chit-pill:hover {
+    border-color: #88A9D1;
+    box-shadow: 0 2px 10px rgba(91, 127, 166, 0.12);
+  }
+  .chit-pill.is-active {
+    background: #5B7FA6;
+    border-color: #5B7FA6;
+    color: #fff;
+  }
+
+  .chit-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 860px) {
+    .chit-cards { grid-template-columns: 1fr; }
+  }
+  .chit-card {
+    background: #fff;
+    border: 2px solid #D4E2EF;
+    border-radius: 16px;
+    padding: 24px 20px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    position: relative;
+  }
+  .chit-card:hover {
+    border-color: #88A9D1;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(91, 127, 166, 0.1);
+  }
+  .chit-card.is-active {
+    border-color: #5B7FA6;
+    box-shadow: 0 8px 28px rgba(91, 127, 166, 0.15);
+  }
+  .chit-card.is-active::after {
+    content: '✓';
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 26px;
+    height: 26px;
+    background: #E9B85B;
+    color: #3D5266;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .chit-card-tag {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #E9B85B;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .chit-card-title {
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #5B7FA6;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .chit-card-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #3D5266;
+    margin-bottom: 12px;
+  }
+  .chit-card-desc {
+    font-size: 14px;
+    color: #6B8499;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .chit-date-box {
+    display: none;
+    background: #F9EFE1;
+    border-radius: 16px;
+    border: 1px solid #D4E2EF;
+    padding: 24px;
+  }
+  .chit-date-box.is-visible { display: block; }
+  .chit-stage-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .chit-tales {
+    display: grid;
+    gap: 8px;
+  }
+  .chit-tale {
+    text-align: left;
+    border: 1.5px solid #D4E2EF;
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #3D5266;
+    transition: all 0.15s;
+  }
+  .chit-tale:hover { border-color: #88A9D1; background: #F9EFE1; }
+  .chit-tale.is-active {
+    border-color: #5B7FA6;
+    background: #F5E6C8;
+  }
+  .chit-tale-num {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: #E8F1F8;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 8px;
+    color: #5B7FA6;
+  }
+  .chit-tale.is-active .chit-tale-num {
+    background: #5B7FA6;
+    color: #fff;
+  }
+
+  .chit-summary {
+    background: #F5E6C8;
+    border: 1px dashed #E9B85B;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 52px;
+  }
+  .chit-summary strong { color: #5B7FA6; }
+  .chit-summary-empty { color: #6B8499; }
+
+  .chit-hidden { position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden; }
+  .chit-pay-btn {
+    display: block; width: 100%; margin-top: 8px;
+    background: #5B7FA6; color: #fff; border: none;
+    border-radius: 999px; padding: 16px 28px;
+    font-family: inherit; font-size: 17px; font-weight: 700;
+    cursor: pointer; transition: background .2s;
+  }
+  .chit-pay-btn:hover:not(:disabled) { background: #4A6D94; }
+  .chit-pay-btn:disabled { background: #B8C9DB; cursor: not-allowed; }
+  .chit-pay-note { font-size: 13px; color: #6B8499; text-align: center; margin-top: 10px; }
+</style>
+
+<div class="chit-wrap" id="chit-program">
+  <h2>Подберите программу</h2>
+  <p class="chit-lead">Сначала класс, затем формат. Для разового занятия — выберите дату старта и сказку из списка.</p>
+
+  <div class="chit-section">
+    <div class="chit-step-label">Шаг 1 · Класс</div>
+    <div class="chit-group-block">
+      <h3 class="chit-group-title">Базовый курс</h3>
+      <div class="chit-pills" id="chit-groups-basic" role="listbox" aria-label="Базовый курс">
+        <button type="button" class="chit-pill" data-group="grade-1">1 класс</button>
+        <button type="button" class="chit-pill" data-group="grade-2">2 класс</button>
+        <button type="button" class="chit-pill" data-group="grade-3">3 класс</button>
+        <button type="button" class="chit-pill" data-group="grade-4">4 класс</button>
+      </div>
+    </div>
+    <div class="chit-group-block">
+      <h3 class="chit-group-title">Внеклассное чтение</h3>
+      <div class="chit-pills" id="chit-groups-extra" role="listbox" aria-label="Внеклассное чтение">
+        <button type="button" class="chit-pill" data-group="extra-6-8">6–8 лет</button>
+        <button type="button" class="chit-pill" data-group="extra-9-11">9–11 лет</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chit-section">
+    <div class="chit-step-label">Шаг 2 · Формат</div>
+    <div class="chit-cards" id="chit-tariffs">
+      <div class="chit-card" data-tariff="single" tabindex="0">
+        <div class="chit-card-tag">Попробовать</div>
+        <div class="chit-card-title">Разовое занятие</div>
+        <div class="chit-card-price">1 490 ₽</div>
+        <p class="chit-card-desc">Одна сказка на выбор. Видео, задания, личная страница прогресса.</p>
+      </div>
+      <div class="chit-card" data-tariff="self_paced" tabindex="0">
+        <div class="chit-card-tag">Основной</div>
+        <div class="chit-card-title">Индивидуальное</div>
+        <div class="chit-card-price">1 990 ₽</div>
+        <p class="chit-card-desc">4 сказки в своём темпе — без живых встреч. Выберите старт: 22 июня или 20 июля.</p>
+      </div>
+      <div class="chit-card" data-tariff="with_teacher" tabindex="0">
+        <div class="chit-card-tag">С поддержкой</div>
+        <div class="chit-card-title">С преподавателем</div>
+        <div class="chit-card-price">4 990 ₽</div>
+        <p class="chit-card-desc">4 сказки + 4 живые встречи. Старт 22 июня или 20 июля — на выбор.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="chit-section chit-date-box" id="chit-date-box">
+    <div class="chit-step-label">Шаг 3 · Когда начать</div>
+    <div class="chit-stage-row" id="chit-stages">
+      <button type="button" class="chit-pill" data-stage="1">Старт курса 22 июня</button>
+      <button type="button" class="chit-pill" data-stage="2">Старт 20 июля</button>
+    </div>
+    <div class="chit-tales" id="chit-tales"></div>
+    <div id="chit-block-preview" style="display:none;font-size:14px;color:#6B8499;line-height:1.55;margin-top:12px"></div>
+  </div>
+
+  <div class="chit-section">
+    <div class="chit-step-label">Ваш выбор</div>
+    <div class="chit-summary" id="chit-summary">
+      <span class="chit-summary-empty">Выберите класс и формат выше</span>
+    </div>
+  </div>
+
+  <div class="chit-section">
+    <button type="button" class="chit-pay-btn" id="chit-pay-btn" disabled>Записаться</button>
+    <p class="chit-pay-note">Оплата картой через Т‑Банк · после оплаты — письмо со ссылкой на личную страницу</p>
+  </div>
+
+  <div class="chit-hidden">
+    <input type="hidden" name="module_id" id="module_id" value="">
+    <input type="hidden" name="chosen_stage" id="chosen_stage" value="">
+    <input type="hidden" name="chosen_tale_number" id="chosen_tale_number" value="">
+  </div>
+</div>
+
+<script>
+(function () {
+  var MODULES = {
+    'grade-1': { single: 1, self_paced: 2, with_teacher: 3, label: '1 класс' },
+    'grade-2': { single: 4, self_paced: 5, with_teacher: 6, label: '2 класс' },
+    'grade-3': { single: 7, self_paced: 8, with_teacher: 9, label: '3 класс' },
+    'grade-4': { single: 10, self_paced: 11, with_teacher: 12, label: '4 класс' },
+    'extra-6-8': { single: 13, self_paced: 14, with_teacher: 15, label: '6–8 лет' },
+    'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' }
+  };
+  var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
+  var STAGE_LABEL = { '1': 'Старт курса 22 июня', '2': 'Старт 20 июля' };
+  var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
+  /* Названия = каталог Tilda (TILDA_PAYMENT_TBANK.md) */
+  var ORDER_LINKS = {
+    single: '#order:Читательство · Разовое =1490',
+    self_paced: '#order:Читательство · Индивидуальное =1990',
+    with_teacher: '#order:Читательство · С преподавателем =4990'
+  };
+  var TALES = {
+    'grade-1': {
+      '1': ['Царевна лягушка', 'Рассказы из Азбуки Л.Н. Толстой', 'Рассказы Н. Носова (Ступеньки, Заплатка, Затейники, Шляпа)', 'Кот в сапогах, Мальчик с пальчик Ш. Перро'],
+      '2': ['По щучьему велению', 'Сказка о мёртвой царевне и о семи богатырях А.С. Пушкин', 'Принцесса на горошине, Дюймовочка Г. Андерсен', 'Аля, Кляксич и буква А И.П. Токмакова']
+    },
+    'grade-2': {
+      '1': ['Сказка о рыбаке и рыбке А.С. Пушкин', 'Цветик-семицветик В.П. Катаев', 'Как муравьишка домой добирался, Где раки зимуют В.В. Бианки', 'Гадкий утёнок Г. Андерсен'],
+      '2': ['Филипок + Азбука Л.Н. Толстой', 'Незнайка на Луне Н. Носов', 'Рикки-Тикки-Тави Р. Киплинг', 'Маленькая Баба-Яга, Маленький водяной О. Пройслер']
+    },
+    'grade-3': {
+      '1': ['Сказка о царе Салтане, о сыне его славном и могучем богатыре А.С. Пушкин', 'Сказка про храброго зайца, Серая Шейка Д.Н. Мамин-Сибиряк', 'Черная курица или Подземные жители А. Погорельский', 'Чудесный доктор А. Куприн'],
+      '2': ['Сказка о молодильных яблоках и живой воде, Волшебное кольцо', 'Серебряный рубль В. Одоевский', 'Аленький цветочек С.Т. Аксаков', 'Королевство кривых зеркал В. Губарев']
+    },
+    'grade-4': {
+      '1': ['Уральские сказы П. Бажов', 'Сказка о потерянном времени Е. Шварц', 'Три толстяка Ю. Олеша', 'Остров Сокровищ Р. Стивенсон'],
+      '2': ['Приключения Тома Сойера М. Твен', 'Белый Бим, Черное ухо Г. Троепольский', 'Пеппи Длинный чулок А. Линдгрен', 'Путешествия Гулливера Дж. Свифт']
+    },
+    'extra-6-8': {
+      '1': ['Плюшевый заяц, или как игрушки становятся настоящими У. Марджери', 'Муми-тролль и комета Т. Янссон', 'Шляпа волшебника Т. Янссон', 'Приключения медвежонка Паддингтона М. Бонд'],
+      '2': ['Невероятные приключения кролика Эдварда К. ДиКамилло', 'Тутта Карлссон Первая и единственная, Людвиг Четырнадцатый и др. Я. Экхольм', 'Карлик Нос В. Гауф', 'Чарли и шоколадная фабрика Р. Даль']
+    },
+    'extra-9-11': {
+      '1': ['Мемуары папы Муми-тролля, Опасное лето Т. Янссон', 'Тоня Глиммердал М. Парр', 'Собака Пес Д. Пеннак', 'Лев, колдунья и платяной шкаф К. Льюис'],
+      '2': ['Чудесное путешествие Нильса с дикими гусями С. Лагерлеф', 'Чудесное путешествие Нильса с дикими гусями С. Лагерлеф, 2 часть', 'Полианна Э. Портер', 'Калиф-аист, Маленький Мук В. Гауф']
+    }
+  };
+
+  var state = { group: '', tariff: '', stage: '', taleNum: 0 };
+
+  var elSummary = document.getElementById('chit-summary');
+  var elDateBox = document.getElementById('chit-date-box');
+  var elPreview = document.getElementById('chit-block-preview');
+  var elTales = document.getElementById('chit-tales');
+  var hidMid = document.getElementById('module_id');
+  var hidStage = document.getElementById('chosen_stage');
+  var hidTale = document.getElementById('chosen_tale_number');
+  var payBtn = document.getElementById('chit-pay-btn');
+
+  function formatPrice(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+  }
+
+  function updatePayButton() {
+    if (!payBtn) return;
+    var ready = state.group && state.tariff;
+    if (state.tariff === 'single') ready = ready && state.stage && state.taleNum;
+    else if (state.tariff) ready = ready && state.stage;
+    if (ready && TARIFF_PRICE[state.tariff]) {
+      payBtn.disabled = false;
+      payBtn.textContent = 'Записаться — ' + formatPrice(TARIFF_PRICE[state.tariff]);
+    } else {
+      payBtn.disabled = true;
+      payBtn.textContent = 'Записаться';
+    }
+  }
+
+  function syncToCartForm() {
+    ['module_id', 'chosen_stage', 'chosen_tale_number'].forEach(function (name) {
+      var src = document.getElementById(name);
+      if (!src) return;
+      document.querySelectorAll('.t706 input[name="' + name + '"], .t-store input[name="' + name + '"]').forEach(function (dst) {
+        dst.value = src.value;
+      });
+    });
+  }
+
+  function syncHidden() {
+    var mid = '';
+    if (state.group && state.tariff && MODULES[state.group]) {
+      mid = MODULES[state.group][state.tariff] || '';
+    }
+    hidMid.value = mid;
+    hidStage.value = state.stage || '';
+    hidTale.value = state.tariff === 'single' && state.taleNum ? String(state.taleNum) : '';
+    syncToTildaForm();
+    syncToCartForm();
+    renderSummary();
+  }
+
+  function syncToTildaForm() {
+    ['module_id', 'chosen_stage', 'chosen_tale_number'].forEach(function (name) {
+      var src = document.getElementById(name);
+      if (!src) return;
+      document.querySelectorAll('.t-form input[name="' + name + '"]').forEach(function (dst) {
+        dst.value = src.value;
+      });
+    });
+  }
+
+  function renderSummary() {
+    if (!state.group || !state.tariff) {
+      elSummary.innerHTML = '<span class="chit-summary-empty">Выберите класс и формат выше</span>';
+      updatePayButton();
+      return;
+    }
+    var g = MODULES[state.group].label;
+    var t = TARIFF_LABEL[state.tariff];
+    var html = '<strong>' + g + '</strong> · ' + t;
+    if (state.tariff === 'single') {
+      if (state.stage && state.taleNum) {
+        var title = (TALES[state.group] && TALES[state.group][state.stage])
+          ? TALES[state.group][state.stage][state.taleNum - 1] : '';
+        html += '<br>' + (STAGE_LABEL[state.stage] || '') + ' · ' + title;
+      } else if (state.stage) {
+        html += '<br><span class="chit-summary-empty">Выберите сказку</span>';
+      } else {
+        html += '<br><span class="chit-summary-empty">Выберите дату старта и сказку</span>';
+      }
+    } else if (state.stage) {
+      html += '<br>' + (STAGE_LABEL[state.stage] || '') + ' · 4 сказки';
+      if (state.tariff === 'with_teacher') html += ' + 4 встречи';
+    } else {
+      html += '<br><span class="chit-summary-empty">Выберите дату старта</span>';
+    }
+    elSummary.innerHTML = html;
+    updatePayButton();
+  }
+
+  function renderTales() {
+    elTales.innerHTML = '';
+    elPreview.style.display = 'none';
+    elPreview.innerHTML = '';
+    if (!state.group || !state.stage) return;
+
+    var list = (TALES[state.group] && TALES[state.group][state.stage]) || [];
+
+    if (state.tariff === 'single') {
+      list.forEach(function (title, i) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chit-tale' + (state.taleNum === i + 1 ? ' is-active' : '');
+        btn.innerHTML = '<span class="chit-tale-num">' + (i + 1) + '</span>' + title;
+        btn.addEventListener('click', function () {
+          state.taleNum = i + 1;
+          renderTales();
+          syncHidden();
+        });
+        elTales.appendChild(btn);
+      });
+    } else {
+      elTales.style.display = 'none';
+      elPreview.style.display = 'block';
+      elPreview.innerHTML = '<strong style="color:#5B7FA6">4 сказки в этом блоке:</strong><br>' +
+        list.map(function (t, i) { return (i + 1) + '. ' + t; }).join('<br>');
+    }
+  }
+
+  function showDateBox() {
+    elDateBox.classList.toggle('is-visible', !!state.tariff);
+    elTales.style.display = state.tariff === 'single' ? 'grid' : 'none';
+  }
+
+  function onGroupClick(btn) {
+    state.group = btn.getAttribute('data-group');
+    state.stage = '';
+    state.taleNum = 0;
+    document.querySelectorAll('#chit-groups-basic .chit-pill, #chit-groups-extra .chit-pill').forEach(function (p) {
+      p.classList.toggle('is-active', p === btn);
+    });
+    renderTales();
+    showDateBox();
+    syncHidden();
+  }
+
+  document.getElementById('chit-groups-basic').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-group]');
+    if (btn) onGroupClick(btn);
+  });
+  document.getElementById('chit-groups-extra').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-group]');
+    if (btn) onGroupClick(btn);
+  });
+
+  document.getElementById('chit-tariffs').addEventListener('click', function (e) {
+    var card = e.target.closest('[data-tariff]');
+    if (!card) return;
+    state.tariff = card.getAttribute('data-tariff');
+    if (state.tariff !== 'single') { state.taleNum = 0; }
+    document.querySelectorAll('#chit-tariffs .chit-card').forEach(function (c) {
+      c.classList.toggle('is-active', c === card);
+    });
+    showDateBox();
+    renderTales();
+    syncHidden();
+  });
+
+  document.getElementById('chit-stages').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-stage]');
+    if (!btn) return;
+    state.stage = btn.getAttribute('data-stage');
+    state.taleNum = 0;
+    document.querySelectorAll('#chit-stages .chit-pill').forEach(function (p) {
+      p.classList.toggle('is-active', p === btn);
+    });
+    renderTales();
+    syncHidden();
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    syncToTildaForm();
+    syncToCartForm();
+  });
+  setInterval(function () { syncToTildaForm(); syncToCartForm(); }, 400);
+
+  payBtn.addEventListener('click', function () {
+    if (!window.chitValidateProgram()) return;
+    syncToCartForm();
+    var link = ORDER_LINKS[state.tariff];
+    if (link) window.location.href = link;
+  });
+
+  window.chitValidateProgram = function () {
+    if (!hidMid.value) {
+      alert('Пожалуйста, выберите класс и формат программы.');
+      document.getElementById('chit-program').scrollIntoView({ behavior: 'smooth' });
+      return false;
+    }
+    if (state.tariff === 'single' && (!hidStage.value || !hidTale.value)) {
+      alert('Для разового занятия выберите дату старта и сказку.');
+      elDateBox.classList.add('is-visible');
+      return false;
+    }
+    if (state.tariff !== 'single' && !hidStage.value) {
+      alert('Выберите дату старта курса: 22 июня или 20 июля.');
+      elDateBox.classList.add('is-visible');
+      return false;
+    }
+    syncToTildaForm();
+    syncToCartForm();
+    return true;
+  };
+
+  document.addEventListener('submit', function (e) {
+    if (e.target.closest('.t-form') && !window.chitValidateProgram()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+})();
+</script>

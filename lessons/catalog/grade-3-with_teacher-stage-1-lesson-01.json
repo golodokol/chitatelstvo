@@ -1,0 +1,22 @@
+{
+  "slug": "grade-3-with_teacher-stage-1-lesson-01",
+  "title": "Сказка о царе Салтане, о сыне его славном и могучем богатыре А.С. Пушкин",
+  "tale_title": "Сказка о царе Салтане, о сыне его славном и могучем богатыре А.С. Пушкин",
+  "module_id": 9,
+  "group_code": "grade-3",
+  "group_label": "3 класс",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Этап 1",
+  "lesson_number": 44,
+  "tale_number": 1,
+  "tale_slug": "grade-3-stage1-tale-01",
+  "module_week": 1,
+  "meeting_number": 1,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Этап 1: 4 недели, 4 сказки"
+}
