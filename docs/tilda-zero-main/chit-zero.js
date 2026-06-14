@@ -14,22 +14,22 @@ function syncChitArtboardHeight() {
   var artboard = main.closest('.t396__artboard');
   if (!artboard) return;
   var h = Math.ceil(main.getBoundingClientRect().height) + 32;
-  artboard.style.setProperty('height', h + 'px', 'important');
   artboard.style.setProperty('min-height', h + 'px', 'important');
+  artboard.style.removeProperty('height');
   var carrier = artboard.querySelector('.t396__carrier');
   var filter = artboard.querySelector('.t396__filter');
   if (carrier) {
-    carrier.style.setProperty('height', h + 'px', 'important');
     carrier.style.setProperty('min-height', h + 'px', 'important');
+    carrier.style.removeProperty('height');
   }
   if (filter) {
-    filter.style.setProperty('height', h + 'px', 'important');
     filter.style.setProperty('min-height', h + 'px', 'important');
+    filter.style.removeProperty('height');
   }
   var elem = main.closest('.tn-elem');
   if (elem) {
-    elem.style.setProperty('height', h + 'px', 'important');
     elem.style.setProperty('min-height', h + 'px', 'important');
+    elem.style.removeProperty('height');
   }
 }
 
@@ -269,6 +269,41 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     pushField('module_id', hidMid ? hidMid.value : '');
     pushField('chosen_stage', hidStage ? hidStage.value : '');
     pushField('chosen_tale_number', hidTale ? hidTale.value : '');
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'notification_channel'].forEach(function(name) {
+      var el = document.querySelector('#chit-main [name="' + name + '"]');
+      if (el) pushField(name, el.value);
+    });
+  }
+
+  function findSt100Root() {
+    return document.querySelector('.t706, .t-store, form[data-formcart="y"]');
+  }
+
+  function checkSt100Block() {
+    var warn = document.getElementById('chit-st100-warning');
+    if (!warn) return;
+    warn.hidden = !!findSt100Root();
+  }
+
+  function bindContactSync() {
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'notification_channel'].forEach(function(name) {
+      var el = document.querySelector('#chit-main [name="' + name + '"]');
+      if (!el) return;
+      function syncContact() { pushField(name, el.value); }
+      el.addEventListener('input', syncContact);
+      el.addEventListener('change', syncContact);
+    });
+  }
+
+  function scrollToCheckout() {
+    var st100 = findSt100Root();
+    if (st100) {
+      st100.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    var warn = document.getElementById('chit-st100-warning');
+    if (warn && !warn.hidden) warn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    else document.getElementById('program').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function openCart(tariff) {
@@ -281,7 +316,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
     setTimeout(function() {
       if (window.tcart && typeof window.tcart.open === 'function') window.tcart.open();
-      document.getElementById('program').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollToCheckout();
     }, 200);
   }
 
@@ -406,10 +441,26 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     if (!hidMid.value) { alert('Выберите класс и формат.'); document.getElementById('program').scrollIntoView({behavior:'smooth'}); return false; }
     if (state.tariff === 'single' && (!hidStage.value || !hidTale.value)) { alert('Выберите дату и сказку.'); elDateBox.classList.add('is-visible'); return false; }
     if (state.tariff !== 'single' && !hidStage.value) { alert('Выберите дату старта.'); elDateBox.classList.add('is-visible'); return false; }
+    var parentName = document.querySelector('#chit-main [name="parent_name"]');
+    var parentEmail = document.querySelector('#chit-main [name="parent_email"]');
+    var childName = document.querySelector('#chit-main [name="child_name"]');
+    if (parentName && !parentName.value.trim()) { alert('Укажите имя родителя.'); parentName.focus(); return false; }
+    if (parentEmail && !parentEmail.value.trim()) { alert('Укажите email.'); parentEmail.focus(); return false; }
+    if (childName && !childName.value.trim()) { alert('Укажите имя ребёнка.'); childName.focus(); return false; }
+    if (!findSt100Root()) {
+      alert('Блок оплаты ST100 не найден на странице. Добавьте его в Tilda под Zero Block (см. ST100_SETUP.md).');
+      checkSt100Block();
+      scrollToCheckout();
+      return false;
+    }
     syncToTildaForm();
     syncToCartForm();
     return true;
   };
+
+  bindContactSync();
+  checkSt100Block();
+  setTimeout(checkSt100Block, 1500);
 })();
 
 (function initInteractive() {

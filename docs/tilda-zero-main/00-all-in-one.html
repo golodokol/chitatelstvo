@@ -1838,10 +1838,48 @@
 
       <div class="enroll-checkout">
         <h3>Запись в Читательство</h3>
-        <p class="form-intro">Выберите программу выше, затем нажмите «Записаться» — откроется корзина с оплатой через Т‑Банк.</p>
+        <p class="form-intro">Заполните контакты и нажмите «Записаться» — откроется оплата через Т‑Банк.</p>
+
+        <div class="form-grid" id="chit-contact-form">
+          <div class="form-field">
+            <label for="chit_parent_name">Имя родителя</label>
+            <input type="text" id="chit_parent_name" name="parent_name" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label for="chit_parent_email">Email</label>
+            <input type="email" id="chit_parent_email" name="parent_email" autocomplete="email" required>
+          </div>
+          <div class="form-field">
+            <label for="chit_parent_telegram">Telegram (необязательно)</label>
+            <input type="text" id="chit_parent_telegram" name="parent_telegram" placeholder="@username">
+          </div>
+          <div class="form-field">
+            <label for="chit_child_name">Имя ребёнка</label>
+            <input type="text" id="chit_child_name" name="child_name" required>
+          </div>
+          <div class="form-field">
+            <label for="chit_child_age">Возраст</label>
+            <input type="number" id="chit_child_age" name="child_age" min="1" max="99">
+          </div>
+          <div class="form-field form-field--full">
+            <label for="chit_notification_channel">Как присылать новости</label>
+            <select id="chit_notification_channel" name="notification_channel">
+              <option value="email">На email</option>
+              <option value="web">Только личная страница</option>
+              <option value="telegram">В Telegram</option>
+              <option value="both">Email и Telegram</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="st100-warning" id="chit-st100-warning" hidden>
+          <strong>Оплата пока не подключена.</strong>
+          В редакторе Tilda добавьте блок <em>ST100 «Корзина с формой»</em> под Zero Block.
+        </div>
+
         <button type="button" class="btn btn--block btn--pay" id="chit-pay-btn" disabled>Записаться</button>
-        <p class="pay-note">Контакты и оплата — в корзине ниже на странице (блок ST100)</p>
-        <p class="form-consent">Нажимая «Записаться», вы соглашаетесь на обработку данных для занятий в Читательстве.</p>
+        <p class="pay-note">После «Записаться» откроется корзина ST100 с оплатой.</p>
+        <p class="form-consent">Нажимая «Записаться», вы соглашаетесь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">политикой</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">офертой</a>.</p>
       </div>
     </div>
   </div>
