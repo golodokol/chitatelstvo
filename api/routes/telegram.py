@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from config.settings import PUBLIC_BASE_URL, ROOT, TELEGRAM_WEBHOOK_SECRET
+from config.settings import PUBLIC_BASE_URL, ROOT, TELEGRAM_ENABLED, TELEGRAM_WEBHOOK_SECRET
 from db import repository as repo
 from db.session import SessionLocal
 from notifications.telegram_bot import (
@@ -36,6 +36,9 @@ async def telegram_webhook(
     request: Request,
     x_telegram_bot_api_secret_token: str | None = Header(default=None),
 ) -> dict[str, bool]:
+    if not TELEGRAM_ENABLED:
+        return {"ok": True}
+
     if TELEGRAM_WEBHOOK_SECRET:
         _verify_telegram_secret(x_telegram_bot_api_secret_token)
 
@@ -82,6 +85,8 @@ async def telegram_webhook(
 
 @router.get("/link-telegram/{token}")
 def link_telegram_redirect(token: str) -> RedirectResponse:
+    if not TELEGRAM_ENABLED:
+        raise HTTPException(503, "Telegram временно недоступен")
     url = build_link_url(token)
     if not url:
         raise HTTPException(503, "Telegram-бот не настроен")
@@ -90,6 +95,8 @@ def link_telegram_redirect(token: str) -> RedirectResponse:
 
 @router.get("/link-telegram/{token}/page", response_class=HTMLResponse)
 def link_telegram_page(token: str, request: Request) -> HTMLResponse:
+    if not TELEGRAM_ENABLED:
+        raise HTTPException(503, "Telegram временно недоступен")
     db: Session = SessionLocal()
     try:
         family = repo.get_family_by_token(db, token)

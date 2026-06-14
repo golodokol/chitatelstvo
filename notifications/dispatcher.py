@@ -7,7 +7,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from config.settings import PUBLIC_BASE_URL
+from config.settings import PUBLIC_BASE_URL, TELEGRAM_ENABLED
 from db import repository as repo
 from db.models import Child, Family, ParentNotification
 from notifications.email_channel import send_email
@@ -73,7 +73,7 @@ def dispatch_parent_notifications(
         notification_ids.append(email_note.id)
 
     # 3. Telegram
-    if channel in ("telegram", "both") and family.telegram_chat_id:
+    if TELEGRAM_ENABLED and channel in ("telegram", "both") and family.telegram_chat_id:
         tg_note = repo.store_notification(
             db,
             family_id=family.id,
@@ -107,6 +107,9 @@ def send_pending_notification(db: Session, notification_id: uuid.UUID) -> None:
                 body=note.message,
             )
         elif note.channel == "telegram":
+            if not TELEGRAM_ENABLED:
+                repo.mark_notification_failed(db, notification_id, "Telegram временно отключён")
+                return
             if not family.telegram_chat_id:
                 raise RuntimeError("telegram_chat_id не привязан")
             send_telegram(family.telegram_chat_id, note.message)

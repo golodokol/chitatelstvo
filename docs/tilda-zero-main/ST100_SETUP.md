@@ -47,6 +47,8 @@ Zero Block выбирает **класс + тариф + дату (+ сказку
 | Email и Telegram | `both` |
 | Только личная страница | `web` |
 
+> **Пока Telegram отключён на сервере** (`TELEGRAM_ENABLED=0`): можно оставить все варианты — API сам переключит `telegram` → `web`, `both` → `email`. Или временно скройте в Tilda пункты «В Telegram» и «Email и Telegram».
+
 Кнопка в корзине: **Оплатить**
 
 ---

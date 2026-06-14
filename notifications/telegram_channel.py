@@ -3,12 +3,15 @@ from __future__ import annotations
 import logging
 from urllib import error, request
 
-from config.settings import TELEGRAM_BOT_TOKEN
+from config.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_ENABLED
 
 logger = logging.getLogger(__name__)
 
 
 def send_telegram(chat_id: int, text: str) -> None:
+    if not TELEGRAM_ENABLED:
+        logger.info("Telegram отключён — уведомление не отправлено (chat_id=%s)", chat_id)
+        return
     if not TELEGRAM_BOT_TOKEN:
         raise RuntimeError("TELEGRAM_BOT_TOKEN не задан")
 

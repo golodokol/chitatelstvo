@@ -7,7 +7,7 @@ import re
 from typing import Any
 from urllib import error, parse, request
 
-from config.settings import PUBLIC_BASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_USERNAME
+from config.settings import PUBLIC_BASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_USERNAME, TELEGRAM_ENABLED
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +15,8 @@ _START_LINK_RE = re.compile(r"^link_(?P<token>[A-Za-z0-9_-]+)$")
 
 
 def get_bot_username() -> str | None:
+    if not TELEGRAM_ENABLED:
+        return None
     if TELEGRAM_BOT_USERNAME:
         return TELEGRAM_BOT_USERNAME.lstrip("@")
     if not TELEGRAM_BOT_TOKEN:
@@ -33,6 +35,8 @@ def get_bot_username() -> str | None:
 
 
 def build_link_url(progress_token: str) -> str | None:
+    if not TELEGRAM_ENABLED:
+        return None
     username = get_bot_username()
     if not username:
         return None
@@ -42,6 +46,9 @@ def build_link_url(progress_token: str) -> str | None:
 
 
 def send_reply(chat_id: int, text: str) -> None:
+    if not TELEGRAM_ENABLED:
+        logger.info("Telegram отключён — ответ не отправлен (chat_id=%s)", chat_id)
+        return
     if not TELEGRAM_BOT_TOKEN:
         raise RuntimeError("TELEGRAM_BOT_TOKEN не задан")
     import json

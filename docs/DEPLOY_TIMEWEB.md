@@ -176,6 +176,15 @@ certbot --nginx -d api.chitatelstvo.ru --agree-tos -m ваш@email.ru
 
 Должна открыться страница с `ok` / JSON. **Это главный признак, что деплой удался.**
 
+**Админ-панель** (список регистраций): `https://api.chitatelstvo.ru/admin`  
+В `.env` на сервере задайте `ADMIN_PASSWORD=ваш_пароль`, затем перезапустите API:
+
+```bash
+docker compose up -d --force-recreate api
+```
+
+После входа доступны таблица семей и экспорт CSV.
+
 ---
 
 ### Шаг 8. Подключить Tilda
@@ -351,17 +360,27 @@ docker compose restart api worker
 
 ---
 
-## Шаг 11. Telegram (когда будет бот)
+## Шаг 11. Telegram (когда будет VPN и бот)
 
-В `.env` на сервере:
+Пока с VPS нет доступа к `api.telegram.org`, держите в `.env`:
 
 ```env
+TELEGRAM_ENABLED=0
+```
+
+Уведомления о курсе идут на **личную страницу прогресса** и email. Каналы «Telegram» / «Email и Telegram» в форме автоматически переключаются на web/email.
+
+Когда настроите VPN:
+
+```env
+TELEGRAM_ENABLED=1
 TELEGRAM_BOT_TOKEN=...
 TELEGRAM_BOT_USERNAME=ваш_бот
 PUBLIC_BASE_URL=https://api.chitatelstvo.ru
 ```
 
 ```bash
+docker compose up -d --force-recreate api worker
 docker compose exec api python scripts/set_telegram_webhook.py
 ```
 

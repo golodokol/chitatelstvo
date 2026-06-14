@@ -10,10 +10,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from api.deps import rate_limit, verify_webhook_secret
-from config.settings import WEBHOOK_SECRET
 from api.event_types import AUTO_LESSON_PLAYER
 from api.schemas import EventWebhook, RegisterResponse, RegisterWebhook, WebhookAccepted
-from config.settings import PUBLIC_BASE_URL
+from config.settings import PUBLIC_BASE_URL, WEBHOOK_SECRET, resolve_notification_channel
 from db import repository as repo
 from db.session import get_db
 from job_queue.redis_queue import enqueue
@@ -113,16 +112,18 @@ async def webhook_register(
         raise HTTPException(401, "Неверный webhook secret")
 
     body = RegisterWebhook.model_validate(_normalize_register_payload(raw))
+    notification_channel = resolve_notification_channel(body.notification_channel)
+    telegram_chat_id = body.telegram_chat_id if notification_channel in ("telegram", "both") else None
 
     family, child = repo.register_family(
         db,
         parent_name=body.parent_name,
         parent_email=str(body.parent_email),
         parent_telegram=body.parent_telegram,
-        notification_channel=body.notification_channel,
+        notification_channel=notification_channel,
         child_name=body.child_name,
         child_age=body.child_age,
-        telegram_chat_id=body.telegram_chat_id,
+        telegram_chat_id=telegram_chat_id,
     )
 
     module_id, module_title = create_enrollment_from_registration(db, child, body)
@@ -137,7 +138,7 @@ async def webhook_register(
         progress_url=progress_url,
         link_telegram_page=link_telegram_page,
         include_telegram=bool(
-            telegram_deep_link and body.notification_channel in ("telegram", "both")
+            telegram_deep_link and notification_channel in ("telegram", "both")
         ),
         module_title=module_title,
     )
@@ -151,7 +152,7 @@ async def webhook_register(
         status="stored",
     )
 
-    if body.notification_channel in ("email", "both"):
+    if notification_channel in ("email", "both"):
         note = repo.store_notification(
             db,
             family_id=family.id,
@@ -163,7 +164,7 @@ async def webhook_register(
         )
         enqueue("send_notification", {"notification_id": str(note.id)})
 
-    if body.notification_channel in ("telegram", "both") and body.telegram_chat_id:
+    if notification_channel in ("telegram", "both") and telegram_chat_id:
         note = repo.store_notification(
             db,
             family_id=family.id,

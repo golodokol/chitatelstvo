@@ -315,6 +315,17 @@ def link_telegram_chat(
     return family
 
 
+def list_all_families(db: Session) -> list[Family]:
+    stmt = (
+        select(Family)
+        .options(
+            joinedload(Family.children).joinedload(Child.enrollments),
+        )
+        .order_by(Family.created_at.desc())
+    )
+    return list(db.scalars(stmt).unique().all())
+
+
 def get_family_by_token(db: Session, token: str) -> Family | None:
     stmt = (
         select(Family)

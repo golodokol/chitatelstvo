@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, ROOT
+from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, ROOT, TELEGRAM_ENABLED
 from db import repository as repo
 from db.session import get_db
 from api.lesson_signing import build_lesson_url
@@ -83,6 +83,7 @@ def family_progress(
             "parent_name": family.parent_name,
             "channel": family.notification_channel,
             "telegram_linked": family.telegram_chat_id is not None,
+            "telegram_enabled": TELEGRAM_ENABLED,
             "telegram_link": telegram_link,
             "link_page": link_page,
             "children": children_data,

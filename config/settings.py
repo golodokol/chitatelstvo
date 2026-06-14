@@ -13,6 +13,7 @@ except ImportError:
 
 # --- API ---
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "").strip()
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "").strip()
 API_HOST = os.getenv("API_HOST", "0.0.0.0")
 API_PORT = int(os.getenv("API_PORT", "8000"))
 PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/")
@@ -36,6 +37,19 @@ USE_LLM = os.getenv("USE_LLM", "1").strip().lower() in ("1", "true", "yes")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "").strip()
 TELEGRAM_WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
+# Пока с VPS нет доступа к api.telegram.org (нужен VPN) — держите 0
+TELEGRAM_ENABLED = os.getenv("TELEGRAM_ENABLED", "0").strip().lower() in ("1", "true", "yes")
+
+
+def resolve_notification_channel(channel: str) -> str:
+    """telegram/both → web/email, если Telegram отключён."""
+    if TELEGRAM_ENABLED:
+        return channel
+    if channel == "telegram":
+        return "web"
+    if channel == "both":
+        return "email"
+    return channel
 
 # --- Email (SMTP) ---
 SMTP_HOST = os.getenv("SMTP_HOST", "").strip()

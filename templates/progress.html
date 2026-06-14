@@ -59,10 +59,13 @@
       {% elif channel == 'email' %}
       Дублируем важное на email.
       {% elif channel == 'both' %}
-      Дублируем на email и Telegram.
+      {% if telegram_enabled %}Дублируем на email и Telegram.{% else %}Дублируем важное на email.{% endif %}
+      {% elif channel == 'telegram' and not telegram_enabled %}
+      Уведомления на этой странице.
       {% endif %}
     </div>
 
+    {% if telegram_enabled %}
     <div class="tg-box">
       {% if telegram_linked %}
       <span class="tg-ok">✓ Telegram привязан</span> — уведомления приходят в бот.
@@ -73,6 +76,7 @@
       Уведомления доступны на этой странице и по email.
       {% endif %}
     </div>
+    {% endif %}
 
     {% for child in children %}
     <div class="card">
