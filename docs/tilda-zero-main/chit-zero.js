@@ -1,4 +1,3 @@
-/* Читательство · вкладка JS Zero Block */
 window.CHIT_IMG_BASE = "https://api.chitatelstvo.ru/assets/";
 
 function chitReady(fn) {

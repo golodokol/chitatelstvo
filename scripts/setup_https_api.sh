@@ -25,14 +25,10 @@ nginx -t
 systemctl enable nginx
 systemctl reload nginx
 
-if certbot certificates 2>/dev/null | grep -q "Certificate Name: $DOMAIN"; then
-  certbot renew --dry-run
-  echo "Certificate already exists for $DOMAIN"
-else
-  certbot --nginx -d "$DOMAIN" \
-    --non-interactive --agree-tos -m "$EMAIL" \
-    --redirect
-fi
+# Deploy or obtain cert and wire nginx listen 443 (HTTP-only template above is OK).
+certbot --nginx -d "$DOMAIN" \
+  --non-interactive --agree-tos -m "$EMAIL" \
+  --redirect
 
 echo "--- checks ---"
 curl -fsS "https://${DOMAIN}/health" | head -c 200
