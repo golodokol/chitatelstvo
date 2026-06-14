@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Читательство{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text: #2c2416;
+      --muted: #6b5d4d;
+      --cream: #faf6f0;
+      --blue: #5b7fa6;
+      --line: #e8e0d6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Literata', Georgia, serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 56px; }
+    .top {
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+    }
+    .top a { color: var(--blue); text-decoration: none; }
+    .top a:hover { text-decoration: underline; }
+    h1 { font-size: 1.65rem; margin: 0 0 8px; line-height: 1.25; }
+    .sub { color: var(--muted); font-size: 0.95rem; margin: 0 0 28px; font-family: 'Nunito', sans-serif; }
+    h2 { font-size: 1.15rem; margin: 28px 0 10px; }
+    p, li { font-size: 0.98rem; }
+    ul, ol { padding-left: 1.25rem; }
+    li { margin-bottom: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin: 16px 0;
+      font-family: 'Nunito', sans-serif;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-weight: 600; width: 38%; }
+    .footer-legal {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .footer-legal a { color: var(--blue); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="top" aria-label="Навигация">
+      <a href="{{ site_url }}">← На главную</a>
+      <a href="{{ legal_politika }}">Политика конфиденциальности</a>
+      <a href="{{ legal_oferta }}">Публичная оферта</a>
+      <a href="{{ legal_rekvizity }}">Реквизиты</a>
+    </nav>
+    {% block content %}{% endblock %}
+    <div class="footer-legal">
+      <p>© Читательство · {{ ip_name }} · {{ site_url }}</p>
+      <p>
+        <a href="mailto:{{ contact_email }}">{{ contact_email }}</a> ·
+        <a href="tel:{{ contact_phone_tel }}">{{ contact_phone }}</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

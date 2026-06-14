@@ -37,6 +37,17 @@ Zero Block выбирает **класс + тариф + дату (+ сказку
 | *(скрыто)* | `module_id` | hidden | — |
 | *(скрыто)* | `chosen_stage` | hidden | — |
 | *(скрыто)* | `chosen_tale_number` | hidden | — |
+| Согласие с офертой и политикой | `legal_consent` | checkbox | **да** |
+
+### Checkbox «Согласие» (обязательно)
+
+Добавьте поле **Checkbox**, Variable name: `legal_consent`, обязательное.
+
+**Текст рядом с галочкой** (можно HTML-ссылки в Tilda):
+
+> Я согласен(на) с [политикой конфиденциальности](https://api.chitatelstvo.ru/legal/politika) и [публичной офертой](https://api.chitatelstvo.ru/legal/oferta)
+
+Без галочки оплата не должна проходить — включите «Обязательное поле» в настройках поля.
 
 ### Select `notification_channel` — значения (value)
 

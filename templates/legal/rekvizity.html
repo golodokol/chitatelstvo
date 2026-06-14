@@ -1,0 +1,29 @@
+{% extends "legal/layout.html" %}
+{% block title %}Реквизиты — Читательство{% endblock %}
+{% block content %}
+<h1>Реквизиты</h1>
+<p class="sub">Сведения о продавце услуг онлайн-школы «Читательство»</p>
+
+<table>
+  <tr><th>Наименование</th><td>{{ ip_name }}</td></tr>
+  <tr><th>ИНН</th><td>{{ inn }}</td></tr>
+  <tr><th>ОГРНИП</th><td>{{ ogrnip }}</td></tr>
+  <tr><th>Юридический адрес</th><td>{{ legal_address }}</td></tr>
+  <tr><th>Фактический адрес</th><td>{{ actual_address }}</td></tr>
+  <tr><th>Сайт</th><td><a href="{{ site_url }}">chitatelstvo.ru</a></td></tr>
+  <tr><th>Email</th><td><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></td></tr>
+  <tr><th>Телефон</th><td><a href="tel:{{ contact_phone_tel }}">{{ contact_phone }}</a></td></tr>
+  <tr><th>Контактное лицо</th><td>Рощина Ольга Владимировна</td></tr>
+</table>
+
+<h2>Банковские реквизиты</h2>
+<table>
+  <tr><th>Расчётный счёт</th><td>{{ bank_account }}</td></tr>
+  <tr><th>Банк</th><td>{{ bank_name }}</td></tr>
+  <tr><th>БИК</th><td>{{ bank_bik }}</td></tr>
+  <tr><th>Корр. счёт</th><td>{{ bank_ks }}</td></tr>
+</table>
+
+<p>Услуги оказываются дистанционно через сайт <a href="{{ site_url }}">chitatelstvo.ru</a>. Оплата принимается через платёжную систему на сайте (банковская карта).</p>
+<p>Документы: <a href="{{ legal_politika }}">Политика конфиденциальности</a> · <a href="{{ legal_oferta }}">Публичная оферта</a></p>
+{% endblock %}

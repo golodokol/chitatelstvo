@@ -1,5 +1,4 @@
-/* Читательство · вкладка CSS Zero Block */
-    /* Tilda Zero: не обрезать длинную страницу и не держать контент invisible */
+/* Tilda Zero: не обрезать длинную страницу и не держать контент invisible */
     .tn-atom__html,
     .tn-atom__html #chit-main {
       height: auto !important;
@@ -1430,4 +1429,3 @@
     #allrecords #chit-main .header-cta { color: #fff !important; }
     #allrecords #chit-main .faq-a { display: none; }
     #allrecords #chit-main .faq-a.is-open { display: block; }
-  
