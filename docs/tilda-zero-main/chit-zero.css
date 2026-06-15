@@ -1534,20 +1534,32 @@
       box-shadow: 0 16px 48px rgba(143,125,163,0.18);
       text-align: center;
     }
-    .founder__photo {
+    .founder__photo-wrap {
       flex-shrink: 0;
-      display: block;
       width: 200px;
       height: 240px;
-      max-width: 200px;
-      aspect-ratio: 5 / 6;
-      object-fit: cover;
-      object-position: center 20%;
       border-radius: 20px;
+      overflow: hidden;
       border: 4px solid var(--accent-pale);
       box-shadow: 0 8px 28px rgba(91,127,166,0.22);
     }
-    .founder__photo--olga { object-position: center 15%; }
+    .founder__photo {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      aspect-ratio: auto;
+      object-fit: cover;
+      object-position: center 20%;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .founder__photo--olga {
+      transform: scale(1.14);
+      transform-origin: center 24%;
+      object-position: center 20%;
+    }
     .founder__photo--anastasia { object-position: center 12%; }
     .founder__body { flex: 1; min-width: 0; width: 100%; }
     .founder__name {
@@ -1576,7 +1588,7 @@
     }
     @media (max-width: 680px) {
       .founder__card { padding: 28px 22px 32px; gap: 18px; }
-      .founder__photo { width: 180px; height: 220px; }
+      .founder__photo-wrap { width: 180px; height: 220px; }
       .founder__name { font-size: 24px; }
       .founder__bio { font-size: 15px; }
     }
