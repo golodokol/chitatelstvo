@@ -755,6 +755,11 @@ if (faqList) {
       if (document.querySelector('.t706__cartwin_showed, .t706__cartwin_active, .t706__cartwin-wrapper_showed')) return;
       var h = window.location.hash || '';
       if (h.indexOf('#order') === 0 || h.indexOf('#opencart') >= 0) return;
+      if (h.length > 1) {
+        try {
+          if (document.querySelector(h)) return;
+        } catch (err) {}
+      }
       setTimeout(onCartClosed, 100);
     });
   }
@@ -1490,6 +1495,12 @@ if (faqList) {
 
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') setOpen(false);
+    });
+
+    panel.querySelectorAll('a[href^="#"]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        setOpen(false);
+      });
     });
   })();
 
