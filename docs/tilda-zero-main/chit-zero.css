@@ -849,10 +849,14 @@
     }
     .for-whom__icon {
       width: 100%; height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center center;
       display: block;
     }
+    .for-whom__icon-wrap--kids .for-whom__icon { object-position: center 42%; }
+    .for-whom__icon-wrap--pace .for-whom__icon { object-position: center 38%; }
+    .for-whom__icon-wrap--family .for-whom__icon { object-position: center 45%; }
+    .for-whom__icon-wrap--parents .for-whom__icon { object-position: center 40%; }
     .for-whom__item:hover {
       transform: translateY(-3px);
       border-color: var(--accent-soft);
