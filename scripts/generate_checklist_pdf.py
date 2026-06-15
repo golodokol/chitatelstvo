@@ -103,8 +103,11 @@ def _draw_page_frame(canvas, doc) -> None:
     canvas.setFillColor(colors.white)
     canvas.roundRect(12 * mm, 14 * mm, w - 24 * mm, h - 28 * mm, 10, fill=1, stroke=0)
 
-    canvas.setFillColor(BLUE_PALE)
+    canvas.setFillColor(colors.white)
     canvas.roundRect(12 * mm, h - 52 * mm, w - 24 * mm, 38 * mm, 10, fill=1, stroke=0)
+    canvas.setStrokeColor(BORDER)
+    canvas.setLineWidth(0.5)
+    canvas.line(12 * mm, h - 52 * mm, w - 12 * mm, h - 52 * mm)
 
     logo_path = _find_logo()
     if logo_path:
@@ -148,16 +151,7 @@ def _item_table(font: str) -> Table:
     for index, text in enumerate(ITEMS, start=1):
         rows.append(
             [
-                Paragraph(
-                    f'<font color="#8F7DA3"><b>{index}</b></font>',
-                    ParagraphStyle(
-                        "Num",
-                        fontName=font,
-                        fontSize=11,
-                        leading=14,
-                        alignment=TA_CENTER,
-                    ),
-                ),
+                str(index),
                 Paragraph(
                     text,
                     ParagraphStyle(
@@ -172,12 +166,15 @@ def _item_table(font: str) -> Table:
             ]
         )
 
-    table = Table(rows, colWidths=[10 * mm, 148 * mm], hAlign="CENTER")
+    table = Table(rows, colWidths=[14 * mm, 144 * mm], hAlign="CENTER")
     table.setStyle(
         TableStyle(
             [
                 ("FONTNAME", (0, 0), (-1, -1), font),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("ALIGN", (0, 0), (0, -1), "CENTER"),
+                ("TEXTCOLOR", (0, 0), (0, -1), LILAC),
+                ("FONTSIZE", (0, 0), (0, -1), 11),
                 ("BACKGROUND", (0, 0), (-1, -1), colors.white),
                 ("ROWBACKGROUNDS", (0, 0), (-1, -1), [colors.white, BLUE_PALE]),
                 ("BOX", (0, 0), (-1, -1), 0.5, BORDER),
