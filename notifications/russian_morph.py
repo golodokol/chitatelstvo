@@ -105,14 +105,26 @@ def age_years_phrase(age: int) -> str:
     return f"{n} {word}"
 
 
-def age_band_intro(age: int | None) -> str:
-    """Вводный абзац по возрастной группе."""
-    if age is None:
-        return (
-            "Наши программы рассчитаны на детей 6–11 лет — "
-            "именно в этом возрасте закладывается привычка не только читать, "
-            "но и понимать, о чём текст."
-        )
+MALE_NAME_EXCEPTIONS = frozenset(
+    {"никита", "илья", "иля", "фома", "кузьма", "савва", "лёва", "лева", "миша", "саша"}
+)
+
+
+def is_female_name(name: str) -> bool:
+    """Эвристика по окончанию имени (для сам/сама и т.п.)."""
+    lower = _lower_stem(name)
+    if lower in MALE_NAME_EXCEPTIONS:
+        return False
+    return lower.endswith(("а", "я"))
+
+
+def reflexive_sam(name: str) -> str:
+    """сам / сама — по полу ребёнка."""
+    return "сама" if is_female_name(name) else "сам"
+
+
+def age_band_intro(age: int) -> str:
+    """Вводный абзац по возрастной группе (только для 6–11 лет)."""
     if age <= 7:
         return (
             "В шесть–семь лет как раз закладывается привычка не только читать, "

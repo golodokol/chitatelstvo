@@ -10,6 +10,7 @@ from notifications.russian_morph import (
     name_dative,
     name_genitive,
     name_prepositional,
+    reflexive_sam,
 )
 
 SUBJECT_WELCOME = "Добро пожаловать в Читательство"
@@ -108,11 +109,25 @@ def build_progress_message(
     )
 
 
+def _age_in_quiz_range(age: int | None) -> bool:
+    return age is not None and QUIZ_AGE_MIN <= age <= QUIZ_AGE_MAX
+
+
+def _quiz_age_intro(child_age: int | None) -> str:
+    if _age_in_quiz_range(child_age):
+        return age_band_intro(child_age)  # type: ignore[arg-type]
+    return (
+        "Наши материалы помогают проверить, насколько ребёнок понимает прочитанное, "
+        "и мягко поддержать интерес к книге — без упрёков и спешки."
+    )
+
+
 def _quiz_problem_paragraph(child_name: str, answers_by_id: dict[str, str]) -> str:
     child_nom = child_name.strip() or "ребёнок"
     child_gen = name_genitive(child_nom)
     child_dat = name_dative(child_nom)
     child_prep = name_prepositional(child_nom)
+    sam = reflexive_sam(child_nom)
     parts: list[str] = []
 
     hard = answers_by_id.get("hard", "")
@@ -133,7 +148,7 @@ def _quiz_problem_paragraph(child_name: str, answers_by_id: dict[str, str]) -> s
         )
     elif hard == "Начать читать без напоминаний":
         parts.append(
-            f"Вы написали, что {child_nom} редко берёт книгу сам. "
+            f"Вы написали, что {child_nom} редко берёт книгу {sam}. "
             "Хорошая новость: привычку можно вырастить — главное, без упрёков и спешки."
         )
 
@@ -162,7 +177,7 @@ def _quiz_problem_paragraph(child_name: str, answers_by_id: dict[str, str]) -> s
     frequency = answers_by_id.get("frequency", "")
     if frequency == "Почти не читает сам" and not parts:
         parts.append(
-            f"Мы видим, что {child_nom} пока почти не читает сам — "
+            f"Мы видим, что {child_nom} пока почти не читает {sam} — "
             "и это как раз тот случай, когда внешняя поддержка особенно помогает."
         )
 
@@ -197,12 +212,12 @@ def _quiz_email_parts(
     parent = parent_name.strip() or "родитель"
     child_gen = name_genitive(child_name)
     problem = _quiz_problem_paragraph(child_name, answers_by_id)
-    age_intro = age_band_intro(child_age)
+    age_intro = _quiz_age_intro(child_age)
 
-    if child_age is not None:
+    if _age_in_quiz_range(child_age):
         thanks = (
             f"Спасибо, что прошли короткий опрос для {child_gen} "
-            f"({age_years_phrase(child_age)})."
+            f"({age_years_phrase(child_age)})."  # type: ignore[arg-type]
         )
     else:
         thanks = f"Спасибо, что прошли короткий опрос для {child_gen}."
@@ -279,9 +294,8 @@ def build_quiz_auto_email_html(
         site_url=site_url,
     )
     logo_url = quiz_logo_url(assets_url)
-    age_block = ""
-    if parts["age_intro"]:
-        age_block = f'<p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["age_intro"])}</p>'
+    home_url = html.escape(site_url, quote=True)
+    age_block = f'<p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["age_intro"])}</p>'
 
     return f"""<!DOCTYPE html>
 <html lang="ru">
@@ -289,9 +303,9 @@ def build_quiz_auto_email_html(
 <body style="margin:0;padding:24px 16px;background:#F6F4F9;font-family:Nunito,Arial,sans-serif;color:#3D5266;">
   <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #E4E0EC;border-radius:16px;padding:28px 24px 32px;">
     <p style="margin:0 0 24px;text-align:center;">
-      <span style="display:inline-block;background:#ffffff;padding:12px 16px;border-radius:14px;border:1px solid #E4E0EC;">
-        <img src="{html.escape(logo_url, quote=True)}" alt="Читательство" width="180" style="max-width:180px;height:auto;display:block;background:#ffffff;">
-      </span>
+      <a href="{home_url}" style="text-decoration:none;display:inline-block;background:#ffffff;padding:12px 16px;border-radius:14px;border:1px solid #E4E0EC;">
+        <img src="{html.escape(logo_url, quote=True)}" alt="Читательство" width="180" style="max-width:180px;height:auto;display:block;background:#ffffff;border:0;">
+      </a>
     </p>
     <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Здравствуйте, {html.escape(parts["parent"])}!</p>
     <p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["thanks"])}</p>
