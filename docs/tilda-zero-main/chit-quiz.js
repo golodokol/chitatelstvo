@@ -102,13 +102,34 @@
     }
   }
 
+  function refreshSteps() {
+    elSteps = root.querySelectorAll('.qz-step');
+  }
+
   function showStep(index) {
     stepIndex = index;
+    refreshSteps();
     elSteps.forEach(function (step, i) {
       step.classList.toggle('is-active', i === index);
     });
     updateProgress();
     hideError();
+    var dialog = root.closest('.qz-modal__dialog');
+    if (dialog) dialog.scrollTop = 0;
+  }
+
+  function resetQuiz() {
+    answers = {};
+    if (form) {
+      form.reset();
+      var btn = form.querySelector('.qz-btn--submit');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Получить подборку + сказку';
+      }
+    }
+    renderQuestions();
+    showStep(0);
   }
 
   function renderQuestions() {
@@ -130,7 +151,56 @@
         '</section>'
       );
     }).join('');
-    elSteps = root.querySelectorAll('.qz-step');
+    refreshSteps();
+  }
+
+  function openQuizModal() {
+    var modal = document.getElementById('qz-modal');
+    if (!modal) return;
+    resetQuiz();
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('qz-modal-open');
+    var closeBtn = modal.querySelector('.qz-modal__close');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeQuizModal() {
+    var modal = document.getElementById('qz-modal');
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('qz-modal-open');
+    if (window.location.hash === '#quiz') {
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (err) {
+        window.location.hash = '';
+      }
+    }
+  }
+
+  function bindModal() {
+    var modal = document.getElementById('qz-modal');
+    if (!modal) return;
+    window.chitQuizOpen = openQuizModal;
+    window.chitQuizClose = closeQuizModal;
+    document.querySelectorAll('[href="#quiz"], [data-qz-open]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        openQuizModal();
+      });
+    });
+    modal.querySelectorAll('[data-qz-close]').forEach(function (el) {
+      el.addEventListener('click', closeQuizModal);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) closeQuizModal();
+    });
+    window.addEventListener('hashchange', function () {
+      if (window.location.hash === '#quiz') openQuizModal();
+    });
+    if (window.location.hash === '#quiz') openQuizModal();
   }
 
   function normalizePhone(raw) {
@@ -198,6 +268,7 @@
   }
 
   renderQuestions();
+  bindModal();
 
   root.addEventListener('click', function (e) {
     var opt = e.target.closest('.qz-option');
