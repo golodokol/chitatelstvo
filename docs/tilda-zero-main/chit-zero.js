@@ -209,8 +209,7 @@ function renderPeriod(title, rows, stageKey) {
     var quoteHtml = info.quote ? '<p class="tale-card__quote">' + info.quote + '</p>' : '';
     var datesHtml = sched
       ? '<div class="tale-card__dates">' +
-          '<span class="tale-card__date">Урок: пн ' + sched.lessons[i] + '</span>' +
-          '<span class="tale-card__date">Встреча: чт ' + sched.meetings[i] + '</span>' +
+          '<span class="tale-card__date">Урок откроется: пн ' + sched.lessons[i] + '</span>' +
         '</div>'
       : '';
     return '<div class="tale-card" tabindex="0" role="button" aria-label="' + r[1] + '">' +
