@@ -1,0 +1,66 @@
+<div id="chit-quiz">
+  <div class="qz-shell">
+    <div class="qz-card">
+      <img class="qz-logo" src="{{ api_url }}/assets/logo-chitatelstvo-quiz.png" alt="Читательство" width="220" height="220" loading="eager">
+
+      <div class="qz-progress" aria-hidden="true">
+        <div class="qz-progress__meta">
+          <span class="qz-progress__label">Вопрос 1 из 5</span>
+          <span class="qz-progress__pct">0%</span>
+        </div>
+        <div class="qz-progress__bar"><div class="qz-progress__fill"></div></div>
+      </div>
+
+      <div id="qz-questions"></div>
+
+      <section class="qz-step" data-step="form">
+        <h2 class="qz-title">Подборка готова</h2>
+        <p class="qz-sub">Оставьте телефон — получите персональную подборку, сказку и PDF-чек-лист.</p>
+
+        <div class="qz-gift">
+          <p class="qz-gift__label">🎁 Ваш подарок</p>
+          <p><strong>Основатель школы лично подарит вам 1 урок исходя из вашего запроса.</strong></p>
+          <p>После квиза мы отправим вам персональную сказку и PDF-чек-лист.</p>
+          <p><strong>Старт программы — 22 июня!</strong></p>
+        </div>
+
+        <form id="qz-form" novalidate>
+          <div class="qz-fields">
+            <div class="qz-field">
+              <label for="qz-parent-name">Имя родителя</label>
+              <input id="qz-parent-name" name="parent_name" type="text" autocomplete="name" required>
+            </div>
+            <div class="qz-field">
+              <label for="qz-phone">Телефон</label>
+              <input id="qz-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required>
+            </div>
+            <div class="qz-field">
+              <label for="qz-child-name">Имя ребёнка</label>
+              <input id="qz-child-name" name="child_name" type="text" autocomplete="off" required>
+            </div>
+            <div class="qz-field">
+              <label for="qz-child-age">Возраст ребёнка</label>
+              <input id="qz-child-age" name="child_age" type="number" min="4" max="18" inputmode="numeric" required>
+            </div>
+          </div>
+          <button type="submit" class="qz-btn qz-btn--submit" style="width:100%">Получить подборку + сказку</button>
+          <p class="qz-consent">Нажимая кнопку, вы соглашаетесь на обработку персональных данных и получение материалов по указанному номеру. <a href="{{ legal_politika }}" target="_blank" rel="noopener">Политика конфиденциальности</a></p>
+          <p class="qz-error" role="alert"></p>
+        </form>
+      </section>
+
+      <section class="qz-step" data-step="success">
+        <div class="qz-success-icon" aria-hidden="true">✓</div>
+        <h2 class="qz-title" style="text-align:center">Спасибо!</h2>
+        <p class="qz-sub" style="text-align:center">Мы получили ваши ответы.</p>
+        <p style="text-align:center;margin:0 0 12px">Скоро вы получите <strong>персональную сказку</strong> и <strong>PDF-чек-лист</strong> в фирменном стиле.</p>
+        <p style="text-align:center;margin:0 0 12px"><strong>Старт программы — 22 июня.</strong></p>
+        <p style="text-align:center;margin:0"><strong>Основатель школы лично подарит вам 1 урок исходя из вашего запроса.</strong></p>
+        <div class="qz-success-links">
+          <a class="qz-link-btn" href="{{ api_url }}/quiz/checklist" target="_blank" rel="noopener">Открыть PDF-чек-лист</a>
+          <a class="qz-link-btn" href="{{ site_url }}/#program" style="background:var(--qz-blue);color:#fff;border-color:transparent">Записаться на программу</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

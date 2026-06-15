@@ -1,13 +1,25 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from config.settings import ROOT
-from api.routes import admin, legal, lesson, pages, progress, telegram, webhook
+from config.settings import PUBLIC_BASE_URL, ROOT
+from api.routes import admin, legal, lesson, pages, progress, quiz, telegram, webhook
 
 app = FastAPI(
     title="Литературная школа онлайн",
     description="Webhook API + личная страница прогресса для родителей",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://chitatelstvo.ru",
+        "https://www.chitatelstvo.ru",
+        PUBLIC_BASE_URL,
+    ],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 app.mount("/static", StaticFiles(directory=str(ROOT / "static")), name="static")
@@ -18,6 +30,7 @@ app.include_router(legal.router)
 app.include_router(webhook.router)
 app.include_router(lesson.router)
 app.include_router(progress.router)
+app.include_router(quiz.router)
 app.include_router(telegram.router)
 
 

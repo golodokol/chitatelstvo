@@ -11,5 +11,6 @@ __pycache__/
 .ruff_cache/
 *.log
 backups/
+data/quiz_leads.jsonl
 .DS_Store
 Thumbs.db
