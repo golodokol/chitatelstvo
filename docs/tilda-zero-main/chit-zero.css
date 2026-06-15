@@ -1556,9 +1556,9 @@
       box-shadow: none;
     }
     .founder__photo--olga {
-      transform: scale(1.14);
-      transform-origin: center 24%;
-      object-position: center 20%;
+      transform: scale(1.14) translateY(-5%);
+      transform-origin: center 32%;
+      object-position: center 42%;
     }
     .founder__photo--anastasia { object-position: center 12%; }
     .founder__body { flex: 1; min-width: 0; width: 100%; }
