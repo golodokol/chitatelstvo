@@ -2,7 +2,7 @@
   'use strict';
 
   var API_BASE = window.CHIT_QUIZ_API || 'https://api.chitatelstvo.ru';
-  var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf';
+  var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf?v=20260615b';
   var AUTO_CFG = window.CHIT_QUIZ_AUTO || {};
   var AUTO_ENABLED = AUTO_CFG.enabled !== false;
   var AUTO_DELAY_MS = Number(AUTO_CFG.delayMs) > 0 ? Number(AUTO_CFG.delayMs) : 5000;

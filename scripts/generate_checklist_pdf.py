@@ -166,7 +166,7 @@ def _item_table(font: str) -> Table:
             ]
         )
 
-    table = Table(rows, colWidths=[14 * mm, 144 * mm], hAlign="CENTER")
+    table = Table(rows, colWidths=[16 * mm, 142 * mm], hAlign="CENTER")
     table.setStyle(
         TableStyle(
             [

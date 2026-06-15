@@ -28,6 +28,15 @@ logger = logging.getLogger(__name__)
 SITE_URL = "https://chitatelstvo.ru"
 CHECKLIST_PDF = ROOT / "static" / "quiz-checklist.pdf"
 CHECKLIST_PDF_NAME = "10-priznakov-chitatelstvo.pdf"
+CHECKLIST_PDF_VERSION = "20260615b"
+
+
+def checklist_pdf_url() -> str:
+    """Public URL with cache-bust query (PDFs are aggressively cached by browsers)."""
+    if CHECKLIST_PDF.is_file():
+        v = int(CHECKLIST_PDF.stat().st_mtime)
+        return f"{PUBLIC_BASE_URL}/quiz/checklist.pdf?v={v}"
+    return f"{PUBLIC_BASE_URL}/quiz/checklist.pdf?v={CHECKLIST_PDF_VERSION}"
 
 PAGE_CONTEXT = {
     "site_url": SITE_URL,
@@ -60,7 +69,7 @@ def _answers_by_id(answers: list[QuizAnswer]) -> dict[str, str]:
 
 
 def _send_quiz_auto_email(body: QuizLeadRequest) -> bool:
-    checklist_url = f"{PUBLIC_BASE_URL}/quiz/checklist.pdf"
+    checklist_url = checklist_pdf_url()
     message = build_quiz_auto_email(
         parent_name=body.parent_name,
         child_name=body.child_name,
@@ -103,6 +112,10 @@ def quiz_checklist_pdf() -> FileResponse:
         CHECKLIST_PDF,
         media_type="application/pdf",
         filename=CHECKLIST_PDF_NAME,
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+        },
     )
 
 
@@ -135,7 +148,7 @@ def quiz_lead(body: QuizLeadRequest, request: Request, _: None = Depends(rate_li
     return {
         "ok": True,
         "email_sent": email_sent,
-        "checklist_url": f"{PUBLIC_BASE_URL}/quiz/checklist.pdf",
+        "checklist_url": checklist_pdf_url(),
         "message": (
             "Спасибо! PDF-чек-лист уже отправлен на email. "
             "Личное письмо от основателя школы придёт чуть позже."
