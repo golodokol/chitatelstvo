@@ -2,7 +2,13 @@
   'use strict';
 
   var API_BASE = window.CHIT_QUIZ_API || 'https://api.chitatelstvo.ru';
-  var CHECKLIST_URL = API_BASE + '/quiz/checklist';
+  var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf';
+  var AUTO_CFG = window.CHIT_QUIZ_AUTO || {};
+  var AUTO_ENABLED = AUTO_CFG.enabled !== false;
+  var AUTO_DELAY_MS = Number(AUTO_CFG.delayMs) > 0 ? Number(AUTO_CFG.delayMs) : 5000;
+  var AUTO_ONCE_PER_SESSION = AUTO_CFG.oncePerSession !== false;
+  var AUTO_STORAGE_KEY = 'chit_quiz_popup';
+  var autoOpenTimer = null;
 
   var QUESTIONS = [
     {
@@ -77,7 +83,8 @@
   }
 
   function hideError() {
-    if (!elError) elError.classList.remove('is-visible');
+    if (!elError) return;
+    elError.classList.remove('is-visible');
   }
 
   function updateProgress() {
@@ -112,10 +119,25 @@
     elSteps.forEach(function (step, i) {
       step.classList.toggle('is-active', i === index);
     });
+    root.classList.toggle('qz-phase-questions', index >= 0 && index < QUESTIONS.length);
+    root.classList.toggle('qz-intro-collapsed', index > 0 && index < QUESTIONS.length);
+    root.classList.toggle('qz-form-step', index === QUESTIONS.length);
+    root.classList.toggle('qz-success-step', index > QUESTIONS.length);
     updateProgress();
     hideError();
     var dialog = root.closest('.qz-modal__dialog');
-    if (dialog) dialog.scrollTop = 0;
+    if (index === QUESTIONS.length) {
+      window.setTimeout(function () {
+        var formStep = root.querySelector('[data-step="form"]');
+        if (dialog && formStep) {
+          formStep.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        } else if (dialog) {
+          dialog.scrollTop = 0;
+        }
+      }, 80);
+    } else if (dialog) {
+      dialog.scrollTop = 0;
+    }
   }
 
   function resetQuiz() {
@@ -125,7 +147,7 @@
       var btn = form.querySelector('.qz-btn--submit');
       if (btn) {
         btn.disabled = false;
-        btn.textContent = 'Получить подборку + сказку';
+        btn.textContent = 'Получить PDF-чек-лист';
       }
     }
     renderQuestions();
@@ -142,7 +164,7 @@
       return (
         '<section class="qz-step' + (qi === 0 ? ' is-active' : '') + '" data-step="' + qi + '">' +
           '<h2 class="qz-title">' + q.title + '</h2>' +
-          '<p class="qz-sub">Выберите один вариант — так мы соберём персональную подборку</p>' +
+          '<p class="qz-sub">Ответьте честно — так мы точнее подстроим рекомендации в письме</p>' +
           '<div class="qz-options">' + opts + '</div>' +
           '<div class="qz-nav">' +
             (qi > 0 ? '<button type="button" class="qz-btn qz-btn--back" data-back="' + qi + '">Назад</button>' : '') +
@@ -154,9 +176,73 @@
     refreshSteps();
   }
 
-  function openQuizModal() {
+  function quizStorageGet() {
+    if (!AUTO_ONCE_PER_SESSION) return null;
+    try {
+      return sessionStorage.getItem(AUTO_STORAGE_KEY);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function quizStorageSet(value) {
+    if (!AUTO_ONCE_PER_SESSION) return;
+    try {
+      sessionStorage.setItem(AUTO_STORAGE_KEY, value);
+    } catch (err) {
+      /* ignore */
+    }
+  }
+
+  function quizPopupSeen() {
+    return !!quizStorageGet();
+  }
+
+  function markQuizPopup(reason) {
+    quizStorageSet(reason || 'seen');
+  }
+
+  function cancelAutoOpen() {
+    if (autoOpenTimer) {
+      clearTimeout(autoOpenTimer);
+      autoOpenTimer = null;
+    }
+  }
+
+  function shouldAutoOpen() {
+    if (!AUTO_ENABLED) return false;
+    if (!document.getElementById('qz-modal')) return false;
+    if (window.location.hash === '#quiz') return false;
+    if (quizPopupSeen()) return false;
+    return true;
+  }
+
+  function scheduleAutoOpen() {
+    cancelAutoOpen();
+    if (!shouldAutoOpen()) return;
+    autoOpenTimer = window.setTimeout(function () {
+      autoOpenTimer = null;
+      if (!shouldAutoOpen()) return;
+      if (document.hidden) {
+        document.addEventListener('visibilitychange', function onVisible() {
+          if (document.hidden) return;
+          document.removeEventListener('visibilitychange', onVisible);
+          if (!shouldAutoOpen()) return;
+          openQuizModal('auto');
+        });
+        return;
+      }
+      var modal = document.getElementById('qz-modal');
+      if (modal && modal.classList.contains('is-open')) return;
+      openQuizModal('auto');
+    }, AUTO_DELAY_MS);
+  }
+
+  function openQuizModal(source) {
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
+    cancelAutoOpen();
+    markQuizPopup(source || 'open');
     resetQuiz();
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
@@ -168,6 +254,7 @@
   function closeQuizModal() {
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
+    markQuizPopup('dismissed');
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('qz-modal-open');
@@ -183,12 +270,12 @@
   function bindModal() {
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
-    window.chitQuizOpen = openQuizModal;
+    window.chitQuizOpen = function () { openQuizModal('manual'); };
     window.chitQuizClose = closeQuizModal;
     document.querySelectorAll('[href="#quiz"], [data-qz-open]').forEach(function (el) {
       el.addEventListener('click', function (e) {
         e.preventDefault();
-        openQuizModal();
+        openQuizModal('manual');
       });
     });
     modal.querySelectorAll('[data-qz-close]').forEach(function (el) {
@@ -198,9 +285,10 @@
       if (e.key === 'Escape' && modal.classList.contains('is-open')) closeQuizModal();
     });
     window.addEventListener('hashchange', function () {
-      if (window.location.hash === '#quiz') openQuizModal();
+      if (window.location.hash === '#quiz') openQuizModal('hash');
     });
-    if (window.location.hash === '#quiz') openQuizModal();
+    if (window.location.hash === '#quiz') openQuizModal('hash');
+    else scheduleAutoOpen();
   }
 
   function normalizePhone(raw) {
@@ -210,18 +298,41 @@
     return digits;
   }
 
+  function allQuestionsAnswered() {
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      if (!answers[QUESTIONS[i].id]) return false;
+    }
+    return true;
+  }
+
   function validateForm() {
     var parentName = form.parent_name.value.trim();
+    var parentEmail = form.parent_email.value.trim();
     var phone = normalizePhone(form.phone.value);
     var childName = form.child_name.value.trim();
-    var childAge = form.child_age.value.trim();
+    var childAgeRaw = form.child_age ? form.child_age.value.trim() : '';
+    var childAge = childAgeRaw === '' ? NaN : parseInt(childAgeRaw, 10);
     if (!parentName) return 'Укажите имя родителя';
+    if (!parentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) {
+      return 'Укажите корректный email';
+    }
     if (phone.length < 11) return 'Укажите корректный телефон';
     if (!childName) return 'Укажите имя ребёнка';
-    if (!childAge || isNaN(Number(childAge)) || Number(childAge) < 4 || Number(childAge) > 18) {
-      return 'Укажите возраст ребёнка (4–18)';
+    if (!childAgeRaw || !Number.isFinite(childAge) || childAge < 1) {
+      return 'Укажите возраст ребёнка от 1 года';
+    }
+    if (!allQuestionsAnswered()) {
+      return 'Ответьте на все вопросы квиза — нажмите «Назад» и выберите варианты';
     }
     return '';
+  }
+
+  function buildAnswersPayload() {
+    return QUESTIONS.map(function (q) {
+      return { id: q.id, question: q.title, answer: answers[q.id] || '' };
+    }).filter(function (item) {
+      return item.answer && item.answer.trim();
+    });
   }
 
   function submitForm(e) {
@@ -239,12 +350,11 @@
     }
     var payload = {
       parent_name: form.parent_name.value.trim(),
+      parent_email: form.parent_email.value.trim(),
       phone: form.phone.value.trim(),
       child_name: form.child_name.value.trim(),
-      child_age: Number(form.child_age.value.trim()),
-      answers: QUESTIONS.map(function (q) {
-        return { question: q.title, answer: answers[q.id] || '' };
-      })
+      child_age: parseInt(form.child_age.value.trim(), 10),
+      answers: buildAnswersPayload()
     };
     fetch(API_BASE + '/api/quiz/lead', {
       method: 'POST',
@@ -252,17 +362,27 @@
       body: JSON.stringify(payload)
     })
       .then(function (r) {
-        if (!r.ok) throw new Error('submit failed');
-        return r.json();
+        if (r.ok) return r.json();
+        return r.json().catch(function () { return {}; }).then(function (data) {
+          var msg = 'Не удалось отправить. Проверьте связь и попробуйте ещё раз.';
+          if (data && data.detail) {
+            if (typeof data.detail === 'string') msg = data.detail;
+            else if (Array.isArray(data.detail) && data.detail[0] && data.detail[0].msg) {
+              msg = 'Проверьте ответы квиза и данные формы, затем попробуйте снова.';
+            }
+          }
+          throw new Error(msg);
+        });
       })
       .then(function () {
+        markQuizPopup('done');
         showStep(QUESTIONS.length + 1);
       })
-      .catch(function () {
-        showError('Не удалось отправить. Проверьте связь и попробуйте ещё раз.');
+      .catch(function (err) {
+        showError(err && err.message ? err.message : 'Не удалось отправить. Проверьте связь и попробуйте ещё раз.');
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Получить подборку + сказку';
+          btn.textContent = 'Получить PDF-чек-лист';
         }
       });
   }
@@ -295,6 +415,27 @@
   });
 
   if (form) form.addEventListener('submit', submitForm);
+
+  var ageInput = form && form.child_age;
+  if (ageInput) {
+    ageInput.setAttribute('min', '1');
+    ageInput.setAttribute('max', '99');
+    ageInput.addEventListener('input', function () {
+      if (this.value === '' || this.value === '-') {
+        if (this.value === '-') this.value = '';
+        return;
+      }
+      var n = parseInt(this.value, 10);
+      if (!Number.isFinite(n) || n < 1) this.value = '';
+      else if (n > 99) this.value = '99';
+    });
+    ageInput.addEventListener('focus', function () {
+      var self = this;
+      window.setTimeout(function () {
+        self.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 320);
+    });
+  }
 
   updateProgress();
 })();

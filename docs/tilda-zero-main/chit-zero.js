@@ -1,3 +1,59 @@
+(function ensureChitStylesheets() {
+  var VERSION = '20260617d';
+  var API = 'https://api.chitatelstvo.ru/assets/';
+  var sheets = [
+    API + 'chit-zero.css?v=' + VERSION,
+    API + 'chit-quiz.css?v=' + VERSION
+  ];
+  var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+
+  function injectLink(href) {
+    var name = href.split('/').pop().split('?')[0];
+    var id = 'chit-css-' + name;
+    if (document.getElementById(id)) return;
+    var link = document.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.href = href;
+    head.appendChild(link);
+  }
+
+  sheets.forEach(injectLink);
+
+  var nodes = document.querySelectorAll('link[rel="stylesheet"]');
+  for (var i = 0; i < nodes.length; i++) {
+    var href = nodes[i].getAttribute('href') || '';
+    if (href.indexOf('api.chitatelstvo.ru/assets/chit-') === -1) continue;
+    if (nodes[i].parentNode !== head) head.appendChild(nodes[i]);
+  }
+})();
+
+function chitCssLooksLoaded() {
+  var main = document.getElementById('chit-main');
+  if (!main) return false;
+  var ff = window.getComputedStyle(main).fontFamily || '';
+  return ff.toLowerCase().indexOf('nunito') !== -1;
+}
+
+function chitFetchCssFallback() {
+  if (chitCssLooksLoaded()) return;
+  var VERSION = '20260617d';
+  var API = 'https://api.chitatelstvo.ru/assets/';
+  ['chit-zero.css', 'chit-quiz.css'].forEach(function (file) {
+    var href = API + file + '?v=' + VERSION;
+    if (document.querySelector('style[data-chit-fallback="' + href + '"]')) return;
+    fetch(href)
+      .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+      .then(function (css) {
+        var style = document.createElement('style');
+        style.setAttribute('data-chit-fallback', href);
+        style.textContent = css;
+        document.head.appendChild(style);
+      })
+      .catch(function () {});
+  });
+}
+
 window.CHIT_IMG_BASE = "https://api.chitatelstvo.ru/assets/";
 
 function chitReady(fn) {
@@ -7,6 +63,11 @@ function chitReady(fn) {
     fn();
   }
 }
+
+chitReady(function () {
+  chitFetchCssFallback();
+  window.setTimeout(chitFetchCssFallback, 1200);
+});
 
 function chitSetAutoHeight(el) {
   if (!el) return;

@@ -33,26 +33,39 @@
     .link { color: #5a4a38; word-break: break-all; }
     .empty { padding: 40px 20px; text-align: center; color: #6b5d4d; }
     .hint { background: #fff8e8; padding: 12px 16px; border-radius: 8px; font-size: .9rem; margin-bottom: 20px; }
+    .section { margin-top: 48px; }
+    .section h2 { font-size: 1.25rem; margin: 0 0 8px; }
+    .answers { font-size: .82rem; color: #5a4a38; white-space: pre-line; max-width: 360px; }
+    .nav-links { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .nav-links a { color: #5a4a38; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div>
-        <h1>Регистрации</h1>
-        <p class="stats">Семей: {{ family_count }} · Детей: {{ child_count }}</p>
+        <h1>Панель руководителя</h1>
+        <p class="stats">Семей: {{ family_count }} · Детей: {{ child_count }} · Заявок квиза: {{ quiz_count }}</p>
       </div>
       <div class="actions">
-        <a class="btn btn-primary" href="/admin/export.csv">Скачать CSV</a>
+        <a class="btn btn-primary" href="/admin/export.csv">CSV регистрации</a>
+        <a class="btn btn-primary" href="/admin/quiz-export.csv">CSV квиз</a>
         <form method="post" action="/admin/logout">
           <button class="btn btn-secondary" type="submit">Выйти</button>
         </form>
       </div>
     </header>
 
-    <div class="hint">
-      Здесь — семьи, созданные через webhook после оплаты на Tilda. Статус оплаты в Tilda CRM не дублируется.
-    </div>
+    <nav class="nav-links">
+      <a href="#registrations">Регистрации</a>
+      <a href="#quiz-leads">Заявки квиза{% if quiz_count %} ({{ quiz_count }}){% endif %}</a>
+    </nav>
+
+    <section class="section" id="registrations">
+      <h2>Регистрации</h2>
+      <div class="hint">
+        Здесь — семьи, созданные через webhook после оплаты на Tilda. Статус оплаты в Tilda CRM не дублируется.
+      </div>
 
     {% if rows %}
     <div class="table-wrap">
@@ -94,6 +107,46 @@
     {% else %}
     <div class="table-wrap empty">Пока нет регистраций.</div>
     {% endif %}
+    </section>
+
+    <section class="section" id="quiz-leads">
+      <h2>Заявки квиза</h2>
+      <p class="stats" style="margin-bottom: 16px">Заявок: {{ quiz_count }}</p>
+      <div class="hint">
+        Родители, прошедшие квиз на сайте. PDF-чек-лист уходит автоматически; личное письмо от основателя — вручную.
+      </div>
+
+      {% if quiz_rows %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Родитель</th>
+              <th>Email</th>
+              <th>Телефон</th>
+              <th>Ребёнок</th>
+              <th>Ответы</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in quiz_rows %}
+            <tr>
+              <td class="mono">{{ row.created_at }}</td>
+              <td>{{ row.parent_name }}</td>
+              <td><a class="link" href="mailto:{{ row.parent_email }}">{{ row.parent_email }}</a></td>
+              <td class="mono">{{ row.phone }}</td>
+              <td>{{ row.child_name }}{% if row.child_age != '—' %} ({{ row.child_age }}){% endif %}</td>
+              <td class="answers">{{ row.answers_text }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="table-wrap empty">Пока нет заявок квиза.</div>
+      {% endif %}
+    </section>
   </div>
 </body>
 </html>

@@ -22,6 +22,7 @@ from config.settings import ADMIN_PASSWORD, PUBLIC_BASE_URL, ROOT
 from db import repository as repo
 from db.session import get_db
 from lessons.enrollment_access import get_active_enrollment
+from services.quiz_leads import build_quiz_lead_rows, load_quiz_leads
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
@@ -110,6 +111,8 @@ def admin_page(
 
     families = repo.list_all_families(db)
     rows = _build_rows(families)
+    quiz_leads = load_quiz_leads()
+    quiz_rows = build_quiz_lead_rows(quiz_leads)
     return templates.TemplateResponse(
         request,
         "admin.html",
@@ -117,6 +120,8 @@ def admin_page(
             "rows": rows,
             "family_count": len(families),
             "child_count": sum(len(f.children) for f in families),
+            "quiz_rows": quiz_rows,
+            "quiz_count": len(quiz_rows),
         },
     )
 
@@ -138,7 +143,7 @@ def admin_login(
         )
 
     response = RedirectResponse("/admin", status_code=303)
-    set_admin_cookie(response)
+    set_admin_cookie(response, request)
     return response
 
 
@@ -201,6 +206,47 @@ def admin_export_csv(
 
     buffer.seek(0)
     filename = f"registrations_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/quiz-export.csv")
+def admin_quiz_export_csv(request: Request) -> StreamingResponse:
+    require_admin(request)
+
+    quiz_rows = build_quiz_lead_rows()
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(
+        [
+            "Дата",
+            "Родитель",
+            "Email",
+            "Телефон",
+            "Ребёнок",
+            "Возраст",
+            "Ответы квиза",
+        ]
+    )
+    for row in quiz_rows:
+        writer.writerow(
+            [
+                row["created_at"],
+                row["parent_name"],
+                row["parent_email"],
+                row["phone"],
+                row["child_name"],
+                row["child_age"],
+                row["answers_text"].replace("\n", " | "),
+            ]
+        )
+
+    buffer.seek(0)
+    filename = f"quiz_leads_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
     return StreamingResponse(
         iter([buffer.getvalue()]),
         media_type="text/csv; charset=utf-8",

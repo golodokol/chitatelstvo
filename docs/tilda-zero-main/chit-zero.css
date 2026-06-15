@@ -1675,10 +1675,28 @@
       transition: background .15s;
     }
     .feedback-tab__links a:hover { background: var(--accent-pale); color: var(--accent); }
+    @media (max-width: 720px) {
+      .feedback-tab {
+        left: 50%;
+        right: 0;
+      }
+      .feedback-tab__toggle {
+        width: 100%;
+        justify-content: center;
+        border-radius: 0;
+        padding: 12px 10px max(14px, env(safe-area-inset-bottom));
+        font-size: 13px;
+        line-height: 1.2;
+        white-space: nowrap;
+        box-shadow: none;
+      }
+      .feedback-tab__panel {
+        width: min(calc(100vw - 24px), 320px);
+        right: 12px;
+      }
+    }
     @media (max-width: 480px) {
-      .feedback-tab { right: 12px; left: 12px; }
-      .feedback-tab__toggle { width: 100%; justify-content: center; border-radius: 14px 14px 0 0; }
-      .feedback-tab__panel { width: 100%; right: 0; }
+      .feedback-tab__toggle { font-size: 12px; }
     }
 
     /* Tilda: фон страницы, без горизонтального скролла */

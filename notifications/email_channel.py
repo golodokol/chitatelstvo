@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import logging
 import smtplib
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from pathlib import Path
 
 from config.settings import (
     SMTP_FROM,
@@ -17,15 +19,35 @@ from config.settings import (
 logger = logging.getLogger(__name__)
 
 
-def send_email(to: str, subject: str, body: str) -> None:
+def send_email(
+    to: str,
+    subject: str,
+    body: str,
+    html_body: str | None = None,
+    attachments: list[tuple[str, Path | bytes]] | None = None,
+) -> None:
     if not SMTP_HOST:
         raise RuntimeError("SMTP_HOST не задан")
 
-    msg = MIMEMultipart("alternative")
+    msg = MIMEMultipart("mixed")
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(body, "plain", "utf-8"))
+    if html_body:
+        alt.attach(MIMEText(html_body, "html", "utf-8"))
+    msg.attach(alt)
+
+    for filename, payload in attachments or []:
+        if isinstance(payload, Path):
+            data = payload.read_bytes()
+        else:
+            data = payload
+        part = MIMEApplication(data, _subtype="pdf")
+        part.add_header("Content-Disposition", "attachment", filename=filename)
+        msg.attach(part)
+
     msg["Subject"] = subject
     msg["From"] = SMTP_FROM
     msg["To"] = to
-    msg.attach(MIMEText(body, "plain", "utf-8"))
 
     # Mail.ru: 465 = SSL сразу, 587 = STARTTLS после подключения
     use_ssl = SMTP_PORT == 465

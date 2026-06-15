@@ -2,8 +2,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style id="chit-hide-store">#allrecords .chit-store-hidden,#allrecords .t-rec[data-record-type="205"],#allrecords .t-rec[data-record-type="762"],#allrecords .t-rec[data-record-type="200"],#allrecords .t-rec[data-record-type="210"],#allrecords .t-rec[data-record-type="215"],#allrecords .t-rec[data-record-type="405"],#allrecords .t-store{display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;left:-99999px!important}</style>
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260613k">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-quiz.css?v=20260615b">
+<link rel="preconnect" href="https://api.chitatelstvo.ru">
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260617d">
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-quiz.css?v=20260617d">
+<script id="chit-css-loader">(function(){var A="https://api.chitatelstvo.ru/assets/",V="20260617d",H=document.head||document.getElementsByTagName("head")[0]||document.documentElement;function L(f){var id="chit-css-"+f,href=A+f+"?v="+V;if(document.getElementById(id))return;var l=document.createElement("link");l.id=id;l.rel="stylesheet";l.href=href;H.appendChild(l);}L("chit-zero.css");L("chit-quiz.css");var nodes=document.querySelectorAll('link[rel="stylesheet"][href*="api.chitatelstvo.ru/assets/chit-"]');for(var i=0;i<nodes.length;i++){if(nodes[i].parentNode!==H)H.appendChild(nodes[i]);}})();</script>
 <div id="chit-main">
 <header class="site-header">
   <div class="site-header__inner">
@@ -595,7 +597,12 @@
     <div id="chit-quiz">
       <div class="qz-shell">
         <div class="qz-card">
-          <img class="qz-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo-quiz.png" alt="Читательство" width="220" height="220" loading="lazy">
+          <img class="qz-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo-quiz.png?v=20260616g" alt="Читательство" width="220" height="220" loading="lazy">
+          <div class="qz-intro-gift">
+            <p class="qz-intro-gift__badge">🎁 Подарок для вас</p>
+            <p class="qz-intro-gift__title">Мы приготовили подарок! Ответьте на <strong>5 вопросов</strong> — и мы отправим <strong>одну сказку-урок</strong> под ваш запрос</p>
+            <p class="qz-intro-gift__sub">Сразу на email — PDF-чек-лист. Чуть позже — личное письмо от основателя школы.</p>
+          </div>
           <h2 id="qz-modal-title" class="qz-visually-hidden">Подборка программы чтения</h2>
           <div class="qz-progress" aria-hidden="true">
             <div class="qz-progress__meta">
@@ -606,19 +613,22 @@
           </div>
           <div id="qz-questions"></div>
           <section class="qz-step" data-step="form">
-            <h2 class="qz-title">Подборка готова</h2>
-            <p class="qz-sub">Оставьте телефон — получите персональную подборку, сказку и PDF-чек-лист.</p>
+            <h2 class="qz-title">Почти готово</h2>
+            <p class="qz-sub">Оставьте контакты — пришлём PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email.</p>
             <div class="qz-gift">
-              <p class="qz-gift__label">🎁 Ваш подарок</p>
-              <p><strong>Основатель школы лично подарит вам 1 урок исходя из вашего запроса.</strong></p>
-              <p>После квиза мы отправим вам персональную сказку и PDF-чек-лист.</p>
-              <p><strong>Старт программы — 22 июня!</strong></p>
+              <p class="qz-gift__label">🎁 Что вы получите</p>
+              <p><strong>Сейчас:</strong> PDF-чек-лист на email — проверить понимание текста вместе с ребёнком.</p>
+              <p><strong>Чуть позже:</strong> личное письмо от основателя с рекомендациями и подарком — 1 урок по вашему запросу.</p>
             </div>
             <form id="qz-form" novalidate>
               <div class="qz-fields">
                 <div class="qz-field">
                   <label for="qz-parent-name">Имя родителя</label>
                   <input id="qz-parent-name" name="parent_name" type="text" autocomplete="name" required>
+                </div>
+                <div class="qz-field">
+                  <label for="qz-parent-email">Email</label>
+                  <input id="qz-parent-email" name="parent_email" type="email" autocomplete="email" required>
                 </div>
                 <div class="qz-field">
                   <label for="qz-phone">Телефон</label>
@@ -630,11 +640,12 @@
                 </div>
                 <div class="qz-field">
                   <label for="qz-child-age">Возраст ребёнка</label>
-                  <input id="qz-child-age" name="child_age" type="number" min="4" max="18" inputmode="numeric" required>
+                  <input id="qz-child-age" name="child_age" type="number" inputmode="numeric" min="1" max="99" autocomplete="off" required>
+                  <p class="qz-age-note">Наши программы пока рассчитаны на возраст 6–11 лет</p>
                 </div>
               </div>
-              <button type="submit" class="qz-btn qz-btn--submit" style="width:100%">Получить подборку + сказку</button>
-              <p class="qz-consent">Нажимая кнопку, вы соглашаетесь на обработку персональных данных и получение материалов по указанному номеру. <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a></p>
+              <button type="submit" class="qz-btn qz-btn--submit" style="width:100%">Получить PDF-чек-лист</button>
+              <p class="qz-consent">Нажимая кнопку, вы соглашаетесь на обработку персональных данных и получение материалов по email и телефону. <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a></p>
               <p class="qz-error" role="alert"></p>
             </form>
           </section>
@@ -642,11 +653,10 @@
             <div class="qz-success-icon" aria-hidden="true">✓</div>
             <h2 class="qz-title" style="text-align:center">Спасибо!</h2>
             <p class="qz-sub" style="text-align:center">Мы получили ваши ответы.</p>
-            <p style="text-align:center;margin:0 0 12px">Скоро вы получите <strong>персональную сказку</strong> и <strong>PDF-чек-лист</strong> в фирменном стиле.</p>
-            <p style="text-align:center;margin:0 0 12px"><strong>Старт программы — 22 июня.</strong></p>
-            <p style="text-align:center;margin:0"><strong>Основатель школы лично подарит вам 1 урок исходя из вашего запроса.</strong></p>
+            <p style="text-align:center;margin:0 0 12px"><strong>PDF-чек-лист уже на вашем email.</strong></p>
+            <p style="text-align:center;margin:0 0 12px">Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
             <div class="qz-success-links">
-              <a class="qz-link-btn" href="https://api.chitatelstvo.ru/quiz/checklist" target="_blank" rel="noopener">Открыть PDF-чек-лист</a>
+              <a class="qz-link-btn" href="https://api.chitatelstvo.ru/quiz/checklist.pdf" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
               <a class="qz-link-btn" href="#program" data-qz-close style="background:var(--qz-blue);color:#fff;border-color:transparent">Записаться на программу</a>
             </div>
           </section>
@@ -658,7 +668,7 @@
 
 <a href="#quiz" class="qz-launcher" id="qz-launcher" aria-haspopup="dialog" aria-controls="qz-modal">
   <span class="qz-launcher__icon" aria-hidden="true">🎁</span>
-  Подборка + подарок
+  <span class="qz-launcher__text">Подборка + подарок</span>
 </a>
 
 <div class="feedback-tab" id="feedback-tab">
@@ -676,5 +686,5 @@
   </button>
 </div>
 </div>
-<script src="https://api.chitatelstvo.ru/assets/chit-quiz.js?v=20260615b"></script>
-<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260613g"></script>
+<script src="https://api.chitatelstvo.ru/assets/chit-quiz.js?v=20260617d"></script>
+<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260617d"></script>

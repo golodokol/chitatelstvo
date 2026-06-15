@@ -42,16 +42,24 @@ def require_admin(request: Request) -> None:
         raise HTTPException(401, "Требуется вход")
 
 
-def set_admin_cookie(response: Response) -> None:
+def _cookie_secure(request: Request) -> bool:
+    forwarded = request.headers.get("x-forwarded-proto", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip().lower() == "https"
+    return request.url.scheme == "https"
+
+
+def set_admin_cookie(response: Response, request: Request) -> None:
     response.set_cookie(
         ADMIN_COOKIE,
         make_admin_token(),
         max_age=ADMIN_COOKIE_MAX_AGE,
         httponly=True,
         samesite="lax",
-        secure=PUBLIC_BASE_URL.startswith("https://"),
+        secure=_cookie_secure(request),
+        path="/admin",
     )
 
 
 def clear_admin_cookie(response: Response) -> None:
-    response.delete_cookie(ADMIN_COOKIE)
+    response.delete_cookie(ADMIN_COOKIE, path="/admin")
