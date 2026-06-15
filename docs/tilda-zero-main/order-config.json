@@ -1,5 +1,6 @@
 {
-  "version": 4,
+  "version": 5,
+  "pay_page_url": "https://chitatelstvo.ru/oplata",
   "products": {
     "single": {
       "uid": "797131986522",

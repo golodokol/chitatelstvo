@@ -1,5 +1,22 @@
 /* Читательство · вкладка CSS Zero Block */
-    /* Tilda Zero: не обрезать длинную страницу и не держать контент invisible */
+    /* Скрыть карточки каталога Tilda на главной (остаются в DOM для оплаты) */
+#allrecords .t-rec[data-record-type="762"],
+#allrecords .t-rec[data-record-type="205"],
+#rec2380183631,
+#rec2380172391,
+#rec2380172421 {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  border: 0 !important;
+}
+
+/* Tilda Zero: не обрезать длинную страницу и не держать контент invisible */
     .tn-atom__html,
     .tn-atom__html #chit-main {
       height: auto !important;
@@ -1556,26 +1573,5 @@
       .preview-strip { font-size: 12px; padding: 8px 12px; }
       .acc-head { font-size: 16px; padding: 16px 18px; }
       .tale-card { padding: 18px 16px; }
-    }
-
-    /* Карточки каталога (ST205 / T762): нужны Tilda для оплаты, на главной не показываем */
-    .t-rec[data-record-type="762"],
-    .t-rec[data-record-type="205"] {
-      position: absolute !important;
-      left: -99999px !important;
-      top: 0 !important;
-      width: 1px !important;
-      height: 1px !important;
-      max-height: 1px !important;
-      min-height: 0 !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      clip-path: inset(50%) !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: 0 !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-      z-index: -1 !important;
     }
   

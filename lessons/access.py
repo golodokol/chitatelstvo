@@ -6,7 +6,16 @@ from datetime import date, datetime, timedelta
 from typing import Any
 
 from config.settings import MODULE_START_DATE
-from db.models import Child
+from db.models import Child, Enrollment
+from lessons.schedule import (
+    effective_module_week,
+    format_date_ru,
+    lesson_opens_on,
+    meeting_on,
+    stage_for_week,
+    tariff_has_meetings,
+    week_in_stage,
+)
 
 
 def _registration_date(child: Child) -> date:
@@ -67,9 +76,13 @@ def is_lesson_unlocked(
     *,
     week_days: int = 7,
     cohort_start: date | None = None,
+    enrollment: Enrollment | None = None,
+    module: dict[str, Any] | None = None,
 ) -> bool:
-    lesson_week = int(lesson.get("module_week", 1))
-    return lesson_week <= unlocked_week_number(child, week_days=week_days, cohort_start=cohort_start)
+    lesson_week = effective_module_week(lesson, enrollment, module)
+    return lesson_week <= unlocked_week_number(
+        child, week_days=week_days, cohort_start=cohort_start
+    )
 
 
 def unlock_date_for_week(
@@ -90,13 +103,31 @@ def lesson_access_info(
     *,
     week_days: int = 7,
     cohort_start: date | None = None,
+    enrollment: Enrollment | None = None,
+    module: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    week = int(lesson.get("module_week", 1))
-    unlocked = is_lesson_unlocked(child, lesson, week_days=week_days, cohort_start=cohort_start)
-    opens_on = unlock_date_for_week(child, week, week_days=week_days, cohort_start=cohort_start)
-    return {
+    week = effective_module_week(lesson, enrollment, module)
+    lesson_for_unlock = {**lesson, "module_week": week}
+    unlocked = is_lesson_unlocked(
+        child,
+        lesson_for_unlock,
+        week_days=week_days,
+        cohort_start=cohort_start,
+        enrollment=enrollment,
+        module=module,
+    )
+    opens = lesson_opens_on(week)
+    info: dict[str, Any] = {
         "module_week": week,
+        "week_in_stage": week_in_stage(week),
+        "stage": stage_for_week(week),
         "unlocked": unlocked,
-        "opens_on": opens_on.strftime("%d.%m.%Y"),
-        "opens_on_iso": opens_on.isoformat(),
+        "opens_on": opens.strftime("%d.%m.%Y"),
+        "opens_on_label": format_date_ru(opens, weekday="понедельник"),
+        "opens_on_iso": opens.isoformat(),
     }
+    if tariff_has_meetings(module):
+        meet = meeting_on(week)
+        info["meeting_on"] = meet.strftime("%d.%m.%Y")
+        info["meeting_on_label"] = format_date_ru(meet, weekday="четверг")
+    return info

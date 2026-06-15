@@ -24,6 +24,7 @@ function fixTildaLayout() {
     ? rec.querySelectorAll('.t396, .t396__artboard, .t396__carrier, .t396__filter, .tn-elem, .tn-atom, .tn-atom__html')
     : [];
   nodes.forEach(function(el) {
+    if (el.closest && el.closest('#chit-main .site-header')) return;
     el.style.setProperty('transform', 'none', 'important');
     el.style.setProperty('zoom', '1', 'important');
     el.style.setProperty('width', '100%', 'important');
@@ -176,13 +177,46 @@ function getTaleInfo(title) {
   return { desc: 'Уточните название сказки — напишите команде Читательства.', quote: null };
 }
 
-function renderPeriod(title, rows) {
-  var cards = rows.map(function(r) {
+var CHIT_SCHEDULE = {
+  '1': {
+    lessons: ['22 июня', '29 июня', '6 июля', '13 июля'],
+    meetings: ['25 июня', '2 июля', '9 июля', '16 июля']
+  },
+  '2': {
+    lessons: ['20 июля', '27 июля', '3 августа', '10 августа'],
+    meetings: ['23 июля', '30 июля', '6 августа', '13 августа']
+  }
+};
+
+function taleScheduleHtml(stage, index, tariff) {
+  var s = CHIT_SCHEDULE[stage];
+  if (!s || index < 0 || index > 3) return '';
+  var html = '<div class="tale-schedule">';
+  if (tariff === 'single' || tariff === 'with_teacher') {
+    html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>четверг, ' + s.meetings[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок откроется: понедельник, ' + s.lessons[index] + '</span>';
+  } else {
+    html += '<span class="tale-schedule__line">Урок откроется: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderPeriod(title, rows, stageKey) {
+  var sched = CHIT_SCHEDULE[stageKey];
+  var cards = rows.map(function(r, i) {
     var info = getTaleInfo(r[1]);
     var quoteHtml = info.quote ? '<p class="tale-card__quote">' + info.quote + '</p>' : '';
+    var datesHtml = sched
+      ? '<div class="tale-card__dates">' +
+          '<span class="tale-card__date">Урок: пн ' + sched.lessons[i] + '</span>' +
+          '<span class="tale-card__date">Встреча: чт ' + sched.meetings[i] + '</span>' +
+        '</div>'
+      : '';
     return '<div class="tale-card" tabindex="0" role="button" aria-label="' + r[1] + '">' +
-      '<div class="tale-card__week">Неделя ' + r[0] + '</div>' +
+      '<div class="tale-card__week">Сказка ' + r[0] + '</div>' +
       '<div class="tale-card__title">' + r[1] + '</div>' +
+      datesHtml +
       '<p class="tale-card__desc">' + info.desc + '</p>' +
       quoteHtml +
       '<p class="tale-card__action"><a href="#program">→ записаться на эту сказку</a></p>' +
@@ -201,8 +235,8 @@ function buildAccordion(containerId, items) {
       '<button type="button" class="acc-head">' + item.title + '</button>' +
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
-        renderPeriod('Старт курса 22 июня', item.june) +
-        renderPeriod('Старт 20 июля', item.july) +
+        renderPeriod('Старт курса 22 июня', item.june, '1') +
+        renderPeriod('Старт 20 июля', item.july, '2') +
       '</div>';
     el.appendChild(div);
   });
@@ -255,10 +289,21 @@ if (faqList) {
     with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022', lid: '776534181255', sku: 'SKU0003' }
   };
   var ST100_RECID = '2379461281';
+  var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
   var orderConfigReady = Promise.resolve();
 
+  function isOnPayPage() {
+    return window.location.pathname.replace(/\/+$/, '').indexOf('/oplata') >= 0;
+  }
+
+  function usesPayPageRedirect() {
+    return !!PAY_PAGE_URL && !isOnPayPage() && !catalogBlocksOnPage();
+  }
+
   function applyOrderConfig(cfg) {
-    if (!cfg || !cfg.products) return;
+    if (!cfg) return;
+    if (cfg.pay_page_url) PAY_PAGE_URL = String(cfg.pay_page_url);
+    if (!cfg.products) return;
     Object.keys(ORDER_PRODUCTS).forEach(function(key) {
       var src = cfg.products[key];
       if (!src) return;
@@ -306,29 +351,11 @@ if (faqList) {
 
   function buildOrderHashes(tariff) {
     var p = ORDER_PRODUCTS[tariff];
-    if (!p) return [];
-    var title = p.title;
-    var price = p.price;
-    var uid = p.uid;
-    var sku = p.sku;
-    var shortTitle = title.replace(/^Читательство\s·\s/, '');
-    var hashes = [];
-
-    if (uid) {
-      hashes.push('order:' + title + '=' + price + ':::uid=' + uid);
-      hashes.push('order:::uid=' + uid);
-    }
-    if (sku) {
-      hashes.push('order:' + title + '=' + price + ':::sku=' + sku);
-      hashes.push('order:' + title + '=' + price + ':::externalid=' + sku);
-      hashes.push('order:' + price + ':' + title + ':::sku=' + sku);
-    }
-    hashes.push('order:' + price + ':' + title);
-    hashes.push('order:' + price + ':' + shortTitle);
-    hashes.push('order:' + title + '=' + price);
-    hashes.push('order:' + title + ' =' + price);
-    hashes.push('order:' + title.replace(/\s·\s/g, ' - ') + '=' + price);
-    return hashes.filter(function(h, i, arr) { return arr.indexOf(h) === i; });
+    if (!p || !p.uid) return [];
+    return [
+      'order:::uid=' + p.uid,
+      'order:' + p.title + '=' + p.price + ':::uid=' + p.uid
+    ];
   }
 
   function triggerOrderHash(hashBody) {
@@ -346,7 +373,7 @@ if (faqList) {
     try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
   }
 
-  orderConfigReady = fetch('https://api.chitatelstvo.ru/assets/order-config.json?v=4', { cache: 'no-store' })
+  orderConfigReady = fetch('https://api.chitatelstvo.ru/assets/order-config.json?v=5', { cache: 'no-store' })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(applyOrderConfig)
     .catch(function() {});
@@ -404,27 +431,65 @@ if (faqList) {
     }
   }
 
+  var CART_FIELD_ALIASES = {
+    parent_name: ['parent_name', 'Name', 'name', 'nm', 'your_name'],
+    parent_email: ['parent_email', 'Email', 'email'],
+    parent_telegram: ['parent_telegram', 'Phone', 'phone', 'tel', 'your_phone'],
+    child_name: ['child_name', 'childname'],
+    child_age: ['child_age', 'childage'],
+    notification_channel: ['notification_channel'],
+    module_id: ['module_id'],
+    chosen_stage: ['chosen_stage'],
+    chosen_tale_number: ['chosen_tale_number']
+  };
+
+  function setInputValue(dst, v) {
+    if (!dst || dst.closest('#chit-main')) return;
+    if (dst.value === v) return;
+    dst.value = v;
+    try { dst.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
+    try { dst.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+  }
+
   function pushField(name, val) {
     var v = val == null ? '' : String(val);
-    var sels = [
-      '.t706 input[name="' + name + '"]:not([type="checkbox"])',
-      '.t706 select[name="' + name + '"]',
-      '.t706 textarea[name="' + name + '"]',
-      '.t-store input[name="' + name + '"]:not([type="checkbox"])',
-      '.t-store select[name="' + name + '"]',
-      '.t-store textarea[name="' + name + '"]',
-      'form[data-formcart="y"] input[name="' + name + '"]:not([type="checkbox"])',
-      'form[data-formcart="y"] select[name="' + name + '"]'
-    ];
-    sels.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(dst) {
-        if (dst.closest('#chit-main')) return;
-        if (dst.value === v) return;
-        dst.value = v;
-        try { dst.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
-        try { dst.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+    var names = CART_FIELD_ALIASES[name] || [name];
+    if (names.indexOf(name) < 0) names.unshift(name);
+    names.forEach(function(fieldName) {
+      var sels = [
+        '.t706 input[name="' + fieldName + '"]:not([type="checkbox"])',
+        '.t706 select[name="' + fieldName + '"]',
+        '.t706 textarea[name="' + fieldName + '"]',
+        '.t-store input[name="' + fieldName + '"]:not([type="checkbox"])',
+        '.t-store select[name="' + fieldName + '"]',
+        '.t-store textarea[name="' + fieldName + '"]',
+        'form[data-formcart="y"] input[name="' + fieldName + '"]:not([type="checkbox"])',
+        'form[data-formcart="y"] select[name="' + fieldName + '"]'
+      ];
+      sels.forEach(function(sel) {
+        document.querySelectorAll(sel).forEach(function(dst) {
+          setInputValue(dst, v);
+        });
       });
     });
+  }
+
+  function syncCartAfterOpen() {
+    syncToCartForm();
+    [150, 400, 900, 1600].forEach(function(ms) {
+      setTimeout(syncToCartForm, ms);
+    });
+  }
+
+  function watchCartModal() {
+    var cartWin = document.querySelector('.t706__cartwin');
+    if (!cartWin || cartWin._chitWatch) return;
+    cartWin._chitWatch = true;
+    var obs = new MutationObserver(function() {
+      var visible = cartWin.style.display !== 'none' && cartWin.offsetParent !== null;
+      if (visible) syncCartAfterOpen();
+    });
+    obs.observe(cartWin, { attributes: true, attributeFilter: ['style', 'class'] });
   }
 
   function pushCheckbox(name, checked) {
@@ -483,6 +548,203 @@ if (faqList) {
     return true;
   }
 
+  var STORE_REC_TYPES = ['762', '205', '200', '210', '215', '405'];
+  var STORE_REC_IDS = ['rec2380183631', 'rec2380172391', 'rec2380172421'];
+
+  function applyStoreHide(el) {
+    if (!el || el.closest('#chit-main') || el.querySelector('#chit-main')) return;
+    if (el.getAttribute && el.getAttribute('data-record-type') === '396') return;
+    el.classList.add('chit-store-hidden');
+    el.setAttribute('aria-hidden', 'true');
+    el.style.setProperty('display', 'none', 'important');
+    el.style.setProperty('position', 'absolute', 'important');
+    el.style.setProperty('left', '-99999px', 'important');
+    el.style.setProperty('height', '0', 'important');
+    el.style.setProperty('min-height', '0', 'important');
+    el.style.setProperty('max-height', '0', 'important');
+    el.style.setProperty('padding', '0', 'important');
+    el.style.setProperty('margin', '0', 'important');
+    el.style.setProperty('overflow', 'hidden', 'important');
+    el.style.setProperty('visibility', 'hidden', 'important');
+    el.style.setProperty('opacity', '0', 'important');
+    el.style.setProperty('pointer-events', 'none', 'important');
+  }
+
+  function isStoreRec(rec) {
+    if (!rec || !rec.classList || !rec.classList.contains('t-rec')) return false;
+    if (rec.closest('#chit-main') || rec.querySelector('#chit-main')) return false;
+    if (rec.getAttribute('data-record-type') === '396') return false;
+    if (STORE_REC_IDS.indexOf(rec.id) >= 0) return true;
+    var recType = rec.getAttribute('data-record-type');
+    if (recType && STORE_REC_TYPES.indexOf(recType) >= 0) return true;
+    if (rec.querySelector('.t-store, .js-store-product, .js-product[data-product-gen-uid], .t-store__card-one')) return true;
+    var text = rec.textContent || '';
+    if (/SKU0001|SKU0002|SKU0003/i.test(text) && /(?:Артикул|1[\s\u00a0]*490|1[\s\u00a0]*990|4[\s\u00a0]*990)/i.test(text)) return true;
+    return false;
+  }
+
+  function chitEnsureMainVisible() {
+    document.querySelectorAll('#allrecords .t-rec').forEach(function(rec) {
+      if (!rec.querySelector('#chit-main')) return;
+      rec.classList.remove('chit-store-hidden');
+      rec.removeAttribute('aria-hidden');
+      ['display', 'position', 'left', 'height', 'min-height', 'max-height', 'padding', 'margin', 'overflow', 'visibility', 'opacity', 'pointer-events'].forEach(function(prop) {
+        rec.style.removeProperty(prop);
+      });
+    });
+    var main = document.getElementById('chit-main');
+    if (main) {
+      main.style.removeProperty('display');
+      main.style.removeProperty('visibility');
+    }
+  }
+
+  function hideCatalogBlocks() {
+    chitEnsureMainVisible();
+    document.querySelectorAll('#allrecords .t-rec').forEach(function(rec) {
+      if (isStoreRec(rec)) applyStoreHide(rec);
+    });
+    [
+      '.t-store',
+      '.t-store__prod-popup',
+      '#rec2380183631',
+      '#rec2380172391',
+      '#rec2380172421'
+    ].forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(applyStoreHide);
+    });
+  }
+
+  function clearOrderHash() {
+    if (window.location.hash && window.location.hash.indexOf('#order') === 0) {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }
+
+  function bindStoreScrollGuard() {
+    if (window._chitScrollGuardBound) return;
+    window._chitScrollGuardBound = true;
+    var busy = false;
+    function guard() {
+      if (busy) return;
+      var needsFix = false;
+      document.querySelectorAll('#allrecords .t-rec').forEach(function(rec) {
+        if (rec.closest('#chit-main') || rec.querySelector('#chit-main')) return;
+        if (rec.getAttribute('data-record-type') === '396') return;
+        var text = rec.textContent || '';
+        if (!/SKU0001|SKU0002|SKU0003/i.test(text) || !/Артикул/i.test(text)) return;
+        var rect = rec.getBoundingClientRect();
+        if (rect.height > 30 && rect.top < window.innerHeight * 0.9) {
+          needsFix = true;
+          applyStoreHide(rec);
+        }
+      });
+      if (needsFix) {
+        busy = true;
+        clearOrderHash();
+        scrollToProgram();
+        setTimeout(function() { busy = false; }, 700);
+      }
+    }
+    window.addEventListener('scroll', guard, { passive: true });
+    setInterval(guard, 400);
+  }
+
+  function bindStoreClickBlock() {
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.js-store-prod-btn, .t-store__card__btn, .t-store__prod-popup-btn, a[href*="#order:"]');
+      if (!btn || btn.closest('#chit-main')) return;
+      var rec = btn.closest('.t-rec');
+      if (!rec || !isStoreRec(rec)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      applyStoreHide(rec);
+      scrollToProgram();
+    }, true);
+  }
+
+  function scrollToProgram() {
+    var program = document.getElementById('program');
+    if (program) {
+      program.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (window.location.hash !== '#program') {
+        history.replaceState(null, '', window.location.pathname + window.location.search + '#program');
+      }
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function bindCartCloseHandler() {
+    function onCartClosed() {
+      hideCatalogBlocks();
+      clearOrderHash();
+      scrollToProgram();
+    }
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.t706__close, .t706__cartwin-close, .t706__cartwin-close-button, .t706__carticon-close, .t706__close-icon')) {
+        setTimeout(onCartClosed, 150);
+        setTimeout(onCartClosed, 600);
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') setTimeout(onCartClosed, 200);
+    });
+    window.addEventListener('hashchange', function() {
+      hideCatalogBlocks();
+      if (document.querySelector('.t706__cartwin_showed, .t706__cartwin_active, .t706__cartwin-wrapper_showed')) return;
+      var h = window.location.hash || '';
+      if (h.indexOf('#order') === 0 || h.indexOf('#opencart') >= 0) return;
+      setTimeout(onCartClosed, 100);
+    });
+  }
+
+  function watchLazyBlocks() {
+    var root = document.getElementById('allrecords');
+    if (!root || root._chitLazyWatch) return;
+    root._chitLazyWatch = true;
+    var obs = new MutationObserver(function() {
+      hideCatalogBlocks();
+      watchCartModal();
+      checkSt100Block();
+    });
+    obs.observe(root, { childList: true, subtree: true });
+  }
+
+  function isBrokenStoreProduct(card) {
+    if (!card) return true;
+    var nameEl = card.querySelector('.js-product-name');
+    var name = nameEl ? nameEl.textContent.trim() : '';
+    var price = parseProductPrice(card.querySelector('.js-store-prod-price-val, .js-product-price'));
+    if (/studio headphones/i.test(name)) return true;
+    if (price > 0 && price < 1000) return true;
+    return false;
+  }
+
+  function reinitCatalogProducts(attempt) {
+    if (typeof window.t_store_oneProduct_init !== 'function') {
+      if ((attempt || 0) < 20) {
+        setTimeout(function() { reinitCatalogProducts((attempt || 0) + 1); }, 250);
+      }
+      return;
+    }
+    document.querySelectorAll('.t-rec[data-record-type="762"], .t-rec[data-record-type="205"]').forEach(function(rec) {
+      var card = rec.querySelector('.js-store-product[data-product-gen-uid], .js-product[data-product-gen-uid]');
+      if (!card) return;
+      var uid = card.getAttribute('data-product-gen-uid');
+      if (!uid) return;
+      var recId = rec.id ? rec.id.replace(/^rec/, '') : '';
+      if (!recId) return;
+      try {
+        window.t_store_oneProduct_init(recId, {
+          productuid: uid,
+          productgenuid: uid,
+          previewmode: 'no'
+        });
+      } catch (e) {}
+    });
+  }
+
   function hasConfiguredUids() {
     return Object.keys(ORDER_PRODUCTS).some(function(key) {
       return !!(ORDER_PRODUCTS[key].uid);
@@ -532,21 +794,27 @@ if (faqList) {
     );
   }
 
-  function showCatalogPaymentAlert() {
+  function showPaymentNotReadyAlert() {
     alert(
-      'Каталог на странице не готов к оплате.\n\n' +
-      'Проверьте 3 карточки товара внизу главной:\n' +
-      '• название «Читательство · …», не «Studio Headphones»\n' +
-      '• цены 1490 / 1990 / 4990, не 100\n' +
-      '• Product ID из каталога в настройках блока\n\n' +
-      'Исправьте → Опубликовать → Ctrl+F5'
+      'Страница оплаты ещё не настроена в Tilda.\n\n' +
+      'Один раз создайте chitatelstvo.ru/oplata (см. PAY-PAGE.md):\n' +
+      'ST100 + 3× ST205 с Product ID.\n\n' +
+      'На главной блоки товара не нужны — оплата только на /oplata.'
     );
+  }
+
+  function isPaymentCatalogReady() {
+    return catalogBlocksOnPage();
   }
 
   function checkCatalogBlock() {
     var warn = document.getElementById('chit-catalog-warning');
     if (!warn) return;
-    warn.hidden = catalogBlocksOnPage();
+    if (isOnPayPage()) {
+      warn.hidden = isPaymentCatalogReady();
+    } else {
+      warn.hidden = true;
+    }
   }
 
   function waitTcartReady(cb, attempt) {
@@ -628,6 +896,7 @@ if (faqList) {
   }
 
   function openCartModal() {
+    syncToCartForm();
     if (typeof window.tcart__openCart === 'function') {
       window.tcart__openCart();
     } else if (window.tcart && typeof window.tcart.open === 'function') {
@@ -642,17 +911,71 @@ if (faqList) {
     if (typeof window.tcart__reDrawTotal === 'function') {
       window.tcart__reDrawTotal();
     }
+    watchCartModal();
+    syncCartAfterOpen();
+    setTimeout(function() {
+      hideCatalogBlocks();
+      clearOrderHash();
+    }, 250);
     return true;
+  }
+
+  function fillCartFormAggressive() {
+    var form = document.querySelector('.t706__orderform form, form[data-formcart="y"]');
+    if (!form || form.closest('#chit-main')) return;
+
+    function src(name) {
+      var el = document.querySelector('#chit-main [name="' + name + '"]');
+      return el ? el.value : '';
+    }
+
+    var parentName = src('parent_name');
+    var parentEmail = src('parent_email');
+    var parentTelegram = src('parent_telegram');
+    var childName = src('child_name');
+    var childAge = src('child_age');
+    var notify = src('notification_channel') || 'email';
+
+    form.querySelectorAll('input[type="email"]').forEach(function(el) {
+      if (parentEmail) setInputValue(el, parentEmail);
+    });
+
+    form.querySelectorAll('input[type="tel"], .t-input-phonemask__value').forEach(function(el) {
+      if (parentTelegram) setInputValue(el, parentTelegram);
+    });
+
+    var textInputs = [];
+    form.querySelectorAll('input[type="text"], input:not([type]), textarea').forEach(function(el) {
+      if (el.type === 'hidden' || el.closest('.t-input-phonemask')) return;
+      textInputs.push(el);
+    });
+
+    if (parentName && textInputs[0]) setInputValue(textInputs[0], parentName);
+    if (childName && textInputs[1]) setInputValue(textInputs[1], childName);
+    if (childAge && textInputs[2]) setInputValue(textInputs[2], childAge);
+
+    form.querySelectorAll('select').forEach(function(el) {
+      if (notify) setInputValue(el, notify);
+    });
+
+    form.querySelectorAll('input[type="hidden"]').forEach(function(el) {
+      var n = el.name || '';
+      if (n === 'module_id' && hidMid) setInputValue(el, hidMid.value);
+      if (n === 'chosen_stage' && hidStage) setInputValue(el, hidStage.value);
+      if (n === 'chosen_tale_number' && hidTale) setInputValue(el, hidTale.value);
+    });
   }
 
   function syncToCartForm() {
     pushField('module_id', hidMid ? hidMid.value : '');
     pushField('chosen_stage', hidStage ? hidStage.value : '');
     pushField('chosen_tale_number', hidTale ? hidTale.value : '');
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'notification_channel'].forEach(function(name) {
+    pushField('notification_channel', 'email');
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (el) pushField(name, el.value);
     });
+    fillCartFormAggressive();
     pushCheckbox('legal_consent', true);
   }
 
@@ -667,7 +990,7 @@ if (faqList) {
   }
 
   function bindContactSync() {
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'notification_channel'].forEach(function(name) {
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (!el) return;
       function syncContact() { pushField(name, el.value); }
@@ -687,93 +1010,76 @@ if (faqList) {
     else document.getElementById('program').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function collectCheckoutPayload(tariff) {
+    function val(name) {
+      var el = document.querySelector('#chit-main [name="' + name + '"]');
+      return el ? el.value : '';
+    }
+    return {
+      tariff: tariff,
+      module_id: hidMid ? hidMid.value : '',
+      chosen_stage: hidStage ? hidStage.value : '',
+      chosen_tale_number: hidTale ? hidTale.value : '',
+      parent_name: val('parent_name'),
+      parent_email: val('parent_email'),
+      parent_telegram: val('parent_telegram'),
+      child_name: val('child_name'),
+      child_age: val('child_age'),
+      notification_channel: val('notification_channel') || 'email'
+    };
+  }
+
+  function redirectToPayPage(tariff) {
+    var p = ORDER_PRODUCTS[tariff];
+    if (!p || !PAY_PAGE_URL) {
+      showPaymentNotReadyAlert();
+      return;
+    }
+    try {
+      sessionStorage.setItem('chit_checkout', JSON.stringify(collectCheckoutPayload(tariff)));
+    } catch (e) {}
+    window.location.href = PAY_PAGE_URL;
+  }
+
   function openCart(tariff) {
     if (!window.chitValidateProgram()) return;
+    if (usesPayPageRedirect()) {
+      redirectToPayPage(tariff);
+      return;
+    }
     orderConfigReady.finally(function() {
-      ensureCatalogBridge();
       syncToCartForm();
       waitTcartReady(function() {
+        clearTcart();
+        if (addProductDirect(tariff) && cartHasItems()) {
+          openCartModal();
+          return;
+        }
         var hashes = buildOrderHashes(tariff);
         var hashIdx = 0;
-        var directTry = 0;
         var hashWait = 0;
-        var storeTry = 0;
-        var phase = findStoreProductCard(tariff) ? 'store' : (resolveProductUid(tariff) ? 'direct' : 'hash');
 
         function openWhenReady() {
           syncToCartForm();
           if (cartHasItems()) {
             openCartModal();
-            checkCatalogBlock();
             return;
           }
-          if (phase === 'store') {
-            if (storeTry === 0) clearTcart();
-            if (!triggerStoreBuy(tariff) && storeTry === 0) {
-              phase = 'direct';
-              setTimeout(openWhenReady, 300);
-              return;
-            }
-            storeTry += 1;
-            if (storeTry >= 12 || cartHasItems()) {
-              if (cartHasItems()) {
-                openCartModal();
-                checkCatalogBlock();
-                return;
-              }
-              phase = 'hash';
-              hashWait = 0;
-              if (hashes.length) triggerOrderHash(hashes[hashIdx]);
-            }
-            setTimeout(openWhenReady, 400);
-            return;
-          }
-          if (phase === 'direct') {
-            if (!addProductDirect(tariff)) {
-              if (!catalogBlocksOnPage() && !hasConfiguredUids()) {
-                showCatalogSetupAlert();
-                return;
-              }
-              phase = 'hash';
-              hashWait = 0;
-              if (hashes.length) triggerOrderHash(hashes[hashIdx]);
-              setTimeout(openWhenReady, 300);
-              return;
-            }
-            directTry += 1;
-            if (directTry >= 4 || cartHasItems()) {
-              if (cartHasItems()) {
-                openCartModal();
-                checkCatalogBlock();
-                return;
-              }
-              phase = 'hash';
-              hashWait = 0;
-              if (hashes.length) triggerOrderHash(hashes[hashIdx]);
-            }
-            setTimeout(openWhenReady, 300);
-            return;
-          }
-          if (phase === 'hash') {
+          if (hashIdx < hashes.length) {
+            triggerOrderHash(hashes[hashIdx]);
             hashWait += 1;
-            if (cartHasItems()) {
-              openCartModal();
-              checkCatalogBlock();
-              return;
-            }
-            if (hashWait >= 6) {
-              hashWait = 0;
-              hashIdx += 1;
-              if (hashIdx < hashes.length) {
-                triggerOrderHash(hashes[hashIdx]);
-                setTimeout(openWhenReady, 300);
+            if (hashWait >= 10 || cartHasItems()) {
+              if (cartHasItems()) {
+                openCartModal();
                 return;
               }
-              showCatalogSetupAlert();
-              return;
+              hashIdx += 1;
+              hashWait = 0;
             }
-            setTimeout(openWhenReady, 300);
+            setTimeout(openWhenReady, 350);
+            return;
           }
+          alert('Не удалось добавить тариф. Проверьте Product ID в блоках ST205 и опубликуйте сайт.');
         }
 
         openWhenReady();
@@ -802,6 +1108,7 @@ if (faqList) {
     if (state.tariff === 'single') {
       if (state.stage && state.taleNum) {
         html += '<br>' + STAGE_LABEL[state.stage] + ' · ' + TALES[state.group][state.stage][state.taleNum - 1];
+        html += '<br>встреча с преподавателем';
       } else if (state.stage) {
         html += '<br><span class="summary-empty">Выберите сказку</span>';
       } else {
@@ -828,15 +1135,31 @@ if (faqList) {
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'tale-btn' + (state.taleNum === i + 1 ? ' is-active' : '');
-        btn.innerHTML = '<span class="tale-num">' + (i + 1) + '</span>' + title;
+        btn.innerHTML =
+          '<span class="tale-num">' + (i + 1) + '</span>' +
+          '<span class="tale-btn__body">' +
+            '<span class="tale-btn__title">' + title + '</span>' +
+            taleScheduleHtml(state.stage, i, state.tariff) +
+          '</span>';
         btn.onclick = function() { state.taleNum = i + 1; renderTales(); syncHidden(); };
         elTales.appendChild(btn);
       });
     } else {
       elTales.style.display = 'none';
       elPreview.style.display = 'block';
-      elPreview.innerHTML = '<strong style="color:var(--blue)">4 сказки в этом блоке:</strong><br>' +
-        list.map(function(t, i) { return (i + 1) + '. ' + t; }).join('<br>');
+      elPreview.innerHTML =
+        '<div class="block-preview__title"><strong>4 сказки в этом блоке</strong>' +
+        (state.tariff === 'with_teacher' ? ' · встречи по четвергам' : '') +
+        '</div>' +
+        '<div class="block-preview__cards">' +
+        list.map(function(t, i) {
+          return '<div class="block-preview__card">' +
+            '<div class="block-preview__num">Сказка ' + (i + 1) + '</div>' +
+            '<div class="block-preview__name">' + t + '</div>' +
+            taleScheduleHtml(state.stage, i, state.tariff) +
+          '</div>';
+        }).join('') +
+        '</div>';
     }
   }
 
@@ -889,23 +1212,11 @@ if (faqList) {
   setInterval(syncToCartForm, 500);
 
   function chitValidateCatalogPayment() {
-    ensureCatalogBridge();
-    if (!catalogBlocksOnPage()) {
-      showCatalogPaymentAlert();
-      checkCatalogBlock();
-      scrollToCheckout();
+    syncToCartForm();
+    hideCatalogBlocks();
+    if (isOnPayPage() && !isPaymentCatalogReady()) {
+      showPaymentNotReadyAlert();
       return false;
-    }
-    var card = findStoreProductCard(state.tariff);
-    if (card) {
-      var nameEl = card.querySelector('.js-product-name');
-      var name = nameEl ? nameEl.textContent.trim() : '';
-      var price = parseProductPrice(card.querySelector('.js-store-prod-price-val, .js-product-price'));
-      var p = ORDER_PRODUCTS[state.tariff];
-      if (p && (name.indexOf('Studio Headphones') >= 0 || (price > 0 && price < 1000 && price !== p.price))) {
-        showCatalogPaymentAlert();
-        return false;
-      }
     }
     return true;
   }
@@ -948,6 +1259,11 @@ if (faqList) {
     if (parentEmail && !parentEmail.value.trim()) { alert('Укажите email.'); parentEmail.focus(); return false; }
     if (childName && !childName.value.trim()) { alert('Укажите имя ребёнка.'); childName.focus(); return false; }
     if (!findSt100Root()) {
+      if (usesPayPageRedirect()) {
+        syncToTildaForm();
+        syncToCartForm();
+        return true;
+      }
       alert('Блок оплаты ST100 не найден на странице. Добавьте его в Tilda под Zero Block (см. ST100_SETUP.md).');
       checkSt100Block();
       scrollToCheckout();
@@ -959,13 +1275,20 @@ if (faqList) {
   };
 
   bindContactSync();
-  ensureCatalogBridge();
+  bindCartCloseHandler();
+  bindStoreScrollGuard();
+  bindStoreClickBlock();
+  hideCatalogBlocks();
+  watchLazyBlocks();
   checkSt100Block();
   checkCatalogBlock();
+  watchCartModal();
+  setInterval(hideCatalogBlocks, 1000);
   setTimeout(function() {
-    ensureCatalogBridge();
+    hideCatalogBlocks();
     checkSt100Block();
     checkCatalogBlock();
+    watchCartModal();
   }, 1500);
 })();
 
@@ -993,8 +1316,8 @@ if (faqList) {
   }
 
   var BOOK_TEXTS = [
-    '<strong style="color:var(--blue)">Разовое</strong> — можно начать с одной сказки, без обязательств',
-    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>22 июня</strong> и <strong>20 июля</strong>',
+    '<strong style="color:var(--blue)">Разовое</strong> — одна сказка и встреча с преподавателем',
+    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса.<span class="hero-book-text__dates">Два старта: <strong>22 июня</strong> и <strong>20 июля</strong></span>',
     '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
   ];
   var bookStack = document.querySelector('.book-stack');
@@ -1059,10 +1382,9 @@ if (faqList) {
   }, 1500);
 
   (function initFinalCtaScroll() {
-    var scroller = document.getElementById('final-cta-scroller');
     var section = document.getElementById('final-cta');
     var bg = section && section.querySelector('.final-cta__bg');
-    if (!scroller || !section || !bg) return;
+    if (!section || !bg) return;
 
     var isMobile = window.matchMedia('(max-width: 768px)').matches;
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1072,13 +1394,13 @@ if (faqList) {
     }
 
     function update() {
-      var rect = scroller.getBoundingClientRect();
+      var rect = section.getBoundingClientRect();
       var vh = window.innerHeight;
-      var pinTravel = scroller.offsetHeight - vh;
-      var progress = pinTravel > 0 ? Math.min(1, Math.max(0, -rect.top / pinTravel)) : 0;
+      if (rect.bottom < 0 || rect.top > vh) return;
 
-      section.classList.toggle('is-active', rect.top < vh * 0.82 && rect.bottom > vh * 0.18);
-      bg.style.transform = 'scale(' + (1.06 + progress * 0.08) + ')';
+      var progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh * 0.85)));
+      section.classList.toggle('is-active', rect.top < vh * 0.75);
+      bg.style.transform = 'scale(' + (1.1 + progress * 0.08) + ') translateY(' + (-progress * 2) + '%)';
     }
 
     window.addEventListener('scroll', update, { passive: true });

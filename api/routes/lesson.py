@@ -15,8 +15,10 @@ from api.lesson_signing import verify_lesson_access
 from config.settings import LESSON_WEEK_DAYS, ROOT, VIDEO_WATCH_THRESHOLD
 from db import repository as repo
 from db.session import get_db
+from catalog.loader import get_module
 from lessons.access import is_lesson_unlocked
 from lessons.enrollment_access import child_can_access_lesson, get_active_enrollment
+from lessons.schedule import effective_module_week
 from lessons.loader import get_lesson, quiz_for_client, score_quiz
 from api.event_types import MANUAL_MARK_ONLY
 from services.events import submit_learning_event
@@ -64,8 +66,15 @@ def _require_lesson_unlocked(db: Session, child_id: uuid.UUID, lesson: dict) -> 
     enrollment = get_active_enrollment(child)
     if not child_can_access_lesson(child, lesson, enrollment):
         raise HTTPException(403, "Этот урок недоступен для вашего модуля.")
-    if not is_lesson_unlocked(child, lesson, week_days=LESSON_WEEK_DAYS):
-        week = lesson.get("module_week", 1)
+    module = get_module(enrollment.module_id) if enrollment else None
+    if not is_lesson_unlocked(
+        child,
+        lesson,
+        week_days=LESSON_WEEK_DAYS,
+        enrollment=enrollment,
+        module=module,
+    ):
+        week = effective_module_week(lesson, enrollment, module)
         raise HTTPException(
             403,
             f"Урок недели {week} ещё закрыт. Новая сказка откроется по расписанию модуля.",

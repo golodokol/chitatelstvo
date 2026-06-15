@@ -1,0 +1,447 @@
+@import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --blue: #5B7FA6;
+  --blue-light: #88A9D1;
+  --blue-pale: #E8F1F8;
+  --blue-deep: #4A6D94;
+  --accent: #8F7DA3;
+  --accent-pale: #EBE6F3;
+  --cream: #F6F4F9;
+  --cream-warm: #EFEBF5;
+  --text: #3D5266;
+  --text-warm: #3A4553;
+  --muted: #6B8499;
+  --border: #D4E2EF;
+  --white: #FFFFFF;
+  --shadow: 0 4px 24px rgba(61, 82, 102, 0.08);
+  --success: #2e7d32;
+  --success-bg: #e8f5e9;
+}
+
+* { box-sizing: border-box; }
+
+body.chit-student {
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  margin: 0;
+  padding: 24px 16px 48px;
+  line-height: 1.55;
+}
+
+.chit-student h1,
+.chit-student h2,
+.chit-student .chit-title {
+  font-family: 'Literata', Georgia, serif;
+  color: var(--text-warm);
+}
+
+.chit-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.chit-header h1 {
+  font-size: 1.75rem;
+  margin: 0 0 0.25rem;
+}
+
+.chit-sub {
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+  font-size: 1rem;
+}
+
+.chit-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.chit-hint {
+  background: var(--blue-pale);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.chit-child-name {
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.chit-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 8px 0 12px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.chit-badge {
+  display: inline-block;
+  background: var(--accent-pale);
+  color: var(--blue-deep);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin: 2px 6px 2px 0;
+}
+
+.chit-schedule-intro {
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin: 12px 0 16px;
+  line-height: 1.5;
+}
+
+.chit-stage {
+  margin-top: 18px;
+}
+
+.chit-stage:first-of-type {
+  margin-top: 8px;
+}
+
+.chit-stage__title {
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--blue-deep);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent-pale);
+}
+
+.chit-lesson-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chit-lesson-item {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--cream-warm);
+  transition: border-color 0.15s;
+}
+
+.chit-lesson-item.is-open {
+  border-color: var(--blue-light);
+  background: var(--white);
+}
+
+.chit-lesson-item.is-locked {
+  opacity: 0.88;
+}
+
+.chit-lesson-item__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.chit-lesson-item__title {
+  font-weight: 700;
+  color: var(--text-warm);
+  font-size: 1rem;
+}
+
+.chit-lesson-item__week {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.chit-lesson-item__dates {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chit-lesson-item__dates strong {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.chit-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 18px;
+  background: var(--blue);
+  color: #fff !important;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.chit-btn:hover {
+  background: var(--blue-deep);
+}
+
+.chit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.chit-btn--outline {
+  background: transparent;
+  color: var(--blue) !important;
+  border: 1.5px solid var(--blue-light);
+}
+
+.chit-btn--outline:hover {
+  background: var(--blue-pale);
+}
+
+.chit-status {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.chit-status--soon {
+  background: var(--accent-pale);
+  color: var(--accent);
+}
+
+.chit-status--locked {
+  background: var(--cream);
+  color: var(--muted);
+}
+
+.chit-tg-box {
+  background: var(--blue-pale);
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  border: 1px solid var(--border);
+}
+
+.chit-tg-btn {
+  display: inline-block;
+  background: #2aabee;
+  color: #fff !important;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.chit-tg-ok { color: var(--success); font-weight: 700; }
+
+.chit-guide-title {
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.chit-guide-sub {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.chit-guide-steps,
+.chit-guide-list {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  font-size: 0.95rem;
+}
+
+.chit-guide-steps li,
+.chit-guide-list li {
+  margin-bottom: 8px;
+}
+
+.chit-points-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.chit-points-table th,
+.chit-points-table td {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.chit-points-table th {
+  color: var(--muted);
+  font-weight: 600;
+  width: 72%;
+  padding-right: 12px;
+}
+
+.chit-points-table td {
+  font-weight: 800;
+  color: var(--blue-deep);
+  white-space: nowrap;
+}
+
+.chit-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.chit-level-pill {
+  background: var(--cream-warm);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.chit-feed {
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.chit-feed-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+.chit-feed-date {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.chit-channel {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.chit-empty-lessons {
+  text-align: center;
+  margin-top: 16px;
+  padding: 8px 0 4px;
+}
+
+.chit-empty-lessons img {
+  width: 140px;
+  height: auto;
+  margin-bottom: 10px;
+  opacity: 0.95;
+}
+
+.chit-empty-lessons p {
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Lesson player */
+.chit-lesson-page .chit-step {
+  border-left: 4px solid var(--accent-soft, #A896B8);
+  padding-left: 16px;
+  margin-bottom: 8px;
+}
+
+.chit-lesson-page .chit-step.done {
+  border-color: var(--success);
+  opacity: 0.9;
+}
+
+.chit-badge-step {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.chit-video-wrap {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #1a2530;
+  margin-top: 12px;
+}
+
+.chit-video-wrap iframe,
+.chit-video-wrap video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.chit-q { margin: 12px 0; }
+
+.chit-q label {
+  display: block;
+  margin: 6px 0;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.chit-msg {
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 0.92rem;
+}
+
+.chit-msg.ok { background: var(--success-bg); color: var(--success); }
+.chit-msg.err { background: #ffebee; color: #c62828; }
+.chit-msg.info { background: var(--blue-pale); color: var(--blue-deep); }
+
+.chit-manual {
+  background: var(--cream-warm);
+  border: 1.5px dashed var(--accent);
+}
+
+.chit-back {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  body.chit-student { padding: 16px 12px 32px; }
+  .chit-card { padding: 18px 16px; }
+}

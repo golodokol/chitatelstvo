@@ -5,17 +5,40 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
+from api.lesson_signing import build_lesson_url
+from catalog.loader import get_module
 from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, ROOT, TELEGRAM_ENABLED
 from db import repository as repo
 from db.session import get_db
-from api.lesson_signing import build_lesson_url
-from catalog.loader import get_module
 from lessons.access import lesson_access_info
 from lessons.enrollment_access import get_active_enrollment, list_lessons_for_child
+from lessons.schedule import STAGE_LABELS, tariff_has_meetings
 from notifications.telegram_bot import build_link_url
 
 router = APIRouter(tags=["progress"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
+
+
+def _group_lessons(lesson_links: list[dict]) -> list[dict]:
+    if not lesson_links:
+        return []
+    stages: list[dict] = []
+    by_stage: dict[str, list[dict]] = {}
+    for les in lesson_links:
+        stage = les.get("stage") or "stage-1"
+        by_stage.setdefault(stage, []).append(les)
+    for stage_key in ("stage-1", "stage-2"):
+        items = by_stage.get(stage_key)
+        if not items:
+            continue
+        stages.append(
+            {
+                "key": stage_key,
+                "label": STAGE_LABELS.get(stage_key, stage_key),
+                "lessons": items,
+            }
+        )
+    return stages
 
 
 @router.get("/progress/{token}", response_class=HTMLResponse)
@@ -33,25 +56,37 @@ def family_progress(
         events = repo.get_child_events(db, child.id, limit=20)
         badges = [b.badge_name for b in child.badges]
         enrollment = get_active_enrollment(child)
-        module_title = None
-        if enrollment:
-            module = get_module(enrollment.module_id)
-            module_title = module["title"] if module else None
+        module = get_module(enrollment.module_id) if enrollment else None
+        module_title = module["title"] if module else None
+        has_meetings = tariff_has_meetings(module)
 
         lesson_links = []
         for les in list_lessons_for_child(child):
-            access = lesson_access_info(child, les, week_days=LESSON_WEEK_DAYS)
+            access = lesson_access_info(
+                child,
+                les,
+                week_days=LESSON_WEEK_DAYS,
+                enrollment=enrollment,
+                module=module,
+            )
             link = {
                 "title": les["title"],
                 "module_week": access["module_week"],
+                "week_in_stage": access["week_in_stage"],
+                "stage": access["stage"],
                 "unlocked": access["unlocked"],
                 "opens_on": access["opens_on"],
+                "opens_on_label": access["opens_on_label"],
                 "stage_label": les.get("stage_label"),
                 "ready": les.get("active", True),
             }
+            if access.get("meeting_on_label"):
+                link["meeting_on"] = access["meeting_on"]
+                link["meeting_on_label"] = access["meeting_on_label"]
             if access["unlocked"] and les.get("active", True):
                 link["url"] = build_lesson_url(child.id, les["slug"])
             lesson_links.append(link)
+
         children_data.append(
             {
                 "name": child.name,
@@ -59,7 +94,9 @@ def family_progress(
                 "points": child.total_points,
                 "badges": badges,
                 "lessons": lesson_links,
+                "lesson_stages": _group_lessons(lesson_links),
                 "module_title": module_title,
+                "has_meetings": has_meetings,
                 "events": [
                     {
                         "type": e.event_type,

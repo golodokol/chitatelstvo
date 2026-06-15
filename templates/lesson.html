@@ -4,69 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
+  <link rel="stylesheet" href="/static/chit-student.css">
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; background: #faf6f0; color: #2c2416; margin: 0; padding: 20px; line-height: 1.5; }
-    .wrap { max-width: 800px; margin: 0 auto; }
-    h1 { font-family: Georgia, serif; }
-    .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-    .step { border-left: 4px solid #c9a86c; padding-left: 14px; margin-bottom: 8px; }
-    .step.done { border-color: #4caf50; opacity: .85; }
-    .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
-    .video-wrap iframe, .video-wrap video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-    .q { margin: 12px 0; }
-    .q label { display: block; margin: 4px 0; cursor: pointer; }
-    button { background: #5a4a38; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .msg { padding: 10px 14px; border-radius: 8px; margin-top: 10px; }
-    .msg.ok { background: #e8f5e9; color: #2e7d32; }
-    .msg.err { background: #ffebee; color: #c62828; }
-    .msg.info { background: #e3f2fd; color: #1565c0; }
-    .manual { background: #fff8e8; border: 1px dashed #c9a86c; }
-    .badge-step { font-size: .8rem; color: #7a6a58; text-transform: uppercase; }
+    .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
+    .chit-lesson-page p { color: var(--muted); }
+    textarea { width: 100%; margin-top: 8px; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 0.95rem; }
   </style>
 </head>
-<body>
-  <div class="wrap">
+<body class="chit-student chit-lesson-page">
+  <div class="chit-wrap">
     <h1>Читательство · {{ lesson.title }}</h1>
-    <p>Привет, <strong>{{ child_name }}</strong>! Неделя {{ lesson.module_week }}. Видео и вопросы засчитываются сами — иди в своём темпе.</p>
+    <p>Привет, <strong style="color:var(--text-warm)">{{ child_name }}</strong>! Сказка {{ lesson.module_week if lesson.module_week <= 4 else lesson.module_week - 4 }} — видео и вопросы засчитываются сами, иди в своём темпе.</p>
 
-    <div class="card step" id="step-video">
-      <div class="badge-step">Шаг 1 · автоматически</div>
+    <div class="chit-card chit-step" id="step-video">
+      <div class="chit-badge-step">Шаг 1 · автоматически</div>
       <h2>Видео-урок</h2>
-      <div class="video-wrap" id="player-container"></div>
-      <div id="video-msg" class="msg info" style="display:none"></div>
+      <div class="chit-video-wrap" id="player-container"></div>
+      <div id="video-msg" class="chit-msg info" style="display:none"></div>
     </div>
 
     {% if comprehension_quiz %}
-    <div class="card step" id="step-comprehension">
-      <div class="badge-step">Шаг 2 · автоматически</div>
+    <div class="chit-card chit-step" id="step-comprehension">
+      <div class="chit-badge-step">Шаг 2 · автоматически</div>
       <h2>{{ comprehension_quiz.title }}</h2>
       <form id="form-comprehension"></form>
-      <button type="button" id="btn-comprehension" disabled>Отправить ответы</button>
+      <button type="button" class="chit-btn" id="btn-comprehension" disabled>Отправить ответы</button>
       <div id="comprehension-msg"></div>
     </div>
     {% endif %}
 
     {% if meaning_quiz %}
-    <div class="card step" id="step-meaning">
-      <div class="badge-step">Шаг {% if comprehension_quiz %}3{% else %}2{% endif %} · автоматически</div>
+    <div class="chit-card chit-step" id="step-meaning">
+      <div class="chit-badge-step">Шаг {% if comprehension_quiz %}3{% else %}2{% endif %} · автоматически</div>
       <h2>{{ meaning_quiz.title }}</h2>
       <form id="form-meaning"></form>
-      <button type="button" id="btn-meaning" disabled>Отправить ответы</button>
+      <button type="button" class="chit-btn" id="btn-meaning" disabled>Отправить ответы</button>
       <div id="meaning-msg"></div>
     </div>
     {% endif %}
 
-    <div class="card manual">
-      <div class="badge-step">Шаг 4–5 · вручную</div>
+    <div class="chit-card chit-manual">
+      <div class="chit-badge-step">Шаг 4–5 · вручную</div>
       <h2>Творчество и встреча</h2>
       <p>Эти шаги отмечает родитель, когда ребёнок действительно их сделал.</p>
       <p>
-        <button type="button" id="btn-creative">Творческое задание выполнено</button>
-        <button type="button" id="btn-meeting" style="margin-left:8px;background:#2aabee">Живая встреча была</button>
+        <button type="button" class="chit-btn" id="btn-creative">Творческое задание выполнено</button>
+        <button type="button" class="chit-btn chit-tg-btn" id="btn-meeting" style="margin-left:8px">Живая встреча была</button>
       </p>
-      <textarea id="manual-notes" rows="2" style="width:100%;margin-top:8px" placeholder="Комментарий (необязательно)"></textarea>
+      <textarea id="manual-notes" rows="2" placeholder="Комментарий (необязательно)"></textarea>
       <div id="manual-msg"></div>
     </div>
   </div>
@@ -93,7 +79,7 @@
 
     function showMsg(elId, text, type) {
       const el = document.getElementById(elId);
-      el.className = 'msg ' + type;
+      el.className = 'chit-msg ' + type;
       el.textContent = text;
       el.style.display = 'block';
     }
@@ -115,7 +101,7 @@
       const form = document.getElementById(formId);
       quiz.questions.forEach((q, idx) => {
         const div = document.createElement('div');
-        div.className = 'q';
+        div.className = 'chit-q';
         div.innerHTML = '<strong>' + (idx + 1) + '. ' + q.text + '</strong>';
         q.options.forEach(opt => {
           const id = formId + '-' + q.id + '-' + opt.id;

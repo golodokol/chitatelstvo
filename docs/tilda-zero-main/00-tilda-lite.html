@@ -1,12 +1,13 @@
 <!-- Читательство · lite (CSS/JS грузятся с API, вставлять целиком) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260609t">
+<style id="chit-hide-store">#allrecords .chit-store-hidden,#allrecords .t-rec[data-record-type="205"],#allrecords .t-rec[data-record-type="762"],#allrecords .t-rec[data-record-type="200"],#allrecords .t-rec[data-record-type="210"],#allrecords .t-rec[data-record-type="215"],#allrecords .t-rec[data-record-type="405"],#allrecords .t-store{display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;left:-99999px!important}</style>
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260613d">
 <div id="chit-main">
 <header class="site-header">
   <div class="site-header__inner">
     <a class="logo" href="#top" id="site-logo" aria-label="Читательство — наверх">
-      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="180" height="180">
+      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="154" height="118" loading="eager" decoding="async">
     </a>
     <nav class="site-nav" aria-label="Разделы страницы">
       <a href="#how-it-works">Как устроено</a>
@@ -24,8 +25,11 @@
 <section class="hero paper-bg" id="top">
   <div class="hero__inner">
     <div class="hero__copy">
-      <div class="hero__badge"><em>ЧИТАТЕЛЬСТВО</em> · онлайн-школа литературного чтения для детей</div>
-      <h1>Понимать книги — с удовольствием</h1>
+      <div class="hero__badge">
+        <span class="hero__badge-line hero__badge-line--title"><em>ЧИТАТЕЛЬСТВО</em></span>
+        <span class="hero__badge-line hero__badge-line--sub">онлайн-школа литературного чтения для детей</span>
+      </div>
+      <h1>Учим читать и понимать книги</h1>
     </div>
 
     <div class="hero__showcase is-active" id="hero-books">
@@ -41,13 +45,12 @@
           <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
         </button>
       </div>
-      <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>22 июня</strong> и <strong>20 июля</strong></p>
-      <p class="hero__visual-hint">нажмите на книгу — текст изменится</p>
+      <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса.<span class="hero-book-text__dates">Два старта: <strong>22 июня</strong> и <strong>20 июля</strong></span></p>
     </div>
 
     <div class="hero__copy">
       <p class="hero__subtitle">Видеоуроки по сказкам и задания на понимание текста — ребёнок читает с удовольствием, а вы видите результат на личной странице</p>
-      <p class="hero__price">от <strong>1 490 ₽</strong> · одна сказка или блок из 4</p>
+      <p class="hero__price">от <strong>1 490 ₽</strong></p>
       <div class="hero__actions">
         <a class="btn" href="#program">Записаться на курс</a>
         <a class="btn btn--outline" href="#programs">Смотреть программы</a>
@@ -153,25 +156,25 @@
         <div class="for-whom__icon-wrap for-whom__icon-wrap--kids">
           <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-kids.png" alt="" width="80" height="80" loading="lazy">
         </div>
-        детей 1–4 класса и ребят 6–11 лет
+        <p class="for-whom__text">детей 1–4 класса и ребят 6–11 лет</p>
       </div>
       <div class="for-whom__item">
         <div class="for-whom__icon-wrap for-whom__icon-wrap--family">
           <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-family.png" alt="" width="80" height="80" loading="lazy">
         </div>
-        семей, которым важно системное чтение, а не случайные тексты
+        <p class="for-whom__text">семей, которым важно системное чтение, а не случайные тексты</p>
       </div>
       <div class="for-whom__item">
         <div class="for-whom__icon-wrap for-whom__icon-wrap--pace">
           <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-pace.png" alt="" width="80" height="80" loading="lazy">
         </div>
-        тех, кому нужен свой темп — без давления и оценок
+        <p class="for-whom__text">тех, кому нужен свой темп — без давления и оценок</p>
       </div>
       <div class="for-whom__item">
         <div class="for-whom__icon-wrap for-whom__icon-wrap--parents">
           <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-parents.png" alt="" width="80" height="80" loading="lazy">
         </div>
-        родителей, которым интересны живые обсуждения с преподавателем
+        <p class="for-whom__text">родителей, которым интересны живые обсуждения с преподавателем</p>
       </div>
     </div>
   </div>
@@ -259,17 +262,17 @@
     <div class="gamify-badges" aria-label="Примеры бейджей">
       <figure class="gamify-item">
         <div class="gamify-item__img">
-          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-meaning.png" alt="" width="80" height="80" loading="lazy">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-meaning.png" alt="" width="96" height="96" loading="lazy">
         </div>
       </figure>
       <figure class="gamify-item">
         <div class="gamify-item__img">
-          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-storyteller.png" alt="" width="80" height="80" loading="lazy">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-storyteller.png" alt="" width="96" height="96" loading="lazy">
         </div>
       </figure>
       <figure class="gamify-item">
         <div class="gamify-item__img">
-          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-tracker.png" alt="" width="80" height="80" loading="lazy">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-tracker.png" alt="" width="96" height="96" loading="lazy">
         </div>
       </figure>
     </div>
@@ -286,13 +289,20 @@
     <div class="tariffs-grid">
       <div class="tariff-card">
         <h3 class="tariff-card__name">Разовое</h3>
-        <p class="tariff-card__mood">Одна сказка — знакомство без обязательств</p>
+        <p class="tariff-card__mood">Одна сказка и встреча с преподавателем</p>
         <ul class="tariff-card__list">
           <li>1 сказка на выбор</li>
           <li>Видео и интерактивные задания</li>
           <li>Личная страница прогресса</li>
-          <li>Без живых встреч</li>
+          <li>1 живая встреча с преподавателем</li>
         </ul>
+        <div class="tariff-card__meet-slot">
+          <div class="tariff-card__meet">
+            <span class="tariff-card__meet-line">Встреча по четвергам</span>
+            <span class="tariff-card__meet-line">Мини-группы до 6 детей</span>
+            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Точное время — после формирования групп</span>
+          </div>
+        </div>
         <div class="tariff-card__price">1 490 ₽</div>
         <div class="tariff-card__note">за 1 занятие</div>
         <a class="btn btn--block" href="#program">Оплатить</a>
@@ -305,7 +315,9 @@
           <li>Свой темп, без расписания</li>
           <li>Видео и задания на каждую сказку</li>
           <li>Личная страница прогресса</li>
+          <li>Без живых встреч</li>
         </ul>
+        <div class="tariff-card__meet-slot" aria-hidden="true"></div>
         <div class="tariff-card__price">1 990 ₽</div>
         <div class="tariff-card__note">за блок из 4 сказок</div>
         <a class="btn btn--block" href="#program">Оплатить</a>
@@ -319,7 +331,13 @@
           <li>Видео и задания между встречами</li>
           <li>Личная страница прогресса</li>
         </ul>
-        <p class="tariff-card__meet">Встречи по четвергам, мини-группы до 6 детей. Точное время — после формирования групп.</p>
+        <div class="tariff-card__meet-slot">
+          <div class="tariff-card__meet">
+            <span class="tariff-card__meet-line">Встречи по четвергам</span>
+            <span class="tariff-card__meet-line">Мини-группы до 6 детей</span>
+            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Точное время — после формирования групп</span>
+          </div>
+        </div>
         <div class="tariff-card__price">4 990 ₽</div>
         <div class="tariff-card__note">за блок из 4 сказок</div>
         <a class="btn btn--block" href="#program">Оплатить</a>
@@ -387,16 +405,19 @@
             <div class="pick-card__tag">Попробовать</div>
             <div class="pick-card__name">Разовое</div>
             <div class="pick-card__price">1 490 ₽</div>
+            <div class="pick-card__hint">1 сказка + встреча по четвергам</div>
           </div>
           <div class="pick-card" data-tariff="self_paced">
             <div class="pick-card__tag">Основной</div>
             <div class="pick-card__name">Индивидуальное</div>
             <div class="pick-card__price">1 990 ₽</div>
+            <div class="pick-card__hint">4 сказки в своём темпе, без встреч</div>
           </div>
           <div class="pick-card" data-tariff="with_teacher">
             <div class="pick-card__tag">С поддержкой</div>
             <div class="pick-card__name">С преподавателем</div>
             <div class="pick-card__price">4 990 ₽</div>
+            <div class="pick-card__hint">4 сказки + встречи по четвергам</div>
           </div>
         </div>
       </div>
@@ -426,7 +447,7 @@
 
       <div class="enroll-checkout">
         <h3>Запись в Читательство</h3>
-        <p class="form-intro">Заполните контакты и нажмите «Записаться» — откроется оплата через Т‑Банк.</p>
+        <p class="form-intro">Заполните контакты и нажмите «Записаться».<span class="form-intro__pay">Откроется оплата через Т‑Банк.</span></p>
 
         <div class="form-grid" id="chit-contact-form">
           <div class="form-field">
@@ -438,8 +459,8 @@
             <input type="email" id="chit_parent_email" name="parent_email" autocomplete="email" required>
           </div>
           <div class="form-field">
-            <label for="chit_parent_telegram">Telegram (необязательно)</label>
-            <input type="text" id="chit_parent_telegram" name="parent_telegram" placeholder="@username">
+            <label for="chit_parent_telegram">Телефон (необязательно)</label>
+            <input type="tel" id="chit_parent_telegram" name="parent_telegram" autocomplete="tel">
           </div>
           <div class="form-field">
             <label for="chit_child_name">Имя ребёнка</label>
@@ -449,31 +470,11 @@
             <label for="chit_child_age">Возраст</label>
             <input type="number" id="chit_child_age" name="child_age" min="1" max="99">
           </div>
-          <div class="form-field form-field--full">
-            <label for="chit_notification_channel">Как присылать новости</label>
-            <select id="chit_notification_channel" name="notification_channel">
-              <option value="email">На email</option>
-              <option value="web">Только личная страница</option>
-              <option value="telegram">В Telegram</option>
-              <option value="both">Email и Telegram</option>
-            </select>
-          </div>
         </div>
-
-        <div class="st100-warning" id="chit-catalog-warning" hidden>
-          <strong>Каталог не связан с оплатой.</strong>
-          Добавьте 3 карточки товара из каталога (ST205 или блок «Товар») с Product ID.
-          Если видите «Studio Headphones» или цену 100 — услуга не подтянулась, выберите её заново в блоке.
-        </div>
-
-        <div class="st100-warning" id="chit-st100-warning" hidden>
-          <strong>Оплата пока не подключена.</strong>
-          В редакторе Tilda добавьте блок <em>ST100 «Корзина с формой»</em> под Zero Block
-          (см. docs/tilda-zero-main/ST100_SETUP.md). Без него кнопка «Записаться» не откроет оплату.
-        </div>
+        <input type="hidden" name="notification_channel" id="chit_notification_channel" value="email">
 
         <button type="button" class="btn btn--block btn--pay" id="chit-pay-btn" disabled>Записаться</button>
-        <p class="pay-note">После «Записаться» откроется корзина ST100 с оплатой. Данные выше подставятся автоматически.</p>
+        <p class="pay-note">После «Записаться» откроется корзина — имя, email и телефон подставятся из формы выше.</p>
         <p class="form-consent">Нажимая «Записаться», вы соглашаетесь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">политикой конфиденциальности</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">офертой</a>.</p>
       </div>
     </div>
@@ -505,21 +506,21 @@
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Можно ли начать с одной сказки?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 1 490 ₽ за одну сказку на выбор из любого периода. Удобный способ познакомиться с форматом.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 1 490 ₽: одна сказка на выбор и встреча с преподавателем. Удобный способ познакомиться с форматом.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Чем отличаются тарифы?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Разовое — 1 сказка. Индивидуальное — 4 сказки в своём темпе (1 990 ₽). С преподавателем — те же 4 сказки плюс 4 живые встречи (4 990 ₽).</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Разовое — 1 сказка и встреча с преподавателем (1 490 ₽). Индивидуальное — 4 сказки в своём темпе, без живых встреч (1 990 ₽). С преподавателем — 4 сказки плюс 4 живые встречи (4 990 ₽).</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Когда проходят занятия с преподавателем?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>По четвергам, в мини-группах до 6 детей. Точное время сообщим после формирования групп.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>По четвергам, в мини-группах до 6 детей — на «Разовом» (1 встреча) и на «С преподавателем» (4 встречи). Точное время сообщим после формирования групп.</p>
       </div>
     </div>
   </div>
@@ -585,4 +586,4 @@
   </button>
 </div>
 </div>
-<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260609t"></script>
+<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260613d"></script>
