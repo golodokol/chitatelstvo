@@ -23,7 +23,9 @@
     <div class="chit-view chit-view--child" data-view="child">
 
       <section class="chit-slovik-intro" aria-label="Знакомство со Словиком">
-        <img class="chit-slovik-intro__img" src="{{ children[0].cabinet.slovik_main_url if children else '/static/sloviki/slovik-main.png' }}" alt="Словик — помощник в приключениях" width="140" height="140" loading="eager">
+        <div class="chit-slovik-intro__visual">
+          <img class="chit-slovik-intro__img" src="{{ children[0].cabinet.slovik_main_url if children else '/static/sloviki/slovik-main.png' }}" alt="Словик — помощник в приключениях" loading="eager">
+        </div>
         <div class="chit-slovik-intro__text">
           <p class="chit-slovik-intro__hi">Привет! Я — <strong>Словик</strong> ✨</p>
           <p class="chit-slovik-intro__body">
