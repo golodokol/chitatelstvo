@@ -60,24 +60,24 @@
 
         <section class="chit-panel chit-panel--stats">
           <div class="chit-stats">
-            <div class="chit-stats__profile">
-              {% if cab.level_image %}
-              <img src="{{ cab.level_image }}" alt="" width="72" height="72" class="chit-stats__avatar">
-              {% endif %}
-            </div>
-            <div class="chit-stats__metrics">
-              <div class="chit-stats__metric">
+            <div class="chit-stats__metric">
+              <div class="chit-stats__figure">
+                {% if cab.level_image %}
+                <img src="{{ cab.level_image }}" alt="" width="72" height="72" class="chit-stats__avatar">
+                {% endif %}
+              </div>
+              <div class="chit-stats__text">
                 <span class="chit-stats__label">Уровень</span>
                 <strong class="chit-stats__value">{{ cab.level }}</strong>
               </div>
-              <div class="chit-stats__metric">
+            </div>
+            <div class="chit-stats__metric">
+              <div class="chit-stats__figure">
+                <img src="{{ cab.slovik_preparing_url }}" alt="" width="72" height="72" class="chit-stats__avatar">
+              </div>
+              <div class="chit-stats__text">
                 <span class="chit-stats__label">Словики</span>
-                <strong class="chit-stats__value chit-stats__value--big">
-                  <span class="chit-stats__points-row">
-                    <img src="{{ cab.slovik_main_url }}" alt="" width="32" height="32" class="chit-stats__slovik-icon">
-                    <span>{{ cab.points }}</span>
-                  </span>
-                </strong>
+                <strong class="chit-stats__value chit-stats__value--big">{{ cab.points }}</strong>
               </div>
             </div>
           </div>
@@ -160,7 +160,7 @@
 
         {% if cab.daily_lesson %}
         <section class="chit-panel chit-panel--mission">
-          <div class="chit-lesson-card{% if cab.daily_lesson.cover_state == 'open' %} chit-lesson-card--open{% endif %}">
+          <div class="chit-lesson-card chit-lesson-card--daily{% if cab.daily_lesson.cover_state == 'open' %} chit-lesson-card--open{% endif %}">
             <div class="chit-lesson-card__cover chit-story-card__cover chit-story-card__cover--{{ cab.daily_lesson.cover_state }}">
               {% if cab.daily_lesson.cover_url %}
               <img src="{{ cab.daily_lesson.cover_url }}" alt="" loading="lazy">

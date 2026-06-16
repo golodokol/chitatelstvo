@@ -10,6 +10,7 @@ STATIC_PREFIX = "/static/sloviki"
 
 SLOVIK_FILES: dict[str, str] = {
     "main": "slovik-main.png",
+    "preparing": "slovik-preparing-read.png",
     "hero": "slovik-hero.png",
     "walks": "slovik-walks.png",
     "reads": "slovik-reads.png",
@@ -56,6 +57,7 @@ LESSON_STEP_SLOVIK: dict[str, str] = {
 
 COMPANION_HINTS: dict[str, str] = {
     "main": "Скоро начнётся новое приключение!",
+    "preparing": "Скоро начнётся новое приключение!",
     "walks": "Пора в путь — урок ждёт!",
     "reads": "Смотрим сказку вместе",
     "writes": "Отвечаем на вопросы",
@@ -111,7 +113,7 @@ def companion_key(
         return "victory"
 
     if not lesson or not lesson.get("url"):
-        return "main"
+        return "preparing"
 
     tale = (lesson.get("title") or "").strip()
     done = {

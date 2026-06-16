@@ -407,4 +407,5 @@ def build_child_cabinet(
         "recent_toast": recent_toast,
         "continue_url": continue_url,
         "slovik_main_url": slovik_url("main"),
+        "slovik_preparing_url": slovik_url("preparing"),
     }
