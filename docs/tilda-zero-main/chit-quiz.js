@@ -308,7 +308,6 @@
   function validateForm() {
     var parentName = form.parent_name.value.trim();
     var parentEmail = form.parent_email.value.trim();
-    var phone = normalizePhone(form.phone.value);
     var childName = form.child_name.value.trim();
     var childAgeRaw = form.child_age ? form.child_age.value.trim() : '';
     var childAge = childAgeRaw === '' ? NaN : parseInt(childAgeRaw, 10);
@@ -316,7 +315,6 @@
     if (!parentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) {
       return 'Укажите корректный email';
     }
-    if (phone.length < 11) return 'Укажите корректный телефон';
     if (!childName) return 'Укажите имя ребёнка';
     if (!childAgeRaw || !Number.isFinite(childAge) || childAge < 1) {
       return 'Укажите возраст ребёнка от 1 года';
@@ -351,7 +349,7 @@
     var payload = {
       parent_name: form.parent_name.value.trim(),
       parent_email: form.parent_email.value.trim(),
-      phone: form.phone.value.trim(),
+      phone: '',
       child_name: form.child_name.value.trim(),
       child_age: parseInt(form.child_age.value.trim(), 10),
       answers: buildAnswersPayload()

@@ -54,7 +54,7 @@ class QuizAnswer(BaseModel):
 class QuizLeadRequest(BaseModel):
     parent_name: str = Field(min_length=1, max_length=200)
     parent_email: EmailStr
-    phone: str = Field(min_length=7, max_length=40)
+    phone: str = Field(default='', max_length=40)
     child_name: str = Field(min_length=1, max_length=100)
     child_age: int | None = Field(default=None, ge=1, le=99)
     answers: list[QuizAnswer] = Field(min_length=1, max_length=10)
