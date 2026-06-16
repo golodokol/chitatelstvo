@@ -126,6 +126,12 @@ def admin_page(
     )
 
 
+@router.get("/login")
+def admin_login_page() -> RedirectResponse:
+    """Старая закладка /admin/login — ведём на страницу входа."""
+    return RedirectResponse("/admin", status_code=302)
+
+
 @router.post("/login")
 def admin_login(
     request: Request,

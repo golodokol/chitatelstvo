@@ -3,9 +3,15 @@ import ssl
 import urllib.parse
 import urllib.request
 import http.cookiejar
+from pathlib import Path
 
-password = open("/root/chitatelstvo/.env", encoding="utf-8").read().split("ADMIN_PASSWORD=", 1)[1].split("\n", 1)[0].strip()
-base = "https://api.chitatelstvo.ru"
+def _admin_password() -> str:
+    for path in (Path("/app/.env"), Path("/root/chitatelstvo/.env"), Path(".env")):
+        if path.is_file():
+            return path.read_text(encoding="utf-8").split("ADMIN_PASSWORD=", 1)[1].split("\n", 1)[0].strip()
+    raise FileNotFoundError("ADMIN_PASSWORD not found in .env")
+
+password = _admin_password()base = "https://api.chitatelstvo.ru"
 
 jar = http.cookiejar.CookieJar()
 ctx = ssl.create_default_context()

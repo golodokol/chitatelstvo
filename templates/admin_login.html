@@ -27,6 +27,7 @@
     }
     h1 { font-size: 1.35rem; margin: 0 0 8px; }
     .sub { color: #6b5d4d; margin: 0 0 24px; font-size: .95rem; }
+    .url { font-family: ui-monospace, monospace; font-size: .85rem; }
     label { display: block; font-size: .9rem; color: #5a4a38; margin-bottom: 8px; }
     input[type=password] {
       width: 100%;
@@ -59,7 +60,7 @@
 <body>
   <div class="card">
     <h1>Читательство</h1>
-    <p class="sub">Админ-панель</p>
+    <p class="sub">Админ-панель · <span class="url">api.chitatelstvo.ru/admin</span></p>
     {% if error %}
     <div class="error">{{ error }}</div>
     {% endif %}
