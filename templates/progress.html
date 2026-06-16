@@ -11,264 +11,358 @@
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
 
-    {% if telegram_enabled and not telegram_linked and telegram_link %}
-    <div class="chit-tg-box chit-tg-box--compact">
-      <a class="chit-tg-btn" href="{{ link_page }}">Привязать Telegram</a>
-    </div>
-    {% endif %}
+    <header class="chit-topbar">
+      <img class="chit-topbar__logo" src="{{ logo_url }}" alt="Читательство" width="48" height="48">
+      <nav class="chit-tabs" role="tablist" aria-label="Разделы личного кабинета">
+        <button type="button" class="chit-tabs__btn is-active" role="tab" aria-selected="true" data-tab="child">Комната приключений</button>
+        <button type="button" class="chit-tabs__btn" role="tab" aria-selected="false" data-tab="parent">Для родителей</button>
+      </nav>
+    </header>
 
-    {% for child in children %}
-    {% set cab = child.cabinet %}
-    <article class="chit-room" id="room-{{ loop.index }}">
+    <!-- ===== Ребёнок: игровая комната ===== -->
+    <div class="chit-view chit-view--child" data-view="child">
 
-      <!-- 1. Шапка: лого + приветствие -->
-      <header class="chit-room__hero">
-        <div class="chit-room__brand">
-          <img class="chit-room__logo" src="{{ logo_url }}" alt="Читательство" width="72" height="72">
-          <div class="chit-room__hello">
-            <p class="chit-room__greet">Привет, <strong>{{ cab.name }}</strong>!</p>
-            <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
-          </div>
-        </div>
-        <div class="chit-room__helper" aria-hidden="true">{{ cab.helper_emoji }}</div>
-      </header>
+      {% for child in children %}
+      {% set cab = child.cabinet %}
+      <article class="chit-room" id="room-{{ loop.index }}">
 
-      <!-- 2. Словики + прогресс -->
-      <section class="chit-panel chit-panel--stats">
-        <div class="chit-stats">
-          <div class="chit-stats__level">
-            {% if cab.level_image %}
-            <img src="{{ cab.level_image }}" alt="" width="56" height="56" class="chit-stats__level-img">
-            {% endif %}
-            <div>
-              <span class="chit-stats__label">Уровень</span>
-              <strong class="chit-stats__value">{{ cab.level }}</strong>
+        <header class="chit-room__hero">
+          <div class="chit-room__brand">
+            <div class="chit-room__hello">
+              <p class="chit-room__greet">Привет, <strong>{{ cab.name }}</strong>!</p>
+              <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
             </div>
           </div>
-          <div class="chit-stats__points">
-            <span class="chit-stats__label">Словики</span>
-            <strong class="chit-stats__value chit-stats__value--big">{{ cab.points }}</strong>
+          <div class="chit-room__helper" aria-hidden="true">{{ cab.helper_emoji }}</div>
+        </header>
+
+        <section class="chit-panel chit-panel--stats">
+          <div class="chit-stats">
+            <div class="chit-stats__level">
+              {% if cab.level_image %}
+              <img src="{{ cab.level_image }}" alt="" width="56" height="56" class="chit-stats__level-img">
+              {% endif %}
+              <div>
+                <span class="chit-stats__label">Уровень</span>
+                <strong class="chit-stats__value">{{ cab.level }}</strong>
+              </div>
+            </div>
+            <div class="chit-stats__points">
+              <span class="chit-stats__label">Словики</span>
+              <strong class="chit-stats__value chit-stats__value--big">{{ cab.points }}</strong>
+            </div>
           </div>
-        </div>
-        <div class="chit-progress">
-          <div class="chit-progress__bar" role="progressbar" aria-valuenow="{{ cab.progress_pct }}" aria-valuemin="0" aria-valuemax="100">
-            <div class="chit-progress__fill" style="width: {{ cab.progress_pct }}%"></div>
+          <div class="chit-progress">
+            <div class="chit-progress__bar" role="progressbar" aria-valuenow="{{ cab.progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+              <div class="chit-progress__fill" style="width: {{ cab.progress_pct }}%"></div>
+            </div>
+            <p class="chit-progress__hint">
+              {% if cab.next_level_name %}
+              До следующего уровня осталось <strong>{{ cab.points_to_next }}</strong> Словиков
+              {% else %}
+              Ты на вершине пути — все уровни открыты!
+              {% endif %}
+            </p>
           </div>
-          <p class="chit-progress__hint">
-            {% if cab.next_level_name %}
-            До следующего уровня осталось <strong>{{ cab.points_to_next }}</strong> Словиков
+          {% if cab.continue_url %}
+          <a class="chit-btn chit-btn--hero" href="{{ cab.continue_url }}">Продолжить приключение</a>
+          {% else %}
+          <span class="chit-btn chit-btn--hero chit-btn--ghost">Скоро новое приключение</span>
+          {% endif %}
+        </section>
+
+        <section class="chit-panel chit-panel--chest{% if cab.chest.ready %} is-ready{% endif %}" id="chest-{{ loop.index }}">
+          <div class="chit-chest">
+            <div class="chit-chest__visual" aria-hidden="true">
+              <div class="chit-chest__box">🎁</div>
+              <div class="chit-chest__glow"></div>
+            </div>
+            <div class="chit-chest__body">
+              <h2 class="chit-chest__title">{{ cab.chest.title }}</h2>
+              <p class="chit-chest__sub">{{ cab.chest.subtitle }}</p>
+              <p class="chit-chest__reward">Внутри: {{ cab.chest.reward }}.</p>
+              <div class="chit-chest__progress">
+                <div class="chit-progress__bar chit-progress__bar--gold">
+                  <div class="chit-progress__fill" style="width: {{ cab.chest.pct }}%"></div>
+                </div>
+                <p class="chit-chest__hint">{{ cab.chest.hint }}</p>
+              </div>
+              <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not cab.chest.ready %} disabled{% endif %}>Открыть сундук</button>
+            </div>
+          </div>
+          <div class="chit-chest-reveal" hidden>
+            <p>✨ Сундук открыт! Новая сказка и секретная наклейка ждут тебя в уроке.</p>
+          </div>
+        </section>
+
+        {% if cab.daily_lesson %}
+        <section class="chit-panel chit-panel--mission">
+          <div class="chit-lesson-card">
+            <span class="chit-lesson-card__badge">Урок дня</span>
+            <h2 class="chit-lesson-card__title">Урок дня: {{ cab.daily_lesson.title }}</h2>
+            <p class="chit-lesson-card__goal">{{ cab.daily_lesson.goal }}</p>
+            <div class="chit-lesson-card__meta">
+              <span>⏱ {{ cab.daily_lesson.duration }}</span>
+              <span>✨ +{{ cab.daily_lesson.reward_pts }} Словиков и шаг к сундуку</span>
+            </div>
+            {% if cab.daily_lesson.url %}
+            <a class="chit-btn" href="{{ cab.daily_lesson.url }}">Начать урок</a>
             {% else %}
-            Ты на вершине пути — все уровни открыты!
+            <p class="chit-lesson-card__soon">Откроется: {{ cab.daily_lesson.opens_on_label }}</p>
             {% endif %}
-          </p>
-        </div>
-        {% if cab.continue_url %}
-        <a class="chit-btn chit-btn--hero" href="{{ cab.continue_url }}">Продолжить приключение</a>
-        {% else %}
-        <span class="chit-btn chit-btn--hero chit-btn--ghost">Скоро новое приключение</span>
+          </div>
+        </section>
+        {% endif %}
+
+        <section class="chit-panel">
+          <h2 class="chit-section-title">Миссии на сегодня</h2>
+          <ul class="chit-missions">
+            {% for m in cab.missions %}
+            <li class="chit-mission chit-mission--{{ m.status }}">
+              <span class="chit-mission__icon">{{ m.icon }}</span>
+              <span class="chit-mission__text">{{ m.text }}</span>
+              {% if m.status == 'done' %}<span class="chit-mission__ok">✓</span>{% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+
+        <section class="chit-panel">
+          <h2 class="chit-section-title">Путь героя</h2>
+          <div class="chit-level-path">
+            {% for lvl in cab.levels %}
+            <div class="chit-level-step chit-level-step--{{ lvl.status }}" data-level-info="{{ lvl.name }} — {% if lvl.status == 'done' %}пройден{% elif lvl.status == 'current' %}сейчас здесь{% elif lvl.status == 'next' %}следующий{% else %}ещё впереди{% endif %}">
+              <div class="chit-level-step__img">
+                {% if lvl.image %}<img src="{{ lvl.image }}" alt="" width="48" height="48">{% else %}⭐{% endif %}
+              </div>
+              <span class="chit-level-step__name">{{ lvl.name }}</span>
+              {% if lvl.status == 'next' and lvl.points_to_unlock %}
+              <span class="chit-level-step__pts">{{ lvl.points_to_unlock }} Слов.</span>
+              {% endif %}
+            </div>
+            {% if not loop.last %}<div class="chit-level-step__line"></div>{% endif %}
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="chit-panel">
+          <div class="chit-section-head">
+            <h2 class="chit-section-title">Трофеи</h2>
+            <p class="chit-section-sub">Ты уже собрал {{ cab.badges_earned_count }} из 9 бейджей</p>
+          </div>
+          <div class="chit-badge-grid">
+            {% for b in cab.badges %}
+            <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}">
+              <div class="chit-badge-card__img">
+                {% if b.image %}<img src="{{ b.image }}" alt="" width="56" height="56">{% else %}🏅{% endif %}
+              </div>
+              <span class="chit-badge-card__name">{{ b.name }}</span>
+            </button>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="chit-panel chit-panel--collection">
+          <h2 class="chit-section-title">Моя коллекция</h2>
+          <div class="chit-collection">
+            <div class="chit-collection__item">
+              <span class="chit-collection__num">{{ cab.collection.stories_count }}</span>
+              <span class="chit-collection__label">сказок</span>
+            </div>
+            <div class="chit-collection__item">
+              <span class="chit-collection__num">{{ cab.collection.cards_count }}</span>
+              <span class="chit-collection__label">карточек</span>
+            </div>
+            <div class="chit-collection__item">
+              <span class="chit-collection__num">{{ cab.collection.secrets_count }}</span>
+              <span class="chit-collection__label">секретов</span>
+            </div>
+            <div class="chit-collection__item">
+              <span class="chit-collection__num">{{ cab.collection.points }}</span>
+              <span class="chit-collection__label">Словиков</span>
+            </div>
+          </div>
+          {% if cab.collection.stories_preview %}
+          <ul class="chit-collection-list">
+            {% for tale in cab.collection.stories_preview %}
+            <li>📚 {{ tale }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </section>
+
+        <section class="chit-panel chit-panel--secret{% if cab.secret_unlocked %} is-unlocked{% endif %}">
+          <div class="chit-secret">
+            <span class="chit-secret__icon">🗝</span>
+            <div>
+              <h2 class="chit-section-title">Секретный сундук</h2>
+              {% if cab.secret_unlocked %}
+              <p>Ты собрал достаточно трофеев — редкая наклейка и бонусная страница уже ждут в следующем уроке!</p>
+              {% else %}
+              <p>Собери 3 бейджа или 15 Словиков — и откроется маленький сюрприз.</p>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+
+      </article>
+      {% endfor %}
+
+    </div>
+
+    <!-- ===== Родители: отдельная вкладка ===== -->
+    <div class="chit-view chit-view--parent" data-view="parent" hidden>
+
+      <section class="chit-panel chit-panel--parent-intro">
+        <h1 class="chit-parent-page__title">Здравствуйте, {{ parent_name }}!</h1>
+        <p class="chit-parent-page__sub">Здесь — прогресс ребёнка, расписание и подсказки. Сохраните эту страницу в закладки.</p>
+        {% if channel == 'web' %}
+        <p class="chit-parent-page__note">Вы выбрали уведомления только на этой странице.</p>
+        {% elif channel == 'email' %}
+        <p class="chit-parent-page__note">Важное дублируем на email.</p>
+        {% elif channel == 'both' %}
+        <p class="chit-parent-page__note">{% if telegram_enabled and telegram_linked %}Уведомления: страница, email и Telegram.{% else %}Уведомления: страница и email.{% endif %}</p>
         {% endif %}
       </section>
 
-      <!-- 3. Сундук -->
-      <section class="chit-panel chit-panel--chest{% if cab.chest.ready %} is-ready{% endif %}" id="chest-{{ loop.index }}">
-        <div class="chit-chest">
-          <div class="chit-chest__visual" aria-hidden="true">
-            <div class="chit-chest__box">🎁</div>
-            <div class="chit-chest__glow"></div>
-          </div>
-          <div class="chit-chest__body">
-            <h2 class="chit-chest__title">{{ cab.chest.title }}</h2>
-            <p class="chit-chest__sub">{{ cab.chest.subtitle }}</p>
-            <p class="chit-chest__reward">Внутри: {{ cab.chest.reward }}.</p>
-            <div class="chit-chest__progress">
-              <div class="chit-progress__bar chit-progress__bar--gold">
-                <div class="chit-progress__fill" style="width: {{ cab.chest.pct }}%"></div>
-              </div>
-              <p class="chit-chest__hint">{{ cab.chest.hint }}</p>
-            </div>
-            <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not cab.chest.ready %} disabled{% endif %}>
-              {% if cab.chest.ready %}Открыть сундук{% else %}Открыть сундук{% endif %}
-            </button>
-          </div>
-        </div>
-        <div class="chit-chest-reveal" hidden>
-          <p>✨ Сундук открыт! Новая сказка и секретная наклейка ждут тебя в уроке.</p>
-        </div>
-      </section>
-
-      <!-- 4. Урок дня -->
-      {% if cab.daily_lesson %}
-      <section class="chit-panel chit-panel--mission">
-        <div class="chit-lesson-card">
-          <span class="chit-lesson-card__badge">Урок дня</span>
-          <h2 class="chit-lesson-card__title">Урок дня: {{ cab.daily_lesson.title }}</h2>
-          <p class="chit-lesson-card__goal">{{ cab.daily_lesson.goal }}</p>
-          <div class="chit-lesson-card__meta">
-            <span>⏱ {{ cab.daily_lesson.duration }}</span>
-            <span>✨ +{{ cab.daily_lesson.reward_pts }} Словиков и шаг к сундуку</span>
-          </div>
-          {% if cab.daily_lesson.url %}
-          <a class="chit-btn" href="{{ cab.daily_lesson.url }}">Начать урок</a>
-          {% else %}
-          <p class="chit-lesson-card__soon">Откроется: {{ cab.daily_lesson.opens_on_label }}</p>
-          {% endif %}
-        </div>
+      {% if telegram_enabled %}
+      <section class="chit-panel chit-panel--parent">
+        <h2 class="chit-section-title chit-section-title--calm">Telegram</h2>
+        {% if telegram_linked %}
+        <p class="chit-tg-ok">✓ Telegram привязан — уведомления приходят в бот.</p>
+        {% elif telegram_link %}
+        <p>Хотите дублировать уведомления в Telegram?</p>
+        <a class="chit-tg-btn" href="{{ link_page }}">Привязать Telegram</a>
+        {% else %}
+        <p>Уведомления доступны на этой странице и по email.</p>
+        {% endif %}
       </section>
       {% endif %}
 
-      <!-- 5. Миссии -->
-      <section class="chit-panel">
-        <h2 class="chit-section-title">Миссии на сегодня</h2>
-        <ul class="chit-missions">
-          {% for m in cab.missions %}
-          <li class="chit-mission chit-mission--{{ m.status }}">
-            <span class="chit-mission__icon">{{ m.icon }}</span>
-            <span class="chit-mission__text">{{ m.text }}</span>
-            {% if m.status == 'done' %}<span class="chit-mission__ok">✓</span>{% endif %}
-          </li>
-          {% endfor %}
+      {% for child in children %}
+      {% set cab = child.cabinet %}
+      <section class="chit-panel chit-panel--parent">
+        <h2 class="chit-section-title chit-section-title--calm">{{ child.name }}</h2>
+        <ul class="chit-parent-facts">
+          <li><strong>Уровень:</strong> {{ cab.parent.level }}</li>
+          <li><strong>Словиков:</strong> {{ cab.parent.points }}</li>
+          <li><strong>Бейджей:</strong> {{ cab.parent.badges_count }}</li>
+          <li><strong>Пройдено уроков:</strong> {{ cab.parent.completed_lessons }}</li>
+          <li><strong>Сейчас развивается:</strong> {{ cab.parent.skill }}</li>
+          <li><strong>Текущий урок:</strong> {{ cab.parent.current_lesson }}</li>
+          <li><strong>Сундук:</strong> {{ cab.parent.chest_ready }}</li>
+          {% if cab.next_level_name %}
+          <li><strong>До следующего уровня:</strong> {{ cab.points_to_next }} Словиков ({{ cab.next_level_name }})</li>
+          {% endif %}
         </ul>
-      </section>
+        {% if child.badges %}
+        <p class="chit-parent-badges"><strong>Бейджи:</strong> {{ child.badges | join(', ') }}</p>
+        {% endif %}
+        {% if child.module_title %}
+        <p class="chit-parent-module"><strong>Модуль:</strong> {{ child.module_title }}</p>
+        {% endif %}
+        <p class="chit-parent-tip">{{ cab.parent.support_tip }}</p>
 
-      <!-- 6. Дорожка уровней -->
-      <section class="chit-panel">
-        <h2 class="chit-section-title">Путь героя</h2>
-        <div class="chit-level-path">
-          {% for lvl in cab.levels %}
-          <div class="chit-level-step chit-level-step--{{ lvl.status }}" data-level-info="{{ lvl.name }} — {% if lvl.status == 'done' %}пройден{% elif lvl.status == 'current' %}сейчас здесь{% elif lvl.status == 'next' %}следующий{% else %}ещё впереди{% endif %}">
-            <div class="chit-level-step__img">
-              {% if lvl.image %}<img src="{{ lvl.image }}" alt="" width="48" height="48">{% else %}⭐{% endif %}
-            </div>
-            <span class="chit-level-step__name">{{ lvl.name }}</span>
-            {% if lvl.status == 'next' and lvl.points_to_unlock %}
-            <span class="chit-level-step__pts">{{ lvl.points_to_unlock }} Слов.</span>
-            {% endif %}
-          </div>
-          {% if not loop.last %}<div class="chit-level-step__line"></div>{% endif %}
-          {% endfor %}
-        </div>
-      </section>
-
-      <!-- 7. Бейджи -->
-      <section class="chit-panel">
-        <div class="chit-section-head">
-          <h2 class="chit-section-title">Трофеи</h2>
-          <p class="chit-section-sub">Ты уже собрал {{ cab.badges_earned_count }} из 9 бейджей</p>
-        </div>
-        <div class="chit-badge-grid">
-          {% for b in cab.badges %}
-          <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}">
-            <div class="chit-badge-card__img">
-              {% if b.image %}<img src="{{ b.image }}" alt="" width="56" height="56">{% else %}🏅{% endif %}
-            </div>
-            <span class="chit-badge-card__name">{{ b.name }}</span>
-          </button>
-          {% endfor %}
-        </div>
-      </section>
-
-      <!-- 8. Коллекция -->
-      <section class="chit-panel chit-panel--collection">
-        <h2 class="chit-section-title">Моя коллекция</h2>
-        <div class="chit-collection">
-          <div class="chit-collection__item">
-            <span class="chit-collection__num">{{ cab.collection.stories_count }}</span>
-            <span class="chit-collection__label">сказок</span>
-          </div>
-          <div class="chit-collection__item">
-            <span class="chit-collection__num">{{ cab.collection.cards_count }}</span>
-            <span class="chit-collection__label">карточек</span>
-          </div>
-          <div class="chit-collection__item">
-            <span class="chit-collection__num">{{ cab.collection.secrets_count }}</span>
-            <span class="chit-collection__label">секретов</span>
-          </div>
-          <div class="chit-collection__item">
-            <span class="chit-collection__num">{{ cab.collection.points }}</span>
-            <span class="chit-collection__label">Словиков</span>
-          </div>
-        </div>
-        {% if cab.collection.stories_preview %}
-        <ul class="chit-collection-list">
-          {% for tale in cab.collection.stories_preview %}
-          <li>📚 {{ tale }}</li>
+        {% if child.events %}
+        <h3 class="chit-parent-subhead">Недавние занятия</h3>
+        <ul class="chit-parent-events">
+          {% for e in child.events[:8] %}
+          <li>{{ e.date }} — {{ e.type }}{% if e.tale != '—' %} («{{ e.tale }}»){% endif %}</li>
           {% endfor %}
         </ul>
         {% endif %}
-      </section>
 
-      <!-- 9. Блок для родителей -->
-      <section class="chit-panel chit-panel--parent">
-        <h2 class="chit-section-title chit-section-title--calm">Для родителя</h2>
-        <ul class="chit-parent-facts">
-          <li><strong>Пройдено уроков:</strong> {{ cab.parent.completed_lessons }}</li>
-          <li><strong>Сейчас развивается:</strong> {{ cab.parent.skill }}</li>
-          <li><strong>Словиков собрано:</strong> {{ cab.parent.points }}</li>
-          <li><strong>Сундук:</strong> {{ cab.parent.chest_hint }}</li>
-        </ul>
-        <p class="chit-parent-tip">{{ cab.parent.support_tip }}</p>
-      </section>
-
-      <!-- 10. Секретный бонус -->
-      <section class="chit-panel chit-panel--secret{% if cab.secret_unlocked %} is-unlocked{% endif %}">
-        <div class="chit-secret">
-          <span class="chit-secret__icon">🗝</span>
-          <div>
-            <h2 class="chit-section-title">Секретный сундук</h2>
-            {% if cab.secret_unlocked %}
-            <p>Ты собрал достаточно трофеев — редкая наклейка и бонусная страница уже ждут в следующем уроке!</p>
-            {% else %}
-            <p>Собери 3 бейджа или 15 Словиков — и откроется маленький сюрприз.</p>
-            {% endif %}
-          </div>
-        </div>
-      </section>
-
-      <!-- Расписание (свернуто) -->
-      {% if child.lessons %}
-      <details class="chit-panel chit-panel--schedule">
-        <summary class="chit-section-title">Все сказки модуля</summary>
+        {% if child.lessons %}
+        <h3 class="chit-parent-subhead">Расписание сказок</h3>
+        <p class="chit-schedule-intro">
+          {% if module_start_date %}
+          Первый этап начинается {{ module_start_date }} — новая сказка открывается по понедельникам.
+          {% else %}
+          Новая сказка открывается раз в неделю по понедельникам.
+          {% endif %}
+          {% if child.has_meetings %}
+          Встречи с преподавателем — по четвергам.
+          {% endif %}
+        </p>
         {% for stage in child.lesson_stages %}
         <div class="chit-stage">
-          <h3 class="chit-stage__title">{{ stage.label }}</h3>
+          <h4 class="chit-stage__title">{{ stage.label }}</h4>
           <ul class="chit-lesson-list">
             {% for les in stage.lessons %}
             <li class="chit-lesson-item{% if les.url %} is-open{% elif not les.unlocked %} is-locked{% endif %}">
               <div class="chit-lesson-item__head">
                 <span class="chit-lesson-item__title">{{ les.title }}</span>
+                <span class="chit-lesson-item__week">Сказка {{ les.week_in_stage }}</span>
+              </div>
+              <div class="chit-lesson-item__dates">
+                {% if les.url or (les.unlocked and les.ready) %}
+                <span><strong>Доступен с:</strong> {{ les.opens_on_label }}</span>
+                {% else %}
+                <span><strong>Откроется:</strong> {{ les.opens_on_label }}</span>
+                {% endif %}
+                {% if les.meeting_on_label %}
+                <span><strong>Встреча:</strong> {{ les.meeting_on_label }}</span>
+                {% endif %}
               </div>
               {% if les.url %}
-              <a class="chit-btn chit-btn--sm" href="{{ les.url }}">Открыть</a>
+              <a class="chit-btn chit-btn--sm" href="{{ les.url }}">Открыть урок</a>
+              {% elif les.unlocked and not les.ready %}
+              <span class="chit-status chit-status--soon">Скоро появится</span>
               {% elif not les.unlocked %}
-              <span class="chit-status chit-status--locked">Откроется {{ les.opens_on_label }}</span>
+              <span class="chit-status chit-status--locked">Пока закрыто</span>
               {% endif %}
             </li>
             {% endfor %}
           </ul>
         </div>
         {% endfor %}
-      </details>
-      {% endif %}
-
-    </article>
-    {% endfor %}
-
-    <!-- Лента родителя -->
-    <section class="chit-panel chit-panel--feed">
-      <h2 class="chit-section-title chit-section-title--calm">Лента</h2>
-      <div class="chit-feed">
-        {% for n in notifications %}
-        <div class="chit-feed-item">
-          <div class="chit-feed-date">{{ n.date }} · {{ n.channel }}</div>
-          {{ n.message }}
-        </div>
         {% else %}
-        <p class="chit-guide-sub">Пока нет сообщений.</p>
-        {% endfor %}
-      </div>
-    </section>
+        <p class="chit-guide-sub">Первая сказка скоро откроется.</p>
+        {% endif %}
+      </section>
+      {% endfor %}
 
-    <p class="chit-footer-note">Сохраните эту страницу в закладки — здесь прогресс {{ parent_name }}.</p>
+      <section class="chit-panel chit-panel--parent">
+        <h2 class="chit-section-title chit-section-title--calm">Как проходит урок</h2>
+        <p class="chit-guide-sub">Ребёнок проходит урок сам — в своём темпе. Квизы проверяются автоматически, вам не нужно ничего отправлять.</p>
+        <ol class="chit-guide-steps">
+          <li><strong>Видео по сказке</strong> — +2 Словика.</li>
+          <li><strong>Квиз «Понимание»</strong> — +2 Словика, бейдж «Следопыт».</li>
+          <li><strong>Квиз «Смысл»</strong> — +2 Словика, бейдж «Ловец смысла».</li>
+          <li><strong>Творческое задание</strong> — +3 Словика. Отметьте выполнение кнопкой в уроке.</li>
+          <li><strong>Пересказ или встреча</strong> — по желанию и тарифу.</li>
+        </ol>
+        <p class="chit-guide-sub">Сравнений с другими детьми нет — только личный прогресс.</p>
+      </section>
+
+      <section class="chit-panel chit-panel--parent">
+        <h2 class="chit-section-title chit-section-title--calm">За что начисляются Словики</h2>
+        <table class="chit-points-table">
+          <tr><th>Досмотрел видеоурок</th><td>+2</td></tr>
+          <tr><th>Квиз «Понимание сказки»</th><td>+2</td></tr>
+          <tr><th>Квиз «Смысл сказки»</th><td>+2</td></tr>
+          <tr><th>Творческое задание</th><td>+3</td></tr>
+          <tr><th>Пересказ сказки</th><td>+3</td></tr>
+          <tr><th>Живая встреча</th><td>+2</td></tr>
+          <tr><th>3 дня подряд</th><td>+3 и бейдж</td></tr>
+        </table>
+      </section>
+
+      <section class="chit-panel chit-panel--parent chit-panel--feed">
+        <h2 class="chit-section-title chit-section-title--calm">Лента уведомлений</h2>
+        <div class="chit-feed">
+          {% for n in notifications %}
+          <div class="chit-feed-item">
+            <div class="chit-feed-date">{{ n.date }} · {{ n.channel }}</div>
+            {{ n.message }}
+          </div>
+          {% else %}
+          <p class="chit-guide-sub">Пока нет сообщений.</p>
+          {% endfor %}
+        </div>
+      </section>
+
+    </div>
   </div>
 
   <div class="chit-modal" id="badge-modal" hidden>

@@ -459,6 +459,112 @@ body.chit-cabinet {
 .chit-wrap--wide { max-width: 680px; }
 .chit-room { margin-bottom: 32px; }
 
+.chit-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.chit-topbar__logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--white);
+  padding: 4px;
+  box-shadow: var(--shadow);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.chit-tabs {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chit-tabs__btn {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.chit-tabs__btn.is-active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.chit-tabs__btn[data-tab="parent"]:not(.is-active) {
+  background: var(--cream-warm);
+}
+
+body.chit-cabinet--parent {
+  background:
+    radial-gradient(ellipse 70% 40% at 50% -10%, rgba(91, 127, 166, 0.1), transparent),
+    var(--cream);
+}
+
+.chit-view[hidden] { display: none !important; }
+
+.chit-parent-page__title {
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1.35rem;
+  margin: 0 0 8px;
+  color: var(--text-warm);
+}
+
+.chit-parent-page__sub,
+.chit-parent-page__note {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.chit-parent-subhead {
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1rem;
+  margin: 18px 0 10px;
+  color: var(--text-warm);
+}
+
+.chit-parent-badges,
+.chit-parent-module {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.chit-parent-events {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.chit-parent-events li { margin-bottom: 4px; }
+
+.chit-panel--parent-intro {
+  background: linear-gradient(135deg, var(--white), var(--cream-warm));
+}
+
+@media (max-width: 600px) {
+  .chit-tabs { width: 100%; }
+  .chit-tabs__btn { font-size: 0.75rem; padding: 10px 8px; white-space: normal; line-height: 1.2; }
+}
+
 .chit-room__hero {
   display: flex;
   align-items: center;

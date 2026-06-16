@@ -1,4 +1,33 @@
 (function () {
+  var tabs = document.querySelectorAll('.chit-tabs__btn');
+  var views = document.querySelectorAll('.chit-view');
+
+  function showTab(name) {
+    tabs.forEach(function (btn) {
+      var active = btn.getAttribute('data-tab') === name;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    views.forEach(function (view) {
+      var show = view.getAttribute('data-view') === name;
+      view.hidden = !show;
+    });
+    document.body.classList.toggle('chit-cabinet--parent', name === 'parent');
+    try {
+      history.replaceState(null, '', name === 'parent' ? '#parent' : '#');
+    } catch (e) {}
+  }
+
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      showTab(btn.getAttribute('data-tab') || 'child');
+    });
+  });
+
+  if (location.hash === '#parent') {
+    showTab('parent');
+  }
+
   document.querySelectorAll('[data-chest-open]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       if (btn.disabled) return;
@@ -33,11 +62,4 @@
       if (e.target === modal) modal.hidden = true;
     });
   }
-
-  document.querySelectorAll('.chit-level-step[data-level-info]').forEach(function (step) {
-    step.addEventListener('click', function () {
-      var info = step.getAttribute('data-level-info');
-      if (info) step.setAttribute('title', info);
-    });
-  });
 })();

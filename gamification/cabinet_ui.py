@@ -225,11 +225,14 @@ def _parent_summary(
         "skill": skill,
         "points": str(points),
         "chest_hint": chest.get("hint", ""),
+        "chest_ready": "да, можно открыть" if chest.get("ready") else chest.get("hint", ""),
         "support_tip": (
             f"Сегодня у {child_name} урок «{lesson_line}». "
             "Можно пройти частями — главное, без спешки и с интересом."
         ),
         "badges_count": str(badges_count),
+        "current_lesson": lesson_line,
+        "level": level,
     }
 
 
