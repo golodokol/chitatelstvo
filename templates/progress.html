@@ -88,6 +88,42 @@
           {% endif %}
         </section>
 
+        <section class="chit-panel chit-panel--hero-path">
+          <h2 class="chit-section-title chit-section-title--hero">Путь героя</h2>
+          <p class="chit-section-sub chit-section-sub--hero">Словики открывают новые ступени — от Старта до Литературного детектива</p>
+          <div class="chit-level-path">
+            {% for lvl in cab.levels %}
+            <button type="button" class="chit-level-step chit-level-step--{{ lvl.status }}" data-level-info="{{ lvl.name }} — {% if lvl.status == 'done' %}пройден{% elif lvl.status == 'current' %}сейчас здесь{% elif lvl.status == 'next' %}следующий{% else %}ещё впереди{% endif %}">
+              <div class="chit-level-step__img">
+                {% if lvl.image %}<img src="{{ lvl.image }}" alt="" width="64" height="64">{% else %}⭐{% endif %}
+              </div>
+              <span class="chit-level-step__name">{{ lvl.name }}</span>
+              {% if lvl.status == 'next' and lvl.points_to_unlock %}
+              <span class="chit-level-step__pts">{{ lvl.points_to_unlock }} Слов.</span>
+              {% endif %}
+            </button>
+            {% if not loop.last %}<div class="chit-level-step__line" aria-hidden="true"></div>{% endif %}
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="chit-panel chit-panel--trophies">
+          <div class="chit-section-head">
+            <h2 class="chit-section-title">Трофеи</h2>
+            <p class="chit-section-sub">Ты уже собрал {{ cab.badges_earned_count }} из {{ cab.badges_total }} бейджей</p>
+          </div>
+          <div class="chit-badge-grid">
+            {% for b in cab.badges %}
+            <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}">
+              <div class="chit-badge-card__img">
+                {% if b.image %}<img src="{{ b.image }}" alt="" width="64" height="64">{% else %}🏅{% endif %}
+              </div>
+              <span class="chit-badge-card__name">{{ b.name }}</span>
+            </button>
+            {% endfor %}
+          </div>
+        </section>
+
         <section class="chit-panel chit-panel--chest{% if cab.chest.ready %} is-ready{% endif %}" id="chest-{{ loop.index }}" data-chest-slovik="{{ cab.chest.slovik_url }}" data-chest-victory="/static/sloviki/slovik-victory.png">
           <div class="chit-chest">
             <div class="chit-chest__visual" aria-hidden="true">
@@ -204,41 +240,6 @@
             </li>
             {% endfor %}
           </ul>
-        </section>
-
-        <section class="chit-panel">
-          <h2 class="chit-section-title">Путь героя</h2>
-          <div class="chit-level-path">
-            {% for lvl in cab.levels %}
-            <div class="chit-level-step chit-level-step--{{ lvl.status }}" data-level-info="{{ lvl.name }} — {% if lvl.status == 'done' %}пройден{% elif lvl.status == 'current' %}сейчас здесь{% elif lvl.status == 'next' %}следующий{% else %}ещё впереди{% endif %}">
-              <div class="chit-level-step__img">
-                {% if lvl.image %}<img src="{{ lvl.image }}" alt="" width="48" height="48">{% else %}⭐{% endif %}
-              </div>
-              <span class="chit-level-step__name">{{ lvl.name }}</span>
-              {% if lvl.status == 'next' and lvl.points_to_unlock %}
-              <span class="chit-level-step__pts">{{ lvl.points_to_unlock }} Слов.</span>
-              {% endif %}
-            </div>
-            {% if not loop.last %}<div class="chit-level-step__line"></div>{% endif %}
-            {% endfor %}
-          </div>
-        </section>
-
-        <section class="chit-panel">
-          <div class="chit-section-head">
-            <h2 class="chit-section-title">Трофеи</h2>
-            <p class="chit-section-sub">Ты уже собрал {{ cab.badges_earned_count }} из {{ cab.badges_total }} бейджей</p>
-          </div>
-          <div class="chit-badge-grid">
-            {% for b in cab.badges %}
-            <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}">
-              <div class="chit-badge-card__img">
-                {% if b.image %}<img src="{{ b.image }}" alt="" width="56" height="56">{% else %}🏅{% endif %}
-              </div>
-              <span class="chit-badge-card__name">{{ b.name }}</span>
-            </button>
-            {% endfor %}
-          </div>
         </section>
 
         <section class="chit-panel chit-panel--collection">

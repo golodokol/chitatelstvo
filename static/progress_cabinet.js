@@ -76,8 +76,30 @@
   var titleEl = document.getElementById('badge-modal-title');
   var textEl = document.getElementById('badge-modal-text');
 
+  function clearPressedBadges(except) {
+    document.querySelectorAll('.chit-badge-card.is-pressed').forEach(function (card) {
+      if (card !== except) card.classList.remove('is-pressed');
+    });
+  }
+
+  function clearActiveLevels(except) {
+    document.querySelectorAll('.chit-level-step.is-active').forEach(function (step) {
+      if (step !== except) step.classList.remove('is-active');
+    });
+  }
+
+  document.querySelectorAll('.chit-level-step').forEach(function (step) {
+    step.addEventListener('click', function () {
+      var active = step.classList.contains('is-active');
+      clearActiveLevels(step);
+      if (!active) step.classList.add('is-active');
+    });
+  });
+
   document.querySelectorAll('[data-badge-name]').forEach(function (card) {
     card.addEventListener('click', function () {
+      clearPressedBadges(card);
+      card.classList.add('is-pressed');
       if (!modal) return;
       titleEl.textContent = card.getAttribute('data-badge-name') || '';
       textEl.textContent = card.getAttribute('data-badge-condition') || '';
@@ -86,11 +108,13 @@
   });
 
   if (modal) {
-    modal.querySelector('.chit-modal__close')?.addEventListener('click', function () {
+    function closeModal() {
       modal.hidden = true;
-    });
+      clearPressedBadges(null);
+    }
+    modal.querySelector('.chit-modal__close')?.addEventListener('click', closeModal);
     modal.addEventListener('click', function (e) {
-      if (e.target === modal) modal.hidden = true;
+      if (e.target === modal) closeModal();
     });
   }
 })();
