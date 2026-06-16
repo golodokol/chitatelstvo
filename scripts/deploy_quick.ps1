@@ -11,7 +11,7 @@ $dir = $cfg.ProjectDir
 
 Write-Host "Deploying to $($cfg.Host)..."
 $assets = "/var/www/chitatelstvo-assets"
-$cmd = "set -e; cd $dir; git pull origin main; docker compose restart api; mkdir -p $assets; cp docs/tilda-zero-main/chit-quiz.js docs/tilda-zero-main/chit-quiz.css $assets/; cp docs/images/gamify-badge-*.png $assets/ 2>/dev/null || true; echo DEPLOY_OK"
+$cmd = "set -e; cd $dir; git pull origin main; docker compose restart api; mkdir -p $assets; cp docs/tilda-zero-main/chit-quiz.js docs/tilda-zero-main/chit-quiz.css $assets/; cp docs/images/gamify-badge-* $assets/ 2>/dev/null || true; bash scripts/rename_assets_lower.sh; echo DEPLOY_OK"
 
 Invoke-Remote -Cfg $cfg -Command $cmd
 Write-Host "Done."
