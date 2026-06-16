@@ -22,6 +22,20 @@
     <!-- ===== Ребёнок: игровая комната ===== -->
     <div class="chit-view chit-view--child" data-view="child">
 
+      <section class="chit-slovik-intro" aria-label="Знакомство со Словиком">
+        <img class="chit-slovik-intro__img" src="/static/sloviki/slovik-main.png" alt="Словик — помощник в приключениях" width="140" height="140" loading="eager">
+        <div class="chit-slovik-intro__text">
+          <p class="chit-slovik-intro__hi">Привет! Я — <strong>Словик</strong> ✨</p>
+          <p class="chit-slovik-intro__body">
+            {% if children|length == 1 %}
+            Я буду рядом с тобой, {{ children[0].name }}: подскажу, когда откроется сундук, порадуемся за каждый урок и поможем собрать Словики. Не спеши — идём в своём темпе, главное с интересом!
+            {% else %}
+            Я буду рядом в ваших приключениях: подскажу, когда откроется сундук, порадуемся за каждый урок и поможем собрать Словики. Не спешите — идём в своём темпе!
+            {% endif %}
+          </p>
+        </div>
+      </section>
+
       {% for child in children %}
       {% set cab = child.cabinet %}
       <article class="chit-room" id="room-{{ loop.index }}">
