@@ -13,6 +13,7 @@ from gamification.sloviki import (
     recent_event_slovik,
     slovik_url,
 )
+from lessons.schedule import STAGE_LABELS
 
 # Пороги Словиков для полоски прогресса до следующего уровня (только UI).
 LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 18, 28]
@@ -247,6 +248,28 @@ def _parent_summary(
     }
 
 
+def _story_stages(lesson_links: list[dict]) -> list[dict]:
+    if not lesson_links:
+        return []
+    by_stage: dict[str, list[dict]] = {}
+    for les in lesson_links:
+        stage = les.get("stage") or "stage-1"
+        by_stage.setdefault(stage, []).append(les)
+    stages: list[dict] = []
+    for stage_key in ("stage-1", "stage-2"):
+        items = by_stage.get(stage_key)
+        if not items:
+            continue
+        stages.append(
+            {
+                "key": stage_key,
+                "label": STAGE_LABELS.get(stage_key, stage_key),
+                "lessons": items,
+            }
+        )
+    return stages
+
+
 def build_child_cabinet(
     *,
     name: str,
@@ -312,6 +335,9 @@ def build_child_cabinet(
             "url": lesson.get("url"),
             "unlocked": bool(lesson.get("url")),
             "opens_on_label": lesson.get("opens_on_label"),
+            "cover_url": lesson.get("cover_url"),
+            "cover_state": lesson.get("cover_state", "locked"),
+            "week_in_stage": lesson.get("week_in_stage"),
         }
 
     chest["slovik_key"] = chest_slovik_key(chest)
@@ -336,6 +362,8 @@ def build_child_cabinet(
         "hint": COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"]),
     }
 
+    story_stages = _story_stages(lesson_links)
+
     continue_url = lesson.get("url") if lesson and lesson.get("url") else None
     recent_toast = recent_event_slovik(events)
 
@@ -353,6 +381,7 @@ def build_child_cabinet(
         "badges_earned_count": len(earned_badges),
         "chest": chest,
         "daily_lesson": daily,
+        "story_stages": story_stages,
         "missions": missions,
         "collection": collection,
         "parent": parent,

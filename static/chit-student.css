@@ -774,6 +774,16 @@ body.chit-cabinet--parent {
   color: var(--accent);
   margin-bottom: 8px;
 }
+
+.chit-lesson-card {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.chit-lesson-card__body { min-width: 0; }
+
 .chit-lesson-card__title { font-family: 'Literata', Georgia, serif; font-size: 1.2rem; margin: 0 0 8px; }
 .chit-lesson-card__goal { margin: 0 0 12px; color: var(--muted); font-size: 0.95rem; }
 .chit-lesson-card__meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.88rem; color: var(--blue-deep); font-weight: 700; margin-bottom: 14px; }
@@ -928,6 +938,142 @@ body.chit-cabinet--parent {
   color: var(--muted);
 }
 
+.chit-story-stage { margin-bottom: 18px; }
+.chit-story-stage:last-child { margin-bottom: 0; }
+
+.chit-story-stage__title {
+  font-family: 'Literata', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.chit-story-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 14px;
+}
+
+.chit-story-card { margin: 0; }
+
+.chit-story-card__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 16px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.chit-story-card--open .chit-story-card__link:hover {
+  transform: translateY(-3px);
+}
+
+.chit-story-card--open .chit-story-card__link:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.chit-story-card__link--static { cursor: default; }
+
+.chit-story-card__cover {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--cream-warm);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.chit-story-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.chit-story-card__placeholder {
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(135deg, rgba(143, 125, 163, 0.08), rgba(91, 127, 166, 0.12)),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 8px,
+      rgba(91, 127, 166, 0.06) 8px,
+      rgba(91, 127, 166, 0.06) 16px
+    );
+}
+
+.chit-story-card__cover--locked img,
+.chit-story-card__cover--soon img,
+.chit-story-card__cover--locked .chit-story-card__placeholder,
+.chit-story-card__cover--soon .chit-story-card__placeholder {
+  filter: grayscale(0.35) brightness(0.72);
+}
+
+.chit-story-card--open .chit-story-card__cover {
+  border-color: var(--blue-light);
+  box-shadow: 0 6px 20px rgba(91, 127, 166, 0.22);
+}
+
+.chit-story-card__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  text-align: center;
+  background: rgba(61, 82, 102, 0.45);
+  color: #fff;
+}
+
+.chit-story-card__overlay-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chit-story-card__overlay-date {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.chit-story-card__meta { padding: 8px 2px 0; }
+
+.chit-story-card__week {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.chit-story-card__title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-warm);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chit-story-card--locked .chit-story-card__title,
+.chit-story-card--soon .chit-story-card__title {
+  color: var(--muted);
+}
+
 .chit-panel--schedule summary { cursor: pointer; list-style: none; }
 .chit-panel--schedule summary::-webkit-details-marker { display: none; }
 .chit-tg-box--compact { padding: 10px 14px; margin-bottom: 12px; }
@@ -954,4 +1100,7 @@ body.chit-cabinet--parent {
   .chit-room__helper { max-width: 72px; }
   .chit-room__helper-img { width: 64px; }
   .chit-room__helper-hint { font-size: 0.65rem; }
+  .chit-lesson-card { grid-template-columns: 1fr; }
+  .chit-lesson-card__cover { max-width: 140px; margin: 0 auto; }
+  .chit-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

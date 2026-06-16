@@ -13,6 +13,7 @@ from db.session import get_db
 from gamification.cabinet_ui import build_child_cabinet
 from lessons.access import lesson_access_info
 from lessons.enrollment_access import get_active_enrollment, list_lessons_for_child
+from lessons.covers import enrich_lesson_link
 from lessons.schedule import STAGE_LABELS, tariff_has_meetings
 from notifications.telegram_bot import build_link_url
 
@@ -86,6 +87,7 @@ def family_progress(
                 link["meeting_on_label"] = access["meeting_on_label"]
             if access["unlocked"] and les.get("active", True):
                 link["url"] = build_lesson_url(child.id, les["slug"])
+            enrich_lesson_link(link)
             lesson_links.append(link)
 
         children_data.append(

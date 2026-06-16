@@ -117,20 +117,80 @@
 
         {% if cab.daily_lesson %}
         <section class="chit-panel chit-panel--mission">
-          <div class="chit-lesson-card">
-            <span class="chit-lesson-card__badge">Урок дня</span>
-            <h2 class="chit-lesson-card__title">Урок дня: {{ cab.daily_lesson.title }}</h2>
-            <p class="chit-lesson-card__goal">{{ cab.daily_lesson.goal }}</p>
-            <div class="chit-lesson-card__meta">
-              <span>⏱ {{ cab.daily_lesson.duration }}</span>
-              <span>✨ +{{ cab.daily_lesson.reward_pts }} Словиков и шаг к сундуку</span>
+          <div class="chit-lesson-card{% if cab.daily_lesson.cover_state == 'open' %} chit-lesson-card--open{% endif %}">
+            <div class="chit-lesson-card__cover chit-story-card__cover chit-story-card__cover--{{ cab.daily_lesson.cover_state }}">
+              {% if cab.daily_lesson.cover_url %}
+              <img src="{{ cab.daily_lesson.cover_url }}" alt="" loading="lazy">
+              {% else %}
+              <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+              {% endif %}
+              {% if cab.daily_lesson.cover_state != 'open' %}
+              <div class="chit-story-card__overlay">
+                <span>{% if cab.daily_lesson.opens_on_label %}Откроется {{ cab.daily_lesson.opens_on_label }}{% else %}Скоро{% endif %}</span>
+              </div>
+              {% endif %}
             </div>
-            {% if cab.daily_lesson.url %}
-            <a class="chit-btn" href="{{ cab.daily_lesson.url }}">Начать урок</a>
-            {% else %}
-            <p class="chit-lesson-card__soon">Откроется: {{ cab.daily_lesson.opens_on_label }}</p>
-            {% endif %}
+            <div class="chit-lesson-card__body">
+              <span class="chit-lesson-card__badge">Урок дня</span>
+              <h2 class="chit-lesson-card__title">Сказка {{ cab.daily_lesson.week_in_stage or 1 }}: {{ cab.daily_lesson.title }}</h2>
+              <p class="chit-lesson-card__goal">{{ cab.daily_lesson.goal }}</p>
+              <div class="chit-lesson-card__meta">
+                <span>⏱ {{ cab.daily_lesson.duration }}</span>
+                <span>✨ +{{ cab.daily_lesson.reward_pts }} Словиков и шаг к сундуку</span>
+              </div>
+              {% if cab.daily_lesson.url %}
+              <a class="chit-btn" href="{{ cab.daily_lesson.url }}">Начать урок</a>
+              {% else %}
+              <p class="chit-lesson-card__soon">Откроется: {{ cab.daily_lesson.opens_on_label }}</p>
+              {% endif %}
+            </div>
           </div>
+        </section>
+        {% endif %}
+
+        {% if cab.story_stages %}
+        <section class="chit-panel chit-panel--stories">
+          <h2 class="chit-section-title">Мои сказки</h2>
+          {% for stage in cab.story_stages %}
+          <div class="chit-story-stage">
+            <h3 class="chit-story-stage__title">{{ stage.label }}</h3>
+            <div class="chit-story-grid">
+              {% for tale in stage.lessons %}
+              <article class="chit-story-card chit-story-card--{{ tale.cover_state }}">
+                {% if tale.url %}
+                <a class="chit-story-card__link" href="{{ tale.url }}">
+                {% else %}
+                <div class="chit-story-card__link chit-story-card__link--static">
+                {% endif %}
+                  <div class="chit-story-card__cover chit-story-card__cover--{{ tale.cover_state }}">
+                    {% if tale.cover_url %}
+                    <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                    {% else %}
+                    <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                    {% endif %}
+                    {% if tale.cover_state != 'open' %}
+                    <div class="chit-story-card__overlay">
+                      <span class="chit-story-card__overlay-label">
+                        {% if tale.cover_state == 'locked' %}Откроется{% else %}Скоро{% endif %}
+                      </span>
+                      <span class="chit-story-card__overlay-date">{{ tale.opens_on_label }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="chit-story-card__meta">
+                    <span class="chit-story-card__week">Сказка {{ tale.week_in_stage }}</span>
+                    <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                  </div>
+                {% if tale.url %}
+                </a>
+                {% else %}
+                </div>
+                {% endif %}
+              </article>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
         </section>
         {% endif %}
 
