@@ -255,6 +255,45 @@
           </ul>
         </section>
 
+        <section class="chit-panel chit-panel--diary">
+          <h2 class="chit-section-title">Читательский дневник</h2>
+          <p class="chit-section-sub">Сказки, которые ты оценил — от самых любимых к менее понравившимся</p>
+          {% if cab.reading_diary %}
+          <div class="chit-diary-grid">
+            {% for entry in cab.reading_diary %}
+            <article class="chit-diary-card">
+              <div class="chit-diary-card__visual">
+                {% if entry.diary_image_url %}
+                <img class="chit-diary-card__img" src="{{ entry.diary_image_url }}" alt="" loading="lazy">
+                {% else %}
+                <div class="chit-diary-card__placeholder" aria-hidden="true">
+                  <span class="chit-diary-card__placeholder-label">Иллюстрация скоро</span>
+                </div>
+                {% endif %}
+              </div>
+              <div class="chit-diary-card__body">
+                {% if entry.week_in_stage %}
+                <span class="chit-diary-card__week">Сказка {{ entry.week_in_stage }}</span>
+                {% endif %}
+                <h3 class="chit-diary-card__title">{{ entry.title }}</h3>
+                <div class="chit-diary-stars" aria-label="Оценка {{ entry.rating }} из 10">
+                  {% for i in range(1, 11) %}
+                  <span class="chit-diary-star{% if i <= entry.rating %} is-on{% endif %}">★</span>
+                  {% endfor %}
+                </div>
+                <p class="chit-diary-card__score">{{ entry.rating }} из 10</p>
+                {% if entry.rated_at_label %}
+                <p class="chit-diary-card__date">{{ entry.rated_at_label }}</p>
+                {% endif %}
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="chit-diary-empty">Пройди сказку и поставь ей оценку после урока — она появится здесь с красивой иллюстрацией.</p>
+          {% endif %}
+        </section>
+
         <section class="chit-panel chit-panel--collection">
           <h2 class="chit-section-title">Моя коллекция</h2>
           <div class="chit-collection">

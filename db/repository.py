@@ -7,7 +7,7 @@ from datetime import date, datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from db.models import Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward
+from db.models import Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward, TaleRating
 from gamification.engine import GamificationResponse
 
 
@@ -395,3 +395,70 @@ def get_child_events(db: Session, child_id: uuid.UUID, limit: int = 30) -> list[
         .limit(limit)
     )
     return list(db.scalars(stmt).all())
+
+
+def child_has_lesson_complete(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    tale_title: str,
+) -> bool:
+    title = tale_title.strip()
+    if not title:
+        return False
+    stmt = (
+        select(Event.id)
+        .where(
+            Event.child_id == child_id,
+            Event.event_type == "lesson_complete",
+            Event.tale_title == title,
+            Event.status.in_(("done", "pending", "processing")),
+        )
+        .limit(1)
+    )
+    return db.scalar(stmt) is not None
+
+
+def get_tale_rating(db: Session, child_id: uuid.UUID, tale_slug: str) -> TaleRating | None:
+    stmt = select(TaleRating).where(
+        TaleRating.child_id == child_id,
+        TaleRating.tale_slug == tale_slug,
+    )
+    return db.scalars(stmt).first()
+
+
+def get_child_tale_ratings(db: Session, child_id: uuid.UUID) -> list[TaleRating]:
+    stmt = (
+        select(TaleRating)
+        .where(TaleRating.child_id == child_id)
+        .order_by(TaleRating.rating.desc(), TaleRating.updated_at.desc())
+    )
+    return list(db.scalars(stmt).all())
+
+
+def save_tale_rating(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    tale_slug: str,
+    tale_title: str,
+    rating: int,
+) -> TaleRating:
+    row = get_tale_rating(db, child_id, tale_slug)
+    now = _utcnow()
+    if row:
+        row.rating = rating
+        row.tale_title = tale_title.strip() or row.tale_title
+        row.updated_at = now
+    else:
+        row = TaleRating(
+            child_id=child_id,
+            tale_slug=tale_slug,
+            tale_title=tale_title.strip() or None,
+            rating=rating,
+            updated_at=now,
+        )
+        db.add(row)
+    db.commit()
+    db.refresh(row)
+    return row

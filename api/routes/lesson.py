@@ -49,6 +49,10 @@ class ManualMarkBody(LessonAuth):
     notes: str | None = Field(default=None, max_length=2000)
 
 
+class TaleRatingBody(LessonAuth):
+    rating: int = Field(ge=1, le=10)
+
+
 def _verify_access(body: LessonAuth, slug: str) -> uuid.UUID:
     if not verify_lesson_access(body.child_id, slug, body.exp, body.sig):
         raise HTTPException(403, "Ссылка урока недействительна или устарела")
@@ -122,6 +126,9 @@ def lesson_page(
         "step_keys": LESSON_STEP_SLOVIK,
     }
 
+    existing_rating = repo.get_tale_rating(db, child, slug)
+    can_rate = repo.child_has_lesson_complete(db, child, tale_title=lesson["title"])
+
     return templates.TemplateResponse(
         request,
         "lesson.html",
@@ -137,6 +144,8 @@ def lesson_page(
             "comprehension_quiz": quiz_for_client(comprehension) if comprehension else None,
             "meaning_quiz": quiz_for_client(meaning) if meaning else None,
             "slovik": slovik,
+            "existing_rating": existing_rating.rating if existing_rating else None,
+            "can_rate": can_rate,
         },
     )
 
@@ -260,4 +269,38 @@ def manual_mark(
         "status": status,
         "event_id": str(event_id) if event_id else None,
         "message": "Отметка сохранена" if status == "accepted" else "Уже отмечено ранее",
+    }
+
+
+@router.post("/api/lesson/{slug}/rating")
+def tale_rating(
+    slug: str,
+    body: TaleRatingBody,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child_id = _verify_access(body, slug)
+    _get_child_or_404(db, child_id)
+
+    lesson = get_lesson(slug)
+    if not lesson:
+        raise HTTPException(404, "Урок не найден")
+
+    _require_lesson_unlocked(db, child_id, lesson)
+
+    if not repo.child_has_lesson_complete(db, child_id, tale_title=lesson["title"]):
+        raise HTTPException(400, "Сначала нужно досмотреть видео-урок по сказке.")
+
+    row = repo.save_tale_rating(
+        db,
+        child_id=child_id,
+        tale_slug=slug,
+        tale_title=lesson["title"],
+        rating=body.rating,
+    )
+    return {
+        "status": "saved",
+        "rating": row.rating,
+        "message": "Спасибо! Оценка попала в читательский дневник.",
     }

@@ -928,6 +928,121 @@ body.chit-cabinet--parent {
 .chit-mission__text { flex: 1; }
 .chit-mission__ok { color: var(--success); font-weight: 800; }
 
+.chit-panel--diary {
+  background: linear-gradient(180deg, #fff 0%, var(--blue-pale) 100%);
+  border-color: var(--blue-light);
+}
+
+.chit-diary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.chit-diary-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.chit-diary-card__visual {
+  aspect-ratio: 4 / 3;
+  background: var(--cream-warm);
+  border-bottom: 1px solid var(--border);
+}
+
+.chit-diary-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.chit-diary-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.85), rgba(232,241,248,0.95)),
+    repeating-linear-gradient(45deg, rgba(91,127,166,0.05) 0 12px, transparent 12px 24px);
+}
+
+.chit-diary-card__placeholder-label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-align: center;
+  padding: 12px;
+}
+
+.chit-diary-card__body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chit-diary-card__week {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+
+.chit-diary-card__title {
+  margin: 0;
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1.02rem;
+  line-height: 1.25;
+  color: var(--text-warm);
+}
+
+.chit-diary-stars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  line-height: 1;
+}
+
+.chit-diary-star {
+  font-size: 0.95rem;
+  color: rgba(91, 127, 166, 0.22);
+}
+
+.chit-diary-star.is-on {
+  color: #e8b020;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.chit-diary-card__score {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--blue-deep);
+}
+
+.chit-diary-card__date {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.chit-diary-empty {
+  margin: 0;
+  padding: 18px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .chit-level-path {
   display: flex;
   align-items: flex-start;

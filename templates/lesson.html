@@ -10,6 +10,16 @@
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
     .chit-lesson-page p { color: var(--muted); }
     textarea { width: 100%; margin-top: 8px; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 0.95rem; }
+    .chit-step-rating { border-color: var(--accent-pale); background: linear-gradient(180deg, #fff, var(--accent-pale)); }
+    .chit-rating-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 8px; }
+    .chit-rating-star {
+      width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--border);
+      background: var(--white); color: var(--muted); font-size: 1.1rem; font-weight: 800;
+      cursor: pointer; transition: transform 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .chit-rating-star:hover, .chit-rating-star.is-hover { transform: translateY(-2px); border-color: var(--blue-light); color: var(--blue-deep); }
+    .chit-rating-star.is-selected { background: var(--blue-pale); border-color: var(--blue); color: var(--blue-deep); box-shadow: 0 4px 12px rgba(91,127,166,0.18); }
+    .chit-rating-value { min-height: 1.4em; font-weight: 700; color: var(--blue-deep); margin: 0 0 12px; }
   </style>
 </head>
 <body class="chit-student chit-lesson-page">
@@ -48,6 +58,16 @@
     </div>
     {% endif %}
 
+    <div class="chit-card chit-step chit-step-rating" id="step-rating" hidden>
+      <div class="chit-badge-step">Оценка сказки</div>
+      <h2>Как тебе эта сказка?</h2>
+      <p>Выбери от 1 до 10 звёзд — оценка попадёт в твой читательский дневник.</p>
+      <div class="chit-rating-picker" id="rating-picker" role="group" aria-label="Оценка сказки от 1 до 10"></div>
+      <p class="chit-rating-value" id="rating-value" aria-live="polite"></p>
+      <button type="button" class="chit-btn" id="btn-rating" disabled>Сохранить оценку</button>
+      <div id="rating-msg"></div>
+    </div>
+
     <div class="chit-card chit-manual">
       <div class="chit-badge-step">Шаг 4–5 · вручную</div>
       <h2>Творчество и встреча</h2>
@@ -74,10 +94,14 @@
       comprehension: {{ comprehension_quiz|tojson }},
       meaning: {{ meaning_quiz|tojson }},
       slovik: {{ slovik|tojson }},
+      existingRating: {{ existing_rating|tojson }},
+      canRate: {{ can_rate|tojson }},
     };
 
     const SLOVIK = CFG.slovik.urls || {};
     const lessonState = { videoDone: false, comprehensionDone: false, meaningDone: false };
+    let selectedRating = CFG.existingRating || 0;
+    let ratingSaved = !!CFG.existingRating;
 
     function refreshCompanion() {
       if (!window.ChitSlovik) return;
@@ -166,8 +190,10 @@
         if (data.status === 'accepted') {
           lessonState.videoDone = true;
           onReward('lesson_complete', data.status);
+          showRatingStep();
         } else {
           refreshCompanion();
+          if (CFG.canRate || CFG.existingRating) showRatingStep();
         }
       } else {
         videoSent = false;
@@ -311,6 +337,58 @@
       if (data.status === 'accepted') onReward(eventType, data.status);
     }
 
+    function updateRatingValue() {
+      const el = document.getElementById('rating-value');
+      if (!el) return;
+      el.textContent = selectedRating ? ('Твоя оценка: ' + selectedRating + ' из 10') : '';
+    }
+
+    function initRatingPicker() {
+      const picker = document.getElementById('rating-picker');
+      if (!picker) return;
+      picker.innerHTML = '';
+      for (let n = 1; n <= 10; n += 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chit-rating-star' + (selectedRating === n ? ' is-selected' : '');
+        btn.textContent = String(n);
+        btn.setAttribute('aria-label', n + ' из 10');
+        btn.addEventListener('click', function() {
+          selectedRating = n;
+          picker.querySelectorAll('.chit-rating-star').forEach(function(node, idx) {
+            node.classList.toggle('is-selected', idx + 1 === n);
+          });
+          document.getElementById('btn-rating').disabled = false;
+          updateRatingValue();
+        });
+        picker.appendChild(btn);
+      }
+      updateRatingValue();
+      if (selectedRating) document.getElementById('btn-rating').disabled = false;
+    }
+
+    function showRatingStep() {
+      const step = document.getElementById('step-rating');
+      if (!step) return;
+      step.hidden = false;
+      initRatingPicker();
+    }
+
+    async function submitRating() {
+      if (!selectedRating) return;
+      const btn = document.getElementById('btn-rating');
+      btn.disabled = true;
+      const data = await postJson('/api/lesson/' + CFG.slug + '/rating', authBody({ rating: selectedRating }));
+      if (data.status === 'saved') {
+        ratingSaved = true;
+        showMsg('rating-msg', data.message, 'ok');
+        markDone('step-rating');
+      } else {
+        showMsg('rating-msg', data.message || data.detail || 'Не удалось сохранить', 'err');
+        btn.disabled = false;
+      }
+    }
+
     if (CFG.comprehension) {
       renderQuiz('form-comprehension', CFG.comprehension);
       document.getElementById('btn-comprehension').addEventListener('click', () =>
@@ -323,6 +401,9 @@
     }
     document.getElementById('btn-creative').addEventListener('click', () => manualMark('creative_task'));
     document.getElementById('btn-meeting').addEventListener('click', () => manualMark('live_meeting'));
+    document.getElementById('btn-rating').addEventListener('click', submitRating);
+
+    if (CFG.canRate || CFG.existingRating) showRatingStep();
 
     const PLACEHOLDER_IDS = ['KINESCOPE_VIDEO_ID', 'YOUTUBE_VIDEO_ID'];
 

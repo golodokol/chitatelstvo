@@ -284,6 +284,27 @@ def _story_stages(lesson_links: list[dict]) -> list[dict]:
     return stages
 
 
+def _reading_diary(ratings: list[Any], lesson_links: list[dict]) -> list[dict[str, Any]]:
+    """Записи дневника: оценённые сказки, от высшей оценки к низшей."""
+    by_slug = {les.get("slug"): les for les in lesson_links if les.get("slug")}
+    entries: list[dict[str, Any]] = []
+    for row in ratings:
+        lesson = by_slug.get(row.tale_slug)
+        title = (row.tale_title or "").strip() or (lesson or {}).get("title") or "Сказка"
+        rated_at = getattr(row, "updated_at", None) or getattr(row, "created_at", None)
+        entries.append(
+            {
+                "title": title,
+                "slug": row.tale_slug,
+                "rating": row.rating,
+                "rated_at_label": rated_at.strftime("%d.%m.%Y") if rated_at else "",
+                "diary_image_url": None,
+                "week_in_stage": (lesson or {}).get("week_in_stage"),
+            }
+        )
+    return entries
+
+
 def build_child_cabinet(
     *,
     name: str,
@@ -292,6 +313,7 @@ def build_child_cabinet(
     earned_badges: list[str],
     events: list[Any],
     lesson_links: list[dict],
+    tale_ratings: list[Any] | None = None,
     assets_base: str,
 ) -> dict[str, Any]:
     """Собирает контекст игрового кабинета для одного ребёнка."""
@@ -405,6 +427,7 @@ def build_child_cabinet(
             if lesson and lesson.get("title")
             else None
         ),
+        "reading_diary": _reading_diary(tale_ratings or [], lesson_links),
         "collection": collection,
         "parent": parent,
         "secret_unlocked": secret_unlocked,

@@ -56,6 +56,7 @@ def family_progress(
     children_data = []
     for child in family.children:
         events = repo.get_child_events(db, child.id, limit=20)
+        tale_ratings = repo.get_child_tale_ratings(db, child.id)
         badges = [b.badge_name for b in child.badges]
         enrollment = get_active_enrollment(child)
         module = get_module(enrollment.module_id) if enrollment else None
@@ -72,6 +73,7 @@ def family_progress(
                 module=module,
             )
             link = {
+                "slug": les["slug"],
                 "title": les["title"],
                 "module_week": access["module_week"],
                 "week_in_stage": access["week_in_stage"],
@@ -107,6 +109,7 @@ def family_progress(
                     earned_badges=badges,
                     events=events,
                     lesson_links=lesson_links,
+                    tale_ratings=tale_ratings,
                     assets_base=PUBLIC_BASE_URL,
                 ),
                 "events": [
