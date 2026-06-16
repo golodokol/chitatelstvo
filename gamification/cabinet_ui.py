@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from gamification.badge_assets import BADGE_ASSET_FILES
 from gamification.rules import LEVELS
 from gamification.sloviki import (
     COMPANION_HINTS,
@@ -27,11 +28,7 @@ LEVEL_IMAGES: dict[str, str] = {
     "Литературный детектив": "gamify-level-detective.png",
 }
 
-BADGE_IMAGES: dict[str, str] = {
-    "Ловец смысла": "gamify-badge-meaning.png",
-    "Сказочник": "gamify-badge-storyteller.png",
-    "Следопыт": "gamify-badge-tracker.png",
-}
+BADGE_IMAGES: dict[str, str] = BADGE_ASSET_FILES
 
 BADGE_CATALOG: list[dict[str, str]] = [
     {"name": "Первый шаг", "condition": "Первое задание в школе"},
