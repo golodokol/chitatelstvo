@@ -237,8 +237,11 @@
         </section>
         {% endif %}
 
-        <section class="chit-panel">
-          <h2 class="chit-section-title">Миссии на сегодня</h2>
+        <section class="chit-panel chit-panel--missions">
+          <h2 class="chit-section-title">{{ cab.missions_title }}</h2>
+          {% if cab.missions_subtitle %}
+          <p class="chit-section-sub">{{ cab.missions_subtitle }}</p>
+          {% endif %}
           <ul class="chit-missions">
             {% for m in cab.missions %}
             <li class="chit-mission chit-mission--{{ m.status }}">

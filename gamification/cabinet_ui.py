@@ -177,23 +177,23 @@ def _missions(events: list[Any], lesson: dict | None, points: int, chest: dict) 
     items = [
         {
             "id": "read",
-            "text": "Прочитать и посмотреть сказку",
+            "text": "Посмотреть сказку недели",
             "status": status("lesson_complete"),
         },
         {
             "id": "quiz",
-            "text": "Ответить на 3 вопроса",
+            "text": "Ответить на вопросы по сказке",
             "status": status("comprehension"),
         },
         {
             "id": "points",
-            "text": "Собрать 10 Словиков",
-            "status": "done" if points >= 10 else "active",
+            "text": "Собрать 10 Словиков за неделю",
+            "status": "done" if points >= 10 else ("active" if lesson and lesson.get("url") else "locked"),
         },
         {
             "id": "chest",
-            "text": "Открыть сундук",
-            "status": "done" if chest_ready else "active",
+            "text": "Открыть сундук сказки",
+            "status": "done" if chest_ready else ("active" if lesson and lesson.get("url") else "locked"),
         },
         {
             "id": "secret",
@@ -399,6 +399,12 @@ def build_child_cabinet(
         "daily_lesson": daily,
         "story_stages": story_stages,
         "missions": missions,
+        "missions_title": "Миссии на эту неделю",
+        "missions_subtitle": (
+            f"Сказка {lesson.get('week_in_stage')}: {lesson.get('title')}"
+            if lesson and lesson.get("title")
+            else None
+        ),
         "collection": collection,
         "parent": parent,
         "secret_unlocked": secret_unlocked,
