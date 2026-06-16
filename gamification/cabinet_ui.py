@@ -5,6 +5,14 @@ from __future__ import annotations
 from typing import Any
 
 from gamification.rules import LEVELS
+from gamification.sloviki import (
+    COMPANION_HINTS,
+    chest_slovik_key,
+    companion_key,
+    mission_slovik_key,
+    recent_event_slovik,
+    slovik_url,
+)
 
 # Пороги Словиков для полоски прогресса до следующего уровня (только UI).
 LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 18, 28]
@@ -150,38 +158,41 @@ def _missions(events: list[Any], lesson: dict | None, points: int, chest: dict) 
             return "active"
         return "locked"
 
+    chest_ready = bool(chest.get("ready"))
     items = [
         {
             "id": "read",
-            "icon": "📖",
             "text": "Прочитать и посмотреть сказку",
             "status": status("lesson_complete"),
         },
         {
             "id": "quiz",
-            "icon": "🔍",
             "text": "Ответить на 3 вопроса",
             "status": status("comprehension"),
         },
         {
             "id": "points",
-            "icon": "✨",
             "text": "Собрать 10 Словиков",
             "status": "done" if points >= 10 else "active",
         },
         {
             "id": "chest",
-            "icon": "🎁",
             "text": "Открыть сундук",
-            "status": "done" if chest.get("ready") else "active",
+            "status": "done" if chest_ready else "active",
         },
         {
             "id": "secret",
-            "icon": "🗝",
             "text": "Найти секретный знак в сказке",
             "status": status("meaning_analysis"),
         },
     ]
+    for item in items:
+        key = mission_slovik_key(
+            item["id"],
+            chest_ready=chest_ready and item["id"] == "chest",
+        )
+        item["slovik_key"] = key
+        item["slovik_url"] = slovik_url(key)
     return items
 
 
@@ -303,13 +314,30 @@ def build_child_cabinet(
             "opens_on_label": lesson.get("opens_on_label"),
         }
 
+    chest["slovik_key"] = chest_slovik_key(chest)
+    chest["slovik_url"] = slovik_url(chest["slovik_key"])
+
     collection = _collection(events, earned_badges, points)
     missions = _missions(events, lesson, points, chest)
     parent = _parent_summary(name, level, points, len(earned_badges), chest, lesson, events)
 
     secret_unlocked = len(earned_badges) >= 3 or points >= 15
+    secret_slovik_key = "victory" if secret_unlocked else "dreams"
+
+    companion_k = companion_key(
+        events,
+        lesson,
+        chest,
+        secret_unlocked=secret_unlocked,
+    )
+    companion = {
+        "key": companion_k,
+        "url": slovik_url(companion_k),
+        "hint": COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"]),
+    }
 
     continue_url = lesson.get("url") if lesson and lesson.get("url") else None
+    recent_toast = recent_event_slovik(events)
 
     return {
         "name": name,
@@ -329,6 +357,9 @@ def build_child_cabinet(
         "collection": collection,
         "parent": parent,
         "secret_unlocked": secret_unlocked,
+        "secret_slovik_url": slovik_url(secret_slovik_key),
+        "companion": companion,
+        "recent_toast": recent_toast,
         "continue_url": continue_url,
-        "helper_emoji": "🦊",
+        "slovik_main_url": slovik_url("main"),
     }

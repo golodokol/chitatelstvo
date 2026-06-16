@@ -28,6 +28,33 @@
     showTab('parent');
   }
 
+  function showSlovikToast(url, message) {
+    var toast = document.getElementById('slovik-toast');
+    if (!toast || !url) return;
+    var img = toast.querySelector('.chit-slovik-toast__img');
+    var text = toast.querySelector('.chit-slovik-toast__text');
+    if (img) img.src = url;
+    if (text) text.textContent = message || '';
+    toast.hidden = false;
+    toast.classList.add('is-visible');
+    clearTimeout(showSlovikToast._timer);
+    showSlovikToast._timer = setTimeout(function () {
+      toast.classList.remove('is-visible');
+      setTimeout(function () { toast.hidden = true; }, 300);
+    }, 4200);
+  }
+
+  document.querySelectorAll('.chit-room-toast-data').forEach(function (node) {
+    try {
+      var data = JSON.parse(node.textContent || '');
+      if (!data || !data.toast_id) return;
+      var key = 'chit-slovik-toast-' + data.toast_id;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+      showSlovikToast(data.url, data.message);
+    } catch (e) {}
+  });
+
   document.querySelectorAll('[data-chest-open]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       if (btn.disabled) return;
@@ -36,6 +63,10 @@
       panel.classList.add('is-opened');
       var reveal = panel.querySelector('.chit-chest-reveal');
       if (reveal) reveal.hidden = false;
+      var victoryUrl = panel.getAttribute('data-chest-victory');
+      var chestImg = panel.querySelector('[data-chest-slovik-img]');
+      if (chestImg && victoryUrl) chestImg.src = victoryUrl;
+      showSlovikToast(victoryUrl || '/static/sloviki/slovik-victory.png', 'Сундук открыт! Новая награда ждёт в уроке.');
       btn.textContent = 'Забрать награду';
       btn.disabled = true;
     });

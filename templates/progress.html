@@ -23,7 +23,7 @@
     <div class="chit-view chit-view--child" data-view="child">
 
       <section class="chit-slovik-intro" aria-label="Знакомство со Словиком">
-        <img class="chit-slovik-intro__img" src="/static/sloviki/slovik-main.png" alt="Словик — помощник в приключениях" width="140" height="140" loading="eager">
+        <img class="chit-slovik-intro__img" src="{{ children[0].cabinet.slovik_main_url if children else '/static/sloviki/slovik-main.png' }}" alt="Словик — помощник в приключениях" width="140" height="140" loading="eager">
         <div class="chit-slovik-intro__text">
           <p class="chit-slovik-intro__hi">Привет! Я — <strong>Словик</strong> ✨</p>
           <p class="chit-slovik-intro__body">
@@ -39,6 +39,9 @@
       {% for child in children %}
       {% set cab = child.cabinet %}
       <article class="chit-room" id="room-{{ loop.index }}">
+        {% if cab.recent_toast %}
+        <script type="application/json" class="chit-room-toast-data">{{ cab.recent_toast | tojson }}</script>
+        {% endif %}
 
         <header class="chit-room__hero">
           <div class="chit-room__brand">
@@ -47,7 +50,10 @@
               <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
             </div>
           </div>
-          <div class="chit-room__helper" aria-hidden="true">{{ cab.helper_emoji }}</div>
+          <figure class="chit-room__helper" aria-label="Словик подсказывает">
+            <img src="{{ cab.companion.url }}" alt="" width="96" height="96" class="chit-room__helper-img" data-companion-img>
+            <figcaption class="chit-room__helper-hint">{{ cab.companion.hint }}</figcaption>
+          </figure>
         </header>
 
         <section class="chit-panel chit-panel--stats">
@@ -85,10 +91,10 @@
           {% endif %}
         </section>
 
-        <section class="chit-panel chit-panel--chest{% if cab.chest.ready %} is-ready{% endif %}" id="chest-{{ loop.index }}">
+        <section class="chit-panel chit-panel--chest{% if cab.chest.ready %} is-ready{% endif %}" id="chest-{{ loop.index }}" data-chest-slovik="{{ cab.chest.slovik_url }}" data-chest-victory="/static/sloviki/slovik-victory.png">
           <div class="chit-chest">
             <div class="chit-chest__visual" aria-hidden="true">
-              <div class="chit-chest__box">🎁</div>
+              <img class="chit-chest__slovik" src="{{ cab.chest.slovik_url }}" alt="" width="80" height="80" data-chest-slovik-img>
               <div class="chit-chest__glow"></div>
             </div>
             <div class="chit-chest__body">
@@ -133,7 +139,9 @@
           <ul class="chit-missions">
             {% for m in cab.missions %}
             <li class="chit-mission chit-mission--{{ m.status }}">
-              <span class="chit-mission__icon">{{ m.icon }}</span>
+              <span class="chit-mission__icon">
+                <img src="{{ m.slovik_url }}" alt="" width="40" height="40" loading="lazy">
+              </span>
               <span class="chit-mission__text">{{ m.text }}</span>
               {% if m.status == 'done' %}<span class="chit-mission__ok">✓</span>{% endif %}
             </li>
@@ -207,7 +215,7 @@
 
         <section class="chit-panel chit-panel--secret{% if cab.secret_unlocked %} is-unlocked{% endif %}">
           <div class="chit-secret">
-            <span class="chit-secret__icon">🗝</span>
+            <img class="chit-secret__slovik" src="{{ cab.secret_slovik_url }}" alt="" width="72" height="72">
             <div>
               <h2 class="chit-section-title">Секретный сундук</h2>
               {% if cab.secret_unlocked %}
@@ -377,6 +385,11 @@
       </section>
 
     </div>
+  </div>
+
+  <div class="chit-slovik-toast" id="slovik-toast" hidden aria-live="polite">
+    <img class="chit-slovik-toast__img" src="" alt="" width="56" height="56">
+    <p class="chit-slovik-toast__text"></p>
   </div>
 
   <div class="chit-modal" id="badge-modal" hidden>

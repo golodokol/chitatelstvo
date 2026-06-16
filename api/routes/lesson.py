@@ -22,6 +22,7 @@ from lessons.schedule import effective_module_week
 from lessons.loader import get_lesson, quiz_for_client, score_quiz
 from api.event_types import MANUAL_MARK_ONLY
 from services.events import submit_learning_event
+from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from storage.yandex import resolve_video_src
 
 router = APIRouter(tags=["lesson"])
@@ -110,6 +111,17 @@ def lesson_page(
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
 
+    initial_step = lesson_step_key(
+        has_comprehension=bool(comprehension),
+        has_meaning=bool(meaning),
+    )
+    slovik = {
+        "urls": slovik_urls(),
+        "initial_step": initial_step,
+        "initial_url": slovik_url(initial_step),
+        "step_keys": LESSON_STEP_SLOVIK,
+    }
+
     return templates.TemplateResponse(
         request,
         "lesson.html",
@@ -124,6 +136,7 @@ def lesson_page(
             "video_src": video_src,
             "comprehension_quiz": quiz_for_client(comprehension) if comprehension else None,
             "meaning_quiz": quiz_for_client(meaning) if meaning else None,
+            "slovik": slovik,
         },
     )
 
