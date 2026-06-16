@@ -20,6 +20,7 @@ BADGE_ASSET_FILES: dict[str, str] = {
     "Сказочник": "gamify-badge-storyteller.png",
     "Исследователь сказки": "gamify-badge-module-explorer.png",
     "Непрерывная серия": "gamify-badge-streak.png",
+    "Путешественник по сказке": "gamify-badge-tale-traveler.png",
 }
 
 # Исходники от дизайнера (docs/images)
@@ -33,6 +34,7 @@ BADGE_SOURCE_FILES: dict[str, str] = {
     "Сказочник": "бейдж сказочник.PNG",
     "Исследователь сказки": "бейдж исследователь сказки.PNG",
     "Непрерывная серия": "бейдж непрерывная серия.PNG",
+    "Путешественник по сказке": "бейдж Путешественник по сказке.PNG",
 }
 
 

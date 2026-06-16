@@ -9,6 +9,7 @@ from config.settings import USE_LLM
 from db import repository as repo
 from db.models import ParentNotification
 from db.session import SessionLocal
+from gamification.bonus_badges import bonus_badges_for_event
 from gamification.engine import GamificationRequest, LearnerState, generate_reward
 from notifications.dispatcher import dispatch_parent_notifications, send_pending_notification
 
@@ -45,13 +46,36 @@ def process_event(event_id: str) -> None:
 
         reward = generate_reward(req, use_llm=USE_LLM)
         repo.save_reward_and_update_child(db, event, child, reward)
+        db.refresh(child)
+
+        bonus_messages: list[str] = []
+        for bonus in bonus_badges_for_event(
+            db,
+            child_id=child.id,
+            child_name=child.name,
+            current_level=child.current_level,
+            current_badges=[b.badge_name for b in child.badges],
+            event_type=event.event_type,
+            tale_title=event.tale_title,
+        ):
+            if repo.grant_bonus_badge(
+                db,
+                child,
+                badge_name=bonus.badge_name,
+                level_change=bonus.level_change,
+            ):
+                bonus_messages.append(bonus.parent_message)
+
+        parent_message = reward.parent_message
+        if bonus_messages:
+            parent_message = f"{parent_message} {' '.join(bonus_messages)}".strip()
 
         notification_ids = dispatch_parent_notifications(
             db,
             family=child.family,
             child=child,
             event_id=event.id,
-            parent_message=reward.parent_message,
+            parent_message=parent_message,
             next_action=reward.next_action,
         )
 

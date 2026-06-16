@@ -195,6 +195,9 @@ def _parent_progress_line(
         ),
         "streak_3": f"{child_name} читает три дня подряд — классная серия!{badge_part}{pts}",
         "streak_5": f"Пять дней подряд в Читательстве — так держать, {child_name}!{pts}",
+        "tale_traveler": (
+            f"{child_name} прошёл(а) все 4 сказки модуля.{badge_part}"
+        ),
     }
 
     if event_type in templates:

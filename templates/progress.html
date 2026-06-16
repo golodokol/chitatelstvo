@@ -227,7 +227,7 @@
         <section class="chit-panel">
           <div class="chit-section-head">
             <h2 class="chit-section-title">Трофеи</h2>
-            <p class="chit-section-sub">Ты уже собрал {{ cab.badges_earned_count }} из 9 бейджей</p>
+            <p class="chit-section-sub">Ты уже собрал {{ cab.badges_earned_count }} из {{ cab.badges_total }} бейджей</p>
           </div>
           <div class="chit-badge-grid">
             {% for b in cab.badges %}

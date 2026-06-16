@@ -240,6 +240,45 @@ def save_reward_and_update_child(
     return db.get(Reward, event.id)  # type: ignore[return-value]
 
 
+def count_distinct_completed_tales(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    extra_tale: str | None = None,
+) -> int:
+    """Сколько разных сказок ребёнок уже прошёл (lesson_complete)."""
+    stmt = select(Event.tale_title).where(
+        Event.child_id == child_id,
+        Event.event_type == "lesson_complete",
+        Event.status == "done",
+    )
+    tales = {(title or "").strip() for title in db.scalars(stmt).all() if (title or "").strip()}
+    if extra_tale:
+        extra = extra_tale.strip()
+        if extra:
+            tales.add(extra)
+    return len(tales)
+
+
+def grant_bonus_badge(
+    db: Session,
+    child: Child,
+    *,
+    badge_name: str,
+    level_change: str | None = None,
+) -> bool:
+    """Выдаёт бонусный бейдж, если его ещё нет. Возвращает True, если добавлен."""
+    exists = db.get(ChildBadge, {"child_id": child.id, "badge_name": badge_name})
+    if exists:
+        return False
+    db.add(ChildBadge(child_id=child.id, badge_name=badge_name))
+    if level_change:
+        child.current_level = level_change
+    db.commit()
+    db.refresh(child)
+    return True
+
+
 def mark_event_failed(db: Session, event_id: uuid.UUID, error: str) -> None:
     event = db.get(Event, event_id)
     if event:

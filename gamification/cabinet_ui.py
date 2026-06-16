@@ -40,7 +40,10 @@ BADGE_CATALOG: list[dict[str, str]] = [
     {"name": "Сказочник", "condition": "Своё творческое задание"},
     {"name": "Исследователь сказки", "condition": "Весь модуль пройден"},
     {"name": "Непрерывная серия", "condition": "3 задания подряд"},
+    {"name": "Путешественник по сказке", "condition": "Все 4 сказки модуля пройдены"},
 ]
+
+BADGES_TOTAL = len(BADGE_CATALOG)
 
 CHEST_STEPS = ("lesson_complete", "comprehension")
 
@@ -377,6 +380,7 @@ def build_child_cabinet(
         "levels": levels_ui,
         "badges": badges_ui,
         "badges_earned_count": len(earned_badges),
+        "badges_total": BADGES_TOTAL,
         "chest": chest,
         "daily_lesson": daily,
         "story_stages": story_stages,
