@@ -44,16 +44,11 @@
         {% endif %}
 
         <header class="chit-room__hero">
-          <div class="chit-room__brand">
-            <div class="chit-room__hello">
-              <p class="chit-room__greet">Привет, <strong>{{ cab.name }}</strong>!</p>
-              <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
-            </div>
+          <div class="chit-room__hello">
+            <p class="chit-room__greet">Привет, <strong>{{ cab.name }}</strong>!</p>
+            <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
+            <p class="chit-room__companion-hint">{{ cab.companion.hint }}</p>
           </div>
-          <figure class="chit-room__helper" aria-label="Словик подсказывает">
-            <img src="{{ cab.companion.url }}" alt="" width="96" height="96" class="chit-room__helper-img" data-companion-img>
-            <figcaption class="chit-room__helper-hint">{{ cab.companion.hint }}</figcaption>
-          </figure>
         </header>
 
         <section class="chit-panel chit-panel--stats">

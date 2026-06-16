@@ -531,12 +531,13 @@ body.chit-cabinet--parent {
 }
 
 .chit-slovik-intro__img {
-  width: 100px;
+  width: 148px;
   height: auto;
   flex-shrink: 0;
   border-radius: 16px;
   background: #fff;
-  padding: 4px;
+  padding: 6px;
+  box-shadow: 0 4px 16px rgba(91, 127, 166, 0.12);
 }
 
 .chit-slovik-intro__text { min-width: 0; }
@@ -561,7 +562,7 @@ body.chit-cabinet--parent {
     text-align: center;
     padding: 16px;
   }
-  .chit-slovik-intro__img { width: 88px; }
+  .chit-slovik-intro__img { width: 120px; }
 }
 
 .chit-parent-page__title {
@@ -612,23 +613,7 @@ body.chit-cabinet--parent {
 }
 
 .chit-room__hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   margin-bottom: 16px;
-}
-
-.chit-room__brand { display: flex; align-items: center; gap: 14px; }
-
-.chit-room__logo {
-  width: 72px;
-  height: 72px;
-  border-radius: 20px;
-  background: var(--white);
-  padding: 6px;
-  box-shadow: var(--shadow);
-  object-fit: contain;
 }
 
 .chit-room__greet {
@@ -640,30 +625,12 @@ body.chit-cabinet--parent {
 
 .chit-room__level-line { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
 
-.chit-room__helper {
-  margin: 0;
-  text-align: center;
-  flex-shrink: 0;
-  max-width: 120px;
-}
-
-.chit-room__helper-img {
-  width: 88px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  border-radius: 16px;
-  background: var(--white);
-  padding: 4px;
-  box-shadow: var(--shadow);
-}
-
-.chit-room__helper-hint {
-  margin: 6px 0 0;
-  font-size: 0.72rem;
+.chit-room__companion-hint {
+  margin: 10px 0 0;
+  font-size: 0.88rem;
   font-weight: 700;
-  line-height: 1.25;
   color: var(--blue-deep);
+  line-height: 1.35;
 }
 
 .chit-panel {
@@ -777,9 +744,24 @@ body.chit-cabinet--parent {
 
 .chit-lesson-card {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: minmax(0, 120px) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
+}
+
+.chit-lesson-card__cover {
+  width: 120px;
+  max-width: 120px;
+  min-width: 0;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.chit-lesson-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .chit-lesson-card__body { min-width: 0; }
@@ -1097,10 +1079,11 @@ body.chit-cabinet--parent {
   .chit-chest { grid-template-columns: 1fr; text-align: center; }
   .chit-chest__visual { margin: 0 auto; }
   .chit-collection { grid-template-columns: repeat(2, 1fr); }
-  .chit-room__helper { max-width: 72px; }
-  .chit-room__helper-img { width: 64px; }
-  .chit-room__helper-hint { font-size: 0.65rem; }
   .chit-lesson-card { grid-template-columns: 1fr; }
-  .chit-lesson-card__cover { max-width: 140px; margin: 0 auto; }
+  .chit-lesson-card__cover {
+    width: 132px;
+    max-width: 132px;
+    margin: 0 auto;
+  }
   .chit-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

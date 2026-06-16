@@ -14,6 +14,7 @@ from gamification.sloviki import (
     slovik_url,
 )
 from lessons.schedule import STAGE_LABELS
+from notifications.russian_morph import name_genitive
 
 # Пороги Словиков для полоски прогресса до следующего уровня (только UI).
 LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 18, 28]
@@ -239,7 +240,7 @@ def _parent_summary(
         "chest_hint": chest.get("hint", ""),
         "chest_ready": "да, можно открыть" if chest.get("ready") else chest.get("hint", ""),
         "support_tip": (
-            f"Сегодня у {child_name} урок «{lesson_line}». "
+            f"Сегодня у {name_genitive(child_name)} урок «{lesson_line}». "
             "Можно пройти частями — главное, без спешки и с интересом."
         ),
         "badges_count": str(badges_count),
