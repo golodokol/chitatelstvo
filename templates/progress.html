@@ -46,27 +46,39 @@
         {% endif %}
 
         <header class="chit-room__hero">
-          <div class="chit-room__hello">
-            <p class="chit-room__greet">Привет, <strong>{{ cab.name }}</strong>!</p>
-            <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
-            <p class="chit-room__companion-hint">{{ cab.companion.hint }}</p>
+          <div class="chit-room__brand">
+            <div class="chit-room__hello">
+              <p class="chit-room__greet">Привет, <strong>{{ cab.name }}</strong>!</p>
+              <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
+            </div>
           </div>
+          <figure class="chit-room__helper" aria-label="Словик подсказывает">
+            <img src="{{ cab.companion.url }}" alt="" width="96" height="96" class="chit-room__helper-img" data-companion-img>
+            <figcaption class="chit-room__helper-hint">{{ cab.companion.hint }}</figcaption>
+          </figure>
         </header>
 
         <section class="chit-panel chit-panel--stats">
           <div class="chit-stats">
-            <div class="chit-stats__level">
+            <div class="chit-stats__profile">
               {% if cab.level_image %}
-              <img src="{{ cab.level_image }}" alt="" width="56" height="56" class="chit-stats__level-img">
+              <img src="{{ cab.level_image }}" alt="" width="72" height="72" class="chit-stats__avatar">
               {% endif %}
-              <div>
+            </div>
+            <div class="chit-stats__metrics">
+              <div class="chit-stats__metric">
                 <span class="chit-stats__label">Уровень</span>
                 <strong class="chit-stats__value">{{ cab.level }}</strong>
               </div>
-            </div>
-            <div class="chit-stats__points">
-              <span class="chit-stats__label">Словики</span>
-              <strong class="chit-stats__value chit-stats__value--big">{{ cab.points }}</strong>
+              <div class="chit-stats__metric">
+                <span class="chit-stats__label">Словики</span>
+                <strong class="chit-stats__value chit-stats__value--big">
+                  <span class="chit-stats__points-row">
+                    <img src="{{ cab.slovik_main_url }}" alt="" width="32" height="32" class="chit-stats__slovik-icon">
+                    <span>{{ cab.points }}</span>
+                  </span>
+                </strong>
+              </div>
             </div>
           </div>
           <div class="chit-progress">
@@ -98,9 +110,7 @@
                 {% if lvl.image %}<img src="{{ lvl.image }}" alt="" width="64" height="64">{% else %}⭐{% endif %}
               </div>
               <span class="chit-level-step__name">{{ lvl.name }}</span>
-              {% if lvl.status == 'next' and lvl.points_to_unlock %}
-              <span class="chit-level-step__pts">{{ lvl.points_to_unlock }} Слов.</span>
-              {% endif %}
+              <span class="chit-level-step__pts">{{ lvl.sloviki_label }}</span>
             </button>
             {% if not loop.last %}<div class="chit-level-step__line" aria-hidden="true"></div>{% endif %}
             {% endfor %}

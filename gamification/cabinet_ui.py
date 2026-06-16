@@ -61,6 +61,19 @@ def _asset_url(base: str, filename: str | None) -> str | None:
     return f"{base.rstrip('/')}/assets/{filename}"
 
 
+def _sloviki_word(n: int) -> str:
+    n = abs(int(n))
+    if n % 10 == 1 and n % 100 != 11:
+        return "Словик"
+    if n % 10 in (2, 3, 4) and n % 100 not in (12, 13, 14):
+        return "Словика"
+    return "Словиков"
+
+
+def _sloviki_label(n: int) -> str:
+    return f"{n} {_sloviki_word(n)}"
+
+
 def _level_progress(points: int, level_name: str) -> dict[str, Any]:
     idx = _level_index(level_name)
     if idx >= len(LEVELS) - 1:
@@ -305,6 +318,7 @@ def build_child_cabinet(
                 "status": st,
                 "image": _asset_url(assets_base, LEVEL_IMAGES.get(lvl_name)),
                 "threshold": thr,
+                "sloviki_label": _sloviki_label(thr),
                 "points_to_unlock": max(0, thr - points) if st == "next" else 0,
             }
         )
