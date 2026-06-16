@@ -7,9 +7,10 @@ from sqlalchemy.orm import Session
 
 from api.lesson_signing import build_lesson_url
 from catalog.loader import get_module
-from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, ROOT, TELEGRAM_ENABLED
+from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, PUBLIC_BASE_URL, ROOT, TELEGRAM_ENABLED
 from db import repository as repo
 from db.session import get_db
+from gamification.cabinet_ui import build_child_cabinet
 from lessons.access import lesson_access_info
 from lessons.enrollment_access import get_active_enrollment, list_lessons_for_child
 from lessons.schedule import STAGE_LABELS, tariff_has_meetings
@@ -97,6 +98,15 @@ def family_progress(
                 "lesson_stages": _group_lessons(lesson_links),
                 "module_title": module_title,
                 "has_meetings": has_meetings,
+                "cabinet": build_child_cabinet(
+                    name=child.name,
+                    level=child.current_level or "Старт",
+                    points=child.total_points or 0,
+                    earned_badges=badges,
+                    events=events,
+                    lesson_links=lesson_links,
+                    assets_base=PUBLIC_BASE_URL,
+                ),
                 "events": [
                     {
                         "type": e.event_type,
@@ -118,6 +128,8 @@ def family_progress(
         "progress.html",
         {
             "parent_name": family.parent_name,
+            "assets_url": PUBLIC_BASE_URL,
+            "logo_url": f"{PUBLIC_BASE_URL}/assets/logo-chitatelstvo.png",
             "channel": family.notification_channel,
             "telegram_linked": family.telegram_chat_id is not None,
             "telegram_enabled": TELEGRAM_ENABLED,
