@@ -75,6 +75,8 @@
   var modal = document.getElementById('badge-modal');
   var titleEl = document.getElementById('badge-modal-title');
   var textEl = document.getElementById('badge-modal-text');
+  var imgWrap = document.getElementById('badge-modal-img-wrap');
+  var imgEl = document.getElementById('badge-modal-img');
 
   function clearPressedBadges(except) {
     document.querySelectorAll('.chit-badge-card.is-pressed').forEach(function (card) {
@@ -101,8 +103,22 @@
       clearPressedBadges(card);
       card.classList.add('is-pressed');
       if (!modal) return;
-      titleEl.textContent = card.getAttribute('data-badge-name') || '';
+      var badgeName = card.getAttribute('data-badge-name') || '';
+      titleEl.textContent = badgeName;
       textEl.textContent = card.getAttribute('data-badge-condition') || '';
+      var imgUrl = card.getAttribute('data-badge-image') || '';
+      var cardImg = card.querySelector('.chit-badge-card__img img');
+      if (imgEl && imgWrap) {
+        var src = imgUrl || (cardImg ? cardImg.src : '');
+        if (src) {
+          imgEl.src = src;
+          imgEl.alt = badgeName;
+          imgWrap.hidden = false;
+        } else {
+          imgEl.removeAttribute('src');
+          imgWrap.hidden = true;
+        }
+      }
       modal.hidden = false;
     });
   });

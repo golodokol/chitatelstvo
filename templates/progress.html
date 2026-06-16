@@ -114,7 +114,7 @@
           </div>
           <div class="chit-badge-grid">
             {% for b in cab.badges %}
-            <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}">
+            <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}"{% if b.image %} data-badge-image="{{ b.image }}"{% endif %}>
               <div class="chit-badge-card__img">
                 {% if b.image %}<img src="{{ b.image }}" alt="" width="64" height="64">{% else %}🏅{% endif %}
               </div>
@@ -451,8 +451,11 @@
   </div>
 
   <div class="chit-modal" id="badge-modal" hidden>
-    <div class="chit-modal__box">
+    <div class="chit-modal__box chit-modal__box--badge">
       <button type="button" class="chit-modal__close" aria-label="Закрыть">×</button>
+      <div class="chit-modal__badge-img" id="badge-modal-img-wrap" hidden>
+        <img id="badge-modal-img" src="" alt="">
+      </div>
       <h3 id="badge-modal-title"></h3>
       <p id="badge-modal-text"></p>
     </div>
