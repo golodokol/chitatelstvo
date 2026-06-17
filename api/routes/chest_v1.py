@@ -1,0 +1,68 @@
+"""JWT API сундука для мобильного приложения."""
+
+from __future__ import annotations
+
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
+from api.deps import get_current_family
+from api.routes.chest import _chest_ready_for_tale, _lesson_for_slug
+from db import repository as repo
+from db.models import Family
+from db.session import get_db
+from gamification.chest_rewards import items_for_treasury, rewards_for_tale
+
+router = APIRouter(prefix="/api/v1", tags=["chest"])
+
+
+class ChestClaimMobileBody(BaseModel):
+    child_id: uuid.UUID
+    tale_slug: str = Field(min_length=1, max_length=200)
+
+
+@router.post("/chest/claim")
+def claim_chest_jwt(
+    body: ChestClaimMobileBody,
+    family: Family = Depends(get_current_family),
+    db: Session = Depends(get_db),
+) -> dict:
+    child = repo.get_child_with_family(db, body.child_id)
+    if not child or child.family_id != family.id:
+        raise HTTPException(403, "Ребёнок не найден в этой семье")
+
+    tale_slug = body.tale_slug.strip()
+    existing = repo.get_chest_claim(db, child.id, tale_slug)
+    if existing:
+        return {
+            "status": "already_claimed",
+            "message": "Награда уже в сокровищнице",
+            "items": existing.items,
+        }
+
+    lesson = _lesson_for_slug(child, tale_slug)
+    if not lesson:
+        raise HTTPException(404, "Сказка не найдена")
+
+    if not _chest_ready_for_tale(db, child.id, lesson):
+        raise HTTPException(400, "Сундук ещё не готов — завершите урок и мини-задание")
+
+    all_items = rewards_for_tale(tale_slug, lesson.get("title", ""))
+    treasury_items = items_for_treasury(all_items)
+    row = repo.save_chest_claim(
+        db,
+        child_id=child.id,
+        tale_slug=tale_slug,
+        tale_title=lesson.get("title", ""),
+        module_week=lesson.get("module_week"),
+        items=treasury_items,
+    )
+    return {
+        "status": "claimed",
+        "message": "Награда сохранена в сокровищнице",
+        "items": row.items,
+        "letter_shown": True,
+        "claimed_at": row.claimed_at.isoformat() if row.claimed_at else None,
+    }

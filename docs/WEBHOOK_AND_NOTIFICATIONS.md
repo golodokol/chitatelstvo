@@ -264,6 +264,35 @@ X-Child-Id: uuid   (опционально — один ребёнок)
 curl "https://api.chitatelstvo.ru/api/v1/cabinet?child_id=UUID" -H "Authorization: Bearer TOKEN"
 ```
 
+### `GET /api/v1/lessons/{slug}`
+
+JSON урока для приложения. JWT + `child_id` (query или `X-Child-Id`).
+
+Для тест-урока без enrollment: `?test_key=TEST_LESSON_SECRET`.
+
+```json
+{
+  "slug": "tsarevna-lyagushka",
+  "title": "Царевна лягушка",
+  "video": { "type": "kinescope", "id": "...", "url": "..." },
+  "comprehension_quiz": { "...": "..." },
+  "lesson_url": "https://api.chitatelstvo.ru/lesson/...?child=...&sig=..."
+}
+```
+
+Действия урока (JWT, `child_id` в теле):
+
+| POST | Путь |
+|------|------|
+| видео досмотрено | `/api/v1/lessons/{slug}/video-complete` |
+| квиз | `/api/v1/lessons/{slug}/quiz` |
+| ручная отметка | `/api/v1/lessons/{slug}/manual` |
+| оценка сказки | `/api/v1/lessons/{slug}/rating` |
+
+### `POST /api/v1/chest/claim`
+
+Открыть сундук без `progress_token`: JWT + `{ "child_id", "tale_slug" }`.
+
 Старая ссылка `/progress/{token}` продолжает работать параллельно.
 
 ---

@@ -5,7 +5,7 @@ import uuid
 from collections import defaultdict
 from typing import Annotated
 
-from fastapi import Depends, Header, HTTPException, Request
+from fastapi import Depends, Header, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 
 from config.settings import JWT_SECRET, RATE_LIMIT_PER_MINUTE, WEBHOOK_SECRET
@@ -32,6 +32,41 @@ def rate_limit(request: Request) -> None:
     if len(_hits[ip]) >= RATE_LIMIT_PER_MINUTE:
         raise HTTPException(429, "Слишком много запросов")
     _hits[ip].append(now)
+
+
+def parse_optional_child_id(
+    child_id: uuid.UUID | None = Query(default=None),
+    x_child_id: Annotated[str | None, Header()] = None,
+) -> uuid.UUID | None:
+    if child_id is not None:
+        return child_id
+    if not x_child_id:
+        return None
+    try:
+        return uuid.UUID(x_child_id.strip())
+    except ValueError as exc:
+        raise HTTPException(400, "Неверный заголовок X-Child-Id") from exc
+
+
+def parse_required_child_id(
+    child_id: uuid.UUID | None = Query(default=None),
+    x_child_id: Annotated[str | None, Header()] = None,
+) -> uuid.UUID:
+    parsed = parse_optional_child_id(child_id, x_child_id)
+    if not parsed:
+        raise HTTPException(400, "Укажите child_id (query) или X-Child-Id (заголовок)")
+    return parsed
+
+
+def get_family_child(
+    child_id: uuid.UUID = Depends(parse_required_child_id),
+    family: Family = Depends(get_current_family),
+    db: Session = Depends(get_db),
+):
+    child = repo.get_child_with_family(db, child_id)
+    if not child or child.family_id != family.id:
+        raise HTTPException(403, "Ребёнок не найден в этой семье")
+    return child
 
 
 def get_current_family(

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from config.settings import PUBLIC_BASE_URL, ROOT
-from api.routes import admin, auth, cabinet_api, chest, legal, lesson, pages, progress, quiz, telegram, test_lesson, webhook
+from api.routes import admin, auth, cabinet_api, chest, chest_v1, legal, lesson, lesson_v1, pages, progress, quiz, telegram, test_lesson, webhook
 
 app = FastAPI(
     title="Литературная школа онлайн",
@@ -30,6 +30,8 @@ app.include_router(legal.router)
 app.include_router(webhook.router)
 app.include_router(auth.router)
 app.include_router(cabinet_api.router)
+app.include_router(lesson_v1.router)
+app.include_router(chest_v1.router)
 app.include_router(lesson.router)
 app.include_router(progress.router)
 app.include_router(chest.router)
