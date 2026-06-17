@@ -167,10 +167,10 @@
           </div>
         </section>
 
-        {% if cab.treasury %}
         <section class="chit-panel chit-panel--treasury" id="treasury-{{ loop.index }}">
-          <h2 class="chit-section-title">Сокровищница</h2>
-          <p class="chit-section-sub">Раскраску и бонусную страницу можно скачать снова. Письмо от школы показывается только при открытии сундука.</p>
+          <h2 class="chit-section-title">Моя сокровищница</h2>
+          <p class="chit-section-sub">Раскраски, наклейки и бонусные страницы из сундуков сказок — их можно скачать снова. Письмо от школы показывается только при открытии сундука.</p>
+          {% if cab.treasury %}
           <div class="chit-treasury-grid">
             {% for item in cab.treasury %}
             <article class="chit-treasury-item">
@@ -183,8 +183,10 @@
             </article>
             {% endfor %}
           </div>
+          {% else %}
+          <p class="chit-treasury-empty">Пока пусто. Заверши урок и открой сундук сказки — награды появятся здесь.</p>
+          {% endif %}
         </section>
-        {% endif %}
 
         {% if cab.daily_lesson %}
         <section class="chit-panel chit-panel--mission">
@@ -287,35 +289,38 @@
           <h2 class="chit-section-title">Читательский дневник</h2>
           <p class="chit-section-sub">Сказки, которые ты оценил — от самых любимых к менее понравившимся</p>
           {% if cab.reading_diary %}
-          <div class="chit-diary-grid">
-            {% for entry in cab.reading_diary %}
-            <article class="chit-diary-card">
-              <div class="chit-diary-card__visual">
-                {% if entry.diary_image_url %}
-                <img class="chit-diary-card__img" src="{{ entry.diary_image_url }}" alt="" loading="lazy">
-                {% else %}
-                <div class="chit-diary-card__placeholder" aria-hidden="true">
-                  <span class="chit-diary-card__placeholder-label">Иллюстрация скоро</span>
+          <div class="chit-diary-shelf">
+            <div class="chit-diary-shelf__books" role="list">
+              {% for entry in cab.reading_diary %}
+              <article class="chit-diary-book" role="listitem">
+                <div class="chit-diary-book__cover-wrap">
+                  {% if entry.diary_image_url %}
+                  <img class="chit-diary-book__cover" src="{{ entry.diary_image_url }}" alt="" loading="lazy">
+                  {% else %}
+                  <div class="chit-diary-book__placeholder" aria-hidden="true">
+                    <span>📚</span>
+                  </div>
+                  {% endif %}
                 </div>
-                {% endif %}
-              </div>
-              <div class="chit-diary-card__body">
-                {% if entry.week_in_stage %}
-                <span class="chit-diary-card__week">Сказка {{ entry.week_in_stage }}</span>
-                {% endif %}
-                <h3 class="chit-diary-card__title">{{ entry.title }}</h3>
-                <div class="chit-diary-stars" aria-label="Оценка {{ entry.rating }} из 10">
-                  {% for i in range(1, 11) %}
-                  <span class="chit-diary-star{% if i <= entry.rating %} is-on{% endif %}">★</span>
-                  {% endfor %}
+                <div class="chit-diary-book__meta">
+                  {% if entry.week_in_stage %}
+                  <span class="chit-diary-book__week">Сказка {{ entry.week_in_stage }}</span>
+                  {% endif %}
+                  <h3 class="chit-diary-book__title">{{ entry.title }}</h3>
+                  <div class="chit-diary-stars" aria-label="Оценка {{ entry.rating }} из 10">
+                    {% for i in range(1, 11) %}
+                    <span class="chit-diary-star{% if i <= entry.rating %} is-on{% endif %}">★</span>
+                    {% endfor %}
+                  </div>
+                  <p class="chit-diary-book__score">{{ entry.rating }} из 10</p>
+                  {% if entry.rated_at_label %}
+                  <p class="chit-diary-book__date">{{ entry.rated_at_label }}</p>
+                  {% endif %}
                 </div>
-                <p class="chit-diary-card__score">{{ entry.rating }} из 10</p>
-                {% if entry.rated_at_label %}
-                <p class="chit-diary-card__date">{{ entry.rated_at_label }}</p>
-                {% endif %}
-              </div>
-            </article>
-            {% endfor %}
+              </article>
+              {% endfor %}
+            </div>
+            <div class="chit-diary-shelf__plank" aria-hidden="true"></div>
           </div>
           {% else %}
           <p class="chit-diary-empty">Пройди сказку и поставь ей оценку после урока — она появится здесь с красивой иллюстрацией.</p>
@@ -349,20 +354,6 @@
             {% endfor %}
           </ul>
           {% endif %}
-        </section>
-
-        <section class="chit-panel chit-panel--secret{% if cab.secret_unlocked %} is-unlocked{% endif %}">
-          <div class="chit-secret">
-            <img class="chit-secret__slovik" src="{{ cab.secret_slovik_url }}" alt="" width="72" height="72">
-            <div>
-              <h2 class="chit-section-title">Секретный сундук</h2>
-              {% if cab.secret_unlocked %}
-              <p>Ты собрал достаточно трофеев — редкая наклейка и бонусная страница уже ждут в следующем уроке!</p>
-              {% else %}
-              <p>Собери 3 бейджа или 15 Словиков — и откроется маленький сюрприз.</p>
-              {% endif %}
-            </div>
-          </div>
         </section>
 
       </article>

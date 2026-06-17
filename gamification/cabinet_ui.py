@@ -23,6 +23,7 @@ from gamification.sloviki import (
     recent_event_slovik,
     slovik_url,
 )
+from lessons.diary_covers import diary_cover_url_for_tale
 from lessons.schedule import STAGE_LABELS
 from notifications.russian_morph import name_genitive
 
@@ -344,7 +345,11 @@ def _reading_diary(ratings: list[Any], lesson_links: list[dict]) -> list[dict[st
                 "slug": row.tale_slug,
                 "rating": row.rating,
                 "rated_at_label": rated_at.strftime("%d.%m.%Y") if rated_at else "",
-                "diary_image_url": None,
+                "diary_image_url": diary_cover_url_for_tale(
+                    row.tale_slug,
+                    title,
+                    module_week=(lesson or {}).get("module_week"),
+                ),
                 "week_in_stage": (lesson or {}).get("week_in_stage"),
             }
         )
@@ -462,14 +467,10 @@ def build_child_cabinet(
     missions = _missions(events, lesson, points, chest)
     parent = _parent_summary(name, level, points, len(earned_badges), chest, lesson, events)
 
-    secret_unlocked = len(earned_badges) >= 3 or points >= 15
-    secret_slovik_key = "victory" if secret_unlocked else "dreams"
-
     companion_k = companion_key(
         events,
         lesson,
         chest,
-        secret_unlocked=secret_unlocked,
     )
     companion = {
         "key": companion_k,
@@ -509,8 +510,6 @@ def build_child_cabinet(
         "treasury": _treasury(claims),
         "collection": collection,
         "parent": parent,
-        "secret_unlocked": secret_unlocked,
-        "secret_slovik_url": slovik_url(secret_slovik_key),
         "companion": companion,
         "recent_toast": recent_toast,
         "continue_url": continue_url,

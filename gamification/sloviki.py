@@ -106,8 +106,6 @@ def companion_key(
     events: list[Any],
     lesson: dict | None,
     chest: dict[str, Any],
-    *,
-    secret_unlocked: bool = False,
 ) -> str:
     if chest.get("ready"):
         return "victory"
@@ -134,8 +132,6 @@ def companion_key(
         return "writes"
     if "lesson_complete" in done:
         return "writes"
-    if secret_unlocked:
-        return "cloud"
     return "reads"
 
 
