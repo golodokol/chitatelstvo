@@ -144,7 +144,7 @@
           data-chest-ready="{{ '1' if cab.chest.ready else '0' }}"
           data-chest-claimed="{{ '1' if cab.chest.claimed else '0' }}"
           data-auto-open="{{ '1' if open_chest and cab.chest.ready and not cab.chest.claimed and loop.first else '0' }}">
-          <script type="application/json" class="chit-chest-data">{{ {"items": cab.chest.items, "tale_title": cab.missions_subtitle or cab.chest.title} | tojson }}</script>
+          <script type="application/json" class="chit-chest-data">{{ {"items": cab.chest["items"], "tale_title": cab.missions_subtitle or cab.chest["title"]} | tojson }}</script>
           <div class="chit-chest">
             <div class="chit-chest__visual" aria-hidden="true">
               <img class="chit-chest__box" src="{{ cab.chest.image_url }}" alt="" width="112" height="112" data-chest-img>
