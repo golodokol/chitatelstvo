@@ -57,6 +57,7 @@ def family_progress(
     for child in family.children:
         events = repo.get_child_events(db, child.id, limit=20)
         tale_ratings = repo.get_child_tale_ratings(db, child.id)
+        chest_claims = repo.get_child_chest_claims(db, child.id)
         badges = [b.badge_name for b in child.badges]
         enrollment = get_active_enrollment(child)
         module = get_module(enrollment.module_id) if enrollment else None
@@ -94,6 +95,7 @@ def family_progress(
 
         children_data.append(
             {
+                "id": str(child.id),
                 "name": child.name,
                 "level": child.current_level,
                 "points": child.total_points,
@@ -110,6 +112,7 @@ def family_progress(
                     events=events,
                     lesson_links=lesson_links,
                     tale_ratings=tale_ratings,
+                    chest_claims=chest_claims,
                     assets_base=PUBLIC_BASE_URL,
                 ),
                 "events": [
@@ -132,6 +135,8 @@ def family_progress(
         request,
         "progress.html",
         {
+            "progress_token": token,
+            "open_chest": request.query_params.get("open_chest") == "1",
             "parent_name": family.parent_name,
             "assets_url": PUBLIC_BASE_URL,
             "logo_url": f"{PUBLIC_BASE_URL}/assets/logo-chitatelstvo.png",

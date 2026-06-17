@@ -7,7 +7,7 @@ from datetime import date, datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from db.models import Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward, TaleRating
+from db.models import ChestClaim, Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward, TaleRating
 from gamification.engine import GamificationResponse
 
 
@@ -459,6 +459,48 @@ def save_tale_rating(
             updated_at=now,
         )
         db.add(row)
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+def get_chest_claim(db: Session, child_id: uuid.UUID, tale_slug: str) -> ChestClaim | None:
+    stmt = select(ChestClaim).where(
+        ChestClaim.child_id == child_id,
+        ChestClaim.tale_slug == tale_slug,
+    )
+    return db.scalars(stmt).first()
+
+
+def get_child_chest_claims(db: Session, child_id: uuid.UUID) -> list[ChestClaim]:
+    stmt = (
+        select(ChestClaim)
+        .where(ChestClaim.child_id == child_id)
+        .order_by(ChestClaim.claimed_at.desc())
+    )
+    return list(db.scalars(stmt).all())
+
+
+def save_chest_claim(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    tale_slug: str,
+    tale_title: str,
+    module_week: int | None,
+    items: list,
+) -> ChestClaim:
+    row = get_chest_claim(db, child_id, tale_slug)
+    if row:
+        return row
+    row = ChestClaim(
+        child_id=child_id,
+        tale_slug=tale_slug,
+        tale_title=tale_title.strip() or None,
+        module_week=module_week,
+        items=items,
+    )
+    db.add(row)
     db.commit()
     db.refresh(row)
     return row

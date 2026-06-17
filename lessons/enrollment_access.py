@@ -87,6 +87,7 @@ def _lesson_summary(lesson: dict[str, Any], enrollment: Enrollment | None) -> di
     return {
         "slug": lesson["slug"],
         "title": title,
+        "tale_slug": lesson.get("tale_slug") or lesson["slug"],
         "module_week": lesson.get("module_week", 1),
         "module_id": lesson.get("module_id"),
         "stage_label": lesson.get("stage_label"),

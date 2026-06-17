@@ -134,10 +134,20 @@
           </div>
         </section>
 
-        <section class="chit-panel chit-panel--chest{% if cab.chest.ready %} is-ready{% endif %}" id="chest-{{ loop.index }}" data-chest-slovik="{{ cab.chest.slovik_url }}" data-chest-victory="/static/sloviki/slovik-victory.png">
+        <section class="chit-panel chit-panel--chest{% if cab.chest.ready %} is-ready{% endif %}{% if cab.chest.claimed %} is-claimed{% endif %}{% if cab.chest.visual == 'opening' %} is-opening{% endif %}" id="chest-{{ loop.index }}"
+          data-child-id="{{ child.id }}"
+          data-tale-slug="{{ cab.chest.tale_slug }}"
+          data-progress-token="{{ progress_token }}"
+          data-chest-closed="{{ cab.chest.image_closed }}"
+          data-chest-opening="{{ cab.chest.image_opening }}"
+          data-chest-open="{{ cab.chest.image_open }}"
+          data-chest-ready="{{ '1' if cab.chest.ready else '0' }}"
+          data-chest-claimed="{{ '1' if cab.chest.claimed else '0' }}"
+          data-auto-open="{{ '1' if open_chest and cab.chest.ready and not cab.chest.claimed and loop.first else '0' }}">
+          <script type="application/json" class="chit-chest-data">{{ {"items": cab.chest.items, "tale_title": cab.missions_subtitle or cab.chest.title} | tojson }}</script>
           <div class="chit-chest">
             <div class="chit-chest__visual" aria-hidden="true">
-              <img class="chit-chest__slovik" src="{{ cab.chest.slovik_url }}" alt="" width="80" height="80" data-chest-slovik-img>
+              <img class="chit-chest__box" src="{{ cab.chest.image_url }}" alt="" width="112" height="112" data-chest-img>
               <div class="chit-chest__glow"></div>
             </div>
             <div class="chit-chest__body">
@@ -150,13 +160,31 @@
                 </div>
                 <p class="chit-chest__hint">{{ cab.chest.hint }}</p>
               </div>
-              <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not cab.chest.ready %} disabled{% endif %}>Открыть сундук</button>
+              <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not cab.chest.ready or cab.chest.claimed %} disabled{% endif %}>
+                {% if cab.chest.claimed %}В сокровищнице{% elif cab.chest.ready %}Открыть сундук{% else %}Сундук закрыт{% endif %}
+              </button>
             </div>
           </div>
-          <div class="chit-chest-reveal" hidden>
-            <p>✨ Сундук открыт! Новая сказка и секретная наклейка ждут тебя в уроке.</p>
+        </section>
+
+        {% if cab.treasury %}
+        <section class="chit-panel chit-panel--treasury" id="treasury-{{ loop.index }}">
+          <h2 class="chit-section-title">Сокровищница</h2>
+          <p class="chit-section-sub">Раскраску и бонусную страницу можно скачать снова. Письмо от школы показывается только при открытии сундука.</p>
+          <div class="chit-treasury-grid">
+            {% for item in cab.treasury %}
+            <article class="chit-treasury-item">
+              {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.tale_title }}{% if item.claimed_at_label %} · {{ item.claimed_at_label }}{% endif %}</span>
+              {% if item.downloadable and item.download_url %}
+              <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
+              {% endif %}
+            </article>
+            {% endfor %}
           </div>
         </section>
+        {% endif %}
 
         {% if cab.daily_lesson %}
         <section class="chit-panel chit-panel--mission">
@@ -513,6 +541,27 @@
     </div>
   </div>
 
+  <div class="chit-chest-modal" id="chest-modal" hidden aria-modal="true" role="dialog" aria-labelledby="chest-modal-title">
+    <div class="chit-chest-modal__backdrop" data-chest-modal-close></div>
+    <div class="chit-chest-modal__sheet">
+      <button type="button" class="chit-chest-modal__close" aria-label="Закрыть" data-chest-modal-close>×</button>
+      <div class="chit-chest-modal__stage" id="chest-modal-animate">
+        <div class="chit-chest-modal__chest-wrap">
+          <div class="chit-chest-modal__light" id="chest-modal-light"></div>
+          <div class="chit-chest-modal__sparks" id="chest-modal-sparks" aria-hidden="true"></div>
+          <img class="chit-chest-modal__chest" id="chest-modal-img" src="/static/chest/chest-closed.png" alt="">
+        </div>
+      </div>
+      <div class="chit-chest-modal__stage chit-chest-modal__stage--reveal" id="chest-modal-reveal" hidden>
+        <h3 class="chit-chest-modal__title" id="chest-modal-title">Сундук открыт!</h3>
+        <p class="chit-chest-modal__sub" id="chest-modal-sub"></p>
+        <div class="chit-chest-modal__rewards" id="chest-modal-rewards"></div>
+        <button type="button" class="chit-chest-modal__claim" id="chest-modal-claim">Забрать награду</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/chest_reveal.js"></script>
   <script src="/static/progress_cabinet.js"></script>
 </body>
 </html>

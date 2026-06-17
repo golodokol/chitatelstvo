@@ -59,17 +59,15 @@
     btn.addEventListener('click', function () {
       if (btn.disabled) return;
       var panel = btn.closest('.chit-panel--chest');
-      if (!panel) return;
-      panel.classList.add('is-opened');
-      var reveal = panel.querySelector('.chit-chest-reveal');
-      if (reveal) reveal.hidden = false;
-      var victoryUrl = panel.getAttribute('data-chest-victory');
-      var chestImg = panel.querySelector('[data-chest-slovik-img]');
-      if (chestImg && victoryUrl) chestImg.src = victoryUrl;
-      showSlovikToast(victoryUrl || '/static/sloviki/slovik-victory.png', 'Сундук открыт! Новая награда ждёт в уроке.');
-      btn.textContent = 'Забрать награду';
-      btn.disabled = true;
+      if (!panel || !window.ChitChest) return;
+      window.ChitChest.openFromPanel(panel);
     });
+  });
+
+  document.querySelectorAll('.chit-panel--chest[data-auto-open="1"]').forEach(function (panel) {
+    if (window.ChitChest) {
+      setTimeout(function () { window.ChitChest.openFromPanel(panel); }, 400);
+    }
   });
 
   var modal = document.getElementById('badge-modal');

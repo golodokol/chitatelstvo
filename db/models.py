@@ -122,6 +122,18 @@ class ParentNotification(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
+class ChestClaim(Base):
+    __tablename__ = "chest_claims"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"))
+    tale_slug: Mapped[str] = mapped_column(Text, nullable=False)
+    tale_title: Mapped[str | None] = mapped_column(Text)
+    module_week: Mapped[int | None] = mapped_column(SmallInteger)
+    items: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    claimed_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
 class TaleRating(Base):
     __tablename__ = "tale_ratings"
 

@@ -5,6 +5,15 @@ from __future__ import annotations
 from typing import Any
 
 from gamification.badge_assets import BADGE_ASSET_FILES
+from gamification.chest_rewards import (
+    CHEST_IMAGES,
+    CHEST_REWARD_SUMMARY,
+    LETTER_KIND,
+    chest_image_for_state,
+    chest_visual_state,
+    reward_summary_text,
+    rewards_for_tale,
+)
 from gamification.rules import LEVELS
 from gamification.sloviki import (
     COMPANION_HINTS,
@@ -118,18 +127,36 @@ def _current_lesson(lesson_links: list[dict]) -> dict | None:
     return lesson_links[0] if lesson_links else None
 
 
-def _chest_state(events: list[Any], lesson: dict | None) -> dict[str, Any]:
+def _chest_state(
+    events: list[Any],
+    lesson: dict | None,
+    *,
+    claim: Any | None = None,
+    reward_items: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    reward_items = reward_items or []
+    reward_text = reward_summary_text(reward_items) if reward_items else CHEST_REWARD_SUMMARY
+    tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
+
     if not lesson:
         return {
             "title": "Сундук Сказки",
             "subtitle": "Когда откроется первая сказка — здесь появится награда.",
-            "reward": "новая сказка, секретная наклейка и бонусная страница",
+            "reward": reward_text,
+            "tale_slug": "",
             "steps_total": 2,
             "steps_done": 0,
             "steps_remaining": 2,
             "pct": 0,
             "ready": False,
+            "claimed": False,
+            "visual": "closed",
+            "image_url": CHEST_IMAGES["closed"],
+            "image_closed": CHEST_IMAGES["closed"],
+            "image_opening": CHEST_IMAGES["opening"],
+            "image_open": CHEST_IMAGES["open"],
             "hint": "До открытия 2 шага",
+            "items": [],
         }
 
     tale = lesson.get("title", "")
@@ -138,9 +165,18 @@ def _chest_state(events: list[Any], lesson: dict | None) -> dict[str, Any]:
     steps_total = len(CHEST_STEPS)
     steps_remaining = max(0, steps_total - steps_done)
     pct = int(steps_done / steps_total * 100) if steps_total else 0
-    ready = steps_remaining == 0
+    ready = steps_remaining == 0 and not claim
+    claimed = claim is not None
+    visual = chest_visual_state(
+        steps_done=steps_done,
+        steps_total=steps_total,
+        ready=ready or claimed,
+        claimed=claimed,
+    )
 
-    if ready:
+    if claimed:
+        hint = "Награда уже в сокровищнице"
+    elif ready:
         hint = "Сундук готов — можно открывать!"
     elif steps_remaining == 1:
         hint = "До открытия осталось 1 задание"
@@ -149,16 +185,25 @@ def _chest_state(events: list[Any], lesson: dict | None) -> dict[str, Any]:
 
     return {
         "title": "Сундук Сказки",
-        "subtitle": (
-            "Откроется после завершения сегодняшнего урока и мини-задания."
-        ),
-        "reward": "новая сказка, секретная наклейка и бонусная страница",
+        "subtitle": "Откроется после завершения сегодняшнего урока и мини-задания.",
+        "reward": reward_text,
+        "tale_slug": tale_slug,
         "steps_total": steps_total,
         "steps_done": steps_done,
         "steps_remaining": steps_remaining,
         "pct": pct,
         "ready": ready,
+        "claimed": claimed,
+        "visual": visual,
+        "image_url": chest_image_for_state(visual if not ready else "closed"),
+        "image_closed": CHEST_IMAGES["closed"],
+        "image_opening": CHEST_IMAGES["opening"],
+        "image_open": CHEST_IMAGES["open"],
         "hint": hint,
+        "items": reward_items,
+        "claimed_at_label": (
+            claim.claimed_at.strftime("%d.%m.%Y") if claim and getattr(claim, "claimed_at", None) else ""
+        ),
     }
 
 
@@ -174,6 +219,7 @@ def _missions(events: list[Any], lesson: dict | None, points: int, chest: dict) 
         return "locked"
 
     chest_ready = bool(chest.get("ready"))
+    chest_claimed = bool(chest.get("claimed"))
     items = [
         {
             "id": "read",
@@ -193,7 +239,7 @@ def _missions(events: list[Any], lesson: dict | None, points: int, chest: dict) 
         {
             "id": "chest",
             "text": "Открыть сундук сказки",
-            "status": "done" if chest_ready else ("active" if lesson and lesson.get("url") else "locked"),
+            "status": "done" if chest_claimed else ("active" if chest_ready else ("active" if lesson and lesson.get("url") else "locked")),
         },
         {
             "id": "secret",
@@ -305,6 +351,31 @@ def _reading_diary(ratings: list[Any], lesson_links: list[dict]) -> list[dict[st
     return entries
 
 
+def _treasury(chest_claims: list[Any]) -> list[dict[str, Any]]:
+    """Сокровищница: награды из сундуков (без письма от школы)."""
+    rows: list[dict[str, Any]] = []
+    for claim in chest_claims:
+        title = (claim.tale_title or "").strip() or "Сказка"
+        claimed_at = getattr(claim, "claimed_at", None)
+        for item in claim.items or []:
+            if item.get("kind") == LETTER_KIND:
+                continue
+            rows.append(
+                {
+                    "tale_title": title,
+                    "tale_slug": claim.tale_slug,
+                    "claimed_at_label": claimed_at.strftime("%d.%m.%Y") if claimed_at else "",
+                    "kind": item.get("kind", ""),
+                    "label": item.get("label", ""),
+                    "description": item.get("description", ""),
+                    "image_url": item.get("image_url"),
+                    "download_url": item.get("download_url"),
+                    "downloadable": bool(item.get("downloadable")),
+                }
+            )
+    return rows
+
+
 def build_child_cabinet(
     *,
     name: str,
@@ -314,6 +385,7 @@ def build_child_cabinet(
     events: list[Any],
     lesson_links: list[dict],
     tale_ratings: list[Any] | None = None,
+    chest_claims: list[Any] | None = None,
     assets_base: str,
 ) -> dict[str, Any]:
     """Собирает контекст игрового кабинета для одного ребёнка."""
@@ -321,7 +393,13 @@ def build_child_cabinet(
     lvl_idx = _level_index(level)
     progress = _level_progress(points, level)
     lesson = _current_lesson(lesson_links)
-    chest = _chest_state(events, lesson)
+    claims = chest_claims or []
+    tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
+    current_claim = next((c for c in claims if c.tale_slug == tale_slug), None) if tale_slug else None
+    reward_items = (
+        rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
+    )
+    chest = _chest_state(events, lesson, claim=current_claim, reward_items=reward_items)
 
     levels_ui = []
     for i, lvl_name in enumerate(LEVELS):
@@ -428,6 +506,7 @@ def build_child_cabinet(
             else None
         ),
         "reading_diary": _reading_diary(tale_ratings or [], lesson_links),
+        "treasury": _treasury(claims),
         "collection": collection,
         "parent": parent,
         "secret_unlocked": secret_unlocked,
