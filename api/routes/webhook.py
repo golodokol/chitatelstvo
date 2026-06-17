@@ -115,7 +115,7 @@ async def webhook_register(
     notification_channel = resolve_notification_channel(body.notification_channel)
     telegram_chat_id = body.telegram_chat_id if notification_channel in ("telegram", "both") else None
 
-    family, child = repo.register_family(
+    family, child, is_returning = repo.resolve_or_create_family_child(
         db,
         parent_name=body.parent_name,
         parent_email=str(body.parent_email),
@@ -141,6 +141,7 @@ async def webhook_register(
             telegram_deep_link and notification_channel in ("telegram", "both")
         ),
         module_title=module_title,
+        is_returning=is_returning,
     )
     repo.store_notification(
         db,
@@ -176,7 +177,12 @@ async def webhook_register(
         )
         enqueue("send_notification", {"notification_id": str(note.id)})
 
-    logger.info("Регистрация %s → %s", body.parent_email, progress_url)
+    logger.info(
+        "Регистрация %s → %s (returning=%s)",
+        body.parent_email,
+        progress_url,
+        is_returning,
+    )
 
     return RegisterResponse(
         family_id=family.id,
@@ -187,6 +193,7 @@ async def webhook_register(
         notification_channel=family.notification_channel,
         module_id=module_id,
         module_title=module_title,
+        is_returning=is_returning,
     )
 
 

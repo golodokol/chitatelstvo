@@ -153,3 +153,4 @@ class RegisterResponse(BaseModel):
     notification_channel: str
     module_id: int | None = None
     module_title: str | None = None
+    is_returning: bool = False

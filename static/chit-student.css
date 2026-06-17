@@ -1169,9 +1169,9 @@ body.chit-cabinet--parent {
 .chit-mission__ok { color: var(--success); font-weight: 800; }
 
 .chit-panel--diary {
-  background:
-    linear-gradient(180deg, #fff 0%, #f4f8fc 55%, #ebe4d8 100%);
-  border-color: var(--blue-light);
+  background: linear-gradient(165deg, #fffcf7 0%, #f9f2e8 52%, #f0e6d6 100%);
+  border-color: #dcc9a8;
+  box-shadow: 0 6px 28px rgba(92, 72, 48, 0.07);
 }
 
 .chit-diary-shelf {
@@ -1180,7 +1180,7 @@ body.chit-cabinet--parent {
   padding: 18px 12px 12px;
   border-radius: 18px;
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.95) 0%, rgba(244,248,252,0.4) 55%, transparent 100%);
+    radial-gradient(ellipse at 50% 0%, rgba(255, 252, 245, 0.95) 0%, rgba(245, 232, 210, 0.35) 58%, transparent 100%);
 }
 
 .chit-diary-shelf__books {
@@ -1304,7 +1304,8 @@ body.chit-cabinet--parent {
   margin: 0;
   padding: 18px 16px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 252, 247, 0.88);
+  border: 1px solid rgba(220, 201, 168, 0.45);
   color: var(--muted);
   line-height: 1.45;
 }

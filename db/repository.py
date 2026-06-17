@@ -31,6 +31,118 @@ def make_idempotency_key(
     return f"{child_id}:{event_type}:{tale}:{day}"
 
 
+def find_family_by_email(db: Session, email: str) -> Family | None:
+    stmt = (
+        select(Family)
+        .where(Family.parent_email == email.strip().lower())
+        .options(
+            joinedload(Family.children).joinedload(Child.badges),
+            joinedload(Family.children).joinedload(Child.enrollments),
+        )
+    )
+    return db.scalars(stmt).first()
+
+
+def _update_family_on_reregister(
+    family: Family,
+    *,
+    parent_name: str,
+    parent_telegram: str | None,
+    notification_channel: str,
+    telegram_chat_id: int | None,
+) -> None:
+    family.parent_name = parent_name.strip()
+    family.notification_channel = notification_channel
+    if parent_telegram is not None:
+        tg = parent_telegram.strip()
+        family.parent_telegram = tg or None
+    if telegram_chat_id is not None:
+        family.telegram_chat_id = telegram_chat_id
+
+
+def resolve_or_create_family_child(
+    db: Session,
+    *,
+    parent_name: str,
+    parent_email: str,
+    parent_telegram: str | None,
+    notification_channel: str,
+    child_name: str,
+    child_age: int | None,
+    telegram_chat_id: int | None = None,
+) -> tuple[Family, Child, bool]:
+    """Найти или создать семью и ребёнка по parent_email + child_name.
+
+    Возвращает (family, child, is_returning).
+    is_returning=True — тот же ребёнок уже был в системе (ссылка и прогресс сохраняются).
+    """
+    email = parent_email.strip().lower()
+    name = child_name.strip()
+
+    existing_child = find_child(db, child_name=name, parent_email=email)
+    if existing_child:
+        family = existing_child.family
+        _update_family_on_reregister(
+            family,
+            parent_name=parent_name,
+            parent_telegram=parent_telegram,
+            notification_channel=notification_channel,
+            telegram_chat_id=telegram_chat_id,
+        )
+        if child_age is not None:
+            existing_child.age = child_age
+        db.commit()
+        db.refresh(family)
+        db.refresh(existing_child)
+        return family, existing_child, True
+
+    family = find_family_by_email(db, email)
+    if family:
+        _update_family_on_reregister(
+            family,
+            parent_name=parent_name,
+            parent_telegram=parent_telegram,
+            notification_channel=notification_channel,
+            telegram_chat_id=telegram_chat_id,
+        )
+        child = Child(
+            family_id=family.id,
+            name=name,
+            age=child_age,
+        )
+        db.add(child)
+        db.commit()
+        db.refresh(family)
+        db.refresh(child)
+        return family, child, False
+
+    family, child = register_family(
+        db,
+        parent_name=parent_name,
+        parent_email=email,
+        parent_telegram=parent_telegram,
+        notification_channel=notification_channel,
+        child_name=name,
+        child_age=child_age,
+        telegram_chat_id=telegram_chat_id,
+    )
+    return family, child, False
+
+
+def complete_active_enrollments(db: Session, child_id: uuid.UUID) -> int:
+    """Закрыть активные записи на модуль перед новой покупкой (разовое → модуль)."""
+    stmt = select(Enrollment).where(
+        Enrollment.child_id == child_id,
+        Enrollment.status == "active",
+    )
+    enrollments = list(db.scalars(stmt).all())
+    for enrollment in enrollments:
+        enrollment.status = "completed"
+    if enrollments:
+        db.commit()
+    return len(enrollments)
+
+
 def register_family(
     db: Session,
     *,

@@ -34,6 +34,7 @@ def build_welcome_message(
     link_telegram_page: str | None = None,
     include_telegram: bool = False,
     module_title: str | None = None,
+    is_returning: bool = False,
 ) -> str:
     parent = parent_name.strip() or "родитель"
     child = child_name.strip() or "ребёнок"
@@ -41,16 +42,25 @@ def build_welcome_message(
     lines = [
         f"Здравствуйте, {parent}!",
         "",
-        f"Ребёнок {child} записан в литературную школу Читательство.",
     ]
+
+    if is_returning:
+        lines.append(f"{child} продолжает занятия в литературной школе Читательство — прогресс сохранён.")
+    else:
+        lines.append(f"Ребёнок {child} записан в литературную школу Читательство.")
 
     if module_title:
         lines.extend(["", f"Модуль: {module_title}."])
 
+    progress_hint = (
+        "Личная страница прогресса (та же ссылка, что и раньше):"
+        if is_returning
+        else "Личная страница прогресса:"
+    )
     lines.extend(
         [
             "",
-            "Личная страница прогресса:",
+            progress_hint,
             progress_url,
             "",
             "Здесь — баллы, бейджи, кнопки уроков и справка: как устроены занятия и за что начисляются баллы. Сохраните ссылку в закладки.",

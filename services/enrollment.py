@@ -72,6 +72,7 @@ def create_enrollment_from_registration(
         return None, None
 
     module = enrollment_data["module"]
+    repo.complete_active_enrollments(db, child.id)
     repo.create_enrollment(
         db,
         child_id=child.id,
