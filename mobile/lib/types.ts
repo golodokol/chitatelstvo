@@ -16,41 +16,140 @@ export type OtpVerifyResponse = {
   children: AuthChild[];
 };
 
+export type CabinetParentSummary = {
+  completed_lessons: string;
+  skill: string;
+  points: string;
+  chest_hint: string;
+  chest_ready: string;
+  support_tip: string;
+  badges_count: string;
+  current_lesson: string;
+  level: string;
+};
+
+export type CabinetChest = {
+  title?: string;
+  subtitle?: string;
+  hint?: string;
+  reward?: string;
+  tale_slug?: string;
+  steps_total?: number;
+  steps_done?: number;
+  steps_remaining?: number;
+  pct?: number;
+  ready?: boolean;
+  claimed?: boolean;
+  visual?: string;
+  image_url?: string;
+  image_closed?: string;
+  image_opening?: string;
+  image_open?: string;
+};
+
+export type CabinetMission = {
+  id: string;
+  text: string;
+  status: "done" | "active" | "locked";
+};
+
+export type CabinetBadge = {
+  name: string;
+  condition: string;
+  earned: boolean;
+  status: string;
+  image?: string | null;
+};
+
+export type CabinetLevel = {
+  name: string;
+  status: string;
+  sloviki_label: string;
+  points_to_unlock: number;
+  image?: string | null;
+};
+
+export type LessonLink = {
+  slug: string;
+  title: string;
+  unlocked: boolean;
+  url?: string;
+  opens_on_label?: string;
+  meeting_on_label?: string;
+  week_in_stage?: number;
+  ready?: boolean;
+  cover_url?: string | null;
+  cover_state?: string;
+};
+
+export type LessonStage = {
+  key: string;
+  label: string;
+  lessons: LessonLink[];
+};
+
+export type ChildEvent = {
+  type: string;
+  tale: string;
+  date: string;
+};
+
 export type CabinetChild = {
   id: string;
   name: string;
   level: string;
   points: number;
+  badges?: string[];
   module_title?: string | null;
+  has_meetings?: boolean;
+  lessons?: LessonLink[];
+  lesson_stages?: LessonStage[];
+  events?: ChildEvent[];
   cabinet: {
     name: string;
     level: string;
+    level_image?: string | null;
     points: number;
+    points_label?: string;
     progress_pct: number;
     points_to_next?: number | null;
     next_level_name?: string | null;
     continue_url?: string | null;
-    companion?: { url?: string; hint?: string };
-    chest?: {
+    slovik_main_url?: string;
+    slovik_preparing_url?: string;
+    companion?: { url?: string; hint?: string; key?: string };
+    chest?: CabinetChest;
+    parent?: CabinetParentSummary;
+    missions?: CabinetMission[];
+    missions_title?: string;
+    missions_subtitle?: string | null;
+    badges?: CabinetBadge[];
+    badges_earned_count?: number;
+    badges_total?: number;
+    levels?: CabinetLevel[];
+    daily_lesson?: {
       title?: string;
-      subtitle?: string;
-      ready?: boolean;
-      claimed?: boolean;
-      tale_slug?: string;
-    };
-    parent?: Record<string, string | number>;
+      goal?: string;
+      duration?: string;
+      url?: string;
+      opens_on_label?: string;
+      cover_url?: string | null;
+      cover_state?: string;
+    } | null;
   };
-  lessons?: Array<{
-    slug: string;
-    title: string;
-    unlocked: boolean;
-    url?: string;
-  }>;
 };
 
 export type CabinetResponse = {
   parent_name: string;
   email: string;
+  module_start_date?: string | null;
+  progress_url?: string;
+  notification_channel?: string;
+  telegram?: {
+    enabled?: boolean;
+    linked?: boolean;
+    link_page?: string;
+  };
   children: CabinetChild[];
   notifications: Array<{ message: string; date: string; channel: string }>;
 };

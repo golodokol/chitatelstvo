@@ -74,7 +74,7 @@ export function Button({
 export function Loader() {
   return (
     <View style={styles.loaderWrap}>
-      <ActivityIndicator color={colors.accent} size="large" />
+      <ActivityIndicator color={colors.blue} size="large" />
     </View>
   );
 }
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   button: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.blue,
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: "center",

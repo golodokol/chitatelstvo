@@ -2,6 +2,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   Alert,
+  Linking,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -11,27 +12,55 @@ import {
 } from "react-native";
 
 import { Button, Loader, Screen } from "@/components/ui";
-import { colors, spacing } from "@/constants/theme";
-import { fetchCabinet } from "@/lib/api";
+import { BadgeGrid } from "@/components/BadgeGrid";
+import { LevelPath } from "@/components/LevelPath";
+import { RemoteImage, textNoBreak } from "@/components/RemoteImage";
+import {
+  LESSON_GUIDE_FOOTER,
+  LESSON_GUIDE_INTRO,
+  LESSON_GUIDE_STEPS,
+  PARENT_INTRO,
+  POINTS_RULES,
+} from "@/constants/cabinet-guide";
+import { colors, spacing, API_BASE_URL } from "@/constants/theme";
+import { claimChest, fetchCabinet } from "@/lib/api";
+import {
+  formatEventType,
+  missionStatusLabel,
+  parentFacts,
+} from "@/lib/cabinet-format";
 import { useAuth } from "@/lib/auth-context";
-import type { CabinetChild } from "@/lib/types";
+import type { CabinetChest, CabinetResponse, LessonLink } from "@/lib/types";
+
+function chestImageUrl(chest: CabinetChest): string | undefined {
+  if (chest.claimed && chest.image_open) return chest.image_open;
+  if (chest.ready && chest.image_opening) return chest.image_opening;
+  return chest.image_url ?? chest.image_closed ?? undefined;
+}
+
+function lessonStatus(les: LessonLink): string {
+  if (les.url) return "Открыта";
+  if (les.unlocked && les.ready === false) return "Скоро появится";
+  if (les.unlocked) return "Доступна";
+  return "Закрыта";
+}
 
 export default function CabinetScreen() {
   const { token, selectedChildId, parentName, children, signOut } = useAuth();
   const [tab, setTab] = useState<"child" | "parent">("child");
-  const [data, setData] = useState<CabinetChild | null>(null);
-  const [notifications, setNotifications] = useState<
-    Array<{ message: string; date: string }>
-  >([]);
+  const [payload, setPayload] = useState<CabinetResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [claiming, setClaiming] = useState(false);
+
+  const data = payload?.children[0] ?? null;
+  const cab = data?.cabinet;
+  const childName = data?.name ?? "Ученик";
 
   const load = useCallback(async () => {
     if (!token || !selectedChildId) return;
     const resp = await fetchCabinet(token, selectedChildId);
-    const child = resp.children[0] ?? null;
-    setData(child);
-    setNotifications(resp.notifications.slice(0, 5));
+    setPayload(resp);
   }, [token, selectedChildId]);
 
   useFocusEffect(
@@ -70,13 +99,42 @@ export default function CabinetScreen() {
     Alert.alert("Скоро", "Новое приключение откроется по расписанию модуля.");
   }
 
+  async function onClaimChest() {
+    if (!token || !selectedChildId || !cab?.chest?.tale_slug) return;
+    setClaiming(true);
+    try {
+      const result = await claimChest(token, selectedChildId, cab.chest.tale_slug);
+      if (result.status === "already_claimed") {
+        Alert.alert("Сундук", "Награда уже получена.");
+      } else {
+        Alert.alert("Сундук", "Сундук открыт! Награда в сокровищнице.");
+      }
+      await load();
+    } catch (err) {
+      Alert.alert("Не удалось открыть сундук", String(err));
+    } finally {
+      setClaiming(false);
+    }
+  }
+
   if (loading && !data) return <Loader />;
 
-  const cab = data?.cabinet;
-  const childName = data?.name ?? "Ученик";
+  const stages = data?.lesson_stages?.length
+    ? data.lesson_stages
+    : data?.lessons?.length
+      ? [{ key: "all", label: "Сказки", lessons: data.lessons }]
+      : [];
 
   return (
     <Screen>
+      <View style={styles.brandRow}>
+        <RemoteImage
+          uri={`${API_BASE_URL}/assets/logo-chitatelstvo.png`}
+          width={44}
+          height={44}
+        />
+        <Text style={styles.brandTitle}>Читательство</Text>
+      </View>
       <View style={styles.tabs}>
         <Pressable
           onPress={() => setTab("child")}
@@ -107,12 +165,61 @@ export default function CabinetScreen() {
       >
         {tab === "child" ? (
           <>
+            {cab?.slovik_main_url ? (
+              <View style={styles.slovikIntro}>
+                <RemoteImage uri={cab.slovik_main_url} width={80} height={80} />
+                <Text style={[styles.slovikText, textNoBreak]}>
+                  Привет! Я — <Text style={styles.strong}>Словик</Text> ✨ Буду рядом в
+                  приключениях: подскажу про сундук и помогу собрать Словики за каждое
+                  занятие.
+                </Text>
+              </View>
+            ) : null}
+
             <View style={styles.hero}>
-              <Text style={styles.greet}>Привет, {childName}!</Text>
-              <Text style={styles.levelLine}>
-                Уровень: <Text style={styles.strong}>{cab?.level}</Text>
-              </Text>
-              <Text style={styles.points}>{cab?.points ?? 0} Словиков</Text>
+              <View style={styles.heroTop}>
+                <View style={styles.heroCopy}>
+                  <Text style={styles.greet}>Привет, {childName}!</Text>
+                  <Text style={styles.levelLine}>
+                    Ты на уровне <Text style={styles.strong}>{cab?.level}</Text>
+                  </Text>
+                </View>
+                {cab?.companion?.url ? (
+                  <View style={styles.companionWrap}>
+                    <RemoteImage uri={cab.companion.url} width={80} height={80} />
+                  </View>
+                ) : null}
+              </View>
+
+              <View style={styles.statsRow}>
+                <View style={styles.stat}>
+                  <RemoteImage uri={cab?.level_image} width={56} height={56} />
+                  <Text style={styles.statLabel}>Уровень</Text>
+                  <Text style={styles.statValue}>{cab?.level}</Text>
+                </View>
+                <View style={styles.stat}>
+                  <RemoteImage
+                    uri={cab?.slovik_preparing_url ?? cab?.companion?.url}
+                    width={56}
+                    height={56}
+                  />
+                  <Text style={styles.statLabel}>Словики</Text>
+                  <Text style={[styles.statValue, styles.points]}>
+                    {cab?.points ?? 0}
+                  </Text>
+                </View>
+              </View>
+
+              {cab?.progress_pct != null ? (
+                <View style={styles.progressTrack}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${Math.min(100, cab.progress_pct)}%` },
+                    ]}
+                  />
+                </View>
+              ) : null}
               {cab?.next_level_name ? (
                 <Text style={styles.hint}>
                   До «{cab.next_level_name}» ещё {cab.points_to_next} Словиков
@@ -133,57 +240,270 @@ export default function CabinetScreen() {
               disabled={!cab?.continue_url}
             />
 
-            {data?.lessons?.length ? (
+            {cab?.daily_lesson ? (
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Сказки</Text>
-                {data.lessons.map((les) => (
+                <Text style={styles.panelTitle}>Урок дня</Text>
+                <View style={styles.lessonCard}>
+                  <RemoteImage
+                    uri={cab.daily_lesson.cover_url}
+                    width={64}
+                    height={88}
+                    rounded
+                    dimmed={!cab.daily_lesson.url}
+                  />
+                  <View style={styles.lessonCardBody}>
+                    <Text style={styles.lessonTitle}>{cab.daily_lesson.title}</Text>
+                    {cab.daily_lesson.goal ? (
+                      <Text style={styles.hint}>{cab.daily_lesson.goal}</Text>
+                    ) : null}
+                    {cab.daily_lesson.opens_on_label && !cab.daily_lesson.url ? (
+                      <Text style={styles.hint}>
+                        Откроется: {cab.daily_lesson.opens_on_label}
+                      </Text>
+                    ) : null}
+                  </View>
+                </View>
+              </View>
+            ) : null}
+
+            {cab?.missions?.length ? (
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>
+                  {cab.missions_title ?? "Миссии на эту неделю"}
+                </Text>
+                {cab.missions_subtitle ? (
+                  <Text style={styles.hint}>{cab.missions_subtitle}</Text>
+                ) : null}
+                {cab.missions.map((m) => (
+                  <View key={m.id} style={styles.missionRow}>
+                    <Text style={styles.missionText}>{m.text}</Text>
+                    <Text style={styles.missionStatus}>
+                      {missionStatusLabel(m.status)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+
+            {stages.map((stage) => (
+              <View key={stage.key} style={styles.panel}>
+                <Text style={styles.panelTitle}>{stage.label}</Text>
+                {stage.lessons.map((les) => (
                   <Pressable
                     key={les.slug}
                     style={styles.lessonRow}
                     onPress={() => openLesson(les.url, les.slug)}
-                    disabled={!les.unlocked}
+                    disabled={!les.url && !les.unlocked}
                   >
-                    <Text style={styles.lessonTitle}>{les.title}</Text>
-                    <Text style={styles.lessonMeta}>
-                      {les.unlocked ? "Открыта" : "Закрыта"}
-                    </Text>
+                    <View style={styles.lessonCard}>
+                      <RemoteImage
+                        uri={les.cover_url}
+                        width={52}
+                        height={72}
+                        rounded
+                        dimmed={!les.unlocked && !les.url}
+                      />
+                      <View style={styles.lessonCardBody}>
+                        <Text style={styles.lessonTitle}>{les.title}</Text>
+                        <Text style={styles.lessonMeta}>
+                          {lessonStatus(les)}
+                          {les.opens_on_label ? ` · ${les.opens_on_label}` : ""}
+                        </Text>
+                      </View>
+                    </View>
                   </Pressable>
                 ))}
+              </View>
+            ))}
+
+            {cab?.levels?.length ? (
+              <View style={styles.panel}>
+                <LevelPath levels={cab.levels} />
+              </View>
+            ) : null}
+
+            {cab?.badges?.length ? (
+              <View style={styles.panel}>
+                <BadgeGrid
+                  badges={cab.badges}
+                  earnedCount={cab.badges_earned_count ?? 0}
+                  total={cab.badges_total ?? cab.badges.length}
+                />
               </View>
             ) : null}
 
             {cab?.chest ? (
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>{cab.chest.title}</Text>
-                <Text style={styles.hint}>{cab.chest.subtitle}</Text>
+                <View style={styles.chestHeader}>
+                  <RemoteImage
+                    uri={chestImageUrl(cab.chest)}
+                    width={120}
+                    height={120}
+                  />
+                  <View style={styles.chestCopy}>
+                    <Text style={styles.panelTitle}>{cab.chest.title}</Text>
+                    <Text style={styles.hint}>{cab.chest.subtitle}</Text>
+                  </View>
+                </View>
+                {cab.chest.hint ? (
+                  <Text style={styles.chestHint}>{cab.chest.hint}</Text>
+                ) : null}
+                {cab.chest.steps_total ? (
+                  <Text style={styles.hint}>
+                    Шагов: {cab.chest.steps_done ?? 0} из {cab.chest.steps_total}
+                  </Text>
+                ) : null}
+                {cab.chest.ready && !cab.chest.claimed ? (
+                  <Button
+                    label={claiming ? "Открываем…" : "Открыть сундук"}
+                    onPress={onClaimChest}
+                    disabled={claiming}
+                  />
+                ) : null}
               </View>
             ) : null}
           </>
         ) : (
           <>
             <View style={styles.panel}>
-              <Text style={styles.panelTitle}>Здравствуйте, {parentName}</Text>
-              {cab?.parent ? (
-                Object.entries(cab.parent).map(([key, value]) => (
-                  <Text key={key} style={styles.parentLine}>
-                    {String(value)}
-                  </Text>
-                ))
-              ) : (
-                <Text style={styles.hint}>
-                  Прогресс {childName}: {cab?.points ?? 0} Словиков, уровень «
-                  {cab?.level}».
-                </Text>
-              )}
+              <Text style={styles.panelTitle}>Здравствуйте, {parentName}!</Text>
+              <Text style={styles.hint}>{PARENT_INTRO}</Text>
             </View>
+
+            {payload?.telegram?.enabled ? (
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Telegram</Text>
+                {payload.telegram.linked ? (
+                  <Text style={styles.hint}>
+                    ✓ Telegram привязан — уведомления приходят в бот.
+                  </Text>
+                ) : payload.telegram.link_page ? (
+                  <>
+                    <Text style={styles.hint}>
+                      Хотите дублировать уведомления в Telegram?
+                    </Text>
+                    <Button
+                      label="Привязать Telegram"
+                      variant="ghost"
+                      onPress={() => Linking.openURL(payload.telegram!.link_page!)}
+                    />
+                  </>
+                ) : (
+                  <Text style={styles.hint}>
+                    Уведомления доступны в приложении и по email.
+                  </Text>
+                )}
+              </View>
+            ) : null}
+
             <View style={styles.panel}>
-              <Text style={styles.panelTitle}>Уведомления</Text>
-              {notifications.length ? (
-                notifications.map((n, i) => (
+              <View style={styles.parentChildHead}>
+                {cab?.level_image ? (
+                  <RemoteImage uri={cab.level_image} width={48} height={48} />
+                ) : null}
+                <Text style={styles.panelTitle}>{childName}</Text>
+              </View>
+              {cab?.parent ? (
+                parentFacts(cab.parent, cab.next_level_name, cab.points_to_next).map(
+                  (row) => (
+                    <Text key={row.label} style={styles.factRow}>
+                      <Text style={styles.factLabel}>{row.label}: </Text>
+                      {row.value}
+                    </Text>
+                  ),
+                )
+              ) : null}
+              {data?.badges?.length ? (
+                <Text style={styles.factRow}>
+                  <Text style={styles.factLabel}>Полученные бейджи: </Text>
+                  {data.badges.join(", ")}
+                </Text>
+              ) : null}
+              {data?.module_title ? (
+                <Text style={styles.factRow}>
+                  <Text style={styles.factLabel}>Модуль: </Text>
+                  {data.module_title}
+                </Text>
+              ) : null}
+              {cab?.parent?.support_tip ? (
+                <Text style={styles.tip}>{cab.parent.support_tip}</Text>
+              ) : null}
+            </View>
+
+            {data?.events?.length ? (
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Недавние занятия</Text>
+                {data.events.slice(0, 8).map((e, i) => (
                   <Text key={i} style={styles.note}>
-                    {n.date}
+                    {e.date} — {formatEventType(e.type)}
+                    {e.tale !== "—" ? ` («${e.tale}»)` : ""}
+                  </Text>
+                ))}
+              </View>
+            ) : null}
+
+            {stages.length ? (
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Расписание сказок</Text>
+                <Text style={styles.hint}>
+                  {payload?.module_start_date
+                    ? `Первый этап начинается ${payload.module_start_date} — новая сказка по понедельникам.`
+                    : "Новая сказка открывается раз в неделю по понедельникам."}
+                  {data?.has_meetings
+                    ? " Встречи с преподавателем — по четвергам."
+                    : ""}
+                </Text>
+                {stages.map((stage) => (
+                  <View key={stage.key} style={styles.stageBlock}>
+                    <Text style={styles.stageTitle}>{stage.label}</Text>
+                    {stage.lessons.map((les) => (
+                      <View key={les.slug} style={styles.scheduleRow}>
+                        <Text style={styles.lessonTitle}>{les.title}</Text>
+                        <Text style={styles.lessonMeta}>
+                          Сказка {les.week_in_stage ?? "—"}
+                          {les.opens_on_label
+                            ? ` · ${les.url ? "с" : "откроется"} ${les.opens_on_label}`
+                            : ""}
+                          {les.meeting_on_label
+                            ? ` · встреча ${les.meeting_on_label}`
+                            : ""}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            ) : null}
+
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Как проходит урок</Text>
+              <Text style={styles.hint}>{LESSON_GUIDE_INTRO}</Text>
+              {LESSON_GUIDE_STEPS.map((step, i) => (
+                <Text key={step.title} style={styles.guideStep}>
+                  {i + 1}. {step.title} — {step.points}
+                </Text>
+              ))}
+              <Text style={styles.hint}>{LESSON_GUIDE_FOOTER}</Text>
+            </View>
+
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>За что начисляются Словики</Text>
+              {POINTS_RULES.map((row) => (
+                <View key={row.action} style={styles.pointsRow}>
+                  <Text style={styles.pointsAction}>{row.action}</Text>
+                  <Text style={styles.pointsValue}>{row.points}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Лента уведомлений</Text>
+              {payload?.notifications?.length ? (
+                payload.notifications.map((n, i) => (
+                  <Text key={i} style={styles.note}>
+                    {n.date} · {n.channel}
                     {"\n"}
-                    {n.message.slice(0, 200)}
+                    {n.message}
                   </Text>
                 ))
               ) : (
@@ -214,6 +534,13 @@ export default function CabinetScreen() {
 }
 
 const styles = StyleSheet.create({
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  brandTitle: { fontSize: 18, fontWeight: "700", color: colors.text },
   tabs: {
     flexDirection: "row",
     gap: spacing.sm,
@@ -227,12 +554,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabActive: {
-    backgroundColor: colors.accentSoft,
+    backgroundColor: colors.bluePale,
     borderWidth: 1,
-    borderColor: colors.accent,
+    borderColor: colors.blue,
   },
   tabText: { color: colors.textMuted, fontWeight: "600" },
-  tabTextActive: { color: colors.accent },
+  tabTextActive: { color: colors.blue },
   hero: {
     backgroundColor: colors.card,
     borderRadius: 18,
@@ -244,7 +571,69 @@ const styles = StyleSheet.create({
   greet: { fontSize: 24, fontWeight: "700", color: colors.text },
   levelLine: { fontSize: 16, color: colors.text },
   strong: { fontWeight: "700" },
-  points: { fontSize: 28, fontWeight: "800", color: colors.accent },
+  points: { fontSize: 24, fontWeight: "800", color: colors.blue },
+  slovikIntro: {
+    flexDirection: "row",
+    gap: spacing.md,
+    alignItems: "center",
+    backgroundColor: colors.bluePale,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+  },
+  slovikText: { flex: 1, color: colors.text, lineHeight: 22, fontSize: 15 },
+  heroTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: spacing.sm,
+  },
+  heroCopy: { flex: 1, gap: 4 },
+  companionWrap: {
+    backgroundColor: colors.bgSoft,
+    borderRadius: 16,
+    padding: 4,
+  },
+  statsRow: {
+    flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  stat: {
+    flex: 1,
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: colors.bgSoft,
+    borderRadius: 14,
+    padding: spacing.sm,
+  },
+  statLabel: { fontSize: 12, color: colors.textMuted, fontWeight: "600" },
+  statValue: { fontSize: 16, fontWeight: "700", color: colors.text, textAlign: "center" },
+  lessonCard: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    alignItems: "flex-start",
+  },
+  lessonCardBody: { flex: 1, gap: 4 },
+  chestHeader: {
+    flexDirection: "row",
+    gap: spacing.md,
+    alignItems: "center",
+  },
+  chestCopy: { flex: 1, gap: 4 },
+  progressTrack: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.bgSoft,
+    marginTop: spacing.sm,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: colors.blue,
+    borderRadius: 4,
+  },
   hint: { color: colors.textMuted, lineHeight: 20 },
   companion: {
     marginTop: spacing.sm,
@@ -259,15 +648,56 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.sm,
   },
-  panelTitle: { fontSize: 18, fontWeight: "700", color: colors.text },
+  panelTitle: { fontSize: 18, fontWeight: "700", color: colors.textWarm },
   lessonRow: {
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.bgSoft,
   },
+  scheduleRow: {
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.bgSoft,
+  },
   lessonTitle: { fontSize: 16, fontWeight: "600", color: colors.text },
-  lessonMeta: { color: colors.textMuted, marginTop: 2 },
-  parentLine: { color: colors.text, lineHeight: 22 },
+  lessonMeta: { color: colors.textMuted, marginTop: 2, lineHeight: 18 },
+  missionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.bgSoft,
+  },
+  missionText: { flex: 1, color: colors.text, lineHeight: 20 },
+  missionStatus: { color: colors.blue, fontWeight: "600", fontSize: 13 },
+  chestHint: { color: colors.blue, fontWeight: "600" },
+  factRow: { color: colors.text, lineHeight: 22 },
+  parentChildHead: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  factLabel: { fontWeight: "700" },
+  tip: {
+    marginTop: spacing.sm,
+    color: colors.text,
+    lineHeight: 22,
+    fontStyle: "italic",
+  },
+  stageBlock: { gap: 4, marginTop: spacing.sm },
+  stageTitle: { fontWeight: "700", color: colors.text, marginBottom: 4 },
+  guideStep: { color: colors.text, lineHeight: 22 },
+  pointsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.bgSoft,
+  },
+  pointsAction: { flex: 1, color: colors.text, lineHeight: 20 },
+  pointsValue: { color: colors.blue, fontWeight: "700" },
   note: {
     color: colors.textMuted,
     lineHeight: 20,

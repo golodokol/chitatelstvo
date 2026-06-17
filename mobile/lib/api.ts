@@ -70,6 +70,22 @@ export async function fetchCabinet(
   return parseJson<CabinetResponse>(resp);
 }
 
+export async function claimChest(
+  token: string,
+  childId: string,
+  taleSlug: string,
+): Promise<{ status: string }> {
+  const resp = await fetch(`${API_BASE_URL}/api/v1/chest/claim`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ child_id: childId, tale_slug: taleSlug }),
+  });
+  return parseJson(resp);
+}
+
 export async function fetchLesson(
   token: string,
   childId: string,

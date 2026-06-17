@@ -6,14 +6,14 @@
     "orientation": "portrait",
     "scheme": "chitatelstvo",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#fffcf7",
+    "backgroundColor": "#F6F4F9",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "ru.chitatelstvo.app"
     },
     "android": {
       "package": "ru.chitatelstvo.app",
-      "backgroundColor": "#fffcf7"
+      "backgroundColor": "#F6F4F9"
     },
     "plugins": ["expo-router", "expo-secure-store"],
     "extra": {
