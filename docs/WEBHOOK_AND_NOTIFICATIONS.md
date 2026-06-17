@@ -247,6 +247,23 @@ curl -X POST https://api.chitatelstvo.ru/api/v1/auth/otp/verify -H "Content-Type
 curl https://api.chitatelstvo.ru/api/v1/auth/me -H "Authorization: Bearer TOKEN"
 ```
 
+### `GET /api/v1/cabinet`
+
+JSON комнаты приключений (то же, что `/progress/{token}`, но для приложения).
+
+```
+Authorization: Bearer ACCESS_TOKEN
+X-Child-Id: uuid   (опционально — один ребёнок)
+```
+
+или `GET /api/v1/cabinet?child_id=uuid`
+
+Ответ: `parent_name`, `progress_url`, `telegram`, `notifications`, массив `children[]` с полем `cabinet` (уровень, словики, сундук, дневник, миссии, `continue_url` для урока).
+
+```powershell
+curl "https://api.chitatelstvo.ru/api/v1/cabinet?child_id=UUID" -H "Authorization: Bearer TOKEN"
+```
+
 Старая ссылка `/progress/{token}` продолжает работать параллельно.
 
 ---
