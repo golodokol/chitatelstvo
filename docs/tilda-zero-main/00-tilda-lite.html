@@ -3,9 +3,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style id="chit-hide-store">#allrecords .chit-store-hidden,#allrecords .t-rec[data-record-type="205"],#allrecords .t-rec[data-record-type="762"],#allrecords .t-rec[data-record-type="200"],#allrecords .t-rec[data-record-type="210"],#allrecords .t-rec[data-record-type="215"],#allrecords .t-rec[data-record-type="405"],#allrecords .t-store{display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;left:-99999px!important}</style>
 <link rel="preconnect" href="https://api.chitatelstvo.ru">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260618b">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-quiz.css?v=20260618b">
-<script id="chit-css-loader">(function(){var A="https://api.chitatelstvo.ru/assets/",V="20260618b",H=document.head||document.getElementsByTagName("head")[0]||document.documentElement;function L(f){var id="chit-css-"+f,href=A+f+"?v="+V;if(document.getElementById(id))return;var l=document.createElement("link");l.id=id;l.rel="stylesheet";l.href=href;H.appendChild(l);}L("chit-zero.css");L("chit-quiz.css");var nodes=document.querySelectorAll('link[rel="stylesheet"][href*="api.chitatelstvo.ru/assets/chit-"]');for(var i=0;i<nodes.length;i++){if(nodes[i].parentNode!==H)H.appendChild(nodes[i]);}})();</script>
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260618c">
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-quiz.css?v=20260618c">
+<script id="chit-css-loader">(function(){var A="https://api.chitatelstvo.ru/assets/",V="20260618c",H=document.head||document.getElementsByTagName("head")[0]||document.documentElement;function L(f){var id="chit-css-"+f,href=A+f+"?v="+V;if(document.getElementById(id))return;var l=document.createElement("link");l.id=id;l.rel="stylesheet";l.href=href;H.appendChild(l);}L("chit-zero.css");L("chit-quiz.css");var nodes=document.querySelectorAll('link[rel="stylesheet"][href*="api.chitatelstvo.ru/assets/chit-"]');for(var i=0;i<nodes.length;i++){if(nodes[i].parentNode!==H)H.appendChild(nodes[i]);}})();</script>
 <div id="chit-main">
 <header class="site-header">
   <div class="site-header__inner">
@@ -26,39 +26,39 @@
 </header>
 
 <!-- HERO -->
-<section class="hero paper-bg" id="top">
-  <div class="hero__inner">
-    <div class="hero__copy">
-      <div class="hero__badge">
-        <span class="hero__badge-line hero__badge-line--title"><em>ЧИТАТЕЛЬСТВО</em></span>
-        <span class="hero__badge-line hero__badge-line--sub">онлайн-школа литературного чтения для детей</span>
+<section class="hero hero--premium paper-bg" id="top">
+  <div class="hero__grid">
+    <div class="hero__content">
+      <div class="hero__brand">
+        <img class="hero__brand-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="" width="72" height="55" loading="eager" decoding="async">
+        <span class="hero__brand-name">Читательство</span>
       </div>
-      <h1>Учим читать и понимать книги</h1>
+      <h1>Литературная школа для детей, где чтение становится приключением</h1>
+      <p class="hero__lead">Индивидуальный подход, игровая система уровней и наград, персональная сказка в подарок и бережное развитие любви к книге.</p>
+      <div class="hero__cta">
+        <a class="btn btn--hero" href="#quiz">Подобрать формат</a>
+        <p class="hero__cta-note">Старт программы — 22 июня</p>
+        <p class="hero__cta-micro">Персональная сказка в подарок после квиза</p>
+      </div>
     </div>
 
-    <div class="hero__showcase is-active" id="hero-books">
-      <p class="hero__showcase-label">Выберите формат — нажмите на книгу</p>
-      <div class="book-stack" role="group" aria-label="Три формата курса">
-        <button type="button" class="book" data-idx="0" aria-label="Разовое — одна сказка">
-          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
-        </button>
-        <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа — 8 сказок">
-          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
-        </button>
-        <button type="button" class="book" data-idx="2" aria-label="Блок — 4 сказки">
-          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
-        </button>
+    <div class="hero__visual">
+      <div class="hero__showcase is-active" id="hero-books">
+        <p class="hero__showcase-label">Выберите формат — нажмите на книгу</p>
+        <div class="book-stack" role="group" aria-label="Три формата курса">
+          <button type="button" class="book" data-idx="0" aria-label="Разовое — одна сказка">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
+          </button>
+          <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа — 8 сказок">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
+          </button>
+          <button type="button" class="book" data-idx="2" aria-label="Блок — 4 сказки">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
+          </button>
+        </div>
+        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса.<span class="hero-book-text__dates">Два старта: <strong>22 июня</strong> и <strong>20 июля</strong></span></p>
       </div>
-      <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса.<span class="hero-book-text__dates">Два старта: <strong>22 июня</strong> и <strong>20 июля</strong></span></p>
-    </div>
-
-    <div class="hero__copy">
-      <p class="hero__subtitle">Видеоуроки по сказкам и задания на понимание текста — ребёнок читает с удовольствием, а вы видите результат на личной странице</p>
-      <p class="hero__price">от <strong>1 490 ₽</strong></p>
-      <div class="hero__actions">
-        <a class="btn" href="#program">Записаться на курс</a>
-        <a class="btn btn--outline" href="#programs">Смотреть программы</a>
-      </div>
+      <p class="hero__visual-accent">Уровни, сундуки, бейджи и сказки — всё, чтобы ребёнку хотелось возвращаться снова.</p>
     </div>
   </div>
   <p class="hero__scroll"><a href="#quote-hero">↓ листайте вниз — там программы и запись</a></p>
@@ -683,5 +683,5 @@
   </button>
 </div>
 </div>
-<script src="https://api.chitatelstvo.ru/assets/chit-quiz.js?v=20260618b"></script>
-<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260618b"></script>
+<script src="https://api.chitatelstvo.ru/assets/chit-quiz.js?v=20260618c"></script>
+<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260618c"></script>
