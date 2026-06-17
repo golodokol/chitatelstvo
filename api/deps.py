@@ -58,17 +58,6 @@ def parse_required_child_id(
     return parsed
 
 
-def get_family_child(
-    child_id: uuid.UUID = Depends(parse_required_child_id),
-    family: Family = Depends(get_current_family),
-    db: Session = Depends(get_db),
-):
-    child = repo.get_child_with_family(db, child_id)
-    if not child or child.family_id != family.id:
-        raise HTTPException(403, "Ребёнок не найден в этой семье")
-    return child
-
-
 def get_current_family(
     authorization: Annotated[str | None, Header()] = None,
     db: Session = Depends(get_db),
@@ -101,3 +90,14 @@ def get_current_family(
         raise HTTPException(401, "Неверный токен")
 
     return family
+
+
+def get_family_child(
+    child_id: uuid.UUID = Depends(parse_required_child_id),
+    family: Family = Depends(get_current_family),
+    db: Session = Depends(get_db),
+):
+    child = repo.get_child_with_family(db, child_id)
+    if not child or child.family_id != family.id:
+        raise HTTPException(403, "Ребёнок не найден в этой семье")
+    return child
