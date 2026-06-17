@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from db.models import ChestClaim, Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward, TaleRating
 from gamification.engine import GamificationResponse
+from gamification.rules import level_from_points
 
 
 def _utcnow() -> datetime:
@@ -225,8 +226,7 @@ def save_reward_and_update_child(
         child.total_points += reward.points
         child.streak_count += 1
 
-    if reward.level_change:
-        child.current_level = reward.level_change
+    child.current_level = level_from_points(child.total_points)
 
     if reward.badge_name:
         exists = db.get(ChildBadge, {"child_id": child.id, "badge_name": reward.badge_name})
@@ -272,8 +272,7 @@ def grant_bonus_badge(
     if exists:
         return False
     db.add(ChildBadge(child_id=child.id, badge_name=badge_name))
-    if level_change:
-        child.current_level = level_change
+    child.current_level = level_from_points(child.total_points)
     db.commit()
     db.refresh(child)
     return True

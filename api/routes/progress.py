@@ -11,6 +11,7 @@ from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, PUBLIC_BASE_URL
 from db import repository as repo
 from db.session import get_db
 from gamification.cabinet_ui import build_child_cabinet
+from gamification.rules import level_from_points
 from lessons.access import lesson_access_info
 from lessons.enrollment_access import get_active_enrollment, list_lessons_for_child
 from lessons.covers import enrich_lesson_link
@@ -97,7 +98,7 @@ def family_progress(
             {
                 "id": str(child.id),
                 "name": child.name,
-                "level": child.current_level,
+                "level": level_from_points(child.total_points or 0),
                 "points": child.total_points,
                 "badges": badges,
                 "lessons": lesson_links,
@@ -106,7 +107,7 @@ def family_progress(
                 "has_meetings": has_meetings,
                 "cabinet": build_child_cabinet(
                     name=child.name,
-                    level=child.current_level or "Старт",
+                    level=level_from_points(child.total_points or 0),
                     points=child.total_points or 0,
                     earned_badges=badges,
                     events=events,

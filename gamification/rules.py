@@ -10,6 +10,19 @@ LEVELS = [
     "Литературный детектив",
 ]
 
+# Пороги Словиков для уровней (индекс = уровень в LEVELS).
+LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 18, 28]
+
+
+def level_from_points(points: int) -> str:
+    """Уровень по накопленным Словикам — единый источник для UI и БД."""
+    pts = max(0, int(points))
+    level = LEVELS[0]
+    for i, name in enumerate(LEVELS):
+        if i < len(LEVEL_SLOVIK_THRESHOLDS) and pts >= LEVEL_SLOVIK_THRESHOLDS[i]:
+            level = name
+    return level
+
 EVENT_RULES: dict[str, dict] = {
     "first_task": {
         "points": 0,

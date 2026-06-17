@@ -14,7 +14,7 @@ from gamification.chest_rewards import (
     reward_summary_text,
     rewards_for_tale,
 )
-from gamification.rules import LEVELS
+from gamification.rules import LEVELS, LEVEL_SLOVIK_THRESHOLDS, level_from_points
 from gamification.sloviki import (
     COMPANION_HINTS,
     chest_slovik_key,
@@ -27,8 +27,6 @@ from lessons.diary_covers import diary_cover_url_for_tale
 from lessons.schedule import STAGE_LABELS
 from notifications.russian_morph import name_genitive
 
-# Пороги Словиков для полоски прогресса до следующего уровня (только UI).
-LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 18, 28]
 
 LEVEL_IMAGES: dict[str, str] = {
     "Старт": "gamify-level-start.png",
@@ -395,8 +393,9 @@ def build_child_cabinet(
 ) -> dict[str, Any]:
     """Собирает контекст игрового кабинета для одного ребёнка."""
     earned_set = set(earned_badges)
-    lvl_idx = _level_index(level)
-    progress = _level_progress(points, level)
+    display_level = level_from_points(points)
+    lvl_idx = _level_index(display_level)
+    progress = _level_progress(points, display_level)
     lesson = _current_lesson(lesson_links)
     claims = chest_claims or []
     tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
@@ -465,7 +464,7 @@ def build_child_cabinet(
 
     collection = _collection(events, earned_badges, points)
     missions = _missions(events, lesson, points, chest)
-    parent = _parent_summary(name, level, points, len(earned_badges), chest, lesson, events)
+    parent = _parent_summary(name, display_level, points, len(earned_badges), chest, lesson, events)
 
     companion_k = companion_key(
         events,
@@ -485,8 +484,8 @@ def build_child_cabinet(
 
     return {
         "name": name,
-        "level": level,
-        "level_image": _asset_url(assets_base, LEVEL_IMAGES.get(level)),
+        "level": display_level,
+        "level_image": _asset_url(assets_base, LEVEL_IMAGES.get(display_level)),
         "points": points,
         "points_label": "Словиков",
         "progress_pct": progress["pct"],
