@@ -84,6 +84,15 @@ def list_children_by_parent_email(db: Session, email: str) -> list[Child]:
     return list(db.scalars(stmt).unique().all())
 
 
+def list_children_for_family(db: Session, family_id: uuid.UUID) -> list[Child]:
+    stmt = (
+        select(Child)
+        .where(Child.family_id == family_id)
+        .order_by(Child.name.asc(), Child.created_at.asc())
+    )
+    return list(db.scalars(stmt).all())
+
+
 def _update_family_on_reregister(
     family: Family,
     *,

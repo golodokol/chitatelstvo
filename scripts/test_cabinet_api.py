@@ -61,8 +61,6 @@ def main() -> int:
         token = verify["access_token"]
         children = verify.get("children") or []
         print("children:", [c.get("name") for c in children])
-        if children and not child_id:
-            child_id = str(children[0]["id"])
 
     status, body = get("/api/v1/cabinet", token)
     print("cabinet (all):", status)
@@ -70,6 +68,10 @@ def main() -> int:
         print(body)
         return 1
     print("  children:", [c.get("name") for c in body.get("children", [])])
+
+    cab_children = body.get("children") or []
+    if cab_children:
+        child_id = str(cab_children[0]["id"])
 
     if child_id:
         status, one = get("/api/v1/cabinet", token, child_id)

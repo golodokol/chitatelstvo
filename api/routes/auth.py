@@ -99,7 +99,8 @@ def auth_me(
     family: Family = Depends(get_current_family),
     db: Session = Depends(get_db),
 ) -> AuthMeResponse:
-    children = repo.list_children_by_parent_email(db, family.parent_email)
+    family = repo.get_family_by_id(db, family.id) or family
+    children = repo.list_children_for_family(db, family.id)
     return AuthMeResponse(
         email=family.parent_email,
         family_id=family.id,

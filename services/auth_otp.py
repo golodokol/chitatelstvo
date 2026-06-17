@@ -136,5 +136,6 @@ def verify_login_otp(db: Session, email: str, code: str) -> tuple[Family, list[C
 
     _clear_code(normalized)
     _clear_failed_verify(normalized)
-    children = repo.list_children_by_parent_email(db, normalized)
+    family = repo.get_family_by_id(db, family.id) or family
+    children = repo.list_children_for_family(db, family.id)
     return family, children
