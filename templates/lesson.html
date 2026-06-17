@@ -30,7 +30,7 @@
     </div>
     <h1>Читательство · {{ lesson.title }}</h1>
     {% if test_key %}
-    <p class="chit-msg info" style="display:block;margin-bottom:12px">Тестовый режим — без ограничений по дате и модулю.</p>
+    <p class="chit-msg info" style="display:block;margin-bottom:12px">Тестовый режим — без ограничений по дате и модулю. Квизы доступны сразу, видео можно не досматривать.</p>
     {% endif %}
     <p>Привет, <strong style="color:var(--text-warm)">{{ child_name }}</strong>! Сказка {{ lesson.module_week if lesson.module_week <= 4 else lesson.module_week - 4 }} — видео и вопросы засчитываются сами, иди в своём темпе.</p>
 
@@ -426,6 +426,10 @@
     } else {
       document.getElementById('player-container').innerHTML =
         '<p style="padding:20px;color:#fff">Видео для этого урока ещё не добавлено.</p>';
+      enableNextAfterVideo();
+    }
+
+    if (CFG.testKey) {
       enableNextAfterVideo();
     }
 

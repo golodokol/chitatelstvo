@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import random
 from pathlib import Path
 from typing import Any
 
@@ -99,15 +100,18 @@ def get_lesson(slug: str) -> dict[str, Any] | None:
     return None
 
 
-def quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
+def quiz_for_client(quiz: dict[str, Any], *, shuffle_options: bool = True) -> dict[str, Any]:
     """Вопросы без правильных ответов — только для браузера."""
     questions = []
     for q in quiz.get("questions", []):
+        options = list(q.get("options", []))
+        if shuffle_options and len(options) > 1:
+            random.shuffle(options)
         questions.append(
             {
                 "id": q["id"],
                 "text": q["text"],
-                "options": q["options"],
+                "options": options,
             }
         )
     return {
