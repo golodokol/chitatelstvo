@@ -14,3 +14,4 @@ backups/
 data/quiz_leads.jsonl
 .DS_Store
 Thumbs.db
+mobile/node_modules/

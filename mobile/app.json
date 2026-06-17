@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Читательство",
+    "slug": "chitatelstvo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "chitatelstvo",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#fffcf7",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ru.chitatelstvo.app"
+    },
+    "android": {
+      "package": "ru.chitatelstvo.app",
+      "backgroundColor": "#fffcf7"
+    },
+    "plugins": ["expo-router", "expo-secure-store"],
+    "extra": {
+      "apiBaseUrl": "https://api.chitatelstvo.ru"
+    }
+  }
+}
