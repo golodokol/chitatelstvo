@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from api.deps import rate_limit
 from api.lesson_signing import verify_lesson_access
+from api.test_lesson_auth import verify_test_lesson_key
 from config.settings import LESSON_WEEK_DAYS, ROOT, VIDEO_WATCH_THRESHOLD
 from db import repository as repo
 from db.session import get_db
@@ -33,6 +34,7 @@ class LessonAuth(BaseModel):
     child_id: uuid.UUID
     exp: int
     sig: str = Field(min_length=8)
+    test_key: str | None = None
 
 
 class VideoCompleteBody(LessonAuth):
@@ -54,6 +56,8 @@ class TaleRatingBody(LessonAuth):
 
 
 def _verify_access(body: LessonAuth, slug: str) -> uuid.UUID:
+    if verify_test_lesson_key(body.test_key):
+        return body.child_id
     if not verify_lesson_access(body.child_id, slug, body.exp, body.sig):
         raise HTTPException(403, "Ссылка урока недействительна или устарела")
     return body.child_id
@@ -66,7 +70,16 @@ def _get_child_or_404(db: Session, child_id: uuid.UUID):
     return child
 
 
-def _require_lesson_unlocked(db: Session, child_id: uuid.UUID, lesson: dict) -> None:
+def _require_lesson_unlocked(
+    db: Session,
+    child_id: uuid.UUID,
+    lesson: dict,
+    *,
+    bypass: bool = False,
+) -> None:
+    if bypass:
+        _get_child_or_404(db, child_id)
+        return
     child = _get_child_or_404(db, child_id)
     enrollment = get_active_enrollment(child)
     if not child_can_access_lesson(child, lesson, enrollment):
@@ -97,14 +110,16 @@ def lesson_page(
     sig: str,
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
-    if not verify_lesson_access(child, slug, exp, sig):
+    test_key = request.query_params.get("test_key")
+    test_bypass = verify_test_lesson_key(test_key)
+    if not test_bypass and not verify_lesson_access(child, slug, exp, sig):
         raise HTTPException(403, "Ссылка урока недействительна или устарела")
 
     lesson = get_lesson(slug)
     if not lesson:
         raise HTTPException(404, "Урок не найден")
 
-    _require_lesson_unlocked(db, child, lesson)
+    _require_lesson_unlocked(db, child, lesson, bypass=test_bypass)
     child_row = _get_child_or_404(db, child)
 
     video = lesson.get("video", {})
@@ -146,6 +161,7 @@ def lesson_page(
             "slovik": slovik,
             "existing_rating": existing_rating.rating if existing_rating else None,
             "can_rate": can_rate,
+            "test_key": test_key if test_bypass else None,
         },
     )
 
@@ -165,7 +181,12 @@ def video_complete(
     if not lesson:
         raise HTTPException(404, "Урок не найден")
 
-    _require_lesson_unlocked(db, child_id, lesson)
+    _require_lesson_unlocked(
+        db,
+        child_id,
+        lesson,
+        bypass=verify_test_lesson_key(body.test_key),
+    )
 
     if body.percent < VIDEO_WATCH_THRESHOLD:
         raise HTTPException(400, f"Нужно досмотреть минимум {int(VIDEO_WATCH_THRESHOLD * 100)}%")
@@ -201,7 +222,12 @@ def quiz_submit(
     if not lesson:
         raise HTTPException(404, "Урок не найден")
 
-    _require_lesson_unlocked(db, child_id, lesson)
+    _require_lesson_unlocked(
+        db,
+        child_id,
+        lesson,
+        bypass=verify_test_lesson_key(body.test_key),
+    )
 
     quiz_key = "comprehension_quiz" if body.quiz_type == "comprehension" else "meaning_quiz"
     quiz = lesson.get(quiz_key)
@@ -251,7 +277,12 @@ def manual_mark(
     if not lesson:
         raise HTTPException(404, "Урок не найден")
 
-    _require_lesson_unlocked(db, child_id, lesson)
+    _require_lesson_unlocked(
+        db,
+        child_id,
+        lesson,
+        bypass=verify_test_lesson_key(body.test_key),
+    )
 
     if body.event_type not in MANUAL_MARK_ONLY:
         raise HTTPException(400, "Этот тип события только для ручной отметки")
@@ -287,7 +318,12 @@ def tale_rating(
     if not lesson:
         raise HTTPException(404, "Урок не найден")
 
-    _require_lesson_unlocked(db, child_id, lesson)
+    _require_lesson_unlocked(
+        db,
+        child_id,
+        lesson,
+        bypass=verify_test_lesson_key(body.test_key),
+    )
 
     if not repo.child_has_lesson_complete(db, child_id, tale_title=lesson["title"]):
         raise HTTPException(400, "Сначала нужно досмотреть видео-урок по сказке.")

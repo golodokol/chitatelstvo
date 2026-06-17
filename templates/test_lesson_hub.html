@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Тест · {{ lesson_title }}</title>
+  <link rel="stylesheet" href="/static/chit-student.css">
+  <style>
+    .chit-test-hub { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+    .chit-test-hub h1 { font-size: 1.45rem; margin-bottom: 8px; }
+    .chit-test-badge {
+      display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--blue-deep); background: var(--blue-pale);
+      border-radius: 999px; padding: 4px 10px; margin-bottom: 16px;
+    }
+    .chit-test-note { color: var(--muted); margin: 0 0 20px; line-height: 1.55; }
+    .chit-test-form label { display: block; font-weight: 700; margin-bottom: 8px; color: var(--text-warm); }
+    .chit-test-form input {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-family: ui-monospace, monospace; font-size: .9rem;
+    }
+    .chit-test-form button { margin-top: 12px; }
+    .chit-test-child {
+      border: 1.5px solid var(--border); border-radius: 14px; padding: 16px 18px;
+      background: var(--white); margin-top: 14px;
+    }
+    .chit-test-child h2 { font-size: 1.1rem; margin: 0 0 6px; }
+    .chit-test-meta { color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
+    .chit-test-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chit-test-actions a {
+      display: inline-block; text-decoration: none; padding: 10px 14px; border-radius: 10px;
+      font-weight: 700; font-size: .92rem;
+    }
+    .chit-test-actions .primary { background: var(--blue); color: #fff; }
+    .chit-test-actions .secondary { background: var(--accent-pale); color: var(--text-warm); border: 1px solid var(--border); }
+    .chit-test-actions .ghost { background: var(--white); color: var(--blue-deep); border: 1px solid var(--blue-light); }
+    .chit-msg.err { margin-top: 12px; }
+    .chit-test-steps { margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border); }
+    .chit-test-steps ol { margin: 0; padding-left: 1.2rem; color: var(--muted); line-height: 1.6; }
+  </style>
+</head>
+<body class="chit-student">
+  <div class="chit-test-hub">
+    <span class="chit-test-badge">Приватный тест</span>
+    <h1>{{ lesson_title }}</h1>
+    <p class="chit-test-note">
+      Страница только для вас: урок открывается без ограничений по дате и модулю.
+      Словики, бейджи и сундук начисляются как в боевом плеере — выберите ребёнка из своей семьи.
+    </p>
+
+    <form class="chit-card chit-test-form" method="get" action="{{ hub_url }}">
+      <label for="token">Токен страницы прогресса</label>
+      <input id="token" name="token" value="{{ token }}" placeholder="из ссылки /progress/…" required>
+      <button type="submit" class="chit-btn">Показать детей</button>
+    </form>
+
+    {% if error %}
+    <div class="chit-msg err">{{ error }}</div>
+    {% endif %}
+
+    {% for child in children %}
+    <div class="chit-test-child">
+      <h2>{{ child.name }}</h2>
+      <p class="chit-test-meta">Уровень: {{ child.level }} · Словики: {{ child.points }}</p>
+      <div class="chit-test-actions">
+        {% if child.lesson_url %}
+        <a class="primary" href="{{ child.lesson_url }}" target="_blank" rel="noopener">Открыть тест-урок</a>
+        {% endif %}
+        {% if child.catalog_url %}
+        <a class="ghost" href="{{ child.catalog_url }}" target="_blank" rel="noopener">Каталогный slug</a>
+        {% endif %}
+        <a class="secondary" href="{{ child.progress_url }}" target="_blank" rel="noopener">Страница прогресса</a>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="chit-test-steps">
+      <p><strong>Как пользоваться</strong></p>
+      <ol>
+        <li>Откройте свою страницу прогресса и скопируйте часть URL после <code>/progress/</code>.</li>
+        <li>Вставьте токен выше и нажмите «Показать детей».</li>
+        <li>Нажмите «Открыть тест-урок» — пройдите видео, квизы и проверьте начисления.</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>

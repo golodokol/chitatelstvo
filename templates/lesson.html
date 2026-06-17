@@ -29,6 +29,9 @@
       <p class="chit-lesson-companion__hint" data-lesson-companion-hint">Смотрим сказку вместе</p>
     </div>
     <h1>Читательство · {{ lesson.title }}</h1>
+    {% if test_key %}
+    <p class="chit-msg info" style="display:block;margin-bottom:12px">Тестовый режим — без ограничений по дате и модулю.</p>
+    {% endif %}
     <p>Привет, <strong style="color:var(--text-warm)">{{ child_name }}</strong>! Сказка {{ lesson.module_week if lesson.module_week <= 4 else lesson.module_week - 4 }} — видео и вопросы засчитываются сами, иди в своём темпе.</p>
 
     <div class="chit-card chit-step" id="step-video">
@@ -96,6 +99,7 @@
       slovik: {{ slovik|tojson }},
       existingRating: {{ existing_rating|tojson }},
       canRate: {{ can_rate|tojson }},
+      testKey: {{ test_key|tojson }},
     };
 
     const SLOVIK = CFG.slovik.urls || {};
@@ -123,7 +127,9 @@
     let maxPercent = 0;
 
     function authBody(extra = {}) {
-      return { child_id: CFG.childId, exp: CFG.exp, sig: CFG.sig, ...extra };
+      const body = { child_id: CFG.childId, exp: CFG.exp, sig: CFG.sig, ...extra };
+      if (CFG.testKey) body.test_key = CFG.testKey;
+      return body;
     }
 
     function showMsg(elId, text, type) {

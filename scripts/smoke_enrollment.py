@@ -27,7 +27,8 @@ def main() -> None:
     assert len(modules) == 18, f"expected 18 modules, got {len(modules)}"
 
     legacy = list_legacy_lessons()
-    assert len(legacy) == 1 and legacy[0]["slug"] == "kolobok", legacy
+    legacy_slugs = {item["slug"] for item in legacy}
+    assert legacy_slugs >= {"kolobok", "tsarevna-lyagushka"}, legacy_slugs
 
     for module in modules:
         mid = module["id"]
@@ -44,7 +45,7 @@ def main() -> None:
     m2 = get_module(2)
     assert m2 and m2["tariff_code"] == "self_paced"
 
-    print("OK: 18 modules, legacy kolobok, lesson counts, tale resolution")
+    print("OK: 18 modules, legacy pilot lessons, lesson counts, tale resolution")
 
 
 if __name__ == "__main__":
