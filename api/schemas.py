@@ -154,3 +154,44 @@ class RegisterResponse(BaseModel):
     module_id: int | None = None
     module_title: str | None = None
     is_returning: bool = False
+
+
+class OtpRequestBody(BaseModel):
+    email: EmailStr
+
+
+class OtpRequestResponse(BaseModel):
+    status: Literal["sent"] = "sent"
+    message: str = "Если этот email зарегистрирован, код отправлен на почту."
+
+
+class AuthChildSummary(BaseModel):
+    id: uuid.UUID
+    name: str
+    age: int | None = None
+    level: str
+    points: int
+    family_id: uuid.UUID
+
+
+class OtpVerifyBody(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=4, max_length=8)
+
+
+class OtpVerifyResponse(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    expires_in: int
+    family_id: uuid.UUID
+    parent_name: str
+    progress_url: str
+    children: list[AuthChildSummary]
+
+
+class AuthMeResponse(BaseModel):
+    email: str
+    family_id: uuid.UUID
+    parent_name: str
+    progress_url: str
+    children: list[AuthChildSummary]

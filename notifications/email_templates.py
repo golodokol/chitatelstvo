@@ -16,6 +16,7 @@ from notifications.russian_morph import (
 SUBJECT_WELCOME = "Добро пожаловать в Читательство"
 SUBJECT_PROGRESS = "Читательство — прогресс ребёнка"
 SUBJECT_QUIZ_AUTO = "PDF-чек-лист от Читательства"
+SUBJECT_OTP = "Код для входа в Читательство"
 
 QUIZ_AGE_MIN = 6
 QUIZ_AGE_MAX = 11
@@ -24,6 +25,23 @@ QUIZ_LOGO_ASSET = "/assets/logo-chitatelstvo-quiz.png?v=20260616c"
 
 def quiz_logo_url(api_base: str = "https://api.chitatelstvo.ru") -> str:
     return f"{api_base.rstrip('/')}{QUIZ_LOGO_ASSET}"
+
+
+def build_otp_message(*, code: str, ttl_minutes: int = 10) -> str:
+    return "\n".join(
+        [
+            "Здравствуйте!",
+            "",
+            f"Код для входа в Читательство: {code}",
+            "",
+            f"Код действует {ttl_minutes} мин. Никому его не сообщайте.",
+            "",
+            "Если вы не запрашивали вход — просто проигнорируйте это письмо.",
+            "",
+            "С теплом,",
+            "Команда Читательства",
+        ]
+    )
 
 
 def build_welcome_message(

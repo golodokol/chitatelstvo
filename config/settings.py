@@ -19,6 +19,13 @@ API_PORT = int(os.getenv("API_PORT", "8000"))
 PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/")
 RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "120"))
 
+# --- Auth (OTP + JWT для приложения) ---
+JWT_SECRET = os.getenv("JWT_SECRET", WEBHOOK_SECRET).strip()
+JWT_TTL_SECONDS = int(os.getenv("JWT_TTL_SECONDS", str(60 * 60 * 24 * 30)))
+OTP_TTL_SECONDS = int(os.getenv("OTP_TTL_SECONDS", "600"))
+OTP_MAX_SENDS_PER_HOUR = int(os.getenv("OTP_MAX_SENDS_PER_HOUR", "5"))
+OTP_MAX_VERIFY_ATTEMPTS = int(os.getenv("OTP_MAX_VERIFY_ATTEMPTS", "8"))
+
 # --- Database ---
 DATABASE_URL = os.getenv(
     "DATABASE_URL",

@@ -227,6 +227,30 @@ SMTP_FROM=Литературная школа <school@yandex.ru>
 
 ---
 
+## Вход по email + OTP (приложение)
+
+Для мобильного приложения и альтернативного входа без ссылки из письма.
+
+| Метод | URL | Назначение |
+|-------|-----|------------|
+| POST | `/api/v1/auth/otp/request` | `{ "email": "anna@example.com" }` → код на почту |
+| POST | `/api/v1/auth/otp/verify` | `{ "email": "...", "code": "482913" }` → JWT + список детей |
+| GET | `/api/v1/auth/me` | `Authorization: Bearer …` → семья и дети |
+
+**Выбор ребёнка:** клиент сохраняет `child_id` из списка `children` локально (в JWT не зашит).
+
+**Env:** `JWT_SECRET` (или fallback на `WEBHOOK_SECRET`), `OTP_TTL_SECONDS=600`, SMTP обязателен для отправки кода.
+
+```powershell
+curl -X POST https://api.chitatelstvo.ru/api/v1/auth/otp/request -H "Content-Type: application/json" -d "{\"email\":\"anna@example.com\"}"
+curl -X POST https://api.chitatelstvo.ru/api/v1/auth/otp/verify -H "Content-Type: application/json" -d "{\"email\":\"anna@example.com\",\"code\":\"123456\"}"
+curl https://api.chitatelstvo.ru/api/v1/auth/me -H "Authorization: Bearer TOKEN"
+```
+
+Старая ссылка `/progress/{token}` продолжает работать параллельно.
+
+---
+
 ## Деплой в прод
 
 ```powershell

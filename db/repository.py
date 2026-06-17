@@ -43,6 +43,47 @@ def find_family_by_email(db: Session, email: str) -> Family | None:
     return db.scalars(stmt).first()
 
 
+def list_families_by_email(db: Session, email: str) -> list[Family]:
+    stmt = (
+        select(Family)
+        .where(Family.parent_email == email.strip().lower())
+        .options(
+            joinedload(Family.children).joinedload(Child.badges),
+            joinedload(Family.children).joinedload(Child.enrollments),
+        )
+        .order_by(Family.created_at.desc())
+    )
+    return list(db.scalars(stmt).unique().all())
+
+
+def get_primary_family_for_email(db: Session, email: str) -> Family | None:
+    families = list_families_by_email(db, email)
+    return families[0] if families else None
+
+
+def get_family_by_id(db: Session, family_id: uuid.UUID) -> Family | None:
+    stmt = (
+        select(Family)
+        .where(Family.id == family_id)
+        .options(
+            joinedload(Family.children).joinedload(Child.badges),
+            joinedload(Family.children).joinedload(Child.enrollments),
+        )
+    )
+    return db.scalars(stmt).unique().first()
+
+
+def list_children_by_parent_email(db: Session, email: str) -> list[Child]:
+    stmt = (
+        select(Child)
+        .join(Family)
+        .where(Family.parent_email == email.strip().lower())
+        .options(joinedload(Child.family))
+        .order_by(Child.name.asc())
+    )
+    return list(db.scalars(stmt).unique().all())
+
+
 def _update_family_on_reregister(
     family: Family,
     *,
