@@ -1136,38 +1136,51 @@
     }
     @media (max-width: 720px) {
       .gamify-levels {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
-        align-items: start;
-        gap: 0 1px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        justify-content: center;
+        width: 100%;
         max-width: 100%;
-        padding: 0 6px 10px;
-        margin-bottom: 36px;
+        gap: 0;
+        padding: 0;
+        margin: 0 auto 36px;
         box-sizing: border-box;
       }
       .gamify-levels::before { display: none; }
       .gamify-levels__arrow {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        align-self: start;
-        padding-top: clamp(18px, 5.5vw, 28px);
-        font-size: clamp(9px, 2.4vw, 12px);
+        display: block;
+        visibility: visible;
+        opacity: 1;
+        flex: 0 0 8px;
+        width: 8px;
+        min-width: 8px;
+        overflow: visible;
+        align-self: flex-start;
+        padding: 26px 0 0;
+        margin: 0;
+        font-size: 12px;
         font-weight: 800;
-        color: var(--accent-soft);
+        color: #8F7DA3;
         line-height: 1;
+        text-align: center;
       }
       .gamify-levels .gamify-item {
+        flex: 1 1 0;
         min-width: 0;
+        max-width: calc((100% - 32px) / 5);
         gap: 4px;
       }
       .gamify-levels .gamify-item__img {
-        width: clamp(46px, 13.5vw, 62px);
-        height: clamp(46px, 13.5vw, 62px);
+        width: 100%;
+        max-width: 56px;
+        height: auto;
+        aspect-ratio: 1;
         margin: 0 auto;
       }
       .gamify-levels .gamify-item__name {
-        font-size: clamp(7px, 1.85vw, 10px);
+        font-size: clamp(7px, 2vw, 10px);
         max-width: 100%;
         min-height: 0;
         line-height: 1.15;
