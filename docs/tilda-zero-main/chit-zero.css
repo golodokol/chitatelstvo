@@ -1134,58 +1134,54 @@
     .gamify-levels__arrow {
       display: none;
     }
+    .gamify-levels .gamify-item__name-short {
+      display: none;
+    }
     @media (max-width: 720px) {
       .gamify-levels {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: flex-start;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+        gap: 0;
         width: 100%;
         max-width: 100%;
-        gap: 0;
         padding: 0;
         margin: 0 auto 36px;
         box-sizing: border-box;
+        align-items: start;
+        justify-items: center;
       }
       .gamify-levels::before { display: none; }
       .gamify-levels__arrow {
         display: block;
-        visibility: visible;
-        opacity: 1;
-        flex: 0 0 8px;
-        width: 8px;
-        min-width: 8px;
-        overflow: visible;
-        align-self: flex-start;
-        padding: 26px 0 0;
-        margin: 0;
-        font-size: 12px;
+        align-self: start;
+        padding-top: 16px;
+        font-size: 10px;
         font-weight: 800;
         color: #8F7DA3;
         line-height: 1;
         text-align: center;
       }
       .gamify-levels .gamify-item {
-        flex: 1 1 0;
         min-width: 0;
-        max-width: calc((100% - 32px) / 5);
+        width: 100%;
         gap: 4px;
       }
       .gamify-levels .gamify-item__img {
-        width: 100%;
-        max-width: 56px;
-        height: auto;
-        aspect-ratio: 1;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
         margin: 0 auto;
       }
       .gamify-levels .gamify-item__name {
-        font-size: clamp(7px, 2vw, 10px);
+        font-size: 9px;
         max-width: 100%;
         min-height: 0;
         line-height: 1.15;
-        hyphens: auto;
+        padding: 0 1px;
       }
+      .gamify-levels .gamify-item__name-full { display: none; }
+      .gamify-levels .gamify-item__name-short { display: block; }
     }
     .gamify-item {
       position: relative; z-index: 1;
