@@ -5,7 +5,7 @@
   var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf?v=20260615b';
   var AUTO_CFG = window.CHIT_QUIZ_AUTO || {};
   var AUTO_ENABLED = AUTO_CFG.enabled !== false;
-  var AUTO_DELAY_MS = Number(AUTO_CFG.delayMs) > 0 ? Number(AUTO_CFG.delayMs) : 5000;
+  var AUTO_DELAY_MS = Number(AUTO_CFG.delayMs) > 0 ? Number(AUTO_CFG.delayMs) : 12000;
   var AUTO_ONCE_PER_SESSION = AUTO_CFG.oncePerSession !== false;
   var AUTO_STORAGE_KEY = 'chit_quiz_popup';
   var autoOpenTimer = null;
