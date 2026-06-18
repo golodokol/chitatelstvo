@@ -857,8 +857,35 @@
       font-size: 17px;
     }
     @media (max-width: 560px) {
-      .summer-timeline { padding: 22px 18px; }
-      .summer-timeline__arrow { flex: 0 0 100%; transform: rotate(90deg); }
+      .summer-timeline {
+        padding: 18px 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .summer-timeline__track {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 8px;
+        padding-bottom: 4px;
+      }
+      .summer-timeline__node {
+        flex: 0 0 auto;
+        min-width: 118px;
+        max-width: 132px;
+        padding: 12px 10px;
+      }
+      .summer-timeline__date { font-size: 16px; }
+      .summer-timeline__label { font-size: 12px; }
+      .summer-timeline__arrow {
+        flex: 0 0 auto;
+        transform: none;
+        font-size: 18px;
+        line-height: 1;
+      }
+      .summer-timeline__total {
+        flex: 0 0 100%;
+        margin-top: 10px;
+      }
     }
 
     /* How a lesson works */
@@ -1106,13 +1133,32 @@
     }
     @media (max-width: 720px) {
       .gamify-levels {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 24px 16px;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        gap: 10px;
+        max-width: 100%;
+        padding: 0 12px 10px;
+        margin-bottom: 40px;
+        justify-content: flex-start;
       }
       .gamify-levels::before { display: none; }
-    }
-    @media (max-width: 400px) {
-      .gamify-levels { grid-template-columns: 1fr; max-width: 200px; }
+      .gamify-levels .gamify-item {
+        flex: 0 0 84px;
+        scroll-snap-align: start;
+      }
+      .gamify-levels .gamify-item__img {
+        width: 72px;
+        height: 72px;
+      }
+      .gamify-levels .gamify-item__name {
+        font-size: 11px;
+        max-width: 84px;
+        min-height: 0;
+        line-height: 1.25;
+      }
     }
     .gamify-item {
       position: relative; z-index: 1;
