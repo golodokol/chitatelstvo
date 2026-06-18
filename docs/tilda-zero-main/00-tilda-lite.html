@@ -1,22 +1,31 @@
 <!-- Читательство · lite (CSS/JS грузятся с API, вставлять целиком) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet"></noscript>
 <style id="chit-hide-store">#allrecords .chit-store-hidden,#allrecords .t-rec[data-record-type="205"],#allrecords .t-rec[data-record-type="762"],#allrecords .t-rec[data-record-type="200"],#allrecords .t-rec[data-record-type="210"],#allrecords .t-rec[data-record-type="215"],#allrecords .t-rec[data-record-type="405"],#allrecords .t-store{display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;left:-99999px!important}</style>
-<link rel="preconnect" href="https://api.chitatelstvo.ru">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260618c">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-quiz.css?v=20260618c">
-<script id="chit-css-loader">(function(){var A="https://api.chitatelstvo.ru/assets/",V="20260618c",H=document.head||document.getElementsByTagName("head")[0]||document.documentElement;function L(f){var id="chit-css-"+f,href=A+f+"?v="+V;if(document.getElementById(id))return;var l=document.createElement("link");l.id=id;l.rel="stylesheet";l.href=href;H.appendChild(l);}L("chit-zero.css");L("chit-quiz.css");var nodes=document.querySelectorAll('link[rel="stylesheet"][href*="api.chitatelstvo.ru/assets/chit-"]');for(var i=0;i<nodes.length;i++){if(nodes[i].parentNode!==H)H.appendChild(nodes[i]);}})();</script>
+<style id="chit-hero-premium">#chit-main .hero--premium .hero__grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)!important;column-gap:clamp(36px,5vw,72px)!important;row-gap:10px!important;align-items:stretch!important;max-width:1120px;margin:0 auto}#chit-main .hero--premium .hero__badge--hero-top{grid-column:1/-1!important;grid-row:1!important;justify-self:center!important;text-align:center!important;background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important;margin:0 0 10px!important;max-width:none!important;width:100%!important;gap:6px!important}#chit-main .hero--premium .hero__badge-line--sub{font-size:15px!important;line-height:1.45!important;font-weight:600!important;color:#6B8499!important}#chit-main .hero--premium .hero__badge-line--title em{font-size:18px!important;letter-spacing:.08em!important;font-weight:800!important;color:#8F7DA3!important;font-style:normal!important}#chit-main .hero--premium .hero__content{grid-column:1!important;grid-row:2!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;align-self:stretch!important}#chit-main .hero--premium .hero__visual{grid-column:2!important;grid-row:2!important;display:flex!important;flex-direction:column!important;align-self:stretch!important}#chit-main .hero--premium .hero__cta-note{margin-top:auto!important;padding-top:10px!important}#chit-main .hero--premium .hero__visual-gift{margin-top:auto!important;padding-top:10px!important;align-self:center!important}@media(max-width:960px){#chit-main .hero--premium .hero__grid{grid-template-columns:1fr!important}#chit-main .hero--premium .hero__badge--hero-top{grid-column:1!important;grid-row:1!important}#chit-main .hero--premium .hero__visual{grid-column:1!important;grid-row:2!important}#chit-main .hero--premium .hero__content{grid-column:1!important;grid-row:3!important;align-items:center!important;text-align:center!important}#chit-main .hero--premium .hero__cta-note,#chit-main .hero--premium .hero__visual-gift{margin-top:0!important;padding-top:8px!important}#chit-main .hero--premium .hero__badge-line--sub{font-size:14px!important}#chit-main .hero--premium .hero__badge-line--title em{font-size:16px!important}}</style>
+<style id="chit-gamify-path">#chit-main .gamify__path-wrap{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;margin:0 auto 20px!important;padding:0 16px!important;box-sizing:border-box!important}#chit-main .gamify__path-note{display:block!important;width:100%!important;max-width:640px!important;margin:0 auto!important;padding:0!important;text-align:center!important;font-size:15px!important;line-height:1.55!important;color:#6B8499!important}#chit-main #rewards .gamify__subtitle{text-align:center!important;width:100%!important;margin-left:auto!important;margin-right:auto!important}#chit-main #rewards .gamify-levels{margin-left:auto!important;margin-right:auto!important}</style>
+<style id="chit-for-whom-icons">#chit-main .for-whom__icon-wrap{position:relative!important;width:80px!important;height:80px!important;min-width:80px!important;min-height:80px!important;border-radius:14px!important;overflow:hidden!important;flex-shrink:0!important;background:#fff!important}#chit-main .for-whom__icon{position:absolute!important;top:0!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;display:block!important;margin:0!important;padding:0!important}#chit-main .for-whom__icon-wrap--kids .for-whom__icon,#chit-main .for-whom__icon-wrap--pace .for-whom__icon{transform:scale(1.24)!important}#chit-main .for-whom__icon-wrap--family .for-whom__icon{transform:scale(1.48)!important;object-position:center 50%!important}#chit-main .for-whom__icon-wrap--parents .for-whom__icon{transform:scale(1.48)!important;object-position:center 42%!important}</style>
+<link rel="preconnect" href="https://api.chitatelstvo.ru" crossorigin>
+<link rel="dns-prefetch" href="https://api.chitatelstvo.ru">
+<link rel="preload" as="style" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260619a">
+<link rel="preload" as="image" href="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" fetchpriority="high">
+<link rel="preload" as="image" href="https://api.chitatelstvo.ru/assets/hero-book-full.png" fetchpriority="high">
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260619a">
+<script id="chit-css-head">(function(){var H=document.head||document.documentElement,n=document.querySelectorAll('link[rel="stylesheet"][href*="api.chitatelstvo.ru/assets/chit-zero"]');for(var i=0;i<n.length;i++){if(n[i].parentNode!==H)H.appendChild(n[i]);}})();</script>
 <div id="chit-main">
 <header class="site-header">
   <div class="site-header__inner">
     <a class="logo" href="#top" id="site-logo" aria-label="Читательство — наверх">
-      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="154" height="118" loading="eager" decoding="async">
+      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="154" height="118" loading="eager" decoding="async" fetchpriority="high">
     </a>
     <nav class="site-nav" aria-label="Разделы страницы">
       <a href="#how-it-works">Как устроено</a>
       <a href="#programs">Программы</a>
       <a href="#tariffs">Тарифы</a>
-      <a href="#quiz">Подборка</a>
+      <a href="#quiz">Подарок</a>
       <a href="#faq">Вопросы</a>
     </nav>
     <div class="site-header__right">
@@ -28,18 +37,18 @@
 <!-- HERO -->
 <section class="hero hero--premium paper-bg" id="top">
   <div class="hero__grid">
+    <div class="hero__badge hero__badge--hero-top">
+      <span class="hero__badge-line hero__badge-line--sub">онлайн-школа литературного чтения</span>
+      <span class="hero__badge-line hero__badge-line--title"><em>ЧИТАТЕЛЬСТВО</em></span>
+    </div>
+
     <div class="hero__content">
-      <div class="hero__brand">
-        <img class="hero__brand-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="" width="72" height="55" loading="eager" decoding="async">
-        <span class="hero__brand-name">Читательство</span>
-      </div>
       <h1>Литературная школа для детей, где чтение становится приключением</h1>
-      <p class="hero__lead">Индивидуальный подход, игровая система уровней и наград, персональная сказка в подарок и бережное развитие любви к книге.</p>
+      <p class="hero__lead">Сказки, игры, литературные занятия, Путь героя и бейджи. Помогаем читать с интересом, понимать смысл и развивать речь.</p>
       <div class="hero__cta">
-        <a class="btn btn--hero" href="#quiz">Подобрать формат</a>
-        <p class="hero__cta-note">Старт программы — 22 июня</p>
-        <p class="hero__cta-micro">Персональная сказка в подарок после квиза</p>
+        <a class="btn btn--hero" href="#tariffs">Подобрать формат</a>
       </div>
+      <p class="hero__cta-note">Старт первой программы — 22 июня</p>
     </div>
 
     <div class="hero__visual">
@@ -47,18 +56,18 @@
         <p class="hero__showcase-label">Выберите формат — нажмите на книгу</p>
         <div class="book-stack" role="group" aria-label="Три формата курса">
           <button type="button" class="book" data-idx="0" aria-label="Разовое — одна сказка">
-            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" loading="lazy" decoding="async" onerror="this.remove()">
           </button>
           <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа — 8 сказок">
-            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" loading="eager" decoding="async" fetchpriority="high" onerror="this.remove()">
           </button>
           <button type="button" class="book" data-idx="2" aria-label="Блок — 4 сказки">
-            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" loading="lazy" decoding="async" onerror="this.remove()">
           </button>
         </div>
         <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса.<span class="hero-book-text__dates">Два старта: <strong>22 июня</strong> и <strong>20 июля</strong></span></p>
       </div>
-      <p class="hero__visual-accent">Уровни, сундуки, бейджи и сказки — всё, чтобы ребёнку хотелось возвращаться снова.</p>
+      <a href="#quiz" class="hero__visual-gift">Получите в подарок один урок-сказку</a>
     </div>
   </div>
   <p class="hero__scroll"><a href="#quote-hero">↓ листайте вниз — там программы и запись</a></p>
@@ -225,10 +234,13 @@
 <section class="section section--cream reveal" id="rewards">
   <div class="section__inner">
     <span class="section__chapter"><em>глава 4</em> · награды</span>
-    <h2 class="section__title">Баллы, уровни и бейджи</h2>
+    <h2 class="section__title">Путь героя и бейджи</h2>
     <p class="section__lead">Баллы и бейджи на личной странице — прогресс виден сразу, без оценок и сравнений с другими</p>
 
-    <h3 class="gamify__subtitle">Пять уровней</h3>
+    <h3 class="gamify__subtitle">Путь героя</h3>
+    <div class="gamify__path-wrap">
+      <p class="gamify__path-note">Пройденные уроки открывают новые ступени — от Старта до Литературного детектива</p>
+    </div>
     <div class="gamify-levels" aria-label="Уровни прогресса">
       <figure class="gamify-item">
         <div class="gamify-item__img">
@@ -683,5 +695,5 @@
   </button>
 </div>
 </div>
-<script src="https://api.chitatelstvo.ru/assets/chit-quiz.js?v=20260618c"></script>
-<script src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260618c"></script>
+<script id="chit-quiz-loader">(function(){var A="https://api.chitatelstvo.ru/assets/",V="20260619a",busy=0,done=0,q=[];function run(){while(q.length)(q.shift())();}window.chitLoadQuiz=function(cb){if(done){if(cb)cb();return;}if(cb)q.push(cb);if(busy)return;busy=1;var c=document.createElement("link");c.rel="stylesheet";c.href=A+"chit-quiz.css?v="+V;document.head.appendChild(c);var s=document.createElement("script");s.src=A+"chit-quiz.js?v="+V;s.onload=function(){done=1;run();};document.head.appendChild(s);};function warm(){if(!done&&!busy)window.chitLoadQuiz();}document.addEventListener("click",function(e){if(done)return;var t=e.target.closest('[href="#quiz"],[data-qz-open]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();window.chitLoadQuiz(function(){if(window.chitQuizOpen)window.chitQuizOpen();});},true);if(location.hash==="#quiz")window.chitLoadQuiz();else if("requestIdleCallback"in window)requestIdleCallback(warm,{timeout:4000});else setTimeout(warm,3500);})();</script>
+<script defer src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260619a"></script>

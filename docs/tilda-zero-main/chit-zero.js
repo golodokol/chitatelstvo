@@ -1,9 +1,8 @@
 (function ensureChitStylesheets() {
-  var VERSION = '20260617d';
+  var VERSION = '20260619a';
   var API = 'https://api.chitatelstvo.ru/assets/';
   var sheets = [
-    API + 'chit-zero.css?v=' + VERSION,
-    API + 'chit-quiz.css?v=' + VERSION
+    API + 'chit-zero.css?v=' + VERSION
   ];
   var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
 
@@ -37,9 +36,9 @@ function chitCssLooksLoaded() {
 
 function chitFetchCssFallback() {
   if (chitCssLooksLoaded()) return;
-  var VERSION = '20260617d';
+  var VERSION = '20260619a';
   var API = 'https://api.chitatelstvo.ru/assets/';
-  ['chit-zero.css', 'chit-quiz.css'].forEach(function (file) {
+  ['chit-zero.css'].forEach(function (file) {
     var href = API + file + '?v=' + VERSION;
     if (document.querySelector('style[data-chit-fallback="' + href + '"]')) return;
     fetch(href)

@@ -206,6 +206,7 @@
       box-shadow: 0 8px 24px rgba(91,127,166,0.28);
     }
     .btn--hero:hover { box-shadow: 0 12px 32px rgba(91,127,166,0.35); }
+    .hero--premium .btn--hero { width: 100%; }
     .btn:disabled {
       background: #B8C9DB; cursor: not-allowed; transform: none;
     }
@@ -236,7 +237,7 @@
       box-sizing: border-box;
     }
 
-    #chit-main img:not(.book__cover):not(.founder__photo),
+    #chit-main img:not(.book__cover):not(.founder__photo):not(.for-whom__icon):not(.logo__img):not(.chit-img-fill),
     #chit-main video,
     #chit-main svg {
       max-width: 100%;
@@ -459,82 +460,138 @@
 
     /* Premium hero — 2 columns */
     .hero--premium {
-      padding: 40px 24px 48px;
+      padding: 48px 24px 52px;
     }
     .hero--premium .hero__grid {
       max-width: var(--max);
       margin: 0 auto;
-      display: grid;
+      display: grid !important;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-      gap: clamp(32px, 5vw, 64px);
-      align-items: center;
+      column-gap: clamp(36px, 5vw, 72px);
+      row-gap: 10px;
+      align-items: stretch;
+    }
+    #chit-main .hero--premium .hero__badge--hero-top {
+      grid-column: 1 / -1;
+      grid-row: 1;
     }
     .hero--premium .hero__content {
+      grid-column: 1;
+      grid-row: 2;
       text-align: left;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      align-self: stretch;
     }
-    .hero__brand {
+    .hero--premium .hero__visual {
+      grid-column: 2;
+      grid-row: 2;
       display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      align-self: stretch;
+    }
+    #chit-main .hero--premium .hero__badge,
+    #chit-main .hero--premium .hero__badge--hero-top {
+      display: inline-flex;
+      flex-direction: column;
+      justify-self: center;
+      align-self: center;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 28px;
+      text-align: center;
+      margin: 0 0 6px;
+      padding: 0 !important;
+      width: 100%;
+      max-width: none;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
     }
-    .hero__brand-logo {
-      width: 72px;
-      height: auto;
-      flex-shrink: 0;
+    .hero--premium .hero__badge-line--sub {
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--muted);
+      font-weight: 600;
     }
-    .hero__brand-name {
-      font-family: Literata, Georgia, serif;
-      font-size: clamp(22px, 2.5vw, 28px);
-      font-weight: 700;
-      color: var(--blue);
-      letter-spacing: -0.02em;
+    .hero--premium .hero__badge-line--title em {
+      font-size: 18px;
+      letter-spacing: 0.08em;
     }
     .hero--premium h1 {
       text-align: left;
-      font-size: clamp(28px, 3.8vw, 44px);
-      line-height: 1.12;
-      margin-bottom: 20px;
-      max-width: 18ch;
+      font-size: clamp(30px, 3.6vw, 42px);
+      line-height: 1.14;
+      margin: 0 0 16px;
+      max-width: 13.5em;
+      letter-spacing: -0.025em;
     }
-    .hero__lead {
-      font-size: clamp(16px, 1.8vw, 19px);
-      line-height: 1.65;
-      color: var(--muted);
-      margin: 0 0 32px;
-      max-width: 36em;
+    .hero--premium .hero__lead {
+      font-size: clamp(16px, 1.75vw, 18px);
+      line-height: 1.62;
+      color: var(--text-warm);
+      margin: 0 0 22px;
+      max-width: 34em;
     }
     .hero__cta {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       gap: 0;
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 0;
+    }
+    .hero--premium .hero__cta-note {
+      margin-top: auto;
+      padding-top: 10px;
+    }
+    .hero--premium .hero__visual-gift {
+      margin-top: auto;
+      padding-top: 10px;
+      align-self: center;
     }
     .hero__cta-note {
-      margin: 14px 0 4px;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .hero__cta-micro {
       margin: 0;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--blue-deep);
+      line-height: 1.45;
     }
-    .hero--premium .hero__visual {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
+    .hero__visual-gift {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: center;
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(143, 125, 163, 0.45);
+      background: transparent;
+      border-radius: 0;
+      transition: color .2s, border-color .2s;
+    }
+    .hero__visual-gift:hover {
+      color: var(--blue-deep);
+      border-bottom-color: var(--blue);
+      background: transparent;
     }
     .hero--premium .hero__showcase {
       max-width: none;
       width: 100%;
       margin: 0;
-      padding: 40px 32px 32px;
+      padding: 36px 28px 28px;
+    }
+    .hero--premium .hero__showcase-label {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: none;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-weight: 700;
     }
     .hero--premium .book-stack {
       gap: clamp(16px, 3vw, 32px);
@@ -546,31 +603,40 @@
     .hero--premium .book:nth-child(2) {
       width: clamp(100px, 14vw, 136px);
     }
-    .hero__visual-accent {
-      margin-top: 18px;
-      padding: 14px 18px;
-      font-size: 15px;
-      line-height: 1.55;
-      color: var(--muted);
-      text-align: center;
-      background: var(--accent-pale);
-      border: 1px solid rgba(143,125,163,0.2);
-      border-radius: 14px;
-    }
     .hero--premium .hero__scroll {
       margin-top: 40px;
     }
     @media (max-width: 960px) {
       .hero--premium .hero__grid {
         grid-template-columns: 1fr;
-        gap: 36px;
       }
-      .hero--premium h1 { max-width: none; }
-      .hero--premium .hero__content { align-items: center; text-align: center; }
-      .hero--premium h1 { text-align: center; }
-      .hero__brand { justify-content: center; }
-      .hero__cta { align-items: center; }
-      .hero__lead { text-align: center; }
+      #chit-main .hero--premium .hero__badge--hero-top {
+        grid-column: 1;
+        grid-row: 1;
+      }
+      .hero--premium .hero__visual {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .hero--premium .hero__content {
+        grid-column: 1;
+        grid-row: 3;
+        align-items: center;
+        text-align: center;
+      }
+      #chit-main .hero--premium .hero__badge,
+      #chit-main .hero--premium .hero__badge--hero-top {
+        align-items: center;
+        text-align: center;
+      }
+      .hero--premium h1 { max-width: none; text-align: center; }
+      .hero__cta { align-items: center; max-width: 100%; }
+      .hero--premium .hero__lead { text-align: center; }
+      .hero--premium .hero__cta-note,
+      .hero--premium .hero__visual-gift {
+        margin-top: 0;
+        padding-top: 8px;
+      }
     }
 
     .quote-hero {
@@ -827,8 +893,8 @@
       max-width: 200px;
       margin: 0 auto;
       aspect-ratio: 1;
-      display: flex; align-items: center; justify-content: center;
-      overflow: visible;
+      position: relative;
+      overflow: hidden;
       background: transparent;
       border: none;
       border-radius: 0;
@@ -837,10 +903,15 @@
       .lesson-step__icon { max-width: 180px; }
     }
     .lesson-step__icon img {
-      width: 100%; height: 100%;
-      object-fit: contain;
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      object-fit: cover;
       object-position: center;
       display: block;
+      transform: scale(1.06);
     }
     .lesson-steps-note {
       text-align: center; max-width: 560px; margin: 24px auto 0;
@@ -959,25 +1030,31 @@
       min-width: 0;
     }
     .for-whom__icon-wrap {
+      position: relative;
       width: 80px; height: 80px;
+      min-width: 80px; min-height: 80px;
       border-radius: 14px;
       overflow: hidden;
       flex-shrink: 0;
-      background: var(--blue-pale);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: var(--white);
     }
     .for-whom__icon {
-      width: 100%; height: 100%;
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
       object-fit: cover;
       object-position: center center;
       display: block;
+      margin: 0;
+      padding: 0;
     }
-    .for-whom__icon-wrap--kids .for-whom__icon { object-position: center 42%; }
-    .for-whom__icon-wrap--pace .for-whom__icon { object-position: center 38%; }
-    .for-whom__icon-wrap--family .for-whom__icon { object-position: center 45%; }
-    .for-whom__icon-wrap--parents .for-whom__icon { object-position: center 40%; }
+    .for-whom__icon-wrap--kids .for-whom__icon { object-position: center 42%; transform: scale(1.24); }
+    .for-whom__icon-wrap--pace .for-whom__icon { object-position: center 38%; transform: scale(1.24); }
+    .for-whom__icon-wrap--family .for-whom__icon { object-position: center 50%; transform: scale(1.48); }
+    .for-whom__icon-wrap--parents .for-whom__icon { object-position: center 42%; transform: scale(1.48); }
     .for-whom__item:hover {
       transform: translateY(-3px);
       border-color: var(--accent-soft);
@@ -987,7 +1064,31 @@
     /* Gamification — уровни и бейджи */
     .gamify__subtitle {
       text-align: center; font-size: 22px; font-weight: 800;
-      color: var(--blue); margin: 0 0 24px;
+      color: var(--blue); margin: 0 0 8px;
+    }
+    #chit-main .gamify__path-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin: 0 auto 20px;
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+    #chit-main .gamify__path-note {
+      display: block;
+      width: 100%;
+      max-width: 640px;
+      text-align: center !important;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--muted);
+      margin: 0 auto !important;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    #allrecords #chit-main .gamify__path-note {
+      text-align: center !important;
     }
     .gamify-levels {
       display: grid;
@@ -1020,19 +1121,26 @@
     }
     .gamify-item__img {
       width: 96px; height: 96px;
-      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
       background: transparent;
       border: none;
       box-shadow: none;
       border-radius: 0;
-      overflow: visible;
+      overflow: hidden;
+      position: relative;
     }
     .gamify-item__img img {
-      width: 100%; height: 100%;
-      object-fit: contain;
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      object-fit: cover;
       object-position: center;
       display: block;
+    }
+    .gamify-levels .gamify-item__img img {
+      transform: scale(1.14);
     }
     .gamify-item__name {
       font-size: 14px; font-weight: 800; color: var(--text);
@@ -1042,10 +1150,13 @@
       min-height: 2.8em;
     }
     .gamify-item--scale-up .gamify-item__img img {
-      transform: scale(1.15);
+      transform: scale(1.24);
     }
     .gamify-item--scale-up-sm .gamify-item__img img {
-      transform: scale(1.05);
+      transform: scale(1.18);
+    }
+    .gamify-badges .gamify-item__img img {
+      transform: scale(1.12);
     }
     .gamify-badges {
       display: flex;
