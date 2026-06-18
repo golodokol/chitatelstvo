@@ -614,15 +614,15 @@
         grid-column: 1;
         grid-row: 1;
       }
-      .hero--premium .hero__visual {
-        grid-column: 1;
-        grid-row: 2;
-      }
       .hero--premium .hero__content {
         grid-column: 1;
-        grid-row: 3;
+        grid-row: 2;
         align-items: center;
         text-align: center;
+      }
+      .hero--premium .hero__visual {
+        grid-column: 1;
+        grid-row: 3;
       }
       #chit-main .hero--premium .hero__badge,
       #chit-main .hero--premium .hero__badge--hero-top {
