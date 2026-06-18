@@ -1,5 +1,5 @@
 (function ensureChitStylesheets() {
-  var VERSION = '20260619d';
+  var VERSION = '20260619e';
   var API = 'https://api.chitatelstvo.ru/assets/';
   var sheets = [
     API + 'chit-zero.css?v=' + VERSION
@@ -36,7 +36,7 @@ function chitCssLooksLoaded() {
 
 function chitFetchCssFallback() {
   if (chitCssLooksLoaded()) return;
-  var VERSION = '20260619d';
+  var VERSION = '20260619e';
   var API = 'https://api.chitatelstvo.ru/assets/';
   ['chit-zero.css'].forEach(function (file) {
     var href = API + file + '?v=' + VERSION;

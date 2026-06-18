@@ -1131,50 +1131,47 @@
       background: linear-gradient(90deg, var(--blue-light), var(--accent-soft), var(--accent));
       opacity: 0.35;
     }
+    .gamify-levels__arrow {
+      display: none;
+    }
     @media (max-width: 720px) {
       .gamify-levels {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: visible;
-        justify-content: space-between;
-        gap: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: start;
+        gap: 0 1px;
         max-width: 100%;
-        padding: 0 8px 10px;
+        padding: 0 6px 10px;
         margin-bottom: 36px;
         box-sizing: border-box;
       }
       .gamify-levels::before { display: none; }
-      .gamify-levels .gamify-item {
-        flex: 1 1 0;
-        min-width: 0;
-        position: relative;
-        padding: 0 1px;
-        scroll-snap-align: unset;
-      }
-      .gamify-levels .gamify-item:not(:last-child)::after {
-        content: '→';
-        position: absolute;
-        right: 0;
-        top: clamp(18px, 5.5vw, 30px);
-        transform: translateX(50%);
-        font-size: clamp(9px, 2.5vw, 13px);
+      .gamify-levels__arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-self: start;
+        padding-top: clamp(18px, 5.5vw, 28px);
+        font-size: clamp(9px, 2.4vw, 12px);
         font-weight: 800;
         color: var(--accent-soft);
         line-height: 1;
-        z-index: 2;
-        pointer-events: none;
+      }
+      .gamify-levels .gamify-item {
+        min-width: 0;
+        gap: 4px;
       }
       .gamify-levels .gamify-item__img {
-        width: clamp(44px, 15vw, 68px);
-        height: clamp(44px, 15vw, 68px);
+        width: clamp(46px, 13.5vw, 62px);
+        height: clamp(46px, 13.5vw, 62px);
         margin: 0 auto;
       }
       .gamify-levels .gamify-item__name {
-        font-size: clamp(8px, 2.1vw, 11px);
+        font-size: clamp(7px, 1.85vw, 10px);
         max-width: 100%;
         min-height: 0;
-        line-height: 1.2;
-        padding: 0 1px;
+        line-height: 1.15;
+        hyphens: auto;
       }
     }
     .gamify-item {
@@ -1238,32 +1235,32 @@
     @media (max-width: 720px) {
       .gamify-badges {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        gap: clamp(6px, 2.5vw, 14px);
-        padding: 0 12px;
+        gap: 4px;
+        padding: 0 8px;
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
-        overflow: visible;
       }
       .gamify-badges .gamify-item {
-        flex: 1 1 0;
+        flex: 0 1 auto;
         min-width: 0;
         display: flex;
         justify-content: center;
       }
       .gamify-badges .gamify-item__img {
-        width: 100%;
-        max-width: min(88px, calc((100vw - 72px) / 3));
-        height: auto;
-        aspect-ratio: 1;
+        width: calc((100vw - 32px) / 3);
+        height: calc((100vw - 32px) / 3);
+        max-width: 104px;
+        max-height: 104px;
       }
     }
     @media (max-width: 400px) {
-      .gamify-badges { gap: 6px; padding: 0 10px; }
+      .gamify-badges { gap: 3px; padding: 0 6px; }
       .gamify-badges .gamify-item__img {
-        max-width: calc((100vw - 56px) / 3);
+        width: calc((100vw - 26px) / 3);
+        height: calc((100vw - 26px) / 3);
       }
     }
     .gamify-badges-note {
