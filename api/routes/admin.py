@@ -406,7 +406,12 @@ def admin_delete_family(
     if not family:
         return _redirect_admin_error("Семья не найдена.", anchor="registrations")
     parent_name = family.parent_name
-    if not repo.delete_family(db, family_id):
+    try:
+        deleted = repo.delete_family(db, family_id)
+    except Exception as exc:
+        db.rollback()
+        return _redirect_admin_error(f"Не удалось удалить запись: {exc}", anchor="registrations")
+    if not deleted:
         return _redirect_admin_error("Не удалось удалить запись.", anchor="registrations")
     return _redirect_admin_deleted(parent_name)
 

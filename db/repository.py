@@ -4,7 +4,7 @@ import secrets
 import uuid
 from datetime import date, datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import delete as sa_delete, select
 from sqlalchemy.orm import Session, joinedload
 
 from db.models import ChestClaim, Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward, TaleRating
@@ -540,10 +540,10 @@ def list_all_families(db: Session) -> list[Family]:
 
 
 def delete_family(db: Session, family_id: uuid.UUID) -> bool:
-    family = db.get(Family, family_id)
-    if not family:
+    """Удалить семью и все связанные записи (каскад в PostgreSQL)."""
+    result = db.execute(sa_delete(Family).where(Family.id == family_id))
+    if result.rowcount == 0:
         return False
-    db.delete(family)
     db.commit()
     return True
 

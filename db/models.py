@@ -24,7 +24,11 @@ class Family(Base):
     progress_token: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
-    children: Mapped[list[Child]] = relationship(back_populates="family")
+    children: Mapped[list[Child]] = relationship(
+        back_populates="family",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Child(Base):

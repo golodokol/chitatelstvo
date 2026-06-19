@@ -165,6 +165,32 @@ def test_parallel_enrollments_different_groups(db):
     assert {e.module_id for e in enrollments} == {2, 17}
 
 
+def test_delete_family_removes_child_and_enrollments(db):
+    email = _unique_email()
+    child_name = "Маша"
+
+    family, child, _ = repo.resolve_or_create_family_child(
+        db,
+        parent_name="Анна",
+        parent_email=email,
+        parent_telegram=None,
+        notification_channel="email",
+        child_name=child_name,
+        child_age=7,
+    )
+    create_enrollment_from_registration(
+        db,
+        child,
+        _register_body(email=email, child_name=child_name, module_id=1, chosen_stage="1", chosen_tale_number=1),
+    )
+
+    assert repo.delete_family(db, family.id) is True
+    assert repo.get_family_by_id(db, family.id) is None
+    assert db.get(Child, child.id) is None
+    remaining = db.scalars(select(Enrollment).where(Enrollment.child_id == child.id)).all()
+    assert remaining == []
+
+
 def test_different_email_creates_new_family(db):
     email1 = _unique_email()
     email2 = _unique_email()
