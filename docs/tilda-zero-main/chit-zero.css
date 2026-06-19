@@ -26,23 +26,46 @@
 }
 
 /*
- * Zero Block rec2378409351: Tilda на мобиле ставит display:table,
- * фиксированную ширину 320–960px и left:calc(50% - 600px) — страница «пустая».
- * У блока также класс t-rec_pt_60 (padding-top: 60px) — пустая полоса сверху.
+ * Zero Block rec2378409351: схлопнуть оболочку Tilda 35000px на всех экранах.
  */
-#rec2378409351.t-rec,
-#rec2378409351 {
+#allrecords #rec2378409351,
+#allrecords #rec2378409351.t-rec,
+#allrecords #rec2378409351 .t396,
+#allrecords #rec2378409351 .t396__artboard {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   padding-top: 0 !important;
   margin-top: 0 !important;
 }
-#rec2378409351 .t396__artboard,
-#rec2378409351 .t396__carrier,
-#rec2378409351 .t396__filter,
-#rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],
-#rec2378409351 .tn-elem[data-elem-type="html"],
-#rec2378409351 .tn-atom,
-#rec2378409351 .tn-atom__html,
-#rec2378409351 #chit-main {
+#allrecords #rec2378409351 .t396__artboard,
+#allrecords #rec2378409351 .t396__carrier,
+#allrecords #rec2378409351 .t396__filter,
+#allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],
+#allrecords #rec2378409351 .tn-elem[data-elem-type="html"],
+#allrecords #rec2378409351 .tn-atom,
+#allrecords #rec2378409351 .tn-atom__html,
+#allrecords #rec2378409351 #chit-main {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+#allrecords #rec2378409351 .t396__carrier,
+#allrecords #rec2378409351 .t396__filter {
+  height: 0 !important;
+  max-height: 0 !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  pointer-events: none !important;
+}
+#allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],
+#allrecords #rec2378409351 .tn-elem[data-elem-type="html"] {
   display: block !important;
   position: relative !important;
   left: 0 !important;
@@ -50,26 +73,34 @@
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
-  height: auto !important;
-  min-height: 0 !important;
-  max-height: none !important;
-  overflow: visible !important;
   transform: none !important;
-  zoom: 1 !important;
-  box-sizing: border-box !important;
+}
+#allrecords #rec2378409351 .t396 {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  margin: 0 !important;
+  table-layout: auto !important;
 }
 
 @media screen and (max-width: 1199px),
 screen and (max-width: 959px),
 screen and (max-width: 639px),
 screen and (max-width: 479px) {
-  #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],
-  #rec2378409351 .tn-elem[data-elem-type="html"],
-  #rec2378409351 #chit-main {
+  #allrecords #rec2378409351 .t396,
+  #allrecords #rec2378409351 .t396__artboard,
+  #allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],
+  #allrecords #rec2378409351 .tn-elem[data-elem-type="html"] {
     display: block !important;
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    transform: none !important;
   }
 }
 

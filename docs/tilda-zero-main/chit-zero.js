@@ -1,5 +1,5 @@
 (function ensureChitStylesheets() {
-  var VERSION = '20260620f';
+  var VERSION = '20260621f';
   var API = 'https://api.chitatelstvo.ru/assets/';
   var sheets = [
     API + 'chit-zero.css?v=' + VERSION
@@ -36,7 +36,7 @@ function chitCssLooksLoaded() {
 
 function chitFetchCssFallback() {
   if (chitCssLooksLoaded()) return;
-  var VERSION = '20260620f';
+  var VERSION = '20260621f';
   var API = 'https://api.chitatelstvo.ru/assets/';
   ['chit-zero.css'].forEach(function (file) {
     var href = API + file + '?v=' + VERSION;
@@ -68,104 +68,133 @@ chitReady(function () {
   window.setTimeout(chitFetchCssFallback, 1200);
 });
 
-function chitSetAutoHeight(el) {
-  if (!el) return;
-  el.style.setProperty('height', 'auto', 'important');
-  el.style.setProperty('max-height', 'none', 'important');
-  el.style.setProperty('overflow', 'visible', 'important');
-  el.style.setProperty('display', 'block', 'important');
+function chitPatchTildaStyleBlock() {
+  var rec = document.getElementById('rec2378409351');
+  if (!rec) return;
+  var styles = rec.querySelectorAll('style');
+  for (var i = 0; i < styles.length; i++) {
+    var txt = styles[i].textContent || '';
+    if (txt.indexOf('1781424531092000001') === -1 && txt.indexOf('t396__artboard') === -1) continue;
+    var next = txt
+      .replace(/left:\s*calc\([^)]+\)/gi, 'left:0')
+      .replace(/width:\s*(?:1200|960|640|480|320)px/gi, 'width:100%')
+      .replace(/height:\s*35000px/gi, 'height:auto')
+      .replace(/height:\s*100vh/gi, 'height:auto')
+      .replace(/display:\s*table/gi, 'display:block');
+    if (next !== txt) styles[i].textContent = next;
+  }
 }
 
 function fixTildaLayout() {
+  if (window._chitFixBusy) return;
+  window._chitFixBusy = true;
+  chitPatchTildaStyleBlock();
   var main = document.getElementById('chit-main');
-  if (!main) return;
-  main.style.setProperty('width', '100%', 'important');
-  main.style.setProperty('max-width', '100%', 'important');
-  main.style.setProperty('min-width', '0', 'important');
-  main.style.setProperty('box-sizing', 'border-box', 'important');
-  var rec = main.closest('.t-rec');
-  if (rec && rec.id === 'rec2378409351') {
+  if (!main) {
+    window._chitFixBusy = false;
+    return;
+  }
+  var rec = document.getElementById('rec2378409351');
+  if (rec) {
     rec.style.setProperty('padding-top', '0', 'important');
     rec.style.setProperty('margin-top', '0', 'important');
+    rec.style.setProperty('width', '100%', 'important');
+    rec.style.setProperty('max-width', '100%', 'important');
   }
-  var nodes = rec
-    ? rec.querySelectorAll('.t396, .t396__artboard, .t396__carrier, .t396__filter, .tn-elem, .tn-atom, .tn-atom__html')
-    : [];
-  nodes.forEach(function(el) {
-    if (el.closest && el.closest('#chit-main .site-header')) return;
-    el.style.setProperty('display', 'block', 'important');
-    el.style.setProperty('position', 'relative', 'important');
-    el.style.setProperty('transform', 'none', 'important');
-    el.style.setProperty('zoom', '1', 'important');
-    el.style.setProperty('width', '100%', 'important');
-    el.style.setProperty('max-width', '100%', 'important');
-    el.style.setProperty('left', '0', 'important');
-    chitSetAutoHeight(el);
-  });
+  var wrap = main.closest('.t396');
+  if (wrap) {
+    wrap.style.setProperty('display', 'block', 'important');
+    wrap.style.setProperty('position', 'relative', 'important');
+    wrap.style.setProperty('width', '100%', 'important');
+    wrap.style.setProperty('max-width', '100%', 'important');
+    wrap.style.setProperty('left', '0', 'important');
+    wrap.style.setProperty('margin', '0', 'important');
+    wrap.style.setProperty('transform', 'none', 'important');
+  }
+  var artboard = main.closest('.t396__artboard');
+  if (artboard) {
+    artboard.style.setProperty('width', '100%', 'important');
+    artboard.style.setProperty('max-width', '100%', 'important');
+    artboard.style.setProperty('height', 'auto', 'important');
+    artboard.style.setProperty('left', '0', 'important');
+    artboard.style.setProperty('position', 'relative', 'important');
+  }
+  var atom = main.closest('.tn-atom');
+  if (atom) {
+    atom.style.setProperty('width', '100%', 'important');
+    atom.style.setProperty('height', 'auto', 'important');
+  }
   var elem = main.closest('.tn-elem');
   if (elem) {
+    elem.style.setProperty('display', 'block', 'important');
+    elem.style.setProperty('position', 'relative', 'important');
     elem.style.setProperty('left', '0', 'important');
     elem.style.setProperty('top', '0', 'important');
+    elem.style.setProperty('width', '100%', 'important');
+    elem.style.setProperty('max-width', '100%', 'important');
+    elem.style.setProperty('min-width', '0', 'important');
+    elem.style.setProperty('height', 'auto', 'important');
+    elem.style.setProperty('transform', 'none', 'important');
+    elem.style.setProperty('margin', '0', 'important');
   }
+  main.style.setProperty('width', '100%', 'important');
+  main.style.setProperty('max-width', '100%', 'important');
   document.documentElement.style.overflowX = 'hidden';
   document.body.style.overflowX = 'hidden';
+  window._chitFixBusy = false;
 }
 
-var _chitLayoutBusy = false;
-var _chitLastArtboardH = 0;
-var _chitLayoutRaf = 0;
-
-function runChitLayoutSync() {
-  if (_chitLayoutBusy) return;
-  _chitLayoutBusy = true;
-  try {
+function chitHookTildaInit() {
+  if (window._chitT396Hooked) return;
+  var orig = window.t396_init;
+  if (typeof orig !== 'function') return;
+  window._chitT396Hooked = true;
+  window.t396_init = function() {
+    var out = orig.apply(this, arguments);
+    chitPatchTildaStyleBlock();
     fixTildaLayout();
-    syncChitArtboardHeight();
-  } finally {
-    _chitLayoutBusy = false;
+    setTimeout(fixTildaLayout, 50);
+    setTimeout(fixTildaLayout, 300);
+    return out;
+  };
+}
+
+function chitInjectTildaKillStyle() {
+  var css = '#allrecords #rec2378409351 .t396,#allrecords #rec2378409351 .t396__artboard,#allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],#allrecords #rec2378409351 .tn-elem[data-elem-type="html"],#allrecords #rec2378409351 .tn-atom,#allrecords #rec2378409351 .tn-atom__html{display:block!important;position:relative!important;left:0!important;top:0!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;margin:0!important;transform:none!important;zoom:1!important}';
+  var style = document.getElementById('chit-tilda-kill');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'chit-tilda-kill';
+    style.textContent = css;
+    document.head.appendChild(style);
+  } else if (style.parentNode && style.parentNode.lastElementChild !== style) {
+    document.head.appendChild(style);
   }
 }
 
-function scheduleChitLayoutSync() {
-  if (_chitLayoutRaf) return;
-  _chitLayoutRaf = requestAnimationFrame(function() {
-    _chitLayoutRaf = 0;
-    runChitLayoutSync();
+function chitStartLayoutPin() {
+  chitInjectTildaKillStyle();
+  chitHookTildaInit();
+  chitPatchTildaStyleBlock();
+  fixTildaLayout();
+  var n = 0;
+  var pin = setInterval(function() {
+    chitInjectTildaKillStyle();
+    chitPatchTildaStyleBlock();
+    fixTildaLayout();
+    chitHookTildaInit();
+    if (++n > 48) clearInterval(pin);
+  }, 250);
+  window.addEventListener('resize', fixTildaLayout, { passive: true });
+  window.addEventListener('load', function() {
+    chitPatchTildaStyleBlock();
+    fixTildaLayout();
   });
-}
-
-function syncChitArtboardHeight() {
-  var main = document.getElementById('chit-main');
-  if (!main) return;
-  var artboard = main.closest('.t396__artboard');
-  if (!artboard) return;
-  var h = Math.ceil(main.getBoundingClientRect().height) + 32;
-  if (!h || h === _chitLastArtboardH) return;
-  _chitLastArtboardH = h;
-  chitSetAutoHeight(artboard);
-  artboard.style.setProperty('min-height', h + 'px', 'important');
-  var carrier = artboard.querySelector('.t396__carrier');
-  var filter = artboard.querySelector('.t396__filter');
-  if (carrier) {
-    chitSetAutoHeight(carrier);
-    carrier.style.setProperty('min-height', h + 'px', 'important');
-  }
-  if (filter) {
-    chitSetAutoHeight(filter);
-    filter.style.setProperty('min-height', h + 'px', 'important');
-  }
-  var elem = main.closest('.tn-elem');
-  if (elem) {
-    chitSetAutoHeight(elem);
-    elem.style.setProperty('min-height', h + 'px', 'important');
-  }
-  var rec = main.closest('.t-rec');
-  if (rec) {
-    chitSetAutoHeight(rec);
-  }
 }
 
 chitReady(function() {
+  chitStartLayoutPin();
+
 var PROGRAMS = {
   basic: [
     { title: '1 класс', intro: 'Для учеников 1 класса (примерно 7–8 лет).',
@@ -317,8 +346,7 @@ function buildAccordion(containerId, items) {
     el.querySelectorAll('.acc-head').forEach(function(h) { h.classList.remove('is-open'); });
     el.querySelectorAll('.acc-body').forEach(function(b) { b.classList.remove('is-open'); });
     if (!open) { head.classList.add('is-open'); body.classList.add('is-open'); }
-    _chitLastArtboardH = 0;
-    scheduleChitLayoutSync();
+    fixTildaLayout();
   });
 }
 
@@ -335,8 +363,7 @@ if (faqList) {
     document.querySelectorAll('.faq-q').forEach(function(x) { x.classList.remove('is-open'); });
     document.querySelectorAll('.faq-a').forEach(function(x) { x.classList.remove('is-open'); });
     if (!open) { q.classList.add('is-open'); a.classList.add('is-open'); }
-    _chitLastArtboardH = 0;
-    scheduleChitLayoutSync();
+    fixTildaLayout();
   });
 }
 
@@ -1693,29 +1720,8 @@ if (faqList) {
     });
   })();
 
-  runChitLayoutSync();
-  window.addEventListener('resize', function() {
-    _chitLastArtboardH = 0;
-    scheduleChitLayoutSync();
-  });
-  window.addEventListener('load', function() {
-    _chitLastArtboardH = 0;
-    setTimeout(runChitLayoutSync, 100);
-    setTimeout(runChitLayoutSync, 800);
-    setTimeout(runChitLayoutSync, 2500);
-  });
-  setTimeout(runChitLayoutSync, 400);
-  setTimeout(function() { _chitLastArtboardH = 0; runChitLayoutSync(); }, 1500);
-  setTimeout(function() { _chitLastArtboardH = 0; runChitLayoutSync(); }, 3000);
-  if ('ResizeObserver' in window) {
-    var mainEl = document.getElementById('chit-main');
-    if (mainEl) {
-      var ro = new ResizeObserver(function() {
-        _chitLastArtboardH = 0;
-        scheduleChitLayoutSync();
-      });
-      ro.observe(mainEl);
-    }
-  }
+  fixTildaLayout();
+  window.addEventListener('resize', fixTildaLayout);
+  window.addEventListener('load', fixTildaLayout);
 })();
 });
