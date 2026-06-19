@@ -137,6 +137,7 @@
       parent_telegram: ['parent_telegram', 'Phone', 'phone', 'tel'],
       child_name: ['child_name'],
       child_age: ['child_age'],
+      promo_code: ['promo_code', 'promocode', 'promo'],
       notification_channel: ['notification_channel'],
       module_id: ['module_id'],
       chosen_stage: ['chosen_stage'],
@@ -201,6 +202,18 @@
     try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
   }
 
+  function applyPromoCode(code) {
+    code = String(code || '').trim();
+    if (!code) return;
+    var input = document.querySelector('.t706 .t-inputpromocode');
+    var btn = document.querySelector('.t706 .t-inputpromocode__btn');
+    if (!input || !btn) return;
+    input.value = code;
+    try { input.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+    btn.style.display = 'table-cell';
+    try { btn.click(); } catch (e) {}
+  }
+
   function openCart() {
     hideStoreBlocks();
     if (typeof window.tcart__openCart === 'function') window.tcart__openCart();
@@ -228,7 +241,7 @@
     waitFor(function () {
       return typeof window.tcart__addProduct === 'function' && document.querySelector('.t706');
     }, function () {
-      ['module_id', 'chosen_stage', 'chosen_tale_number', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'notification_channel'].forEach(function (name) {
+      ['module_id', 'chosen_stage', 'chosen_tale_number', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
         setField(name, data[name]);
       });
 
@@ -241,6 +254,9 @@
         tries += 1;
         if ((window.tcart && window.tcart.products && window.tcart.products.length) || tries >= 8) {
           openCart();
+          [300, 900, 1600].forEach(function (ms) {
+            setTimeout(function () { applyPromoCode(data.promo_code); }, ms);
+          });
           return;
         }
         setTimeout(tryOpen, 400);

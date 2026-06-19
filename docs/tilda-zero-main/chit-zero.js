@@ -496,11 +496,13 @@ if (faqList) {
     parent_telegram: ['parent_telegram', 'Phone', 'phone', 'tel', 'your_phone'],
     child_name: ['child_name', 'childname'],
     child_age: ['child_age', 'childage'],
+    promo_code: ['promo_code', 'promocode', 'promo'],
     notification_channel: ['notification_channel'],
     module_id: ['module_id'],
     chosen_stage: ['chosen_stage'],
     chosen_tale_number: ['chosen_tale_number']
   };
+  var lastAppliedPromo = '';
 
   function setInputValue(dst, v) {
     if (!dst || dst.closest('#chit-main')) return;
@@ -533,10 +535,43 @@ if (faqList) {
     });
   }
 
+  function getPromoCodeValue() {
+    var el = document.querySelector('#chit-main [name="promo_code"]');
+    return el ? String(el.value || '').trim() : '';
+  }
+
+  function promoAlreadyApplied(code) {
+    if (!code || !window.tcart || typeof window.tcart.promocode !== 'object') return false;
+    var promo = window.tcart.promocode;
+    if (promo.message !== 'OK') return false;
+    var saved = String(promo.code || promo.promocode || '').trim();
+    return saved.toLowerCase() === code.toLowerCase();
+  }
+
+  function applyPromoCodeFromForm() {
+    var code = getPromoCodeValue();
+    if (!code) {
+      lastAppliedPromo = '';
+      return;
+    }
+    if (code === lastAppliedPromo && promoAlreadyApplied(code)) return;
+    var input = document.querySelector('.t706 .t-inputpromocode');
+    var btn = document.querySelector('.t706 .t-inputpromocode__btn');
+    if (!input || !btn) return;
+    setInputValue(input, code);
+    btn.style.display = 'table-cell';
+    try { btn.click(); } catch (e) {}
+    lastAppliedPromo = code;
+  }
+
   function syncCartAfterOpen() {
     syncToCartForm();
+    applyPromoCodeFromForm();
     [150, 400, 900, 1600].forEach(function(ms) {
-      setTimeout(syncToCartForm, ms);
+      setTimeout(function() {
+        syncToCartForm();
+        applyPromoCodeFromForm();
+      }, ms);
     });
   }
 
@@ -1035,6 +1070,7 @@ if (faqList) {
     pushField('chosen_stage', hidStage ? hidStage.value : '');
     pushField('chosen_tale_number', hidTale ? hidTale.value : '');
     pushField('notification_channel', 'email');
+    pushField('promo_code', getPromoCodeValue());
     ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (el) pushField(name, el.value);
@@ -1054,7 +1090,7 @@ if (faqList) {
   }
 
   function bindContactSync() {
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age'].forEach(function(name) {
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (!el) return;
       function syncContact() { pushField(name, el.value); }
@@ -1089,6 +1125,7 @@ if (faqList) {
       parent_telegram: val('parent_telegram'),
       child_name: val('child_name'),
       child_age: val('child_age'),
+      promo_code: val('promo_code'),
       notification_channel: val('notification_channel') || 'email'
     };
   }
