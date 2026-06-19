@@ -10,6 +10,7 @@
     .wrap { max-width: 1200px; margin: 0 auto; }
     header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
     h1 { font-size: 1.5rem; margin: 0; }
+    h3 { font-size: 1rem; margin: 0 0 12px; }
     .stats { color: #6b5d4d; font-size: .95rem; }
     .actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .btn {
@@ -24,6 +25,7 @@
     }
     .btn-primary { background: #5a4a38; color: #fff; }
     .btn-secondary { background: #e8e0d6; color: #5a4a38; }
+    .btn-small { padding: 6px 10px; font-size: .82rem; }
     .table-wrap { overflow-x: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
     table { width: 100%; border-collapse: collapse; font-size: .88rem; }
     th, td { padding: 10px 12px; border-bottom: 1px solid #f0ebe3; text-align: left; vertical-align: top; }
@@ -33,11 +35,29 @@
     .link { color: #5a4a38; word-break: break-all; }
     .empty { padding: 40px 20px; text-align: center; color: #6b5d4d; }
     .hint { background: #fff8e8; padding: 12px 16px; border-radius: 8px; font-size: .9rem; margin-bottom: 20px; }
+    .flash { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: .92rem; }
+    .flash--ok { background: #e8f5e9; color: #2e5a32; }
+    .flash--error { background: #fdecea; color: #8a2a1f; }
     .section { margin-top: 48px; }
     .section h2 { font-size: 1.25rem; margin: 0 0 8px; }
     .answers { font-size: .82rem; color: #5a4a38; white-space: pre-line; max-width: 360px; }
     .nav-links { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
     .nav-links a { color: #5a4a38; }
+    .panel { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 20px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 16px; }
+    .field label { display: block; font-size: .85rem; color: #5a4a38; margin-bottom: 4px; }
+    .field input, .field select { width: 100%; padding: 8px 10px; border: 1px solid #ddd4c8; border-radius: 8px; font: inherit; background: #fffcf8; }
+    .field--wide { grid-column: 1 / -1; }
+    .field--check { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+    .field--check label { margin: 0; }
+    .field--check input { width: auto; }
+    .grant-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; min-width: 260px; }
+    .grant-form select { padding: 6px 8px; border: 1px solid #ddd4c8; border-radius: 6px; font: inherit; font-size: .8rem; background: #fffcf8; max-width: 120px; }
+    .grant-form label { font-size: .75rem; color: #6b5d4d; display: block; margin-bottom: 2px; }
+    .grant-field { flex: 1 1 70px; min-width: 70px; }
+    .grant-check { flex: 0 0 auto; font-size: .78rem; display: flex; align-items: center; gap: 4px; padding-bottom: 6px; }
+    .grant-check input { width: auto; }
+    .module-option-single { font-style: italic; }
   </style>
 </head>
 <body>
@@ -57,14 +77,98 @@
     </header>
 
     <nav class="nav-links">
+      <a href="#enroll">Выдать доступ</a>
       <a href="#registrations">Регистрации</a>
       <a href="#quiz-leads">Заявки квиза{% if quiz_count %} ({{ quiz_count }}){% endif %}</a>
     </nav>
 
+    {% if flash %}
+    <div class="flash flash--{{ flash.type }}">
+      {{ flash.message }}
+      {% if flash.progress_url %}
+      · <a class="link" href="{{ flash.progress_url }}" target="_blank" rel="noopener">Открыть прогресс</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <section class="section" id="enroll">
+      <h2>Выдать доступ</h2>
+      <div class="hint">
+        Ручная запись без оплаты — для тестов и исключений. Старый активный модуль у ребёнка будет закрыт, откроется новый.
+      </div>
+
+      <div class="panel">
+        <h3>Новая запись</h3>
+        <form method="post" action="/admin/enroll" class="form-grid">
+          <div class="field">
+            <label for="new_parent_name">Имя родителя</label>
+            <input id="new_parent_name" name="parent_name" required>
+          </div>
+          <div class="field">
+            <label for="new_parent_email">Email</label>
+            <input id="new_parent_email" name="parent_email" type="email" required>
+          </div>
+          <div class="field">
+            <label for="new_parent_telegram">Телефон / Telegram</label>
+            <input id="new_parent_telegram" name="parent_telegram">
+          </div>
+          <div class="field">
+            <label for="new_child_name">Имя ребёнка</label>
+            <input id="new_child_name" name="child_name" required>
+          </div>
+          <div class="field">
+            <label for="new_child_age">Возраст</label>
+            <input id="new_child_age" name="child_age" type="number" min="1" max="99">
+          </div>
+          <div class="field">
+            <label for="new_channel">Канал уведомлений</label>
+            <select id="new_channel" name="notification_channel">
+              <option value="email">email</option>
+              <option value="web">web</option>
+              <option value="both">both</option>
+              <option value="telegram">telegram</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="new_module_id">Модуль</label>
+            <select id="new_module_id" name="module_id" required class="module-select">
+              {% for mod in modules %}
+              <option value="{{ mod.id }}" data-tariff="{{ mod.tariff_code }}">{{ mod.id }} · {{ mod.title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label for="new_stage">Этап</label>
+            <select id="new_stage" name="chosen_stage" required>
+              <option value="1">22 июня (этап 1)</option>
+              <option value="2">20 июля (этап 2)</option>
+            </select>
+          </div>
+          <div class="field tale-field">
+            <label for="new_tale">Сказка (только разовое)</label>
+            <select id="new_tale" name="chosen_tale_number">
+              <option value="">—</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="field field--check">
+            <input id="new_send_email" name="send_email" type="checkbox" value="on" checked>
+            <label for="new_send_email">Отправить письмо на email</label>
+          </div>
+          <div class="field field--wide">
+            <button class="btn btn-primary" type="submit">Создать запись</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
     <section class="section" id="registrations">
       <h2>Регистрации</h2>
       <div class="hint">
-        Здесь — семьи, созданные через webhook после оплаты на Tilda. Статус оплаты в Tilda CRM не дублируется.
+        Семьи после оплаты на Tilda и записи, созданные вручную выше. В колонке «Выдать» — смена модуля для существующего ребёнка.
       </div>
 
     {% if rows %}
@@ -75,14 +179,11 @@
             <th>Дата</th>
             <th>Родитель</th>
             <th>Email</th>
-            <th>Telegram</th>
-            <th>Канал</th>
             <th>Ребёнок</th>
             <th>Модуль</th>
             <th>Этап</th>
-            <th>Сказка</th>
-            <th>Уровень</th>
             <th>Прогресс</th>
+            <th>Выдать модуль</th>
           </tr>
         </thead>
         <tbody>
@@ -91,14 +192,47 @@
             <td class="mono">{{ row.registered_at }}</td>
             <td>{{ row.parent_name }}</td>
             <td><a class="link" href="mailto:{{ row.parent_email }}">{{ row.parent_email }}</a></td>
-            <td>{{ row.parent_telegram }}{% if row.telegram_linked == 'да' %} ✓{% endif %}</td>
-            <td>{{ row.channel }}</td>
             <td>{{ row.child_name }}{% if row.child_age != '—' %} ({{ row.child_age }}){% endif %}</td>
             <td>{{ row.module }}</td>
             <td>{{ row.stage }}</td>
-            <td>{{ row.tale }}</td>
-            <td>{{ row.level }} · {{ row.points }} б.</td>
             <td><a class="link" href="{{ row.progress_url }}" target="_blank" rel="noopener">открыть</a></td>
+            <td>
+              {% if row.child_id %}
+              <form method="post" action="/admin/enroll/{{ row.child_id }}" class="grant-form">
+                <div class="grant-field">
+                  <label>Модуль</label>
+                  <select name="module_id" required class="module-select">
+                    {% for mod in modules %}
+                    <option value="{{ mod.id }}" data-tariff="{{ mod.tariff_code }}">{{ mod.id }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="grant-field">
+                  <label>Этап</label>
+                  <select name="chosen_stage" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  </select>
+                </div>
+                <div class="grant-field tale-field">
+                  <label>Сказка</label>
+                  <select name="chosen_tale_number">
+                    <option value="">—</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                </div>
+                <label class="grant-check">
+                  <input name="send_email" type="checkbox" value="on"> email
+                </label>
+                <button class="btn btn-primary btn-small" type="submit">Выдать</button>
+              </form>
+              {% else %}
+              —
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -148,5 +282,25 @@
       {% endif %}
     </section>
   </div>
+  <script>
+    function syncTaleFields(scope) {
+      var root = scope || document;
+      root.querySelectorAll('.module-select').forEach(function (sel) {
+        var form = sel.closest('form');
+        if (!form) return;
+        var taleField = form.querySelector('.tale-field');
+        if (!taleField) return;
+        var opt = sel.options[sel.selectedIndex];
+        var isSingle = opt && opt.getAttribute('data-tariff') === 'single';
+        taleField.style.opacity = isSingle ? '1' : '0.45';
+        var taleSelect = taleField.querySelector('select');
+        if (taleSelect) taleSelect.required = isSingle;
+      });
+    }
+    document.querySelectorAll('.module-select').forEach(function (sel) {
+      sel.addEventListener('change', function () { syncTaleFields(sel.closest('form')); });
+    });
+    syncTaleFields(document);
+  </script>
 </body>
 </html>

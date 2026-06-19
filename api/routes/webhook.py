@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import uuid
 from typing import TypeVar
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -11,14 +10,11 @@ from sqlalchemy.orm import Session
 
 from api.deps import rate_limit, verify_webhook_secret
 from api.event_types import AUTO_LESSON_PLAYER
-from api.schemas import EventWebhook, RegisterResponse, RegisterWebhook, WebhookAccepted
-from config.settings import PUBLIC_BASE_URL, WEBHOOK_SECRET, resolve_notification_channel
+from api.schemas import EventWebhook, RegisterWebhook, WebhookAccepted
+from config.settings import WEBHOOK_SECRET
 from db import repository as repo
 from db.session import get_db
-from job_queue.redis_queue import enqueue
-from notifications.email_templates import build_welcome_message
-from notifications.telegram_bot import build_link_url
-from services.enrollment import create_enrollment_from_registration
+from services.registration import process_registration
 from services.events import submit_learning_event
 
 logger = logging.getLogger(__name__)
@@ -112,89 +108,7 @@ async def webhook_register(
         raise HTTPException(401, "Неверный webhook secret")
 
     body = RegisterWebhook.model_validate(_normalize_register_payload(raw))
-    notification_channel = resolve_notification_channel(body.notification_channel)
-    telegram_chat_id = body.telegram_chat_id if notification_channel in ("telegram", "both") else None
-
-    family, child, is_returning = repo.resolve_or_create_family_child(
-        db,
-        parent_name=body.parent_name,
-        parent_email=str(body.parent_email),
-        parent_telegram=body.parent_telegram,
-        notification_channel=notification_channel,
-        child_name=body.child_name,
-        child_age=body.child_age,
-        telegram_chat_id=telegram_chat_id,
-    )
-
-    module_id, module_title = create_enrollment_from_registration(db, child, body)
-
-    progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
-    link_telegram_page = f"{PUBLIC_BASE_URL}/link-telegram/{family.progress_token}/page"
-    telegram_deep_link = build_link_url(family.progress_token)
-
-    welcome = build_welcome_message(
-        parent_name=body.parent_name,
-        child_name=child.name,
-        progress_url=progress_url,
-        link_telegram_page=link_telegram_page,
-        include_telegram=bool(
-            telegram_deep_link and notification_channel in ("telegram", "both")
-        ),
-        module_title=module_title,
-        is_returning=is_returning,
-    )
-    repo.store_notification(
-        db,
-        family_id=family.id,
-        child_id=child.id,
-        event_id=None,
-        channel="web",
-        message=welcome,
-        status="stored",
-    )
-
-    if notification_channel in ("email", "both"):
-        note = repo.store_notification(
-            db,
-            family_id=family.id,
-            child_id=child.id,
-            event_id=None,
-            channel="email",
-            message=welcome,
-            status="pending",
-        )
-        enqueue("send_notification", {"notification_id": str(note.id)})
-
-    if notification_channel in ("telegram", "both") and telegram_chat_id:
-        note = repo.store_notification(
-            db,
-            family_id=family.id,
-            child_id=child.id,
-            event_id=None,
-            channel="telegram",
-            message=welcome,
-            status="pending",
-        )
-        enqueue("send_notification", {"notification_id": str(note.id)})
-
-    logger.info(
-        "Регистрация %s → %s (returning=%s)",
-        body.parent_email,
-        progress_url,
-        is_returning,
-    )
-
-    return RegisterResponse(
-        family_id=family.id,
-        child_id=child.id,
-        progress_url=progress_url,
-        link_telegram_page=link_telegram_page,
-        telegram_deep_link=telegram_deep_link,
-        notification_channel=family.notification_channel,
-        module_id=module_id,
-        module_title=module_title,
-        is_returning=is_returning,
-    )
+    return process_registration(db, body, send_email=True, log_source="webhook")
 
 
 @router.post("/event", response_model=WebhookAccepted, status_code=202, dependencies=[Depends(verify_webhook_secret)])
