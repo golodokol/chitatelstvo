@@ -1,5 +1,5 @@
 (function ensureChitStylesheets() {
-  var VERSION = '20260621f';
+  var VERSION = '20260621s';
   var API = 'https://api.chitatelstvo.ru/assets/';
   var sheets = [
     API + 'chit-zero.css?v=' + VERSION
@@ -36,7 +36,7 @@ function chitCssLooksLoaded() {
 
 function chitFetchCssFallback() {
   if (chitCssLooksLoaded()) return;
-  var VERSION = '20260621f';
+  var VERSION = '20260621s';
   var API = 'https://api.chitatelstvo.ru/assets/';
   ['chit-zero.css'].forEach(function (file) {
     var href = API + file + '?v=' + VERSION;
@@ -53,7 +53,7 @@ function chitFetchCssFallback() {
   });
 }
 
-window.CHIT_IMG_BASE = "https://api.chitatelstvo.ru/assets/";
+window.CHIT_IMG_BASE = "https://static.tildacdn.com/tild3463-6531-4233-a632-616134353338/";
 
 function chitReady(fn) {
   if (document.readyState === 'loading') {
@@ -172,6 +172,33 @@ function chitInjectTildaKillStyle() {
   }
 }
 
+function chitForceLoadImages() {
+  var root = document.getElementById('chit-main');
+  if (!root) return;
+  root.querySelectorAll('img').forEach(function(img) {
+    img.loading = 'eager';
+    img.removeAttribute('onerror');
+    var src = img.getAttribute('src') || '';
+    if (!src || src.indexOf('api.chitatelstvo.ru/assets/') === -1) return;
+    if (img._chitImgBound) return;
+    img._chitImgBound = true;
+    img.addEventListener('error', function onErr() {
+      var tries = img._chitImgRetry || 0;
+      if (tries > 2) return;
+      img._chitImgRetry = tries + 1;
+      var base = src.split('?')[0];
+      setTimeout(function() {
+        img.src = base + '?r=' + Date.now();
+      }, img._chitImgRetry * 600);
+    });
+    if (!img.complete) {
+      var current = img.getAttribute('src');
+      img.src = '';
+      img.src = current;
+    }
+  });
+}
+
 function chitStartLayoutPin() {
   chitInjectTildaKillStyle();
   chitHookTildaInit();
@@ -189,10 +216,14 @@ function chitStartLayoutPin() {
   window.addEventListener('load', function() {
     chitPatchTildaStyleBlock();
     fixTildaLayout();
+    chitForceLoadImages();
   });
 }
 
 chitReady(function() {
+  chitForceLoadImages();
+  setTimeout(chitForceLoadImages, 800);
+  setTimeout(chitForceLoadImages, 2500);
   chitStartLayoutPin();
 
 var PROGRAMS = {
@@ -1681,7 +1712,6 @@ if (faqList) {
 
       var progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh * 0.85)));
       section.classList.toggle('is-active', rect.top < vh * 0.75);
-      bg.style.transform = 'scale(' + (1.1 + progress * 0.08) + ') translateY(' + (-progress * 2) + '%)';
     }
 
     window.addEventListener('scroll', update, { passive: true });
