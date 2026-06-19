@@ -476,18 +476,109 @@ if (faqList) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
   }
 
-  function updatePayButton() {
-    if (!payBtn) return;
+  function isTariffReadyForPay() {
     var ready = state.group && state.tariff;
     if (state.tariff === 'single') ready = ready && state.stage && state.taleNum;
     else if (state.tariff) ready = ready && state.stage;
-    if (ready && TARIFF_PRICE[state.tariff]) {
+    return !!ready;
+  }
+
+  var promoQuotePrice = null;
+  var promoQuotePending = false;
+  var promoQuoteTimer = null;
+
+  function readQuotedPriceFromTcart() {
+    if (!window.tcart || !window.tcart.promocode || window.tcart.promocode.message !== 'OK') return null;
+    if (typeof window.tcart.prodamount_withdiscount === 'number' && window.tcart.prodamount_withdiscount >= 0) {
+      return Math.round(window.tcart.prodamount_withdiscount);
+    }
+    if (typeof window.tcart.amount === 'number' && window.tcart.amount >= 0) {
+      return Math.round(window.tcart.amount);
+    }
+    return null;
+  }
+
+  function updatePayButton() {
+    if (!payBtn) return;
+    var ready = isTariffReadyForPay();
+    var base = ready && state.tariff ? TARIFF_PRICE[state.tariff] : 0;
+    if (ready && base) {
       payBtn.disabled = false;
-      payBtn.textContent = 'Оплатить — ' + formatPrice(TARIFF_PRICE[state.tariff]);
+      var price = promoQuotePrice != null ? promoQuotePrice : base;
+      if (promoQuotePending && getPromoCodeValue()) {
+        payBtn.textContent = 'Оплатить — ' + formatPrice(base) + '…';
+      } else {
+        payBtn.textContent = 'Оплатить — ' + formatPrice(price);
+      }
     } else {
       payBtn.disabled = true;
       payBtn.textContent = 'Оплатить';
+      promoQuotePrice = null;
+      promoQuotePending = false;
     }
+  }
+
+  function schedulePromoQuoteRefresh() {
+    if (promoQuoteTimer) clearTimeout(promoQuoteTimer);
+    promoQuoteTimer = setTimeout(refreshPromoQuote, 700);
+  }
+
+  function refreshPromoQuote() {
+    promoQuoteTimer = null;
+    if (!isTariffReadyForPay()) {
+      promoQuotePrice = null;
+      promoQuotePending = false;
+      updatePayButton();
+      return;
+    }
+    var code = getPromoCodeValue();
+    if (!code) {
+      lastAppliedPromo = '';
+      promoQuotePrice = null;
+      promoQuotePending = false;
+      updatePayButton();
+      return;
+    }
+    promoQuotePending = true;
+    updatePayButton();
+    waitTcartReady(function() {
+      if (!addProductDirect(state.tariff)) {
+        promoQuotePending = false;
+        promoQuotePrice = null;
+        updatePayButton();
+        return;
+      }
+      lastAppliedPromo = '';
+      applyPromoCodeFromForm();
+      var attempts = 0;
+      function poll() {
+        attempts += 1;
+        if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
+          window.tcart__updateTotalProductsinCartObj();
+        }
+        var quoted = readQuotedPriceFromTcart();
+        if (quoted != null) {
+          promoQuotePrice = quoted;
+          promoQuotePending = false;
+          updatePayButton();
+          return;
+        }
+        if (window.tcart && window.tcart.promocode && window.tcart.promocode.message && window.tcart.promocode.message !== 'OK') {
+          promoQuotePrice = null;
+          promoQuotePending = false;
+          updatePayButton();
+          return;
+        }
+        if (attempts >= 24) {
+          promoQuotePending = false;
+          promoQuotePrice = null;
+          updatePayButton();
+          return;
+        }
+        setTimeout(poll, 250);
+      }
+      setTimeout(poll, 350);
+    });
   }
 
   var CART_FIELD_ALIASES = {
@@ -560,6 +651,7 @@ if (faqList) {
     if (!input || !btn) return;
     setInputValue(input, code);
     btn.style.display = 'table-cell';
+    try { input.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
     try { btn.click(); } catch (e) {}
     lastAppliedPromo = code;
   }
@@ -1223,6 +1315,7 @@ if (faqList) {
     }
     elSummary.innerHTML = html;
     updatePayButton();
+    schedulePromoQuoteRefresh();
   }
 
   function renderTales() {
@@ -1294,6 +1387,12 @@ if (faqList) {
     payBtn.addEventListener('click', function() {
       openCart(state.tariff);
     });
+  }
+
+  var promoInput = document.querySelector('#chit-main [name="promo_code"]');
+  if (promoInput) {
+    promoInput.addEventListener('input', schedulePromoQuoteRefresh);
+    promoInput.addEventListener('change', schedulePromoQuoteRefresh);
   }
 
   document.querySelectorAll('[data-tariff-jump]').forEach(function(btn) {
