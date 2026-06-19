@@ -437,7 +437,7 @@
             <input type="email" id="chit_parent_email" name="parent_email" autocomplete="email" required>
           </div>
           <div class="form-field">
-            <label for="chit_parent_telegram">Telegram (необязательно)</label>
+            <label for="chit_parent_telegram">Telegram</label>
             <input type="text" id="chit_parent_telegram" name="parent_telegram" placeholder="@username">
           </div>
           <div class="form-field">
@@ -449,7 +449,7 @@
             <input type="number" id="chit_child_age" name="child_age" min="1" max="99">
           </div>
           <div class="form-field">
-            <label for="chit_promo_code">Промокод (необязательно)</label>
+            <label for="chit_promo_code">Промокод</label>
             <input type="text" id="chit_promo_code" name="promo_code" autocomplete="off" spellcheck="false" autocapitalize="characters">
           </div>
           <div class="form-field form-field--full">

@@ -249,6 +249,7 @@ def create_enrollment(
     chosen_tale_number: int | None = None,
     chosen_tale_slug: str | None = None,
     chosen_tale_title: str | None = None,
+    promo_code: str | None = None,
     start_date: date | None = None,
 ) -> Enrollment:
     enrollment = Enrollment(
@@ -260,6 +261,7 @@ def create_enrollment(
         chosen_tale_number=chosen_tale_number,
         chosen_tale_slug=chosen_tale_slug,
         chosen_tale_title=chosen_tale_title,
+        promo_code=promo_code,
     )
     db.add(enrollment)
     db.commit()

@@ -61,6 +61,7 @@ class Enrollment(Base):
     chosen_tale_number: Mapped[int | None] = mapped_column(SmallInteger)
     chosen_tale_slug: Mapped[str | None] = mapped_column(Text)
     chosen_tale_title: Mapped[str | None] = mapped_column(Text)
+    promo_code: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     child: Mapped[Child] = relationship(back_populates="enrollments")

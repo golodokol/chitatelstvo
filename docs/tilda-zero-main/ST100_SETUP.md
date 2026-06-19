@@ -64,6 +64,7 @@ Zero Block выбирает **класс + тариф + дату (+ сказку
 | `module_id` |
 | `chosen_stage` |
 | `chosen_tale_number` |
+| `promo_code` |
 | `legal_consent` |
 
 Zero Block подставит значения при «Записаться».

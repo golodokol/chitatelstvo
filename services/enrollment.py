@@ -81,5 +81,6 @@ def create_enrollment_from_registration(
         chosen_tale_number=enrollment_data["chosen_tale_number"],
         chosen_tale_slug=enrollment_data["chosen_tale_slug"],
         chosen_tale_title=enrollment_data["chosen_tale_title"],
+        promo_code=body.promo_code,
     )
     return module["id"], module["title"]

@@ -76,7 +76,7 @@
     .table-registrations {
       table-layout: fixed;
       font-size: .8rem;
-      min-width: 1340px;
+      min-width: 1390px;
     }
     .table-registrations th,
     .table-registrations td {
@@ -137,9 +137,17 @@
       font-size: .72rem;
     }
     .table-registrations .col-lesson {
-      width: 128px;
+      width: 118px;
       white-space: nowrap;
       font-size: .72rem;
+    }
+    .table-registrations .col-promo {
+      width: 72px;
+      white-space: nowrap;
+      font-size: .68rem;
+      color: #6b5d4d;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .table-registrations .col-progress {
       width: 50px;
@@ -337,6 +345,7 @@
             <th class="col-tariff">Формат</th>
             <th class="col-stage">Этап</th>
             <th class="col-lesson">Сказка / блок</th>
+            <th class="col-promo">Промо</th>
             <th class="col-progress">Прогресс</th>
             <th class="col-grant">Выдать</th>
             <th class="col-delete"></th>
@@ -359,6 +368,7 @@
             </td>
             <td class="col-stage">{{ row.stage }}</td>
             <td class="col-lesson lesson-cell" title="{{ row.lesson }}">{{ row.lesson }}</td>
+            <td class="col-promo" title="{{ row.promo_code }}">{{ row.promo_code }}</td>
             <td class="col-progress"><a class="link" href="{{ row.progress_url }}" target="_blank" rel="noopener">открыть</a></td>
             <td class="col-grant">
               {% if row.child_id %}

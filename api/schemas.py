@@ -44,6 +44,7 @@ _REGISTER_FIELDS = frozenset(
         "module_id",
         "chosen_stage",
         "chosen_tale_number",
+        "promo_code",
     }
 )
 
@@ -59,6 +60,7 @@ class RegisterWebhook(BaseModel):
     module_id: int | None = Field(default=None, ge=1, le=18)
     chosen_stage: str | None = Field(default=None, max_length=50)
     chosen_tale_number: int | None = Field(default=None, ge=1, le=4)
+    promo_code: str | None = Field(default=None, max_length=50)
 
     @model_validator(mode="before")
     @classmethod
@@ -82,6 +84,8 @@ class RegisterWebhook(BaseModel):
             "tale": "chosen_tale_number",
             "child": "child_name",
             "age": "child_age",
+            "promocode": "promo_code",
+            "promo": "promo_code",
         }
         out: dict = {}
         for key, value in data.items():
@@ -124,6 +128,14 @@ class RegisterWebhook(BaseModel):
         if "20" in raw and "июл" in raw:
             return "2"
         return str(value).strip()
+
+    @field_validator("promo_code", mode="before")
+    @classmethod
+    def normalize_promo_code(cls, value: object) -> object:
+        if value is None or value == "":
+            return None
+        code = str(value).strip()
+        return code or None
 
 
 class EventWebhook(BaseModel):
