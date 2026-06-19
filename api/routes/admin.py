@@ -25,12 +25,62 @@ from catalog.loader import get_module, load_modules
 from config.settings import ADMIN_PASSWORD, PUBLIC_BASE_URL, ROOT
 from db import repository as repo
 from db.session import get_db
-from lessons.enrollment_access import get_active_enrollment
+from lessons.enrollment_access import get_active_enrollment, normalize_stage
 from services.quiz_leads import build_quiz_lead_rows, load_quiz_leads
 from services.registration import grant_enrollment_to_child, process_registration
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
+
+_TARIFF_LABELS = {
+    "single": "Разовое",
+    "self_paced": "Индивидуальное",
+    "with_teacher": "С преподавателем",
+}
+
+
+def _format_stage_label(chosen_stage: str | None) -> str:
+    stage = normalize_stage(chosen_stage)
+    if stage == "stage-1":
+        return "22 июня"
+    if stage == "stage-2":
+        return "20 июля"
+    if not chosen_stage:
+        return "—"
+    return str(chosen_stage)
+
+
+def _format_lesson_label(enrollment, module: dict | None) -> str:
+    if not enrollment or not module:
+        return "—"
+    if module.get("tariff_code") == "single":
+        if enrollment.chosen_tale_title:
+            return enrollment.chosen_tale_title
+        if enrollment.chosen_tale_number:
+            return f"Сказка №{enrollment.chosen_tale_number}"
+        return "—"
+    count = module.get("tales_count") or 4
+    return f"Блок · {count} сказки"
+
+
+def _enrollment_columns(enrollment, module: dict | None) -> dict[str, str]:
+    if not enrollment:
+        return {
+            "grade": "—",
+            "tariff": "—",
+            "tariff_code": "",
+            "stage": "—",
+            "lesson": "—",
+        }
+    mod = module or get_module(enrollment.module_id)
+    tariff_code = mod["tariff_code"] if mod else ""
+    return {
+        "grade": mod["group_label"] if mod else "—",
+        "tariff": _TARIFF_LABELS.get(tariff_code, mod["tariff_label"] if mod else "—"),
+        "tariff_code": tariff_code,
+        "stage": _format_stage_label(enrollment.chosen_stage),
+        "lesson": _format_lesson_label(enrollment, mod),
+    }
 
 
 def _fmt_dt(value: datetime | None) -> str:
@@ -55,9 +105,11 @@ def _build_rows(families) -> list[dict]:
                     "child_name": "—",
                     "child_age": "—",
                     "child_id": None,
-                    "module": "—",
+                    "grade": "—",
+                    "tariff": "—",
+                    "tariff_code": "",
                     "stage": "—",
-                    "tale": "—",
+                    "lesson": "—",
                     "level": "—",
                     "points": "—",
                     "progress_url": progress_url,
@@ -67,17 +119,8 @@ def _build_rows(families) -> list[dict]:
 
         for child in family.children:
             enrollment = get_active_enrollment(child)
-            module_title = "—"
-            stage = "—"
-            tale = "—"
-            if enrollment:
-                module = get_module(enrollment.module_id)
-                module_title = module["title"] if module else f"Модуль {enrollment.module_id}"
-                stage = enrollment.chosen_stage or "—"
-                if enrollment.chosen_tale_title:
-                    tale = enrollment.chosen_tale_title
-                elif enrollment.chosen_tale_number:
-                    tale = f"№{enrollment.chosen_tale_number}"
+            module = get_module(enrollment.module_id) if enrollment else None
+            cols = _enrollment_columns(enrollment, module)
 
             rows.append(
                 {
@@ -90,9 +133,11 @@ def _build_rows(families) -> list[dict]:
                     "child_name": child.name,
                     "child_age": str(child.age) if child.age is not None else "—",
                     "child_id": str(child.id),
-                    "module": module_title,
-                    "stage": stage,
-                    "tale": tale,
+                    "grade": cols["grade"],
+                    "tariff": cols["tariff"],
+                    "tariff_code": cols["tariff_code"],
+                    "stage": cols["stage"],
+                    "lesson": cols["lesson"],
                     "level": child.current_level,
                     "points": str(child.total_points),
                     "progress_url": progress_url,
@@ -103,6 +148,16 @@ def _build_rows(families) -> list[dict]:
 
 def _admin_modules() -> list[dict]:
     return sorted(load_modules(), key=lambda m: m["id"])
+
+
+def _admin_module_groups() -> list[dict]:
+    by_group: dict[str, list[dict]] = {}
+    for mod in _admin_modules():
+        by_group.setdefault(mod["group_label"], []).append(mod)
+    ordered: list[dict] = []
+    for label in sorted(by_group, key=lambda name: by_group[name][0]["id"]):
+        ordered.append({"label": label, "modules": by_group[label]})
+    return ordered
 
 
 def _flash_from_query(request: Request) -> dict | None:
@@ -178,6 +233,8 @@ def admin_page(
             "quiz_rows": quiz_rows,
             "quiz_count": len(quiz_rows),
             "modules": _admin_modules(),
+            "module_groups": _admin_module_groups(),
+            "tariff_labels": _TARIFF_LABELS,
             "flash": _flash_from_query(request),
         },
     )
@@ -308,9 +365,10 @@ def admin_export_csv(
             "TG привязан",
             "Ребёнок",
             "Возраст",
-            "Модуль",
+            "Класс",
+            "Формат",
             "Этап",
-            "Сказка",
+            "Сказка / блок",
             "Уровень",
             "Баллы",
             "Ссылка прогресса",
@@ -327,9 +385,10 @@ def admin_export_csv(
                 row["telegram_linked"],
                 row["child_name"],
                 row["child_age"],
-                row["module"],
+                row["grade"],
+                row["tariff"],
                 row["stage"],
-                row["tale"],
+                row["lesson"],
                 row["level"],
                 row["points"],
                 row["progress_url"],

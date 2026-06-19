@@ -52,14 +52,43 @@
     .field--check label { margin: 0; }
     .field--check input { width: auto; }
     .grant-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; min-width: 260px; }
-    .grant-form select { padding: 6px 8px; border: 1px solid #ddd4c8; border-radius: 6px; font: inherit; font-size: .8rem; background: #fffcf8; max-width: 120px; }
+    .grant-form select { padding: 6px 8px; border: 1px solid #ddd4c8; border-radius: 6px; font: inherit; font-size: .8rem; background: #fffcf8; max-width: 140px; }
+    .grant-form .module-select { max-width: 160px; }
     .grant-form label { font-size: .75rem; color: #6b5d4d; display: block; margin-bottom: 2px; }
     .grant-field { flex: 1 1 70px; min-width: 70px; }
     .grant-check { flex: 0 0 auto; font-size: .78rem; display: flex; align-items: center; gap: 4px; padding-bottom: 6px; }
     .grant-check input { width: auto; }
-    .module-option-single { font-style: italic; }
+    .tariff {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: .78rem;
+      white-space: nowrap;
+    }
+    .tariff--single { background: #fff3e0; color: #8a5a12; }
+    .tariff--self_paced { background: #e8f0ff; color: #2a4a7a; }
+    .tariff--with_teacher { background: #ede7f6; color: #4a2a6a; }
+    .lesson-cell { max-width: 280px; }
+    .col-grade { white-space: nowrap; }
   </style>
 </head>
+{% macro tariff_name(code) -%}
+  {%- if code == 'single' -%}{{ tariff_labels.single }}
+  {%- elif code == 'self_paced' -%}{{ tariff_labels.self_paced }}
+  {%- elif code == 'with_teacher' -%}{{ tariff_labels.with_teacher }}
+  {%- else -%}—{%- endif -%}
+{%- endmacro %}
+{% macro module_select(select_id, select_name, compact=false) %}
+<select{% if select_id %} id="{{ select_id }}"{% endif %} name="{{ select_name }}" required class="module-select{% if compact %} module-select--compact{% endif %}">
+  {% for group in module_groups %}
+  <optgroup label="{{ group.label }}">
+    {% for mod in group.modules %}
+    <option value="{{ mod.id }}" data-tariff="{{ mod.tariff_code }}">{{ tariff_name(mod.tariff_code) }}</option>
+    {% endfor %}
+  </optgroup>
+  {% endfor %}
+</select>
+{% endmacro %}
 <body>
   <div class="wrap">
     <header>
@@ -94,7 +123,10 @@
     <section class="section" id="enroll">
       <h2>Выдать доступ</h2>
       <div class="hint">
-        Ручная запись без оплаты — для тестов и исключений. Старый активный модуль у ребёнка будет закрыт, откроется новый.
+        Ручная запись без оплаты — для тестов и исключений. Старый доступ у ребёнка будет закрыт, откроется новый.<br>
+        <strong>Класс и формат</strong> — что купили (разовое / индивидуальное / с преподавателем).
+        <strong>Этап</strong> — только дата старта (22 июня или 20 июля).
+        <strong>Сказка</strong> — только для разового: конкретное название урока.
       </div>
 
       <div class="panel">
@@ -130,12 +162,8 @@
             </select>
           </div>
           <div class="field">
-            <label for="new_module_id">Модуль</label>
-            <select id="new_module_id" name="module_id" required class="module-select">
-              {% for mod in modules %}
-              <option value="{{ mod.id }}" data-tariff="{{ mod.tariff_code }}">{{ mod.id }} · {{ mod.title }}</option>
-              {% endfor %}
-            </select>
+            <label for="new_module_id">Класс и формат</label>
+            {{ module_select('new_module_id', 'module_id') }}
           </div>
           <div class="field">
             <label for="new_stage">Этап</label>
@@ -168,7 +196,10 @@
     <section class="section" id="registrations">
       <h2>Регистрации</h2>
       <div class="hint">
-        Семьи после оплаты на Tilda и записи, созданные вручную выше. В колонке «Выдать» — смена модуля для существующего ребёнка.
+        Семьи после оплаты на Tilda и записи, созданные вручную выше.
+        В таблице: <strong>Класс</strong>, <strong>Формат</strong> (разовое · индивидуальное · с преподавателем),
+        <strong>Этап</strong> (дата), <strong>Сказка / блок</strong> (название сказки или «4 сказки»).
+        В колонке «Выдать» — смена доступа для существующего ребёнка.
       </div>
 
     {% if rows %}
@@ -180,10 +211,12 @@
             <th>Родитель</th>
             <th>Email</th>
             <th>Ребёнок</th>
-            <th>Модуль</th>
+            <th>Класс</th>
+            <th>Формат</th>
             <th>Этап</th>
+            <th>Сказка / блок</th>
             <th>Прогресс</th>
-            <th>Выдать модуль</th>
+            <th>Выдать</th>
           </tr>
         </thead>
         <tbody>
@@ -193,25 +226,29 @@
             <td>{{ row.parent_name }}</td>
             <td><a class="link" href="mailto:{{ row.parent_email }}">{{ row.parent_email }}</a></td>
             <td>{{ row.child_name }}{% if row.child_age != '—' %} ({{ row.child_age }}){% endif %}</td>
-            <td>{{ row.module }}</td>
+            <td class="col-grade">{{ row.grade }}</td>
+            <td>
+              {% if row.tariff_code %}
+              <span class="tariff tariff--{{ row.tariff_code }}">{{ row.tariff }}</span>
+              {% else %}
+              —
+              {% endif %}
+            </td>
             <td>{{ row.stage }}</td>
+            <td class="lesson-cell">{{ row.lesson }}</td>
             <td><a class="link" href="{{ row.progress_url }}" target="_blank" rel="noopener">открыть</a></td>
             <td>
               {% if row.child_id %}
               <form method="post" action="/admin/enroll/{{ row.child_id }}" class="grant-form">
                 <div class="grant-field">
-                  <label>Модуль</label>
-                  <select name="module_id" required class="module-select">
-                    {% for mod in modules %}
-                    <option value="{{ mod.id }}" data-tariff="{{ mod.tariff_code }}">{{ mod.id }}</option>
-                    {% endfor %}
-                  </select>
+                  <label>Формат</label>
+                  {{ module_select('', 'module_id', true) }}
                 </div>
                 <div class="grant-field">
                   <label>Этап</label>
                   <select name="chosen_stage" required>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
+                    <option value="1">22 июня</option>
+                    <option value="2">20 июля</option>
                   </select>
                 </div>
                 <div class="grant-field tale-field">
