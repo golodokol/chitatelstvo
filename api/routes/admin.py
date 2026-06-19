@@ -38,6 +38,21 @@ _TARIFF_LABELS = {
     "with_teacher": "С преподавателем",
 }
 
+_GRADE_SHORT = {
+    "1 класс": "1",
+    "2 класс": "2",
+    "3 класс": "3",
+    "4 класс": "4",
+    "Внеклассное чтение 6–8 лет": "6–8",
+    "Внеклассное чтение 9–11 лет": "9–11",
+}
+
+
+def _short_grade_label(label: str | None) -> str:
+    if not label or label == "—":
+        return "—"
+    return _GRADE_SHORT.get(label, label[:6])
+
 
 def _format_stage_label(chosen_stage: str | None) -> str:
     stage = normalize_stage(chosen_stage)
@@ -66,8 +81,8 @@ def _format_lesson_label(enrollment, module: dict | None) -> str:
 def _enrollment_columns(enrollment, module: dict | None) -> dict[str, str]:
     if not enrollment:
         return {
-                    "show_delete": show_delete,
-                    "grade": "—",
+            "grade": "—",
+            "grade_short": "—",
             "tariff": "—",
             "tariff_code": "",
             "stage": "—",
@@ -75,8 +90,10 @@ def _enrollment_columns(enrollment, module: dict | None) -> dict[str, str]:
         }
     mod = module or get_module(enrollment.module_id)
     tariff_code = mod["tariff_code"] if mod else ""
+    grade = mod["group_label"] if mod else "—"
     return {
-        "grade": mod["group_label"] if mod else "—",
+        "grade": grade,
+        "grade_short": _short_grade_label(grade),
         "tariff": _TARIFF_LABELS.get(tariff_code, mod["tariff_label"] if mod else "—"),
         "tariff_code": tariff_code,
         "stage": _format_stage_label(enrollment.chosen_stage),
@@ -113,6 +130,7 @@ def _build_rows(families) -> list[dict]:
                     "family_id": family_id,
                     "show_delete": show_delete,
                     "grade": "—",
+                    "grade_short": "—",
                     "tariff": "—",
                     "tariff_code": "",
                     "stage": "—",
@@ -141,6 +159,7 @@ def _build_rows(families) -> list[dict]:
                         "family_id": family_id,
                         "show_delete": show_delete,
                         "grade": "—",
+                        "grade_short": "—",
                         "tariff": "—",
                         "tariff_code": "",
                         "stage": "—",
@@ -170,6 +189,7 @@ def _build_rows(families) -> list[dict]:
                         "family_id": family_id,
                         "show_delete": show_delete and idx == 0,
                         "grade": cols["grade"],
+                        "grade_short": cols["grade_short"],
                         "tariff": cols["tariff"],
                         "tariff_code": cols["tariff_code"],
                         "stage": cols["stage"],

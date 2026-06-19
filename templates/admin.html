@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; }
     body { font-family: Georgia, 'Times New Roman', serif; background: #faf6f0; color: #2c2416; margin: 0; padding: 24px; line-height: 1.5; }
-    .wrap { max-width: 1200px; margin: 0 auto; }
+    .wrap { max-width: 1400px; margin: 0 auto; }
     header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
     h1 { font-size: 1.5rem; margin: 0; }
     h3 { font-size: 1rem; margin: 0 0 12px; }
@@ -73,6 +73,108 @@
     .tariff--with_teacher { background: #ede7f6; color: #4a2a6a; }
     .lesson-cell { max-width: 280px; }
     .col-grade { white-space: nowrap; }
+    .table-registrations {
+      table-layout: fixed;
+      font-size: .8rem;
+    }
+    .table-registrations th,
+    .table-registrations td {
+      padding: 8px 8px;
+      vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .table-registrations .col-date {
+      width: 108px;
+      white-space: nowrap;
+      font-size: .74rem;
+    }
+    .table-registrations .col-parent {
+      width: 88px;
+      white-space: nowrap;
+    }
+    .table-registrations .col-email {
+      width: 220px;
+      font-size: .94rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .table-registrations .col-email .link {
+      word-break: normal;
+      white-space: nowrap;
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: bottom;
+    }
+    .table-registrations .col-child {
+      width: 92px;
+      white-space: nowrap;
+    }
+    .table-registrations .col-grade {
+      width: 52px;
+      font-size: .68rem;
+      color: #6b5d4d;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .table-registrations .col-tariff {
+      width: 118px;
+      white-space: nowrap;
+    }
+    .table-registrations .col-tariff .tariff {
+      font-size: .66rem;
+      padding: 1px 6px;
+    }
+    .table-registrations .col-stage {
+      width: 72px;
+      white-space: nowrap;
+      font-size: .74rem;
+    }
+    .table-registrations .col-lesson {
+      width: 150px;
+      white-space: nowrap;
+      font-size: .74rem;
+    }
+    .table-registrations .col-progress {
+      width: 58px;
+      white-space: nowrap;
+    }
+    .table-registrations .col-grant {
+      width: 280px;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .table-registrations .col-delete {
+      width: 72px;
+      white-space: nowrap;
+    }
+    .table-registrations .grant-form {
+      flex-wrap: nowrap;
+      min-width: 0;
+      gap: 4px;
+    }
+    .table-registrations .grant-form select {
+      max-width: 96px;
+      font-size: .72rem;
+      padding: 4px 6px;
+    }
+    .table-registrations .grant-form .module-select {
+      max-width: 108px;
+    }
+    .table-registrations .grant-field {
+      min-width: 0;
+      flex: 0 1 auto;
+    }
+    .table-registrations .grant-check {
+      font-size: .72rem;
+      padding-bottom: 4px;
+    }
+    .table-registrations .btn-small {
+      padding: 4px 8px;
+      font-size: .74rem;
+    }
   </style>
 </head>
 {% macro tariff_name(code) -%}
@@ -208,41 +310,41 @@
 
     {% if rows %}
     <div class="table-wrap">
-      <table>
+      <table class="table-registrations">
         <thead>
           <tr>
-            <th>Дата</th>
-            <th>Родитель</th>
-            <th>Email</th>
-            <th>Ребёнок</th>
-            <th>Класс</th>
-            <th>Формат</th>
-            <th>Этап</th>
-            <th>Сказка / блок</th>
-            <th>Прогресс</th>
-            <th>Выдать</th>
-            <th></th>
+            <th class="col-date">Дата</th>
+            <th class="col-parent">Родитель</th>
+            <th class="col-email">Email</th>
+            <th class="col-child">Ребёнок</th>
+            <th class="col-grade">Кл.</th>
+            <th class="col-tariff">Формат</th>
+            <th class="col-stage">Этап</th>
+            <th class="col-lesson">Сказка / блок</th>
+            <th class="col-progress">Прогресс</th>
+            <th class="col-grant">Выдать</th>
+            <th class="col-delete"></th>
           </tr>
         </thead>
         <tbody>
           {% for row in rows %}
           <tr>
-            <td class="mono">{{ row.registered_at }}</td>
-            <td>{{ row.parent_name }}</td>
-            <td><a class="link" href="mailto:{{ row.parent_email }}">{{ row.parent_email }}</a></td>
-            <td>{{ row.child_name }}{% if row.child_age != '—' %} ({{ row.child_age }}){% endif %}</td>
-            <td class="col-grade">{{ row.grade }}</td>
-            <td>
+            <td class="mono col-date">{{ row.registered_at }}</td>
+            <td class="col-parent" title="{{ row.parent_name }}">{{ row.parent_name }}</td>
+            <td class="col-email"><a class="link" href="mailto:{{ row.parent_email }}" title="{{ row.parent_email }}">{{ row.parent_email }}</a></td>
+            <td class="col-child">{{ row.child_name }}{% if row.child_age != '—' %} ({{ row.child_age }}){% endif %}</td>
+            <td class="col-grade" title="{{ row.grade }}">{{ row.grade_short or row.grade }}</td>
+            <td class="col-tariff">
               {% if row.tariff_code %}
               <span class="tariff tariff--{{ row.tariff_code }}">{{ row.tariff }}</span>
               {% else %}
               —
               {% endif %}
             </td>
-            <td>{{ row.stage }}</td>
-            <td class="lesson-cell">{{ row.lesson }}</td>
-            <td><a class="link" href="{{ row.progress_url }}" target="_blank" rel="noopener">открыть</a></td>
-            <td>
+            <td class="col-stage">{{ row.stage }}</td>
+            <td class="col-lesson lesson-cell" title="{{ row.lesson }}">{{ row.lesson }}</td>
+            <td class="col-progress"><a class="link" href="{{ row.progress_url }}" target="_blank" rel="noopener">открыть</a></td>
+            <td class="col-grant">
               {% if row.child_id %}
               <form method="post" action="/admin/enroll/{{ row.child_id }}" class="grant-form">
                 <div class="grant-field">
@@ -275,7 +377,7 @@
               —
               {% endif %}
             </td>
-            <td>
+            <td class="col-delete">
               {% if row.show_delete and row.family_id %}
               <form
                 method="post"
