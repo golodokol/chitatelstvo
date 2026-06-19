@@ -28,7 +28,13 @@
 /*
  * Zero Block rec2378409351: Tilda на мобиле ставит display:table,
  * фиксированную ширину 320–960px и left:calc(50% - 600px) — страница «пустая».
+ * У блока также класс t-rec_pt_60 (padding-top: 60px) — пустая полоса сверху.
  */
+#rec2378409351.t-rec,
+#rec2378409351 {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
 #rec2378409351 .t396__artboard,
 #rec2378409351 .t396__carrier,
 #rec2378409351 .t396__filter,
@@ -2142,7 +2148,8 @@ screen and (max-width: 479px) {
       /* full-bleed убран глобально — здесь только типографика и отступы */
       .section { padding: 48px 16px; }
       .section__inner { padding-left: 0; padding-right: 0; }
-      .hero { padding: 28px 16px 36px; }
+      .hero { padding: 20px 16px 32px; }
+      .hero--premium { padding-top: 16px; }
 
       .section__title { font-size: 28px; margin-bottom: 12px; }
       .section__lead { font-size: 16px; margin-bottom: 32px; }

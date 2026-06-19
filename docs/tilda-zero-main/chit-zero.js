@@ -1,5 +1,5 @@
 (function ensureChitStylesheets() {
-  var VERSION = '20260620e';
+  var VERSION = '20260620f';
   var API = 'https://api.chitatelstvo.ru/assets/';
   var sheets = [
     API + 'chit-zero.css?v=' + VERSION
@@ -36,7 +36,7 @@ function chitCssLooksLoaded() {
 
 function chitFetchCssFallback() {
   if (chitCssLooksLoaded()) return;
-  var VERSION = '20260620e';
+  var VERSION = '20260620f';
   var API = 'https://api.chitatelstvo.ru/assets/';
   ['chit-zero.css'].forEach(function (file) {
     var href = API + file + '?v=' + VERSION;
@@ -84,6 +84,10 @@ function fixTildaLayout() {
   main.style.setProperty('min-width', '0', 'important');
   main.style.setProperty('box-sizing', 'border-box', 'important');
   var rec = main.closest('.t-rec');
+  if (rec && rec.id === 'rec2378409351') {
+    rec.style.setProperty('padding-top', '0', 'important');
+    rec.style.setProperty('margin-top', '0', 'important');
+  }
   var nodes = rec
     ? rec.querySelectorAll('.t396, .t396__artboard, .t396__carrier, .t396__filter, .tn-elem, .tn-atom, .tn-atom__html')
     : [];
