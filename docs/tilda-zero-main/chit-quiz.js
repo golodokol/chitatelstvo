@@ -113,6 +113,27 @@
     elSteps = root.querySelectorAll('.qz-step');
   }
 
+  function fitDialogHeight() {
+    var dialog = root.closest('.qz-modal__dialog');
+    var modal = dialog && dialog.closest('.qz-modal');
+    if (!dialog || !modal || !modal.classList.contains('is-open')) return;
+    dialog.style.height = 'auto';
+    dialog.style.maxHeight = '';
+    dialog.classList.remove('qz-modal--tight');
+    var card = dialog.querySelector('.qz-card');
+    if (!card) return;
+    var pad = window.innerWidth <= 720 ? 24 : 32;
+    var max = Math.max(280, window.innerHeight - pad);
+    var h = card.offsetHeight;
+    if (h > max) {
+      dialog.classList.add('qz-modal--tight');
+      h = card.offsetHeight;
+    }
+    var fit = Math.min(h, max);
+    dialog.style.height = fit + 'px';
+    dialog.style.maxHeight = fit + 'px';
+  }
+
   function showStep(index) {
     stepIndex = index;
     refreshSteps();
@@ -125,19 +146,7 @@
     root.classList.toggle('qz-success-step', index > QUESTIONS.length);
     updateProgress();
     hideError();
-    var dialog = root.closest('.qz-modal__dialog');
-    if (index === QUESTIONS.length) {
-      window.setTimeout(function () {
-        var formStep = root.querySelector('[data-step="form"]');
-        if (dialog && formStep) {
-          formStep.scrollIntoView({ block: 'start', behavior: 'smooth' });
-        } else if (dialog) {
-          dialog.scrollTop = 0;
-        }
-      }, 80);
-    } else if (dialog) {
-      dialog.scrollTop = 0;
-    }
+    window.setTimeout(fitDialogHeight, 40);
   }
 
   function resetQuiz() {
@@ -249,6 +258,7 @@
     document.body.classList.add('qz-modal-open');
     var closeBtn = modal.querySelector('.qz-modal__close');
     if (closeBtn) closeBtn.focus();
+    window.setTimeout(fitDialogHeight, 60);
   }
 
   function closeQuizModal() {
@@ -436,4 +446,5 @@
   }
 
   updateProgress();
+  window.addEventListener('resize', fitDialogHeight);
 })();
