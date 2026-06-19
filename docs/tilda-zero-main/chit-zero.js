@@ -1,5 +1,5 @@
 (function ensureChitStylesheets() {
-  var VERSION = '20260619i';
+  var VERSION = '20260620c';
   var API = 'https://api.chitatelstvo.ru/assets/';
   var sheets = [
     API + 'chit-zero.css?v=' + VERSION
@@ -36,7 +36,7 @@ function chitCssLooksLoaded() {
 
 function chitFetchCssFallback() {
   if (chitCssLooksLoaded()) return;
-  var VERSION = '20260619i';
+  var VERSION = '20260620c';
   var API = 'https://api.chitatelstvo.ru/assets/';
   ['chit-zero.css'].forEach(function (file) {
     var href = API + file + '?v=' + VERSION;
@@ -487,6 +487,42 @@ if (faqList) {
   var promoQuotePending = false;
   var promoQuoteTimer = null;
 
+  function resetTcartPromoState() {
+    if (!window.tcart) return;
+    delete window.tcart.promocode;
+    delete window.tcart.prodamount_withdiscount;
+    delete window.tcart.prodamount_discountsum;
+  }
+
+  function refreshTcartTotals() {
+    if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
+      window.tcart__updateTotalProductsinCartObj();
+    }
+    if (typeof window.tcart__calcPromocode === 'function' && window.tcart && typeof window.tcart.amount === 'number') {
+      window.tcart.amount = window.tcart__calcPromocode(window.tcart.amount);
+    }
+    if (typeof window.tcart__reDrawTotal === 'function') {
+      window.tcart__reDrawTotal();
+    }
+    if (typeof window.tcart__saveLocalObj === 'function') {
+      window.tcart__saveLocalObj();
+    }
+  }
+
+  function findPromoControls() {
+    var input = document.querySelector('.t706 .t-inputpromocode, .t706__orderform .t-inputpromocode, .t706__cartwin .t-inputpromocode');
+    if (!input) return null;
+    var wrapper = input.closest('.t-inputpromocode__wrapper');
+    var btn = wrapper
+      ? wrapper.querySelector('.t-inputpromocode__btn')
+      : document.querySelector('.t706 .t-inputpromocode__btn');
+    return btn ? { input: input, btn: btn } : null;
+  }
+
+  function canPreviewPromoQuote() {
+    return !!findPromoControls();
+  }
+
   function readQuotedPriceFromTcart() {
     if (!window.tcart || !window.tcart.promocode || window.tcart.promocode.message !== 'OK') return null;
     if (typeof window.tcart.prodamount_withdiscount === 'number' && window.tcart.prodamount_withdiscount >= 0) {
@@ -539,8 +575,15 @@ if (faqList) {
       updatePayButton();
       return;
     }
+    if (!canPreviewPromoQuote()) {
+      promoQuotePrice = null;
+      promoQuotePending = false;
+      updatePayButton();
+      return;
+    }
     promoQuotePending = true;
     updatePayButton();
+    ensureCatalogBridge();
     waitTcartReady(function() {
       if (!addProductDirect(state.tariff)) {
         promoQuotePending = false;
@@ -553,9 +596,7 @@ if (faqList) {
       var attempts = 0;
       function poll() {
         attempts += 1;
-        if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
-          window.tcart__updateTotalProductsinCartObj();
-        }
+        refreshTcartTotals();
         var quoted = readQuotedPriceFromTcart();
         if (quoted != null) {
           promoQuotePrice = quoted;
@@ -569,7 +610,7 @@ if (faqList) {
           updatePayButton();
           return;
         }
-        if (attempts >= 24) {
+        if (attempts >= 30) {
           promoQuotePending = false;
           promoQuotePrice = null;
           updatePayButton();
@@ -643,17 +684,19 @@ if (faqList) {
     var code = getPromoCodeValue();
     if (!code) {
       lastAppliedPromo = '';
-      return;
+      return false;
     }
-    if (code === lastAppliedPromo && promoAlreadyApplied(code)) return;
-    var input = document.querySelector('.t706 .t-inputpromocode');
-    var btn = document.querySelector('.t706 .t-inputpromocode__btn');
-    if (!input || !btn) return;
-    setInputValue(input, code);
-    btn.style.display = 'table-cell';
-    try { input.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
-    try { btn.click(); } catch (e) {}
+    if (code === lastAppliedPromo && promoAlreadyApplied(code)) return true;
+    var controls = findPromoControls();
+    if (!controls) return false;
+    pushField('promo_code', code);
+    setInputValue(controls.input, code);
+    controls.btn.style.display = 'table-cell';
+    try { controls.input.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
+    try { controls.input.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+    try { controls.btn.click(); } catch (e) {}
     lastAppliedPromo = code;
+    return true;
   }
 
   function syncCartAfterOpen() {
@@ -1023,6 +1066,7 @@ if (faqList) {
     window.tcart.amount = 0;
     window.tcart.total = 0;
     window.tcart.prodamount = 0;
+    resetTcartPromoState();
     if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
       window.tcart__updateTotalProductsinCartObj();
     }

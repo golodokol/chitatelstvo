@@ -1,6 +1,6 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты:
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=2"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=3"></script>
  */
 (function () {
   var STORAGE_KEY = 'chit_checkout';
@@ -149,6 +149,7 @@
         '.t706 input[name="' + fieldName + '"], .t706 textarea[name="' + fieldName + '"], .t706 select[name="' + fieldName + '"], form[data-formcart="y"] [name="' + fieldName + '"]'
       ).forEach(function (el) {
         el.value = v;
+        try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (err) {}
         try { el.dispatchEvent(new Event('change', { bubbles: true })); } catch (err) {}
       });
     });
@@ -160,12 +161,38 @@
     setTimeout(function () { waitFor(fn, cb, (attempt || 0) + 1); }, 200);
   }
 
+  function resetTcartPromoState() {
+    if (!window.tcart) return;
+    delete window.tcart.promocode;
+    delete window.tcart.prodamount_withdiscount;
+    delete window.tcart.prodamount_discountsum;
+  }
+
   function clearTcart() {
     if (!window.tcart) window.tcart = { products: [], amount: 0, total: 0, prodamount: 0 };
     window.tcart.products = [];
     window.tcart.amount = 0;
     window.tcart.total = 0;
     window.tcart.prodamount = 0;
+    resetTcartPromoState();
+  }
+
+  function refreshTcartTotals() {
+    if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
+      window.tcart__updateTotalProductsinCartObj();
+    }
+    if (typeof window.tcart__calcPromocode === 'function' && window.tcart && typeof window.tcart.amount === 'number') {
+      window.tcart.amount = window.tcart__calcPromocode(window.tcart.amount);
+    }
+    if (typeof window.tcart__reDrawTotal === 'function') {
+      window.tcart__reDrawTotal();
+    }
+    if (typeof window.tcart__reDrawProducts === 'function') {
+      window.tcart__reDrawProducts();
+    }
+    if (typeof window.tcart__saveLocalObj === 'function') {
+      window.tcart__saveLocalObj();
+    }
   }
 
   function addProduct(tariff) {
@@ -182,12 +209,7 @@
       uid: p.uid,
       lid: p.lid || p.uid
     });
-    if (typeof window.tcart__updateTotalProductsinCartObj === 'function') {
-      window.tcart__updateTotalProductsinCartObj();
-    }
-    if (typeof window.tcart__saveLocalObj === 'function') {
-      window.tcart__saveLocalObj();
-    }
+    refreshTcartTotals();
     return !!(window.tcart.products && window.tcart.products.length);
   }
 
@@ -202,20 +224,70 @@
     try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
   }
 
-  function applyPromoCode(code) {
+  function findPromoControls() {
+    var input = document.querySelector('.t706 .t-inputpromocode, .t706__orderform .t-inputpromocode, .t706__cartwin .t-inputpromocode');
+    if (!input) return null;
+    var wrapper = input.closest('.t-inputpromocode__wrapper');
+    var btn = wrapper
+      ? wrapper.querySelector('.t-inputpromocode__btn')
+      : document.querySelector('.t706 .t-inputpromocode__btn');
+    return btn ? { input: input, btn: btn } : null;
+  }
+
+  function promoAppliedOk(code) {
     code = String(code || '').trim();
-    if (!code) return;
-    var input = document.querySelector('.t706 .t-inputpromocode');
-    var btn = document.querySelector('.t706 .t-inputpromocode__btn');
-    if (!input || !btn) return;
-    input.value = code;
-    try { input.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
-    btn.style.display = 'table-cell';
-    try { btn.click(); } catch (e) {}
+    if (!code || !window.tcart || typeof window.tcart.promocode !== 'object') return !code;
+    var promo = window.tcart.promocode;
+    if (promo.message !== 'OK') return false;
+    return String(promo.code || promo.promocode || '').trim().toLowerCase() === code.toLowerCase();
+  }
+
+  function applyPromoCode(code, cb) {
+    code = String(code || '').trim();
+    if (!code) {
+      if (cb) cb(true);
+      return;
+    }
+    if (promoAppliedOk(code)) {
+      refreshTcartTotals();
+      if (cb) cb(true);
+      return;
+    }
+    var controls = findPromoControls();
+    if (!controls) {
+      if (cb) cb(false);
+      return;
+    }
+    setField('promo_code', code);
+    controls.input.value = code;
+    controls.btn.style.display = 'table-cell';
+    try { controls.input.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
+    try { controls.input.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+    try { controls.btn.click(); } catch (e) {}
+
+    var attempts = 0;
+    (function poll() {
+      attempts += 1;
+      refreshTcartTotals();
+      if (promoAppliedOk(code)) {
+        if (cb) cb(true);
+        return;
+      }
+      if (window.tcart && window.tcart.promocode && window.tcart.promocode.message && window.tcart.promocode.message !== 'OK') {
+        if (cb) cb(false);
+        return;
+      }
+      if (attempts >= 35) {
+        if (cb) cb(false);
+        return;
+      }
+      setTimeout(poll, 200);
+    })();
   }
 
   function openCart() {
     hideStoreBlocks();
+    refreshTcartTotals();
     if (typeof window.tcart__openCart === 'function') window.tcart__openCart();
     else {
       var icon = document.querySelector('.t706__carticon');
@@ -235,7 +307,7 @@
       return;
     }
 
-    showPayShell('Оплата', 'Открываем корзину…');
+    showPayShell('Оплата', data.promo_code ? 'Проверяем промокод…' : 'Открываем корзину…');
     watchStoreBlocks();
 
     waitFor(function () {
@@ -248,15 +320,26 @@
       var uid = ORDER_PRODUCTS[data.tariff].uid;
       var tries = 0;
 
+      function finishCheckout() {
+        applyPromoCode(data.promo_code, function () {
+          refreshTcartTotals();
+          openCart();
+          if (data.promo_code) {
+            [500, 1400].forEach(function (ms) {
+              setTimeout(function () {
+                applyPromoCode(data.promo_code, refreshTcartTotals);
+              }, ms);
+            });
+          }
+        });
+      }
+
       function tryOpen() {
         hideStoreBlocks();
         if (!addProduct(data.tariff)) triggerUidHash(uid);
         tries += 1;
         if ((window.tcart && window.tcart.products && window.tcart.products.length) || tries >= 8) {
-          openCart();
-          [300, 900, 1600].forEach(function (ms) {
-            setTimeout(function () { applyPromoCode(data.promo_code); }, ms);
-          });
+          finishCheckout();
           return;
         }
         setTimeout(tryOpen, 400);
