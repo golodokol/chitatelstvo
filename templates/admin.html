@@ -76,104 +76,119 @@
     .table-registrations {
       table-layout: fixed;
       font-size: .8rem;
+      min-width: 1340px;
     }
     .table-registrations th,
     .table-registrations td {
-      padding: 8px 8px;
+      padding: 8px 6px;
       vertical-align: middle;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .table-registrations .col-date {
-      width: 108px;
+      width: 100px;
       white-space: nowrap;
-      font-size: .74rem;
+      font-size: .72rem;
     }
     .table-registrations .col-parent {
-      width: 88px;
+      width: 78px;
       white-space: nowrap;
+      font-size: .76rem;
     }
     .table-registrations .col-email {
-      width: 220px;
-      font-size: .94rem;
-      font-weight: 600;
+      width: 158px;
+      font-size: .64rem;
+      font-weight: normal;
+      font-family: ui-monospace, monospace;
+      letter-spacing: -0.02em;
       white-space: nowrap;
     }
     .table-registrations .col-email .link {
       word-break: normal;
       white-space: nowrap;
-      display: inline-block;
-      max-width: 100%;
+      display: block;
       overflow: hidden;
       text-overflow: ellipsis;
-      vertical-align: bottom;
+      font-size: inherit;
     }
     .table-registrations .col-child {
-      width: 92px;
+      width: 86px;
       white-space: nowrap;
+      font-size: .76rem;
     }
     .table-registrations .col-grade {
-      width: 52px;
-      font-size: .68rem;
+      width: 44px;
+      font-size: .66rem;
       color: #6b5d4d;
       white-space: nowrap;
       text-align: center;
     }
     .table-registrations .col-tariff {
-      width: 118px;
+      width: 102px;
       white-space: nowrap;
     }
     .table-registrations .col-tariff .tariff {
-      font-size: .66rem;
-      padding: 1px 6px;
+      font-size: .64rem;
+      padding: 1px 5px;
     }
     .table-registrations .col-stage {
-      width: 72px;
+      width: 66px;
       white-space: nowrap;
-      font-size: .74rem;
+      font-size: .72rem;
     }
     .table-registrations .col-lesson {
-      width: 150px;
+      width: 128px;
+      white-space: nowrap;
+      font-size: .72rem;
+    }
+    .table-registrations .col-progress {
+      width: 50px;
       white-space: nowrap;
       font-size: .74rem;
     }
-    .table-registrations .col-progress {
-      width: 58px;
-      white-space: nowrap;
-    }
     .table-registrations .col-grant {
-      width: 280px;
+      width: 292px;
+      padding-right: 12px;
       overflow: visible;
       text-overflow: clip;
     }
     .table-registrations .col-delete {
-      width: 72px;
+      width: 88px;
+      padding-left: 10px;
+      padding-right: 14px;
       white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
     }
     .table-registrations .grant-form {
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       min-width: 0;
-      gap: 4px;
+      max-width: 280px;
+      gap: 5px 5px;
+      align-items: flex-end;
     }
     .table-registrations .grant-form select {
-      max-width: 96px;
-      font-size: .72rem;
-      padding: 4px 6px;
+      max-width: 88px;
+      font-size: .68rem;
+      padding: 3px 5px;
     }
     .table-registrations .grant-form .module-select {
-      max-width: 108px;
+      max-width: 100px;
     }
     .table-registrations .grant-field {
       min-width: 0;
       flex: 0 1 auto;
     }
     .table-registrations .grant-check {
-      font-size: .72rem;
-      padding-bottom: 4px;
+      font-size: .68rem;
+      padding-bottom: 3px;
     }
     .table-registrations .btn-small {
-      padding: 4px 8px;
-      font-size: .74rem;
+      padding: 4px 7px;
+      font-size: .7rem;
+    }
+    .table-wrap--registrations {
+      padding-right: 4px;
     }
   </style>
 </head>
@@ -309,7 +324,7 @@
       </div>
 
     {% if rows %}
-    <div class="table-wrap">
+    <div class="table-wrap table-wrap--registrations">
       <table class="table-registrations">
         <thead>
           <tr>
