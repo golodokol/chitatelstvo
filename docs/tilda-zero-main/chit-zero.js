@@ -1,5 +1,5 @@
 (function ensureChitStylesheets() {
-  var VERSION = '20260620d';
+  var VERSION = '20260620e';
   var API = 'https://api.chitatelstvo.ru/assets/';
   var sheets = [
     API + 'chit-zero.css?v=' + VERSION
@@ -36,7 +36,7 @@ function chitCssLooksLoaded() {
 
 function chitFetchCssFallback() {
   if (chitCssLooksLoaded()) return;
-  var VERSION = '20260620d';
+  var VERSION = '20260620e';
   var API = 'https://api.chitatelstvo.ru/assets/';
   ['chit-zero.css'].forEach(function (file) {
     var href = API + file + '?v=' + VERSION;
@@ -79,6 +79,10 @@ function chitSetAutoHeight(el) {
 function fixTildaLayout() {
   var main = document.getElementById('chit-main');
   if (!main) return;
+  main.style.setProperty('width', '100%', 'important');
+  main.style.setProperty('max-width', '100%', 'important');
+  main.style.setProperty('min-width', '0', 'important');
+  main.style.setProperty('box-sizing', 'border-box', 'important');
   var rec = main.closest('.t-rec');
   var nodes = rec
     ? rec.querySelectorAll('.t396, .t396__artboard, .t396__carrier, .t396__filter, .tn-elem, .tn-atom, .tn-atom__html')

@@ -35,7 +35,8 @@
 #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],
 #rec2378409351 .tn-elem[data-elem-type="html"],
 #rec2378409351 .tn-atom,
-#rec2378409351 .tn-atom__html {
+#rec2378409351 .tn-atom__html,
+#rec2378409351 #chit-main {
   display: block !important;
   position: relative !important;
   left: 0 !important;
@@ -49,6 +50,21 @@
   overflow: visible !important;
   transform: none !important;
   zoom: 1 !important;
+  box-sizing: border-box !important;
+}
+
+@media screen and (max-width: 1199px),
+screen and (max-width: 959px),
+screen and (max-width: 639px),
+screen and (max-width: 479px) {
+  #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],
+  #rec2378409351 .tn-elem[data-elem-type="html"],
+  #rec2378409351 #chit-main {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
 }
 
 /* Tilda Zero: не обрезать длинную страницу и не держать контент invisible */
@@ -110,9 +126,10 @@
   --serif: 'Literata', Georgia, serif;
   --hand: 'Caveat', cursive;
   width: 100%;
-  max-width: none;
+  max-width: 100%;
+  min-width: 0;
   margin: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
   scroll-behavior: smooth;
   font-family: 'Nunito', system-ui, sans-serif;
   color: var(--text);
@@ -550,15 +567,19 @@
       font-size: clamp(30px, 3.6vw, 42px);
       line-height: 1.14;
       margin: 0 0 16px;
-      max-width: 13.5em;
+      max-width: min(13.5em, 100%);
       letter-spacing: -0.025em;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .hero--premium .hero__lead {
       font-size: clamp(16px, 1.75vw, 18px);
       line-height: 1.62;
       color: var(--text-warm);
       margin: 0 0 22px;
-      max-width: 34em;
+      max-width: min(34em, 100%);
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .hero__cta {
       display: flex;
@@ -655,9 +676,11 @@
         align-items: center;
         text-align: center;
       }
-      .hero--premium h1 { max-width: none; text-align: center; }
+      .hero--premium h1 { max-width: 100%; text-align: center; font-size: clamp(24px, 7vw, 30px); }
       .hero__cta { align-items: center; max-width: 100%; }
-      .hero--premium .hero__lead { text-align: center; }
+      .hero--premium .hero__lead { text-align: center; max-width: 100%; }
+      .hero--premium .hero__grid { width: 100%; max-width: 100%; }
+      .hero--premium .hero__content { width: 100%; max-width: 100%; min-width: 0; }
       .hero--premium .hero__cta-note,
       .hero--premium .hero__visual-gift {
         margin-top: 0;
@@ -2124,14 +2147,14 @@
       .section__title { font-size: 28px; margin-bottom: 12px; }
       .section__lead { font-size: 16px; margin-bottom: 32px; }
 
-      .logo { width: 172px; height: 76px; }
-      .logo__img { height: 76px; max-width: 172px; max-height: 76px; }
+      .logo { width: 140px; height: 62px; }
+      .logo__img { height: 62px; max-width: 140px; max-height: 62px; }
       .hero__badge { padding: 11px 16px; max-width: min(100%, 340px); }
       .hero__badge-line--title em { font-size: 15px; }
       .hero__badge-line--sub { font-size: 12px; }
       #hero-book-text { font-size: 16px; min-height: 4.6em; padding: 0 4px; }
-      .site-header__inner { padding: 14px 16px; gap: 12px; min-height: 92px; }
-      .header-cta { padding: 8px 16px; font-size: 14px; white-space: nowrap; }
+      .site-header__inner { padding: 12px 12px; gap: 8px; min-height: 0; max-width: 100%; }
+      .header-cta { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
 
       .btn { padding: 14px 22px; font-size: 16px; }
       .hero__subtitle { font-size: 18px; }
@@ -2206,9 +2229,14 @@
 
     @media (max-width: 480px) {
       .section__title { font-size: 24px; }
-      .hero h1 { font-size: 30px; }
+      .hero h1 { font-size: 26px; }
+      .hero--premium h1 { font-size: clamp(22px, 6.8vw, 28px); }
+      .hero--premium { padding-left: 12px; padding-right: 12px; }
       .hero__subtitle { font-size: 17px; }
       .section { padding: 40px 14px; }
+      .logo { width: 118px; height: 52px; }
+      .logo__img { height: 52px; max-width: 118px; max-height: 52px; }
+      .header-cta { padding: 7px 10px; font-size: 12px; }
       .preview-strip { font-size: 12px; padding: 8px 12px; }
       .acc-head { font-size: 16px; padding: 16px 18px; }
       .tale-card { padding: 18px 16px; }
