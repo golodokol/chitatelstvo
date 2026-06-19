@@ -526,6 +526,15 @@ def list_all_families(db: Session) -> list[Family]:
     return list(db.scalars(stmt).unique().all())
 
 
+def delete_family(db: Session, family_id: uuid.UUID) -> bool:
+    family = db.get(Family, family_id)
+    if not family:
+        return False
+    db.delete(family)
+    db.commit()
+    return True
+
+
 def get_family_by_token(db: Session, token: str) -> Family | None:
     stmt = (
         select(Family)

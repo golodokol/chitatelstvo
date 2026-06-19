@@ -25,7 +25,10 @@
     }
     .btn-primary { background: #5a4a38; color: #fff; }
     .btn-secondary { background: #e8e0d6; color: #5a4a38; }
+    .btn-danger { background: #b54a3a; color: #fff; }
+    .btn-danger:hover { background: #963d30; }
     .btn-small { padding: 6px 10px; font-size: .82rem; }
+    .delete-form { margin: 0; }
     .table-wrap { overflow-x: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
     table { width: 100%; border-collapse: collapse; font-size: .88rem; }
     th, td { padding: 10px 12px; border-bottom: 1px solid #f0ebe3; text-align: left; vertical-align: top; }
@@ -200,6 +203,7 @@
         В таблице: <strong>Класс</strong>, <strong>Формат</strong> (разовое · индивидуальное · с преподавателем),
         <strong>Этап</strong> (дата), <strong>Сказка / блок</strong> (название сказки или «4 сказки»).
         В колонке «Выдать» — смена доступа для существующего ребёнка.
+        Кнопка <strong>Удалить</strong> удаляет всю семью (родителя, детей, прогресс) — для тестовых записей.
       </div>
 
     {% if rows %}
@@ -217,6 +221,7 @@
             <th>Сказка / блок</th>
             <th>Прогресс</th>
             <th>Выдать</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -265,6 +270,21 @@
                   <input name="send_email" type="checkbox" value="on"> email
                 </label>
                 <button class="btn btn-primary btn-small" type="submit">Выдать</button>
+              </form>
+              {% else %}
+              —
+              {% endif %}
+            </td>
+            <td>
+              {% if row.show_delete and row.family_id %}
+              <form
+                method="post"
+                action="/admin/families/{{ row.family_id }}/delete"
+                class="delete-form"
+                data-parent="{{ row.parent_name }}"
+                data-email="{{ row.parent_email }}"
+              >
+                <button class="btn btn-danger btn-small" type="submit">Удалить</button>
               </form>
               {% else %}
               —
@@ -338,6 +358,20 @@
       sel.addEventListener('change', function () { syncTaleFields(sel.closest('form')); });
     });
     syncTaleFields(document);
+
+    document.querySelectorAll('.delete-form').forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        var parent = form.getAttribute('data-parent') || 'семья';
+        var email = form.getAttribute('data-email') || '';
+        var message =
+          'Удалить семью «' + parent + '»' +
+          (email ? ' (' + email + ')' : '') +
+          ' и всех детей?\n\nПрогресс и доступ будут удалены без возможности восстановления.';
+        if (!window.confirm(message)) {
+          event.preventDefault();
+        }
+      });
+    });
   </script>
 </body>
 </html>

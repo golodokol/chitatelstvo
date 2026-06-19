@@ -66,7 +66,8 @@ def _format_lesson_label(enrollment, module: dict | None) -> str:
 def _enrollment_columns(enrollment, module: dict | None) -> dict[str, str]:
     if not enrollment:
         return {
-            "grade": "—",
+                    "show_delete": show_delete,
+                    "grade": "—",
             "tariff": "—",
             "tariff_code": "",
             "stage": "—",
@@ -91,8 +92,12 @@ def _fmt_dt(value: datetime | None) -> str:
 
 def _build_rows(families) -> list[dict]:
     rows: list[dict] = []
+    seen_families: set[str] = set()
     for family in families:
         progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
+        family_id = str(family.id)
+        show_delete = family_id not in seen_families
+        seen_families.add(family_id)
         if not family.children:
             rows.append(
                 {
@@ -105,6 +110,8 @@ def _build_rows(families) -> list[dict]:
                     "child_name": "—",
                     "child_age": "—",
                     "child_id": None,
+                    "family_id": family_id,
+                    "show_delete": show_delete,
                     "grade": "—",
                     "tariff": "—",
                     "tariff_code": "",
@@ -133,6 +140,8 @@ def _build_rows(families) -> list[dict]:
                     "child_name": child.name,
                     "child_age": str(child.age) if child.age is not None else "—",
                     "child_id": str(child.id),
+                    "family_id": family_id,
+                    "show_delete": show_delete,
                     "grade": cols["grade"],
                     "tariff": cols["tariff"],
                     "tariff_code": cols["tariff_code"],
@@ -143,6 +152,7 @@ def _build_rows(families) -> list[dict]:
                     "progress_url": progress_url,
                 }
             )
+            show_delete = False
     return rows
 
 
@@ -168,6 +178,12 @@ def _flash_from_query(request: Request) -> dict | None:
             "message": params.get("msg") or "Доступ выдан.",
             "progress_url": params.get("progress_url") or "",
         }
+    if params.get("deleted") == "1":
+        return {
+            "type": "ok",
+            "message": params.get("msg") or "Запись удалена.",
+            "progress_url": "",
+        }
     if params.get("error"):
         return {
             "type": "error",
@@ -188,8 +204,16 @@ def _redirect_admin_ok(progress_url: str, module_title: str | None) -> RedirectR
     return RedirectResponse(url, status_code=303)
 
 
-def _redirect_admin_error(message: str) -> RedirectResponse:
-    return RedirectResponse(f"/admin?error={quote(message)}#enroll", status_code=303)
+def _redirect_admin_error(message: str, *, anchor: str = "enroll") -> RedirectResponse:
+    return RedirectResponse(f"/admin?error={quote(message)}#{anchor}", status_code=303)
+
+
+def _redirect_admin_deleted(parent_name: str) -> RedirectResponse:
+    msg = f"Удалена семья: {parent_name}."
+    return RedirectResponse(
+        f"/admin?deleted=1&msg={quote(msg)}#registrations",
+        status_code=303,
+    )
 
 
 def _parse_child_age(raw: str | None) -> int | None:
@@ -341,6 +365,22 @@ def admin_enroll_grant(
         return _redirect_admin_error(str(exc.detail))
 
     return _redirect_admin_ok(result.progress_url, result.module_title)
+
+
+@router.post("/families/{family_id}/delete")
+def admin_delete_family(
+    request: Request,
+    family_id: uuid.UUID,
+    db: Session = Depends(get_db),
+):
+    require_admin(request)
+    family = repo.get_family_by_id(db, family_id)
+    if not family:
+        return _redirect_admin_error("Семья не найдена.", anchor="registrations")
+    parent_name = family.parent_name
+    if not repo.delete_family(db, family_id):
+        return _redirect_admin_error("Не удалось удалить запись.", anchor="registrations")
+    return _redirect_admin_deleted(parent_name)
 
 
 @router.get("/export.csv")
