@@ -25,7 +25,7 @@ from catalog.loader import get_module, load_modules
 from config.settings import ADMIN_PASSWORD, PUBLIC_BASE_URL, ROOT
 from db import repository as repo
 from db.session import get_db
-from lessons.enrollment_access import get_active_enrollment, normalize_stage
+from lessons.enrollment_access import get_active_enrollments, normalize_stage
 from services.quiz_leads import build_quiz_lead_rows, load_quiz_leads
 from services.registration import grant_enrollment_to_child, process_registration
 
@@ -125,34 +125,62 @@ def _build_rows(families) -> list[dict]:
             continue
 
         for child in family.children:
-            enrollment = get_active_enrollment(child)
-            module = get_module(enrollment.module_id) if enrollment else None
-            cols = _enrollment_columns(enrollment, module)
+            enrollments = get_active_enrollments(child)
+            if not enrollments:
+                rows.append(
+                    {
+                        "registered_at": _fmt_dt(family.created_at),
+                        "parent_name": family.parent_name,
+                        "parent_email": family.parent_email,
+                        "parent_telegram": family.parent_telegram or "—",
+                        "channel": family.notification_channel,
+                        "telegram_linked": "да" if family.telegram_chat_id else "нет",
+                        "child_name": child.name,
+                        "child_age": str(child.age) if child.age is not None else "—",
+                        "child_id": str(child.id),
+                        "family_id": family_id,
+                        "show_delete": show_delete,
+                        "grade": "—",
+                        "tariff": "—",
+                        "tariff_code": "",
+                        "stage": "—",
+                        "lesson": "—",
+                        "level": child.current_level,
+                        "points": str(child.total_points),
+                        "progress_url": progress_url,
+                    }
+                )
+                show_delete = False
+                continue
 
-            rows.append(
-                {
-                    "registered_at": _fmt_dt(family.created_at),
-                    "parent_name": family.parent_name,
-                    "parent_email": family.parent_email,
-                    "parent_telegram": family.parent_telegram or "—",
-                    "channel": family.notification_channel,
-                    "telegram_linked": "да" if family.telegram_chat_id else "нет",
-                    "child_name": child.name,
-                    "child_age": str(child.age) if child.age is not None else "—",
-                    "child_id": str(child.id),
-                    "family_id": family_id,
-                    "show_delete": show_delete,
-                    "grade": cols["grade"],
-                    "tariff": cols["tariff"],
-                    "tariff_code": cols["tariff_code"],
-                    "stage": cols["stage"],
-                    "lesson": cols["lesson"],
-                    "level": child.current_level,
-                    "points": str(child.total_points),
-                    "progress_url": progress_url,
-                }
-            )
-            show_delete = False
+            for idx, enrollment in enumerate(enrollments):
+                module = get_module(enrollment.module_id)
+                cols = _enrollment_columns(enrollment, module)
+                rows.append(
+                    {
+                        "registered_at": _fmt_dt(family.created_at),
+                        "parent_name": family.parent_name,
+                        "parent_email": family.parent_email,
+                        "parent_telegram": family.parent_telegram or "—",
+                        "channel": family.notification_channel,
+                        "telegram_linked": "да" if family.telegram_chat_id else "нет",
+                        "child_name": child.name,
+                        "child_age": str(child.age) if child.age is not None else "—",
+                        "child_id": str(child.id),
+                        "family_id": family_id,
+                        "show_delete": show_delete and idx == 0,
+                        "grade": cols["grade"],
+                        "tariff": cols["tariff"],
+                        "tariff_code": cols["tariff_code"],
+                        "stage": cols["stage"],
+                        "lesson": cols["lesson"],
+                        "level": child.current_level,
+                        "points": str(child.total_points),
+                        "progress_url": progress_url,
+                    }
+                )
+                if idx == 0:
+                    show_delete = False
     return rows
 
 

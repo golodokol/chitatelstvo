@@ -126,6 +126,58 @@ def _current_lesson(lesson_links: list[dict]) -> dict | None:
     return lesson_links[0] if lesson_links else None
 
 
+def _weekly_lessons(lesson_links: list[dict]) -> tuple[list[dict], str]:
+    if not lesson_links:
+        return [], "Урок этой недели"
+    unlocked = [les for les in lesson_links if les.get("unlocked")]
+    if unlocked:
+        current_week = max(int(les.get("module_week") or 1) for les in unlocked)
+    else:
+        current_week = int(lesson_links[0].get("module_week") or 1)
+    week_lessons = [
+        les for les in lesson_links if int(les.get("module_week") or 1) == current_week
+    ]
+    if not week_lessons:
+        week_lessons = [_current_lesson(lesson_links) or lesson_links[0]]
+    label = "Уроки этой недели" if len(week_lessons) > 1 else "Урок этой недели"
+    return week_lessons, label
+
+
+def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
+    reward_pts = 15
+    cards: list[dict[str, Any]] = []
+    for lesson in lessons:
+        cards.append(
+            {
+                "title": lesson.get("title", "Урок"),
+                "goal": "За 10 минут узнаешь, как найти главную мысль сказки.",
+                "duration": "≈ 10 мин",
+                "reward_pts": reward_pts,
+                "url": lesson.get("url"),
+                "unlocked": bool(lesson.get("url")),
+                "opens_on_label": lesson.get("opens_on_label"),
+                "cover_url": lesson.get("cover_url"),
+                "cover_state": lesson.get("cover_state", "locked"),
+                "week_in_stage": lesson.get("week_in_stage"),
+            }
+        )
+    return cards
+
+
+def _chest_title(tale_title: str) -> str:
+    tale = (tale_title or "").strip()
+    if tale:
+        return f"Сундук к сказке «{tale}»"
+    return "Сундук Сказки"
+
+
+def _chest_subtitle(tale_title: str) -> str:
+    tale = (tale_title or "").strip()
+    if tale:
+        return f"Откроется после завершения урока по сказке «{tale}» и мини-задания."
+    return "Когда откроется первая сказка — здесь появится награда."
+
+
 def _chest_state(
     events: list[Any],
     lesson: dict | None,
@@ -142,6 +194,7 @@ def _chest_state(
             "title": "Сундук Сказки",
             "subtitle": "Когда откроется первая сказка — здесь появится награда.",
             "reward": reward_text,
+            "tale_title": "",
             "tale_slug": "",
             "steps_total": 2,
             "steps_done": 0,
@@ -159,6 +212,7 @@ def _chest_state(
         }
 
     tale = lesson.get("title", "")
+    tale_title = tale.strip()
     done = _events_for_tale(events, tale)
     steps_done = sum(1 for s in CHEST_STEPS if s in done)
     steps_total = len(CHEST_STEPS)
@@ -183,9 +237,10 @@ def _chest_state(
         hint = f"До открытия осталось {steps_remaining} задания"
 
     return {
-        "title": "Сундук Сказки",
-        "subtitle": "Откроется после завершения сегодняшнего урока и мини-задания.",
+        "title": _chest_title(tale_title),
+        "subtitle": _chest_subtitle(tale_title),
         "reward": reward_text,
+        "tale_title": tale_title,
         "tale_slug": tale_slug,
         "steps_total": steps_total,
         "steps_done": steps_done,
@@ -379,6 +434,50 @@ def _treasury(chest_claims: list[Any]) -> list[dict[str, Any]]:
     return rows
 
 
+def _build_track_section(
+    *,
+    track: dict[str, Any],
+    events: list[Any],
+    claims: list[Any],
+    points: int,
+    assets_base: str,
+) -> dict[str, Any]:
+    lesson_links = track.get("lesson_links") or []
+    lesson = _current_lesson(lesson_links)
+    weekly_source, weekly_label = _weekly_lessons(lesson_links)
+    tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
+    current_claim = next((c for c in claims if c.tale_slug == tale_slug), None) if tale_slug else None
+    reward_items = (
+        rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
+    )
+    chest = _chest_state(events, lesson, claim=current_claim, reward_items=reward_items)
+    chest["slovik_key"] = chest_slovik_key(chest)
+    chest["slovik_url"] = slovik_url(chest["slovik_key"])
+
+    missions = _missions(events, lesson, points, chest)
+    story_stages = track.get("lesson_stages") or _story_stages(lesson_links)
+
+    return {
+        "group_code": track.get("group_code", ""),
+        "group_label": track.get("group_label", ""),
+        "module_title": track.get("module_title", ""),
+        "module_id": track.get("module_id"),
+        "chest": chest,
+        "weekly_lessons": _weekly_lesson_cards(weekly_source),
+        "weekly_lessons_label": weekly_label,
+        "daily_lesson": _weekly_lesson_cards(weekly_source)[0] if weekly_source else None,
+        "story_stages": story_stages,
+        "missions": missions,
+        "missions_title": "Миссии на эту неделю",
+        "missions_subtitle": (
+            f"Сказка {lesson.get('week_in_stage')}: {lesson.get('title')}"
+            if lesson and lesson.get("title")
+            else None
+        ),
+        "continue_url": lesson.get("url") if lesson and lesson.get("url") else None,
+    }
+
+
 def build_child_cabinet(
     *,
     name: str,
@@ -387,6 +486,7 @@ def build_child_cabinet(
     earned_badges: list[str],
     events: list[Any],
     lesson_links: list[dict],
+    tracks: list[dict[str, Any]] | None = None,
     tale_ratings: list[Any] | None = None,
     chest_claims: list[Any] | None = None,
     assets_base: str,
@@ -396,14 +496,59 @@ def build_child_cabinet(
     display_level = level_from_points(points)
     lvl_idx = _level_index(display_level)
     progress = _level_progress(points, display_level)
-    lesson = _current_lesson(lesson_links)
     claims = chest_claims or []
-    tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
-    current_claim = next((c for c in claims if c.tale_slug == tale_slug), None) if tale_slug else None
-    reward_items = (
-        rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
-    )
-    chest = _chest_state(events, lesson, claim=current_claim, reward_items=reward_items)
+
+    track_sections: list[dict[str, Any]] = []
+    if tracks:
+        for track in tracks:
+            track_sections.append(
+                _build_track_section(
+                    track=track,
+                    events=events,
+                    claims=claims,
+                    points=points,
+                    assets_base=assets_base,
+                )
+            )
+
+    if track_sections:
+        primary = track_sections[0]
+        lesson = _current_lesson(lesson_links)
+        chest = primary["chest"]
+        daily = primary.get("daily_lesson")
+        weekly_lessons = primary.get("weekly_lessons") or []
+        weekly_label = primary.get("weekly_lessons_label") or "Урок этой недели"
+        missions = primary["missions"]
+        missions_title = primary["missions_title"]
+        missions_subtitle = primary["missions_subtitle"]
+        story_stages = primary["story_stages"]
+        continue_url = next(
+            (t["continue_url"] for t in track_sections if t.get("continue_url")),
+            None,
+        )
+    else:
+        lesson = _current_lesson(lesson_links)
+        tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
+        current_claim = next((c for c in claims if c.tale_slug == tale_slug), None) if tale_slug else None
+        reward_items = (
+            rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
+        )
+        chest = _chest_state(events, lesson, claim=current_claim, reward_items=reward_items)
+        chest["slovik_key"] = chest_slovik_key(chest)
+        chest["slovik_url"] = slovik_url(chest["slovik_key"])
+        weekly_source, weekly_label = _weekly_lessons(lesson_links)
+        weekly_lessons = _weekly_lesson_cards(weekly_source)
+        daily = weekly_lessons[0] if weekly_lessons else None
+        missions = _missions(events, lesson, points, chest)
+        missions_title = "Миссии на эту неделю"
+        missions_subtitle = (
+            f"Сказка {lesson.get('week_in_stage')}: {lesson.get('title')}"
+            if lesson and lesson.get("title")
+            else None
+        )
+        story_stages = _story_stages(lesson_links)
+        continue_url = lesson.get("url") if lesson and lesson.get("url") else None
+        track_sections = []
 
     levels_ui = []
     for i, lvl_name in enumerate(LEVELS):
@@ -443,43 +588,18 @@ def build_child_cabinet(
             }
         )
 
-    daily = None
-    if lesson:
-        reward_pts = 15
-        daily = {
-            "title": lesson.get("title", "Урок дня"),
-            "goal": "За 10 минут узнаешь, как найти главную мысль сказки.",
-            "duration": "≈ 10 мин",
-            "reward_pts": reward_pts,
-            "url": lesson.get("url"),
-            "unlocked": bool(lesson.get("url")),
-            "opens_on_label": lesson.get("opens_on_label"),
-            "cover_url": lesson.get("cover_url"),
-            "cover_state": lesson.get("cover_state", "locked"),
-            "week_in_stage": lesson.get("week_in_stage"),
-        }
-
-    chest["slovik_key"] = chest_slovik_key(chest)
-    chest["slovik_url"] = slovik_url(chest["slovik_key"])
-
-    collection = _collection(events, earned_badges, points)
-    missions = _missions(events, lesson, points, chest)
-    parent = _parent_summary(name, display_level, points, len(earned_badges), chest, lesson, events)
-
-    companion_k = companion_key(
-        events,
-        lesson,
-        chest,
-    )
+    primary_chest = chest
+    if track_sections:
+        ready_chest = next((t["chest"] for t in track_sections if t["chest"].get("ready")), None)
+        if ready_chest:
+            primary_chest = ready_chest
+    parent = _parent_summary(name, display_level, points, len(earned_badges), primary_chest, lesson, events)
+    companion_k = companion_key(events, lesson, primary_chest)
     companion = {
         "key": companion_k,
         "url": slovik_url(companion_k),
         "hint": COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"]),
     }
-
-    story_stages = _story_stages(lesson_links)
-
-    continue_url = lesson.get("url") if lesson and lesson.get("url") else None
     recent_toast = recent_event_slovik(events)
 
     return {
@@ -495,19 +615,18 @@ def build_child_cabinet(
         "badges": badges_ui,
         "badges_earned_count": len(earned_badges),
         "badges_total": BADGES_TOTAL,
+        "tracks": track_sections,
         "chest": chest,
+        "weekly_lessons": weekly_lessons,
+        "weekly_lessons_label": weekly_label,
         "daily_lesson": daily,
         "story_stages": story_stages,
         "missions": missions,
-        "missions_title": "Миссии на эту неделю",
-        "missions_subtitle": (
-            f"Сказка {lesson.get('week_in_stage')}: {lesson.get('title')}"
-            if lesson and lesson.get("title")
-            else None
-        ),
+        "missions_title": missions_title,
+        "missions_subtitle": missions_subtitle,
         "reading_diary": _reading_diary(tale_ratings or [], lesson_links),
         "treasury": _treasury(claims),
-        "collection": collection,
+        "collection": _collection(events, earned_badges, points),
         "parent": parent,
         "companion": companion,
         "recent_toast": recent_toast,

@@ -179,18 +179,31 @@ def resolve_or_create_family_child(
     return family, child, False
 
 
-def complete_active_enrollments(db: Session, child_id: uuid.UUID) -> int:
-    """Закрыть активные записи на модуль перед новой покупкой (разовое → модуль)."""
+def complete_active_enrollments(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    group_code: str | None = None,
+) -> int:
+    """Закрыть активные записи перед новой покупкой в том же направлении (group_code)."""
+    from catalog.loader import get_module
+
     stmt = select(Enrollment).where(
         Enrollment.child_id == child_id,
         Enrollment.status == "active",
     )
     enrollments = list(db.scalars(stmt).all())
+    closed = 0
     for enrollment in enrollments:
+        if group_code is not None:
+            mod = get_module(enrollment.module_id)
+            if not mod or mod["group_code"] != group_code:
+                continue
         enrollment.status = "completed"
-    if enrollments:
+        closed += 1
+    if closed:
         db.commit()
-    return len(enrollments)
+    return closed
 
 
 def register_family(

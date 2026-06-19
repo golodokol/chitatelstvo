@@ -94,6 +94,30 @@ export type ChildEvent = {
   date: string;
 };
 
+export type CabinetWeeklyLesson = {
+  title?: string;
+  goal?: string;
+  duration?: string;
+  url?: string;
+  opens_on_label?: string;
+  cover_url?: string | null;
+  cover_state?: string;
+  week_in_stage?: number;
+  reward_pts?: number;
+};
+
+export type CabinetTrack = {
+  group_code?: string;
+  group_label?: string;
+  module_title?: string;
+  chest?: CabinetChest;
+  weekly_lessons?: CabinetWeeklyLesson[];
+  weekly_lessons_label?: string;
+  missions?: CabinetMission[];
+  missions_title?: string;
+  missions_subtitle?: string | null;
+};
+
 export type CabinetChild = {
   id: string;
   name: string;
@@ -119,6 +143,9 @@ export type CabinetChild = {
     slovik_preparing_url?: string;
     companion?: { url?: string; hint?: string; key?: string };
     chest?: CabinetChest;
+    tracks?: CabinetTrack[];
+    weekly_lessons?: CabinetWeeklyLesson[];
+    weekly_lessons_label?: string;
     parent?: CabinetParentSummary;
     missions?: CabinetMission[];
     missions_title?: string;
@@ -127,15 +154,7 @@ export type CabinetChild = {
     badges_earned_count?: number;
     badges_total?: number;
     levels?: CabinetLevel[];
-    daily_lesson?: {
-      title?: string;
-      goal?: string;
-      duration?: string;
-      url?: string;
-      opens_on_label?: string;
-      cover_url?: string | null;
-      cover_state?: string;
-    } | null;
+    daily_lesson?: CabinetWeeklyLesson | null;
   };
 };
 

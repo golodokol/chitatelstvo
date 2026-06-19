@@ -129,6 +129,42 @@ def test_same_email_different_children_share_family_token(db):
     assert len(children) == 2
 
 
+def test_parallel_enrollments_different_groups(db):
+    email = _unique_email()
+    child_name = "Маша"
+
+    family, child, _ = repo.resolve_or_create_family_child(
+        db,
+        parent_name="Анна",
+        parent_email=email,
+        parent_telegram=None,
+        notification_channel="email",
+        child_name=child_name,
+        child_age=7,
+    )
+
+    create_enrollment_from_registration(
+        db,
+        child,
+        _register_body(email=email, child_name=child_name, module_id=2, chosen_stage="1"),
+    )
+    create_enrollment_from_registration(
+        db,
+        child,
+        _register_body(email=email, child_name=child_name, module_id=17, chosen_stage="1"),
+    )
+
+    enrollments = list(
+        db.scalars(
+            select(Enrollment)
+            .where(Enrollment.child_id == child.id, Enrollment.status == "active")
+            .order_by(Enrollment.module_id.asc())
+        ).all()
+    )
+    assert len(enrollments) == 2
+    assert {e.module_id for e in enrollments} == {2, 17}
+
+
 def test_different_email_creates_new_family(db):
     email1 = _unique_email()
     email2 = _unique_email()

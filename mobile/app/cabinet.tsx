@@ -30,7 +30,7 @@ import {
   parentFacts,
 } from "@/lib/cabinet-format";
 import { useAuth } from "@/lib/auth-context";
-import type { CabinetChest, CabinetResponse, LessonLink } from "@/lib/types";
+import type { CabinetChest, CabinetResponse, CabinetTrack, LessonLink } from "@/lib/types";
 
 function chestImageUrl(chest: CabinetChest): string | undefined {
   if (chest.claimed && chest.image_open) return chest.image_open;
@@ -99,11 +99,11 @@ export default function CabinetScreen() {
     Alert.alert("Скоро", "Новое приключение откроется по расписанию модуля.");
   }
 
-  async function onClaimChest() {
-    if (!token || !selectedChildId || !cab?.chest?.tale_slug) return;
+  async function onClaimChest(taleSlug: string) {
+    if (!token || !selectedChildId || !taleSlug) return;
     setClaiming(true);
     try {
-      const result = await claimChest(token, selectedChildId, cab.chest.tale_slug);
+      const result = await claimChest(token, selectedChildId, taleSlug);
       if (result.status === "already_claimed") {
         Alert.alert("Сундук", "Награда уже получена.");
       } else {
@@ -123,6 +123,24 @@ export default function CabinetScreen() {
     ? data.lesson_stages
     : data?.lessons?.length
       ? [{ key: "all", label: "Сказки", lessons: data.lessons }]
+      : [];
+
+  const courseTracks: CabinetTrack[] = cab?.tracks?.length
+    ? cab.tracks
+    : cab?.chest
+      ? [
+          {
+            chest: cab.chest,
+            weekly_lessons:
+              cab.weekly_lessons ??
+              (cab.daily_lesson ? [cab.daily_lesson] : []),
+            weekly_lessons_label:
+              cab.weekly_lessons_label ?? "Урок этой недели",
+            missions: cab.missions,
+            missions_title: cab.missions_title,
+            missions_subtitle: cab.missions_subtitle,
+          },
+        ]
       : [];
 
   return (
@@ -240,50 +258,105 @@ export default function CabinetScreen() {
               disabled={!cab?.continue_url}
             />
 
-            {cab?.daily_lesson ? (
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Урок дня</Text>
-                <View style={styles.lessonCard}>
-                  <RemoteImage
-                    uri={cab.daily_lesson.cover_url}
-                    width={64}
-                    height={88}
-                    rounded
-                    dimmed={!cab.daily_lesson.url}
-                  />
-                  <View style={styles.lessonCardBody}>
-                    <Text style={styles.lessonTitle}>{cab.daily_lesson.title}</Text>
-                    {cab.daily_lesson.goal ? (
-                      <Text style={styles.hint}>{cab.daily_lesson.goal}</Text>
+            {courseTracks.map((track, trackIndex) => (
+              <View key={`${track.group_code ?? "track"}-${trackIndex}`}>
+                {track.chest ? (
+                  <View style={styles.panel}>
+                    {track.group_label ? (
+                      <Text style={styles.hint}>{track.group_label}</Text>
                     ) : null}
-                    {cab.daily_lesson.opens_on_label && !cab.daily_lesson.url ? (
+                    <View style={styles.chestHeader}>
+                      <RemoteImage
+                        uri={chestImageUrl(track.chest)}
+                        width={120}
+                        height={120}
+                      />
+                      <View style={styles.chestCopy}>
+                        <Text style={styles.panelTitle}>{track.chest.title}</Text>
+                        <Text style={styles.hint}>{track.chest.subtitle}</Text>
+                      </View>
+                    </View>
+                    {track.chest.hint ? (
+                      <Text style={styles.chestHint}>{track.chest.hint}</Text>
+                    ) : null}
+                    {track.chest.steps_total ? (
                       <Text style={styles.hint}>
-                        Откроется: {cab.daily_lesson.opens_on_label}
+                        Шагов: {track.chest.steps_done ?? 0} из {track.chest.steps_total}
                       </Text>
                     ) : null}
+                    {track.chest.ready && !track.chest.claimed && track.chest.tale_slug ? (
+                      <Button
+                        label={claiming ? "Открываем…" : "Открыть сундук"}
+                        onPress={() => onClaimChest(track.chest!.tale_slug!)}
+                        disabled={claiming}
+                      />
+                    ) : null}
                   </View>
-                </View>
-              </View>
-            ) : null}
-
-            {cab?.missions?.length ? (
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>
-                  {cab.missions_title ?? "Миссии на эту неделю"}
-                </Text>
-                {cab.missions_subtitle ? (
-                  <Text style={styles.hint}>{cab.missions_subtitle}</Text>
                 ) : null}
-                {cab.missions.map((m) => (
-                  <View key={m.id} style={styles.missionRow}>
-                    <Text style={styles.missionText}>{m.text}</Text>
-                    <Text style={styles.missionStatus}>
-                      {missionStatusLabel(m.status)}
+
+                {track.weekly_lessons?.length ? (
+                  <View style={styles.panel}>
+                    <Text style={styles.panelTitle}>
+                      {track.weekly_lessons_label ?? "Урок этой недели"}
                     </Text>
+                    {track.group_label ? (
+                      <Text style={styles.hint}>{track.group_label}</Text>
+                    ) : null}
+                    {track.weekly_lessons.map((weekly, weeklyIndex) => (
+                      <View key={`${weekly.title ?? "lesson"}-${weeklyIndex}`} style={styles.lessonCard}>
+                        <RemoteImage
+                          uri={weekly.cover_url}
+                          width={64}
+                          height={88}
+                          rounded
+                          dimmed={!weekly.url}
+                        />
+                        <View style={styles.lessonCardBody}>
+                          <Text style={styles.lessonTitle}>{weekly.title}</Text>
+                          {weekly.goal ? (
+                            <Text style={styles.hint}>{weekly.goal}</Text>
+                          ) : null}
+                          {weekly.opens_on_label && !weekly.url ? (
+                            <Text style={styles.hint}>
+                              Откроется: {weekly.opens_on_label}
+                            </Text>
+                          ) : null}
+                          {weekly.url ? (
+                            <Button
+                              label="Начать урок"
+                              variant="ghost"
+                              onPress={() => openLesson(weekly.url)}
+                            />
+                          ) : null}
+                        </View>
+                      </View>
+                    ))}
                   </View>
-                ))}
+                ) : null}
+
+                {track.missions?.length ? (
+                  <View style={styles.panel}>
+                    <Text style={styles.panelTitle}>
+                      {track.missions_title ?? "Миссии на эту неделю"}
+                    </Text>
+                    {track.missions_subtitle ? (
+                      <Text style={styles.hint}>
+                        {track.group_label ? `${track.group_label} · ` : ""}
+                        {track.missions_subtitle}
+                      </Text>
+                    ) : null}
+                    {track.missions.map((m) => (
+                      <View key={`${trackIndex}-${m.id}`} style={styles.missionRow}>
+                        <Text style={styles.missionText}>{m.text}</Text>
+                        <Text style={styles.missionStatus}>
+                          {missionStatusLabel(m.status)}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
               </View>
-            ) : null}
+            ))}
 
             {stages.map((stage) => (
               <View key={stage.key} style={styles.panel}>
@@ -329,37 +402,6 @@ export default function CabinetScreen() {
                   earnedCount={cab.badges_earned_count ?? 0}
                   total={cab.badges_total ?? cab.badges.length}
                 />
-              </View>
-            ) : null}
-
-            {cab?.chest ? (
-              <View style={styles.panel}>
-                <View style={styles.chestHeader}>
-                  <RemoteImage
-                    uri={chestImageUrl(cab.chest)}
-                    width={120}
-                    height={120}
-                  />
-                  <View style={styles.chestCopy}>
-                    <Text style={styles.panelTitle}>{cab.chest.title}</Text>
-                    <Text style={styles.hint}>{cab.chest.subtitle}</Text>
-                  </View>
-                </View>
-                {cab.chest.hint ? (
-                  <Text style={styles.chestHint}>{cab.chest.hint}</Text>
-                ) : null}
-                {cab.chest.steps_total ? (
-                  <Text style={styles.hint}>
-                    Шагов: {cab.chest.steps_done ?? 0} из {cab.chest.steps_total}
-                  </Text>
-                ) : null}
-                {cab.chest.ready && !cab.chest.claimed ? (
-                  <Button
-                    label={claiming ? "Открываем…" : "Открыть сундук"}
-                    onPress={onClaimChest}
-                    disabled={claiming}
-                  />
-                ) : null}
               </View>
             ) : null}
           </>

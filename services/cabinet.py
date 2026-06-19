@@ -8,15 +8,14 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from api.lesson_signing import build_lesson_url
-from catalog.loader import get_module
 from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, PUBLIC_BASE_URL, TELEGRAM_ENABLED
 from db import repository as repo
-from db.models import Child, Family
+from db.models import Child, Enrollment, Family
 from gamification.cabinet_ui import build_child_cabinet
 from gamification.rules import level_from_points
 from lessons.access import lesson_access_info
 from lessons.covers import enrich_lesson_link
-from lessons.enrollment_access import get_active_enrollment, list_lessons_for_child
+from lessons.enrollment_access import list_enrollment_tracks, list_lessons_for_enrollment
 from lessons.schedule import STAGE_LABELS, tariff_has_meetings
 from notifications.telegram_bot import build_link_url
 
@@ -43,14 +42,15 @@ def group_lessons(lesson_links: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return stages
 
 
-def build_lesson_links(db: Session, child: Child) -> tuple[list[dict[str, Any]], str | None, bool]:
-    enrollment = get_active_enrollment(child)
-    module = get_module(enrollment.module_id) if enrollment else None
-    module_title = module["title"] if module else None
+def build_lesson_links_for_track(
+    db: Session,
+    child: Child,
+    enrollment: Enrollment,
+    module: dict[str, Any],
+) -> tuple[list[dict[str, Any]], bool]:
     has_meetings = tariff_has_meetings(module)
-
     lesson_links: list[dict[str, Any]] = []
-    for les in list_lessons_for_child(child):
+    for les in list_lessons_for_enrollment(enrollment):
         access = lesson_access_info(
             child,
             les,
@@ -69,6 +69,9 @@ def build_lesson_links(db: Session, child: Child) -> tuple[list[dict[str, Any]],
             "opens_on_label": access["opens_on_label"],
             "opens_on_iso": access.get("opens_on_iso"),
             "stage_label": les.get("stage_label"),
+            "tale_slug": les.get("tale_slug") or les["slug"],
+            "module_id": les.get("module_id"),
+            "group_code": module.get("group_code"),
             "ready": les.get("active", True),
         }
         if access.get("meeting_on_label"):
@@ -78,8 +81,7 @@ def build_lesson_links(db: Session, child: Child) -> tuple[list[dict[str, Any]],
             link["url"] = build_lesson_url(child.id, les["slug"])
         enrich_lesson_link(link)
         lesson_links.append(link)
-
-    return lesson_links, module_title, has_meetings
+    return lesson_links, has_meetings
 
 
 def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_BASE_URL) -> dict[str, Any]:
@@ -87,9 +89,33 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
     tale_ratings = repo.get_child_tale_ratings(db, child.id)
     chest_claims = repo.get_child_chest_claims(db, child.id)
     badges = [b.badge_name for b in child.badges]
-    lesson_links, module_title, has_meetings = build_lesson_links(db, child)
     points = child.total_points or 0
     level = level_from_points(points)
+
+    tracks: list[dict[str, Any]] = []
+    all_lesson_links: list[dict[str, Any]] = []
+    has_meetings = False
+
+    for track in list_enrollment_tracks(child):
+        enrollment = track["enrollment"]
+        module = track["module"]
+        lesson_links, track_meetings = build_lesson_links_for_track(db, child, enrollment, module)
+        has_meetings = has_meetings or track_meetings
+        all_lesson_links.extend(lesson_links)
+        tracks.append(
+            {
+                "group_code": module["group_code"],
+                "group_label": module["group_label"],
+                "module_title": module["title"],
+                "module_id": module["id"],
+                "lesson_links": lesson_links,
+                "lesson_stages": group_lessons(lesson_links),
+                "has_meetings": track_meetings,
+            }
+        )
+
+    module_titles = [t["module_title"] for t in tracks]
+    module_title = " · ".join(module_titles) if module_titles else None
 
     return {
         "id": str(child.id),
@@ -98,17 +124,19 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
         "level": level,
         "points": points,
         "badges": badges,
-        "lessons": lesson_links,
-        "lesson_stages": group_lessons(lesson_links),
+        "lessons": all_lesson_links,
+        "lesson_stages": group_lessons(all_lesson_links),
         "module_title": module_title,
         "has_meetings": has_meetings,
+        "tracks": tracks,
         "cabinet": build_child_cabinet(
             name=child.name,
             level=level,
             points=points,
             earned_badges=badges,
             events=events,
-            lesson_links=lesson_links,
+            lesson_links=all_lesson_links,
+            tracks=tracks,
             tale_ratings=tale_ratings,
             chest_claims=chest_claims,
             assets_base=assets_base,

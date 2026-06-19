@@ -18,7 +18,7 @@ from db import repository as repo
 from db.models import Child
 from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from lessons.access import is_lesson_unlocked
-from lessons.enrollment_access import child_can_access_lesson, get_active_enrollment
+from lessons.enrollment_access import child_can_access_lesson, find_enrollment_for_lesson
 from lessons.loader import get_lesson, quiz_for_client, score_quiz
 from lessons.schedule import effective_module_week
 from services.events import submit_learning_event
@@ -43,7 +43,7 @@ def require_lesson_unlocked(
         return get_child_or_404(db, child_id)
 
     child = get_child_or_404(db, child_id)
-    enrollment = get_active_enrollment(child)
+    enrollment = find_enrollment_for_lesson(child, lesson)
     if not child_can_access_lesson(child, lesson, enrollment):
         raise HTTPException(403, "Этот урок недоступен для вашего модуля.")
     module = get_module(enrollment.module_id) if enrollment else None
