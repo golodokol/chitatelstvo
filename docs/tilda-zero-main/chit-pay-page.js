@@ -1,10 +1,27 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты:
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=3"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=4"></script>
  */
 (function () {
   var STORAGE_KEY = 'chit_checkout';
   var ST100_RECID = '2379461281';
+
+  function resolveSt100Recid() {
+    var rec = document.querySelector('#allrecords .t-rec[data-record-type="706"], .t-rec[data-record-type="706"]');
+    if (rec && rec.id && rec.id.indexOf('rec') === 0) {
+      return rec.id.slice(3);
+    }
+    return ST100_RECID;
+  }
+
+  function getSt100Root() {
+    var recid = resolveSt100Recid();
+    return document.getElementById('rec' + recid) || document.querySelector('.t706') || document.body;
+  }
+
+  function promoControlsAvailable() {
+    return !!findPromoControls();
+  }
   var HOME_URL = 'https://chitatelstvo.ru/#program';
   var STORE_REC_TYPES = ['762', '205', '200', '210', '215', '405'];
   var ORDER_PRODUCTS = {
@@ -204,7 +221,7 @@
       price: p.price,
       amount: p.price,
       quantity: 1,
-      recid: ST100_RECID,
+      recid: resolveSt100Recid(),
       sku: p.sku || '',
       uid: p.uid,
       lid: p.lid || p.uid
@@ -214,7 +231,7 @@
   }
 
   function triggerUidHash(uid) {
-    var root = document.getElementById('rec' + ST100_RECID) || document.querySelector('.t706') || document.body;
+    var root = getSt100Root();
     var link = document.createElement('a');
     link.href = '#order:::uid=' + uid;
     link.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;opacity:0;';
@@ -321,9 +338,19 @@
       var tries = 0;
 
       function finishCheckout() {
-        applyPromoCode(data.promo_code, function () {
+        if (data.promo_code && !promoControlsAvailable()) {
+          showPayShell(
+            'Промокод не применился',
+            'В блоке ST100 на странице /oplata не включены промокоды. Tilda → ST100 → Настройки → «Промокоды». Оплата откроется по полной цене.'
+          );
+        }
+        applyPromoCode(data.promo_code, function (ok) {
           refreshTcartTotals();
           openCart();
+          if (data.promo_code && !ok && promoControlsAvailable()) {
+            showPayShell('Промокод', 'Код не принят — проверьте написание или срок действия в Tilda.');
+            setTimeout(hidePayShell, 3500);
+          }
           if (data.promo_code) {
             [500, 1400].forEach(function (ms) {
               setTimeout(function () {
