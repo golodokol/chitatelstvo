@@ -28,7 +28,8 @@ function chitPatchTildaStyleBlock() {
       .replace(/width:\s*(?:1200|960|640|480|320)px/gi, 'width:100%')
       .replace(/height:\s*35000px/gi, 'height:auto')
       .replace(/height:\s*100vh/gi, 'height:auto')
-      .replace(/display:\s*table/gi, 'display:block');
+      .replace(/display:\s*table/gi, 'display:block')
+      .replace(/top:\s*-\d+px/gi, 'top:0');
     if (next !== txt) styles[i].textContent = next;
   }
 }
@@ -48,6 +49,7 @@ function fixTildaLayout() {
     rec.style.setProperty('margin-top', '0', 'important');
     rec.style.setProperty('width', '100%', 'important');
     rec.style.setProperty('max-width', '100%', 'important');
+    rec.style.setProperty('overflow-x', 'hidden', 'important');
   }
   var wrap = main.closest('.t396');
   if (wrap) {
@@ -58,6 +60,7 @@ function fixTildaLayout() {
     wrap.style.setProperty('left', '0', 'important');
     wrap.style.setProperty('margin', '0', 'important');
     wrap.style.setProperty('transform', 'none', 'important');
+    wrap.style.setProperty('overflow-x', 'hidden', 'important');
   }
   var artboard = main.closest('.t396__artboard');
   if (artboard) {
@@ -87,6 +90,7 @@ function fixTildaLayout() {
   }
   main.style.setProperty('width', '100%', 'important');
   main.style.setProperty('max-width', '100%', 'important');
+  main.style.setProperty('overflow-x', 'hidden', 'important');
   document.documentElement.style.overflowX = 'hidden';
   document.body.style.overflowX = 'hidden';
   window._chitFixBusy = false;
@@ -247,8 +251,8 @@ function getTaleInfo(title) {
 
 var CHIT_SCHEDULE = {
   '1': {
-    lessons: ['22 июня', '29 июня', '6 июля', '13 июля'],
-    meetings: ['25 июня', '2 июля', '9 июля', '16 июля']
+    lessons: ['29 июня', '6 июля', '13 июля', '20 июля'],
+    meetings: ['2 июля', '9 июля', '16 июля', '23 июля']
   },
   '2': {
     lessons: ['20 июля', '27 июля', '3 августа', '10 августа'],
@@ -302,7 +306,7 @@ function buildAccordion(containerId, items) {
       '<button type="button" class="acc-head">' + item.title + '</button>' +
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
-        renderPeriod('Старт курса 22 июня', item.june, '1') +
+        renderPeriod('Старт курса 29 июня', item.june, '1') +
         renderPeriod('Старт 20 июля', item.july, '2') +
       '</div>';
     el.appendChild(div);
@@ -347,7 +351,7 @@ if (faqList) {
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
-  var STAGE_LABEL = { '1': 'Старт курса 22 июня', '2': 'Старт 20 июля' };
+  var STAGE_LABEL = { '1': 'Старт курса 29 июня', '2': 'Старт 20 июля' };
   var ORDER_PRODUCTS = {
     single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },

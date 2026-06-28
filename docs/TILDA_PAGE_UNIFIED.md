@@ -15,7 +15,7 @@
 |------|-------------|
 | `parent_name`, `parent_email`, `child_name`, … | всегда |
 | `module_id` | **всегда** (число 1–18) |
-| `chosen_stage` | **все тарифы** — период `1` (22 июня) или `2` (20 июля) |
+| `chosen_stage` | **все тарифы** — период `1` (29 июня) или `2` (20 июля) |
 | `chosen_tale_number` | только **разовое** занятие (`1`–`4`) |
 
 Без `module_id` — режим пилота (только «Колобок»). Для новых модулей `module_id` обязателен.
@@ -27,7 +27,7 @@
 ```
 1. Класс / группа          → select group_code (или сразу считает module_id)
 2. Формат обучения         → select tariff
-3. Дата старта          → chosen_stage (22 июня = 1, 20 июля = 2)
+3. Дата старта          → chosen_stage (29 июня = 1, 20 июля = 2)
 4. [если разовое] Сказка → chosen_tale_number
 5. Данные родителя/ребёнка
 6. notification_channel
@@ -97,7 +97,7 @@
 <div id="single-options" style="display:none">
   <select name="chosen_stage" id="chosen_stage">
     <option value="">Когда начать</option>
-    <option value="1">Старт курса 22 июня (4 сказки)</option>
+    <option value="1">Старт курса 29 июня (4 сказки)</option>
     <option value="2">Старт 20 июля (4 сказки)</option>
   </select>
   <select name="chosen_tale_number" id="chosen_tale_number">

@@ -22,20 +22,20 @@ _MONTHS_RU = (
     "декабря",
 )
 
-STAGE_1_START = date(2026, 6, 22)
+STAGE_1_START = date(2026, 6, 29)
 STAGE_2_START = date(2026, 7, 20)
 
 STAGE_1_LESSON_OPENS = (
-    date(2026, 6, 22),
     date(2026, 6, 29),
     date(2026, 7, 6),
     date(2026, 7, 13),
+    date(2026, 7, 20),
 )
 STAGE_1_MEETINGS = (
-    date(2026, 6, 25),
     date(2026, 7, 2),
     date(2026, 7, 9),
     date(2026, 7, 16),
+    date(2026, 7, 23),
 )
 STAGE_2_LESSON_OPENS = (
     date(2026, 7, 20),
@@ -51,7 +51,7 @@ STAGE_2_MEETINGS = (
 )
 
 STAGE_LABELS = {
-    "stage-1": "Этап 1 · старт 22 июня",
+    "stage-1": "Этап 1 · старт 29 июня",
     "stage-2": "Этап 2 · старт 20 июля",
 }
 

@@ -253,13 +253,13 @@
         <div class="chit-card-tag">Основной</div>
         <div class="chit-card-title">Индивидуальное</div>
         <div class="chit-card-price">1 990 ₽</div>
-        <p class="chit-card-desc">4 сказки в своём темпе — без живых встреч. Выберите старт: 22 июня или 20 июля.</p>
+        <p class="chit-card-desc">4 сказки в своём темпе — без живых встреч. Выберите старт: 29 июня или 20 июля.</p>
       </div>
       <div class="chit-card" data-tariff="with_teacher" tabindex="0">
         <div class="chit-card-tag">С поддержкой</div>
         <div class="chit-card-title">С преподавателем</div>
         <div class="chit-card-price">4 990 ₽</div>
-        <p class="chit-card-desc">4 сказки + 4 живые встречи. Старт 22 июня или 20 июля — на выбор.</p>
+        <p class="chit-card-desc">4 сказки + 4 живые встречи. Старт 29 июня или 20 июля — на выбор.</p>
       </div>
     </div>
   </div>
@@ -267,7 +267,7 @@
   <div class="chit-section chit-date-box" id="chit-date-box">
     <div class="chit-step-label">Шаг 3 · Когда начать</div>
     <div class="chit-stage-row" id="chit-stages">
-      <button type="button" class="chit-pill" data-stage="1">Старт курса 22 июня</button>
+      <button type="button" class="chit-pill" data-stage="1">Старт курса 29 июня</button>
       <button type="button" class="chit-pill" data-stage="2">Старт 20 июля</button>
     </div>
     <div class="chit-tales" id="chit-tales"></div>
@@ -304,7 +304,7 @@
     'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' }
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var STAGE_LABEL = { '1': 'Старт курса 22 июня', '2': 'Старт 20 июля' };
+  var STAGE_LABEL = { '1': 'Старт курса 29 июня', '2': 'Старт 20 июля' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
   /* Названия = каталог Tilda (TILDA_PAYMENT_TBANK.md) */
   var ORDER_LINKS = {
@@ -535,7 +535,7 @@
       return false;
     }
     if (state.tariff !== 'single' && !hidStage.value) {
-      alert('Выберите дату старта курса: 22 июня или 20 июля.');
+      alert('Выберите дату старта курса: 29 июня или 20 июля.');
       elDateBox.classList.add('is-visible');
       return false;
     }

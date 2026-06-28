@@ -169,7 +169,7 @@ function buildAccordion(containerId, items) {
       '<button type="button" class="acc-head">' + item.title + '</button>' +
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
-        renderPeriod('Старт курса 22 июня', item.june) +
+        renderPeriod('Старт курса 29 июня', item.june) +
         renderPeriod('Старт 20 июля', item.july) +
       '</div>';
     el.appendChild(div);
@@ -211,7 +211,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
-  var STAGE_LABEL = { '1': 'Старт курса 22 июня', '2': 'Старт 20 июля' };
+  var STAGE_LABEL = { '1': 'Старт курса 29 июня', '2': 'Старт 20 июля' };
   var ORDER_LINKS = {
     single: '#order:Читательство · Разовое =1490',
     self_paced: '#order:Читательство · Индивидуальное =1990',
@@ -517,7 +517,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
 
   var BOOK_TEXTS = [
     '<strong style="color:var(--blue)">Разовое</strong> — можно начать с одной сказки, без обязательств',
-    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>22 июня</strong> и <strong>20 июля</strong>',
+    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>29 июня</strong> и <strong>20 июля</strong>',
     '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
   ];
   var bookStack = document.querySelector('.book-stack');
