@@ -37,7 +37,7 @@
 
   function init(container, options) {
     var emotions = options.emotions || [];
-    var pick = options.pick || 1;
+    var pickN = parseInt(options.pick, 10) || 1;
     var selected = new Set();
     var onChange = options.onChange || function () {};
 
@@ -149,13 +149,17 @@
 
     function renderPicked() {
       if (!selected.size) {
-        pickedEl.textContent = pick === 1
+        pickedEl.textContent = pickN === 1
           ? 'Выбери одну эмоцию'
-          : 'Выбери ' + pick + ' эмоции';
+          : 'Выбери ' + pickN + ' эмоции';
         return;
       }
       var names = Array.from(selected).map(emotionLabel);
       pickedEl.textContent = 'Выбрано: ' + names.join(', ');
+    }
+
+    function selectionComplete() {
+      return selected.size === pickN;
     }
 
     function syncUI() {
@@ -170,15 +174,15 @@
         node.setAttribute('aria-pressed', selected.has(node.dataset.id) ? 'true' : 'false');
       });
       renderPicked();
-      onChange(Array.from(selected));
+      onChange(Array.from(selected), selectionComplete());
     }
 
     function toggle(id) {
       if (selected.has(id)) {
         selected.delete(id);
-      } else if (selected.size < pick) {
+      } else if (selected.size < pickN) {
         selected.add(id);
-      } else if (pick === 1) {
+      } else if (pickN === 1) {
         selected.clear();
         selected.add(id);
       } else {
@@ -222,7 +226,7 @@
       getSelected: getSelected,
       setSelected: setSelected,
       markResult: markResult,
-      isComplete: function () { return selected.size === pick; },
+      isComplete: selectionComplete,
     };
   }
 

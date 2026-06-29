@@ -1872,6 +1872,11 @@ body.chit-cabinet--parent {
   margin: 12px 0 4px;
 }
 
+.chit-emotion-next-hint {
+  margin-top: 14px;
+  font-size: 0.92rem;
+}
+
 .chit-emotion-wheel.is-shake {
   animation: chit-emotion-shake 0.4s ease;
 }

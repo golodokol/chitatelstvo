@@ -49,6 +49,7 @@
       <div id="emotion-wheel-root"></div>
       <button type="button" class="chit-btn" id="btn-emotion" disabled>Проверить</button>
       <div id="emotion-msg"></div>
+      <p class="chit-hint chit-emotion-next-hint">Дальше на странице — вопросы на понимание и смысл сказки (прокрутите вниз).</p>
     </div>
     {% endif %}
 
@@ -196,8 +197,9 @@
       const btnEmotion = document.getElementById('btn-emotion');
       const btnComp = document.getElementById('btn-comprehension');
       const btnMean = document.getElementById('btn-meaning');
-      if (btnEmotion) btnEmotion.disabled = emotionWheel ? !emotionWheel.isComplete() : false;
-      else if (btnComp) btnComp.disabled = false;
+      if (btnEmotion) {
+        btnEmotion.disabled = !(emotionWheel && emotionWheel.isComplete());
+      } else if (btnComp && !CFG.emotion) btnComp.disabled = false;
       else if (btnMean) btnMean.disabled = false;
     }
 
@@ -372,14 +374,18 @@
       emotionWheel = ChitEmotionWheel.init(document.getElementById('emotion-wheel-root'), {
         emotions: CFG.emotion.emotions,
         pick: q.pick,
-        onChange: function () {
+        onChange: function (_selected, complete) {
           const btn = document.getElementById('btn-emotion');
           if (btn && !lessonState.emotionDone) {
-            btn.disabled = !emotionWheel.isComplete();
+            btn.disabled = !complete;
           }
         },
       });
       document.getElementById('btn-emotion').addEventListener('click', submitEmotionQuiz);
+      const emotionBtn = document.getElementById('btn-emotion');
+      if (emotionBtn && !lessonState.emotionDone) {
+        emotionBtn.disabled = !emotionWheel.isComplete();
+      }
     }
 
     async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {
