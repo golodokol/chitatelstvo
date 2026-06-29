@@ -16,6 +16,7 @@ from db.models import Child, Family
 from db.session import get_db
 from services.lesson_player import (
     build_lesson_json,
+    handle_emotion_quiz_submit,
     handle_manual_mark,
     handle_quiz_submit,
     handle_tale_rating,
@@ -37,6 +38,10 @@ class VideoCompleteMobileBody(LessonChildBody):
 class QuizSubmitMobileBody(LessonChildBody):
     quiz_type: Literal["comprehension", "meaning_analysis"]
     answers: dict[str, str]
+
+
+class EmotionQuizSubmitMobileBody(LessonChildBody):
+    answers: dict[str, list[str]]
 
 
 class ManualMarkMobileBody(LessonChildBody):
@@ -86,6 +91,25 @@ def video_complete_v1(
         child_id=child.id,
         slug=slug,
         percent=body.percent,
+        test_key=body.test_key,
+    )
+
+
+@router.post("/{slug}/emotion-quiz")
+def emotion_quiz_submit_v1(
+    slug: str,
+    body: EmotionQuizSubmitMobileBody,
+    request: Request,
+    family: Family = Depends(get_current_family),
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child = _child_in_family(db, family, body.child_id)
+    return handle_emotion_quiz_submit(
+        db,
+        child_id=child.id,
+        slug=slug,
+        answers=body.answers,
         test_key=body.test_key,
     )
 

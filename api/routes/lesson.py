@@ -18,6 +18,7 @@ from lessons.loader import get_lesson, quiz_for_client
 from services.lesson_player import (
     build_lesson_json,
     get_child_or_404,
+    handle_emotion_quiz_submit,
     handle_manual_mark,
     handle_quiz_submit,
     handle_tale_rating,
@@ -42,6 +43,10 @@ class VideoCompleteBody(LessonAuth):
 class QuizSubmitBody(LessonAuth):
     quiz_type: Literal["comprehension", "meaning_analysis"]
     answers: dict[str, str]
+
+
+class EmotionQuizSubmitBody(LessonAuth):
+    answers: dict[str, list[str]]
 
 
 class ManualMarkBody(LessonAuth):
@@ -92,6 +97,7 @@ def lesson_page(
             "video_src": payload["video"]["src"],
             "comprehension_quiz": payload["comprehension_quiz"],
             "meaning_quiz": payload["meaning_quiz"],
+            "emotion_quiz": payload["emotion_quiz"],
             "slovik": payload["slovik"],
             "existing_rating": payload["existing_rating"],
             "can_rate": payload["can_rate"],
@@ -115,6 +121,25 @@ def video_complete(
         child_id=child_id,
         slug=slug,
         percent=body.percent,
+        test_key=body.test_key,
+    )
+
+
+@router.post("/api/lesson/{slug}/emotion-quiz")
+def emotion_quiz_submit(
+    slug: str,
+    body: EmotionQuizSubmitBody,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child_id = _verify_access(body, slug)
+    get_child_or_404(db, child_id)
+    return handle_emotion_quiz_submit(
+        db,
+        child_id=child_id,
+        slug=slug,
+        answers=body.answers,
         test_key=body.test_key,
     )
 

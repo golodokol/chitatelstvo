@@ -36,6 +36,13 @@ EVENT_RULES: dict[str, dict] = {
         "badge": "Читатель",
         "level": "Юный читатель",
         "reward_type": "badge",
+        "next_action": "Определить эмоции героя на эмоциометре.",
+    },
+    "emotion_quiz": {
+        "points": 1,
+        "badge": None,
+        "level": None,
+        "reward_type": "points",
         "next_action": "Выполнить задание на понимание текста.",
     },
     "comprehension": {

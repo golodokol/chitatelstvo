@@ -19,7 +19,13 @@ from db.models import Child
 from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from lessons.access import is_lesson_unlocked
 from lessons.enrollment_access import child_can_access_lesson, find_enrollment_for_lesson
-from lessons.loader import get_lesson, quiz_for_client, score_quiz
+from lessons.loader import (
+    emotion_quiz_for_client,
+    get_lesson,
+    quiz_for_client,
+    score_emotion_quiz,
+    score_quiz,
+)
 from lessons.schedule import effective_module_week
 from services.events import submit_learning_event
 from storage.yandex import resolve_video_src
@@ -72,9 +78,11 @@ def load_lesson(db: Session, slug: str) -> dict[str, Any]:
 
 
 def build_slovik_payload(lesson: dict[str, Any]) -> dict[str, Any]:
+    emotion = lesson.get("emotion_quiz")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
     initial_step = lesson_step_key(
+        has_emotion=bool(emotion),
         has_comprehension=bool(comprehension),
         has_meaning=bool(meaning),
     )
@@ -112,6 +120,7 @@ def build_lesson_json(
     lesson = load_lesson(db, slug)
     require_lesson_unlocked(db, child.id, lesson, bypass=test_bypass)
 
+    emotion = lesson.get("emotion_quiz")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
     existing_rating = repo.get_tale_rating(db, child, slug)
@@ -126,6 +135,7 @@ def build_lesson_json(
         "active": lesson.get("active", True),
         "video_threshold": VIDEO_WATCH_THRESHOLD,
         "video": build_video_payload(lesson),
+        "emotion_quiz": emotion_quiz_for_client(emotion) if emotion else None,
         "comprehension_quiz": quiz_for_client(comprehension) if comprehension else None,
         "meaning_quiz": quiz_for_client(meaning) if meaning else None,
         "slovik": build_slovik_payload(lesson),
@@ -168,6 +178,55 @@ def handle_video_complete(
         "status": status,
         "event_id": str(event_id) if event_id else None,
         "message": "Урок засчитан" if status == "accepted" else "Уже было засчитано ранее",
+    }
+
+
+def handle_emotion_quiz_submit(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    slug: str,
+    answers: dict[str, list[str]],
+    test_key: str | None = None,
+) -> dict[str, Any]:
+    lesson = load_lesson(db, slug)
+    require_lesson_unlocked(
+        db,
+        child_id,
+        lesson,
+        bypass=verify_test_lesson_key(test_key),
+    )
+
+    quiz = lesson.get("emotion_quiz")
+    if not quiz:
+        raise HTTPException(404, "Эмоциометр для этого урока ещё не настроен")
+
+    passed = score_emotion_quiz(quiz, answers)
+    if not passed:
+        return {
+            "status": "failed",
+            "message": quiz.get(
+                "feedback_retry",
+                "Попробуй ещё раз — подумай, что чувствовал герой в этот момент.",
+            ),
+        }
+
+    status, event_id = submit_learning_event(
+        db,
+        child_id=child_id,
+        event_type="emotion_quiz",
+        tale_title=lesson["title"],
+        lesson_date=date.today(),
+        notes="auto: emotion wheel",
+        payload={"source": "lesson_player", "answers": answers},
+    )
+    return {
+        "status": status,
+        "event_id": str(event_id) if event_id else None,
+        "message": quiz.get(
+            "feedback_ok",
+            "Верно! Задание засчитано!" if status == "accepted" else "Уже было засчитано ранее",
+        ),
     }
 
 

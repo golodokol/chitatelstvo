@@ -1,6 +1,7 @@
 (function (global) {
   var STEP_HINTS = {
     reads: 'Смотрим сказку вместе',
+    emotion: 'Угадываем эмоции героя',
     writes: 'Отвечаем на вопросы',
     dreams: 'Ищем смысл и секреты',
     grows: 'Творчество и встреча — по желанию',
@@ -10,6 +11,7 @@
 
   var EVENT_POINTS = {
     lesson_complete: 2,
+    emotion_quiz: 1,
     comprehension: 2,
     meaning_analysis: 2,
     creative_task: 3,
@@ -18,6 +20,7 @@
 
   var EVENT_SLOVIK = {
     lesson_complete: 'reads',
+    emotion_quiz: 'emotion',
     comprehension: 'writes',
     meaning_analysis: 'dreams',
     creative_task: 'writes',
@@ -80,11 +83,15 @@
 
   function nextStepKey(cfg, state) {
     state = state || {};
-    if (state.meaningDone || (state.videoDone && !cfg.hasComprehension && !cfg.hasMeaning)) {
+    cfg = cfg || {};
+    if (state.meaningDone || (state.videoDone && !cfg.hasEmotion && !cfg.hasComprehension && !cfg.hasMeaning)) {
       return 'grows';
     }
     if (state.comprehensionDone && !cfg.hasMeaning) return 'grows';
     if (state.comprehensionDone) return 'dreams';
+    if (state.emotionDone && cfg.hasComprehension) return 'writes';
+    if (state.emotionDone) return 'grows';
+    if (state.videoDone && cfg.hasEmotion) return 'emotion';
     if (state.videoDone) return 'writes';
     return 'reads';
   }

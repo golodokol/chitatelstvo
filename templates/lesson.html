@@ -41,9 +41,20 @@
       <div id="video-msg" class="chit-msg info" style="display:none"></div>
     </div>
 
+    {% if emotion_quiz %}
+    <div class="chit-card chit-step chit-step-emotion" id="step-emotion">
+      <div class="chit-badge-step">Шаг 2 · автоматически</div>
+      <h2>{{ emotion_quiz.title }}</h2>
+      <p class="chit-emotion-question" id="emotion-question-text"></p>
+      <div id="emotion-wheel-root"></div>
+      <button type="button" class="chit-btn" id="btn-emotion" disabled>Проверить</button>
+      <div id="emotion-msg"></div>
+    </div>
+    {% endif %}
+
     {% if comprehension_quiz %}
     <div class="chit-card chit-step" id="step-comprehension">
-      <div class="chit-badge-step">Шаг 2 · автоматически</div>
+      <div class="chit-badge-step">Шаг {% if emotion_quiz %}3{% else %}2{% endif %} · автоматически</div>
       <h2>{{ comprehension_quiz.title }}</h2>
       <form id="form-comprehension"></form>
       <button type="button" class="chit-btn" id="btn-comprehension" disabled>Отправить ответы</button>
@@ -53,7 +64,7 @@
 
     {% if meaning_quiz %}
     <div class="chit-card chit-step" id="step-meaning">
-      <div class="chit-badge-step">Шаг {% if comprehension_quiz %}3{% else %}2{% endif %} · автоматически</div>
+      <div class="chit-badge-step">Шаг {% if emotion_quiz and comprehension_quiz %}4{% elif emotion_quiz or comprehension_quiz %}3{% else %}2{% endif %} · автоматически</div>
       <h2>{{ meaning_quiz.title }}</h2>
       <form id="form-meaning"></form>
       <button type="button" class="chit-btn" id="btn-meaning" disabled>Отправить ответы</button>
@@ -85,6 +96,7 @@
   </div>
 
   <script src="/static/lesson_slovik.js"></script>
+  <script src="/static/emotion_wheel.js"></script>
   <script>
     const CFG = {
       slug: {{ slug|tojson }},
@@ -94,6 +106,7 @@
       threshold: {{ video_threshold }},
       video: {{ lesson.video|tojson }},
       videoSrc: {{ video_src|tojson }},
+      emotion: {{ emotion_quiz|tojson }},
       comprehension: {{ comprehension_quiz|tojson }},
       meaning: {{ meaning_quiz|tojson }},
       slovik: {{ slovik|tojson }},
@@ -103,14 +116,15 @@
     };
 
     const SLOVIK = CFG.slovik.urls || {};
-    const lessonState = { videoDone: false, comprehensionDone: false, meaningDone: false };
+    const lessonState = { videoDone: false, emotionDone: false, comprehensionDone: false, meaningDone: false };
+    let emotionWheel = null;
     let selectedRating = CFG.existingRating || 0;
     let ratingSaved = !!CFG.existingRating;
 
     function refreshCompanion() {
       if (!window.ChitSlovik) return;
       var key = ChitSlovik.nextStepKey(
-        { hasComprehension: !!CFG.comprehension, hasMeaning: !!CFG.meaning },
+        { hasEmotion: !!CFG.emotion, hasComprehension: !!CFG.comprehension, hasMeaning: !!CFG.meaning },
         lessonState
       );
       ChitSlovik.updateCompanion(SLOVIK, key);
@@ -179,9 +193,11 @@
     }
 
     function enableNextAfterVideo() {
+      const btnEmotion = document.getElementById('btn-emotion');
       const btnComp = document.getElementById('btn-comprehension');
       const btnMean = document.getElementById('btn-meaning');
-      if (btnComp) btnComp.disabled = false;
+      if (btnEmotion) btnEmotion.disabled = emotionWheel ? !emotionWheel.isComplete() : false;
+      else if (btnComp) btnComp.disabled = false;
       else if (btnMean) btnMean.disabled = false;
     }
 
@@ -315,6 +331,57 @@
       document.head.appendChild(tag);
     }
 
+    async function submitEmotionQuiz() {
+      if (!CFG.emotion || !emotionWheel) return;
+      const q = CFG.emotion.question;
+      const selected = emotionWheel.getSelected();
+      if (selected.length !== q.pick) {
+        showMsg('emotion-msg', q.pick === 1 ? 'Выбери одну эмоцию' : 'Нужно выбрать ' + q.pick + ' эмоции', 'err');
+        return;
+      }
+      const btn = document.getElementById('btn-emotion');
+      btn.disabled = true;
+      const answers = {};
+      answers[q.id] = selected;
+      const data = await postJson('/api/lesson/' + CFG.slug + '/emotion-quiz', authBody({ answers }));
+      if (data.status === 'failed') {
+        showMsg('emotion-msg', data.message, 'err');
+        btn.disabled = false;
+        return;
+      }
+      showMsg('emotion-msg', data.message, 'ok');
+      markDone('step-emotion');
+      lessonState.emotionDone = true;
+      onReward('emotion_quiz', data.status);
+      const btnComp = document.getElementById('btn-comprehension');
+      const btnMean = document.getElementById('btn-meaning');
+      if (btnComp) btnComp.disabled = false;
+      else if (btnMean) btnMean.disabled = false;
+    }
+
+    function initEmotionWheel() {
+      if (!CFG.emotion || !window.ChitEmotionWheel) return;
+      const q = CFG.emotion.question;
+      const qEl = document.getElementById('emotion-question-text');
+      if (qEl) {
+        const hint = q.pick === 1
+          ? 'Выбери одну эмоцию на колесе.'
+          : 'Можно выбрать две эмоции — отметь обе на колесе.';
+        qEl.textContent = q.text + ' ' + hint;
+      }
+      emotionWheel = ChitEmotionWheel.init(document.getElementById('emotion-wheel-root'), {
+        emotions: CFG.emotion.emotions,
+        pick: q.pick,
+        onChange: function () {
+          const btn = document.getElementById('btn-emotion');
+          if (btn && !lessonState.emotionDone) {
+            btn.disabled = !emotionWheel.isComplete();
+          }
+        },
+      });
+      document.getElementById('btn-emotion').addEventListener('click', submitEmotionQuiz);
+    }
+
     async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {
       const answers = collectAnswers(formId, quiz);
       if (!answers) {
@@ -395,10 +462,13 @@
       }
     }
 
+    initEmotionWheel();
+
     if (CFG.comprehension) {
       renderQuiz('form-comprehension', CFG.comprehension);
       document.getElementById('btn-comprehension').addEventListener('click', () =>
         submitQuiz('comprehension', 'form-comprehension', CFG.comprehension, 'btn-comprehension', 'comprehension-msg', CFG.meaning ? 'btn-meaning' : null));
+      if (CFG.emotion) document.getElementById('btn-comprehension').disabled = true;
     }
     if (CFG.meaning) {
       renderQuiz('form-meaning', CFG.meaning);

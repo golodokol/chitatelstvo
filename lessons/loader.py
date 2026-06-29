@@ -127,3 +127,45 @@ def score_quiz(quiz: dict[str, Any], answers: dict[str, str]) -> tuple[int, int]
         if answers.get(q["id"]) == q.get("correct"):
             correct += 1
     return correct, total
+
+
+EMOTION_WHEEL: list[dict[str, str]] = [
+    {"id": "joy", "label": "Радость", "color": "#3D5A8C"},
+    {"id": "interest", "label": "Интерес", "color": "#C8B8E4"},
+    {"id": "surprise", "label": "Удивление", "color": "#5E4A78"},
+    {"id": "sadness", "label": "Грусть", "color": "#6E94BE"},
+    {"id": "fear", "label": "Страх", "color": "#4A3D68"},
+    {"id": "loneliness", "label": "Одиночество", "color": "#B8A6D8"},
+    {"id": "tired", "label": "Усталость", "color": "#5A82AE"},
+    {"id": "pride", "label": "Гордость", "color": "#F2E4A8"},
+    {"id": "calm", "label": "Спокойствие", "color": "#C4DCE8"},
+]
+
+
+def emotion_quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
+    """Вопрос эмоциометра без правильных ответов."""
+    q = quiz.get("question") or {}
+    return {
+        "title": quiz.get("title", "Эмоции героя"),
+        "character": quiz.get("character", ""),
+        "emotions": EMOTION_WHEEL,
+        "question": {
+            "id": q["id"],
+            "text": q["text"],
+            "pick": int(q.get("pick", 1)),
+        },
+        "feedback_ok": quiz.get("feedback_ok", ""),
+        "feedback_retry": quiz.get("feedback_retry", ""),
+    }
+
+
+def score_emotion_quiz(quiz: dict[str, Any], answers: dict[str, list[str]]) -> bool:
+    """Точное совпадение набора эмоций с правильным ответом."""
+    q = quiz.get("question") or {}
+    qid = q.get("id")
+    if not qid:
+        return False
+    picked = set(answers.get(qid) or [])
+    correct = set(q.get("correct") or [])
+    expected_pick = int(q.get("pick", len(correct)))
+    return picked == correct and len(picked) == expected_pick

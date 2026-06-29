@@ -3,6 +3,7 @@
 AUTO_LESSON_PLAYER = frozenset(
     {
         "lesson_complete",
+        "emotion_quiz",
         "comprehension",
         "meaning_analysis",
     }

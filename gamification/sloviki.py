@@ -25,6 +25,7 @@ SLOVIK_FILES: dict[str, str] = {
 EVENT_SLOVIK: dict[str, str] = {
     "first_task": "walks",
     "lesson_complete": "reads",
+    "emotion_quiz": "dreams",
     "comprehension": "writes",
     "meaning_analysis": "dreams",
     "creative_task": "writes",
@@ -48,6 +49,7 @@ MISSION_SLOVIK: dict[str, str] = {
 
 LESSON_STEP_SLOVIK: dict[str, str] = {
     "video": "reads",
+    "emotion": "dreams",
     "comprehension": "writes",
     "meaning": "dreams",
     "creative": "writes",
@@ -60,6 +62,7 @@ COMPANION_HINTS: dict[str, str] = {
     "preparing": "Скоро начнётся новое приключение!",
     "walks": "Пора в путь — урок ждёт!",
     "reads": "Смотрим сказку вместе",
+    "emotion": "Угадываем эмоции героя",
     "writes": "Отвечаем на вопросы",
     "dreams": "Ищем смысл и секреты",
     "cloud": "Сундук совсем близко!",
@@ -76,7 +79,10 @@ def slovik_url(key: str) -> str:
 
 
 def slovik_urls() -> dict[str, str]:
-    return {k: slovik_url(k) for k in SLOVIK_FILES}
+    urls = {k: slovik_url(k) for k in SLOVIK_FILES}
+    for step, img_key in LESSON_STEP_SLOVIK.items():
+        urls[step] = slovik_url(img_key)
+    return urls
 
 
 def event_slovik_key(event_type: str, *, big: bool = False) -> str:
@@ -130,6 +136,8 @@ def companion_key(
         return "dreams"
     if "comprehension" in done:
         return "writes"
+    if "emotion_quiz" in done:
+        return "writes"
     if "lesson_complete" in done:
         return "writes"
     return "reads"
@@ -150,18 +158,26 @@ def event_toast_message(event_type: str) -> str:
 
 def lesson_step_key(
     *,
+    has_emotion: bool = False,
     has_comprehension: bool,
     has_meaning: bool,
     video_done: bool = False,
+    emotion_done: bool = False,
     comprehension_done: bool = False,
     meaning_done: bool = False,
 ) -> str:
-    if meaning_done or (video_done and not has_comprehension and not has_meaning):
+    if meaning_done or (video_done and not has_emotion and not has_comprehension and not has_meaning):
         return "grows"
     if comprehension_done and not has_meaning:
         return "grows"
     if comprehension_done:
         return "dreams"
+    if emotion_done and has_comprehension:
+        return "writes"
+    if emotion_done and not has_comprehension:
+        return "grows"
+    if video_done and has_emotion:
+        return "emotion"
     if video_done:
         return "writes"
     return "reads"

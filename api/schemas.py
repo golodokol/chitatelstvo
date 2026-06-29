@@ -9,6 +9,7 @@ from pydantic import BaseModel, EmailStr, Field, field_validator, model_validato
 EventType = Literal[
     "first_task",
     "lesson_complete",
+    "emotion_quiz",
     "comprehension",
     "meaning_analysis",
     "creative_task",
