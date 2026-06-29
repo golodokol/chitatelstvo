@@ -333,12 +333,33 @@
       document.head.appendChild(tag);
     }
 
+    function clearEmotionFeedback() {
+      const msg = document.getElementById('emotion-msg');
+      if (msg) {
+        msg.className = 'chit-msg';
+        msg.textContent = '';
+        msg.style.display = 'none';
+      }
+      if (emotionWheel && emotionWheel.clearResult) emotionWheel.clearResult();
+      document.getElementById('step-emotion').classList.remove('done', 'is-wrong', 'is-ok');
+    }
+
+    function showEmotionVerdict(type, text) {
+      const msg = document.getElementById('emotion-msg');
+      const step = document.getElementById('step-emotion');
+      msg.className = 'chit-msg chit-emotion-verdict ' + (type === 'ok' ? 'ok' : 'err');
+      msg.textContent = text;
+      msg.style.display = 'block';
+      step.classList.remove('is-wrong', 'is-ok');
+      step.classList.add(type === 'ok' ? 'is-ok' : 'is-wrong');
+    }
+
     async function submitEmotionQuiz() {
       if (!CFG.emotion || !emotionWheel) return;
       const q = CFG.emotion.question;
       const selected = emotionWheel.getSelected();
-      if (selected.length !== q.pick) {
-        showMsg('emotion-msg', q.pick === 1 ? 'Выбери одну эмоцию' : 'Нужно выбрать ' + q.pick + ' эмоции', 'err');
+      if (selected.length !== Number(q.pick)) {
+        showEmotionVerdict('err', q.pick === 1 ? 'Выбери одну эмоцию на колесе.' : 'Нужно выбрать ' + q.pick + ' эмоции.');
         return;
       }
       const btn = document.getElementById('btn-emotion');
@@ -347,11 +368,17 @@
       answers[q.id] = selected;
       const data = await postJson('/api/lesson/' + CFG.slug + '/emotion-quiz', authBody({ answers }));
       if (data.status === 'failed') {
-        showMsg('emotion-msg', data.message, 'err');
-        btn.disabled = false;
+        if (data.correct && emotionWheel.markResult) {
+          emotionWheel.markResult(data.correct, false);
+        }
+        showEmotionVerdict('err', 'Пока не верно. ' + (data.message || 'Попробуй ещё раз.'));
+        btn.disabled = !emotionWheel.isComplete();
         return;
       }
-      showMsg('emotion-msg', data.message, 'ok');
+      if (emotionWheel.markResult && data.correct) {
+        emotionWheel.markResult(data.correct, true);
+      }
+      showEmotionVerdict('ok', data.message || 'Верно!');
       markDone('step-emotion');
       lessonState.emotionDone = true;
       onReward('emotion_quiz', data.status);
@@ -375,6 +402,7 @@
         emotions: CFG.emotion.emotions,
         pick: q.pick,
         onChange: function (_selected, complete) {
+          if (!lessonState.emotionDone) clearEmotionFeedback();
           const btn = document.getElementById('btn-emotion');
           if (btn && !lessonState.emotionDone) {
             btn.disabled = !complete;

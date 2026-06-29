@@ -1872,9 +1872,38 @@ body.chit-cabinet--parent {
   margin: 12px 0 4px;
 }
 
+.chit-step-emotion.is-ok {
+  border-color: var(--success);
+  box-shadow: inset 4px 0 0 var(--success);
+}
+
+.chit-step-emotion.is-wrong {
+  border-color: #e57373;
+  box-shadow: inset 4px 0 0 #c62828;
+}
+
+.chit-emotion-verdict {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 12px;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.chit-emotion-verdict.ok {
+  border: 2px solid var(--success);
+}
+
+.chit-emotion-verdict.err {
+  border: 2px solid #c62828;
+}
+
 .chit-emotion-next-hint {
   margin-top: 14px;
   font-size: 0.92rem;
+  background: var(--cream-warm);
+  border: 1px dashed var(--border);
+  color: var(--muted);
 }
 
 .chit-emotion-wheel.is-shake {

@@ -203,12 +203,14 @@ def handle_emotion_quiz_submit(
 
     passed = score_emotion_quiz(quiz, answers)
     if not passed:
+        q = quiz.get("question") or {}
         return {
             "status": "failed",
             "message": quiz.get(
                 "feedback_retry",
                 "Попробуй ещё раз — подумай, что чувствовал герой в этот момент.",
             ),
+            "correct": list(q.get("correct") or []),
         }
 
     status, event_id = submit_learning_event(
@@ -220,9 +222,11 @@ def handle_emotion_quiz_submit(
         notes="auto: emotion wheel",
         payload={"source": "lesson_player", "answers": answers},
     )
+    q = quiz.get("question") or {}
     return {
         "status": status,
         "event_id": str(event_id) if event_id else None,
+        "correct": list(q.get("correct") or []),
         "message": quiz.get(
             "feedback_ok",
             "Верно! Задание засчитано!" if status == "accepted" else "Уже было засчитано ранее",

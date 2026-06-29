@@ -220,12 +220,19 @@
       });
     }
 
+    function clearResult() {
+      container.querySelectorAll('.chit-emotion-wheel__sector, .chit-emotion-chip').forEach(function (node) {
+        node.classList.remove('is-correct', 'is-wrong');
+      });
+    }
+
     syncUI();
 
     return {
       getSelected: getSelected,
       setSelected: setSelected,
       markResult: markResult,
+      clearResult: clearResult,
       isComplete: selectionComplete,
     };
   }
