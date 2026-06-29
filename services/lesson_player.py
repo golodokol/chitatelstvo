@@ -123,8 +123,8 @@ def build_lesson_json(
     emotion = lesson.get("emotion_quiz")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
-    existing_rating = repo.get_tale_rating(db, child, slug)
-    can_rate = repo.child_has_lesson_complete(db, child, tale_title=lesson["title"])
+    existing_rating = repo.get_tale_rating(db, child.id, slug)
+    can_rate = repo.child_has_lesson_complete(db, child.id, tale_title=lesson["title"])
 
     return {
         "slug": slug,
