@@ -59,7 +59,7 @@
       <h2>{{ comprehension_quiz.title }}</h2>
       <form id="form-comprehension"></form>
       <button type="button" class="chit-btn" id="btn-comprehension" disabled>Отправить ответы</button>
-      <div id="comprehension-msg"></div>
+      <div id="comprehension-msg" class="chit-msg" style="display:none" aria-live="polite"></div>
     </div>
     {% endif %}
 
@@ -69,7 +69,7 @@
       <h2>{{ meaning_quiz.title }}</h2>
       <form id="form-meaning"></form>
       <button type="button" class="chit-btn" id="btn-meaning" disabled>Отправить ответы</button>
-      <div id="meaning-msg"></div>
+      <div id="meaning-msg" class="chit-msg" style="display:none" aria-live="polite"></div>
     </div>
     {% endif %}
 
@@ -172,6 +172,7 @@
       quiz.questions.forEach((q, idx) => {
         const div = document.createElement('div');
         div.className = 'chit-q';
+        div.dataset.qid = q.id;
         div.innerHTML = '<strong>' + (idx + 1) + '. ' + q.text + '</strong>';
         q.options.forEach(opt => {
           const id = formId + '-' + q.id + '-' + opt.id;
@@ -181,6 +182,67 @@
         });
         form.appendChild(div);
       });
+      form.addEventListener('change', function () {
+        clearQuizFeedback(formId);
+      });
+    }
+
+    function clearQuizFeedback(formId) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+      const step = form.closest('.chit-step');
+      if (step) step.classList.remove('is-ok', 'is-wrong');
+      form.querySelectorAll('.chit-q').forEach(function (node) {
+        node.classList.remove('is-correct', 'is-wrong');
+      });
+      form.querySelectorAll('label').forEach(function (node) {
+        node.classList.remove('is-correct-option', 'is-wrong-pick');
+      });
+      const msg = step ? step.querySelector('.chit-quiz-verdict') : null;
+      if (msg) {
+        msg.className = 'chit-msg chit-quiz-verdict';
+        msg.textContent = '';
+        msg.style.display = 'none';
+      }
+    }
+
+    function markQuizResults(formId, results) {
+      (results || []).forEach(function (r) {
+        const qEl = document.querySelector('#' + formId + ' .chit-q[data-qid="' + r.id + '"]');
+        if (!qEl) return;
+        qEl.classList.add(r.ok ? 'is-correct' : 'is-wrong');
+        if (!r.ok && r.correct_option) {
+          const correctInput = qEl.querySelector('input[value="' + r.correct_option + '"]');
+          if (correctInput && correctInput.parentElement) {
+            correctInput.parentElement.classList.add('is-correct-option');
+          }
+          const picked = qEl.querySelector('input[name="' + r.id + '"]:checked');
+          if (picked && picked.parentElement) {
+            picked.parentElement.classList.add('is-wrong-pick');
+          }
+        }
+      });
+    }
+
+    function showQuizVerdict(formId, type, text) {
+      const form = document.getElementById(formId);
+      const step = form.closest('.chit-step');
+      const btn = step ? step.querySelector('.chit-btn') : null;
+      let msg = step ? step.querySelector('.chit-quiz-verdict') : null;
+      if (!msg && step) {
+        msg = document.createElement('div');
+        msg.className = 'chit-msg chit-quiz-verdict';
+        msg.setAttribute('aria-live', 'polite');
+        if (btn) btn.insertAdjacentElement('afterend', msg);
+        else form.insertAdjacentElement('afterend', msg);
+      }
+      msg.className = 'chit-msg chit-quiz-verdict ' + (type === 'ok' ? 'ok' : 'err');
+      msg.textContent = text;
+      msg.style.display = 'block';
+      if (step) {
+        step.classList.remove('is-ok', 'is-wrong');
+        step.classList.add(type === 'ok' ? 'is-ok' : 'is-wrong');
+      }
     }
 
     function collectAnswers(formId, quiz) {
@@ -419,17 +481,28 @@
     async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {
       const answers = collectAnswers(formId, quiz);
       if (!answers) {
-        showMsg(msgId, 'Ответьте на все вопросы', 'err');
+        showQuizVerdict(formId, 'err', 'Ответьте на все вопросы, затем нажмите «Отправить ответы».');
         return;
       }
       document.getElementById(btnId).disabled = true;
       const data = await postJson('/api/lesson/' + CFG.slug + '/quiz', authBody({ quiz_type: quizType, answers }));
+      const passNeed = data.pass_score || quiz.pass_score || data.total;
       if (data.status === 'failed') {
-        showMsg(msgId, data.message + ' (' + data.score + '/' + data.total + ')', 'err');
+        markQuizResults(formId, data.results);
+        showQuizVerdict(
+          formId,
+          'err',
+          'Пока не засчитано: ' + data.score + ' из ' + data.total + ' верно (нужно ' + passNeed + '). ' + (data.message || '')
+        );
         document.getElementById(btnId).disabled = false;
         return;
       }
-      showMsg(msgId, data.message, 'ok');
+      markQuizResults(formId, data.results);
+      showQuizVerdict(
+        formId,
+        'ok',
+        'Засчитано! ' + data.score + ' из ' + data.total + ' верно. ' + (data.message || '')
+      );
       markDone(quizType === 'comprehension' ? 'step-comprehension' : 'step-meaning');
       if (nextBtnId) document.getElementById(nextBtnId).disabled = false;
       if (quizType === 'comprehension') lessonState.comprehensionDone = true;

@@ -22,6 +22,7 @@ from lessons.enrollment_access import child_can_access_lesson, find_enrollment_f
 from lessons.loader import (
     emotion_quiz_for_client,
     get_lesson,
+    quiz_answer_results,
     quiz_for_client,
     score_emotion_quiz,
     score_quiz,
@@ -256,13 +257,17 @@ def handle_quiz_submit(
     if not quiz:
         raise HTTPException(404, "Квиз для этого урока ещё не настроен")
     correct, total = score_quiz(quiz, answers)
-    passed = correct >= int(quiz.get("pass_score", total))
+    pass_score = int(quiz.get("pass_score", total))
+    results = quiz_answer_results(quiz, answers)
+    passed = correct >= pass_score
 
     if not passed:
         return {
             "status": "failed",
             "score": correct,
             "total": total,
+            "pass_score": pass_score,
+            "results": results,
             "message": "Попробуйте ещё раз — перечитайте вопросы вместе с ребёнком.",
         }
 
@@ -280,6 +285,8 @@ def handle_quiz_submit(
         "event_id": str(event_id) if event_id else None,
         "score": correct,
         "total": total,
+        "pass_score": pass_score,
+        "results": results,
         "message": "Задание засчитано!" if status == "accepted" else "Уже было засчитано ранее",
     }
 

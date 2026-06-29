@@ -412,7 +412,48 @@ body.chit-student {
   height: 100%;
 }
 
-.chit-q { margin: 12px 0; }
+.chit-q { margin: 12px 0; padding: 10px 12px; border-radius: 10px; border: 1.5px solid transparent; }
+
+.chit-q.is-correct {
+  background: var(--success-bg);
+  border-color: var(--success);
+}
+
+.chit-q.is-wrong {
+  background: #fff5f5;
+  border-color: #e57373;
+}
+
+.chit-q label.is-correct-option {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.chit-q label.is-wrong-pick {
+  color: #c62828;
+  font-weight: 700;
+  text-decoration: line-through;
+}
+
+.chit-step.is-ok {
+  border-color: var(--success);
+  box-shadow: inset 4px 0 0 var(--success);
+}
+
+.chit-step.is-wrong {
+  border-color: #e57373;
+  box-shadow: inset 4px 0 0 #c62828;
+}
+
+.chit-quiz-verdict {
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.chit-quiz-verdict.ok { border: 2px solid var(--success); }
+.chit-quiz-verdict.err { border: 2px solid #c62828; }
 
 .chit-q label {
   display: block;

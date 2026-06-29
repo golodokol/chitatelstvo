@@ -129,6 +129,21 @@ def score_quiz(quiz: dict[str, Any], answers: dict[str, str]) -> tuple[int, int]
     return correct, total
 
 
+def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, str]) -> list[dict[str, Any]]:
+    """По каждому вопросу — верно ли; при ошибке id правильного варианта."""
+    items: list[dict[str, Any]] = []
+    for q in quiz.get("questions", []):
+        qid = q["id"]
+        picked = answers.get(qid)
+        correct_id = q.get("correct")
+        ok = picked == correct_id
+        item: dict[str, Any] = {"id": qid, "ok": ok}
+        if not ok and correct_id:
+            item["correct_option"] = correct_id
+        items.append(item)
+    return items
+
+
 EMOTION_WHEEL: list[dict[str, str]] = [
     {"id": "joy", "label": "Радость", "color": "#3D5A8C"},
     {"id": "interest", "label": "Интерес", "color": "#C8B8E4"},
