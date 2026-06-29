@@ -8,9 +8,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from api.lesson_signing import build_lesson_url
 from api.test_lesson_auth import test_lesson_enabled, verify_test_lesson_key
-from config.settings import PUBLIC_BASE_URL, ROOT
+from config.settings import ROOT
 from db import repository as repo
 from db.session import get_db
 from lessons.loader import get_lesson
@@ -23,12 +22,32 @@ TEST_LESSON_SLUG = "tsarevna-lyagushka"
 TEST_LESSON_SLUG_CATALOG = "grade-1-self_paced-stage-1-lesson-01"
 
 
-def _lesson_url_with_test_key(child_id, slug: str, test_key: str) -> str | None:
-    lesson = get_lesson(slug)
-    if not lesson:
+def _request_origin(request: Request) -> str:
+    """Базовый URL API с учётом nginx (https)."""
+    scheme = request.headers.get("x-forwarded-proto") or request.url.scheme
+    host = request.headers.get("host") or request.url.netloc
+    return f"{scheme}://{host}"
+
+
+def _lesson_url_with_test_key(
+    request: Request,
+    child_id,
+    slug: str,
+    test_key: str,
+) -> str | None:
+    """Ссылка на урок: test_key снимает проверку подписи, домен — текущий хост."""
+    if not get_lesson(slug):
         return None
-    base = build_lesson_url(child_id, slug)
-    return f"{base}&{urlencode({'test_key': test_key})}"
+    origin = _request_origin(request)
+    qs = urlencode(
+        {
+            "child": str(child_id),
+            "exp": "0",
+            "sig": "0",
+            "test_key": test_key,
+        }
+    )
+    return f"{origin}/lesson/{slug}?{qs}"
 
 
 @router.get("/test/urok/{secret}", response_class=HTMLResponse)
@@ -40,6 +59,7 @@ def test_lesson_hub(
     if not test_lesson_enabled() or not verify_test_lesson_key(secret):
         raise HTTPException(404, "Страница не найдена")
 
+    origin = _request_origin(request)
     token = (request.query_params.get("token") or "").strip()
     error = None
     children: list[dict] = []
@@ -47,15 +67,21 @@ def test_lesson_hub(
     if token:
         family = repo.get_family_by_token(db, token)
         if not family:
-            error = "Токен не найден — проверьте ссылку со страницы прогресса."
+            error = (
+                "Токен не найден. Откройте страницу прогресса в браузере — "
+                "если она открывается, скопируйте токен из адреса после /progress/ "
+                "(без пробелов в начале и в конце)."
+            )
         elif not family.children:
             error = "У этой семьи пока нет детей в базе."
         else:
-            progress_url = f"{PUBLIC_BASE_URL}/progress/{token}"
+            progress_url = f"{origin}/progress/{token}"
             for child in family.children:
-                lesson_url = _lesson_url_with_test_key(child.id, TEST_LESSON_SLUG, secret)
+                lesson_url = _lesson_url_with_test_key(
+                    request, child.id, TEST_LESSON_SLUG, secret
+                )
                 catalog_url = _lesson_url_with_test_key(
-                    child.id, TEST_LESSON_SLUG_CATALOG, secret
+                    request, child.id, TEST_LESSON_SLUG_CATALOG, secret
                 )
                 children.append(
                     {
@@ -79,8 +105,9 @@ def test_lesson_hub(
             "error": error,
             "children": children,
             "lesson_title": lesson["title"] if lesson else TEST_LESSON_SLUG,
-            "hub_url": f"{PUBLIC_BASE_URL}/test/urok/{secret}",
+            "hub_url": f"{origin}/test/urok/{secret}",
         },
     )
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    response.headers["Cache-Control"] = "no-store"
     return response
