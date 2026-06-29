@@ -141,8 +141,30 @@
     let videoSent = false;
     let maxPercent = 0;
 
+    function clampPercent(percent) {
+      let p = Number(percent);
+      if (!Number.isFinite(p) || p < 0) p = 0;
+      if (p > 1) p = p / 100;
+      return Math.min(1, Math.max(0, p));
+    }
+
+    function apiErrorMessage(data, fallback) {
+      if (!data) return fallback;
+      if (data.message) return data.message;
+      const detail = data.detail;
+      if (typeof detail === 'string') return detail;
+      if (Array.isArray(detail) && detail.length) {
+        return detail.map(function (item) {
+          return typeof item === 'string' ? item : (item.msg || JSON.stringify(item));
+        }).join(' ');
+      }
+      return fallback;
+    }
+
     function authBody(extra = {}) {
-      const body = { child_id: CFG.childId, exp: CFG.exp, sig: CFG.sig, ...extra };
+      let sig = CFG.sig;
+      if (CFG.testKey && String(sig).length < 8) sig = '00000000';
+      const body = { child_id: CFG.childId, exp: CFG.exp, sig: sig, ...extra };
       if (CFG.testKey) body.test_key = CFG.testKey;
       return body;
     }
@@ -164,7 +186,22 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      return res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        return { status: 'error', message: 'Сервер вернул неожиданный ответ.' };
+      }
+      if (!res.ok) {
+        const detail = data.detail;
+        let message = data.message;
+        if (!message && typeof detail === 'string') message = detail;
+        if (!message && Array.isArray(detail) && detail[0] && detail[0].msg) {
+          message = detail[0].msg;
+        }
+        return { status: 'error', message: message || ('Ошибка ' + res.status) };
+      }
+      return data;
     }
 
     function renderQuiz(formId, quiz) {
@@ -187,13 +224,62 @@
       });
     }
 
+    function quizStats(data, quiz) {
+      const results = data && data.results;
+      if (results && results.length) {
+        return {
+          score: results.filter(function (r) { return r.ok; }).length,
+          total: results.length,
+        };
+      }
+      if (data && data.score != null && data.total != null) {
+        return { score: data.score, total: data.total };
+      }
+      const total = (quiz && quiz.questions && quiz.questions.length) || 0;
+      return { score: 0, total: total };
+    }
+
+    function quizWrongNumbers(quiz, results) {
+      if (!quiz || !results) return [];
+      return results
+        .filter(function (r) { return !r.ok; })
+        .map(function (r) {
+          const idx = quiz.questions.findIndex(function (q) { return q.id === r.id; });
+          return idx >= 0 ? idx + 1 : null;
+        })
+        .filter(function (n) { return n != null; });
+    }
+
+    function formatQuizVerdict(data, quiz, passed) {
+      const stats = quizStats(data, quiz);
+      const passNeed = (data && data.pass_score) || (quiz && quiz.pass_score) || stats.total;
+      const wrongNums = quizWrongNumbers(quiz, data && data.results);
+      let text;
+      if (passed) {
+        text = 'Засчитано! ' + stats.score + ' из ' + stats.total + ' верно.';
+        if (wrongNums.length) {
+          text += ' Ошибки в вопросах: ' + wrongNums.join(', ') + '.';
+        }
+      } else {
+        text = 'Пока не засчитано: ' + stats.score + ' из ' + stats.total + ' верно (нужно ' + passNeed + ').';
+        if (wrongNums.length) {
+          text += ' Ошибки в вопросах: ' + wrongNums.join(', ') + '.';
+        }
+        if (data && data.message) text += ' ' + data.message;
+      }
+      return text;
+    }
+
     function clearQuizFeedback(formId) {
       const form = document.getElementById(formId);
       if (!form) return;
       const step = form.closest('.chit-step');
-      if (step) step.classList.remove('is-ok', 'is-wrong');
+      if (step) step.classList.remove('is-ok', 'is-wrong', 'is-partial');
       form.querySelectorAll('.chit-q').forEach(function (node) {
         node.classList.remove('is-correct', 'is-wrong');
+      });
+      form.querySelectorAll('.chit-q-badge').forEach(function (node) {
+        node.remove();
       });
       form.querySelectorAll('label').forEach(function (node) {
         node.classList.remove('is-correct-option', 'is-wrong-pick');
@@ -211,6 +297,15 @@
         const qEl = document.querySelector('#' + formId + ' .chit-q[data-qid="' + r.id + '"]');
         if (!qEl) return;
         qEl.classList.add(r.ok ? 'is-correct' : 'is-wrong');
+        const strong = qEl.querySelector('strong');
+        if (strong) {
+          const oldBadge = qEl.querySelector('.chit-q-badge');
+          if (oldBadge) oldBadge.remove();
+          const badge = document.createElement('span');
+          badge.className = 'chit-q-badge ' + (r.ok ? 'is-ok' : 'is-err');
+          badge.textContent = r.ok ? ' — верно' : ' — ошибка';
+          strong.appendChild(badge);
+        }
         if (!r.ok && r.correct_option) {
           const correctInput = qEl.querySelector('input[value="' + r.correct_option + '"]');
           if (correctInput && correctInput.parentElement) {
@@ -240,8 +335,13 @@
       msg.textContent = text;
       msg.style.display = 'block';
       if (step) {
-        step.classList.remove('is-ok', 'is-wrong');
-        step.classList.add(type === 'ok' ? 'is-ok' : 'is-wrong');
+        step.classList.remove('is-ok', 'is-wrong', 'is-partial');
+        if (type === 'ok') {
+          const hasWrong = form.querySelector('.chit-q.is-wrong');
+          step.classList.add(hasWrong ? 'is-partial' : 'is-ok');
+        } else {
+          step.classList.add('is-wrong');
+        }
       }
     }
 
@@ -268,6 +368,7 @@
     async function sendVideoComplete(percent) {
       if (videoSent) return;
       videoSent = true;
+      percent = clampPercent(percent);
       const data = await postJson('/api/lesson/' + CFG.slug + '/video-complete', authBody({ percent }));
       if (data.status === 'accepted' || data.status === 'duplicate') {
         showMsg('video-msg', data.message + ' Словики начисляются — загляните на страницу прогресса.', 'ok');
@@ -283,7 +384,7 @@
         }
       } else {
         videoSent = false;
-        showMsg('video-msg', data.message || 'Ошибка', 'err');
+        showMsg('video-msg', apiErrorMessage(data, 'Не удалось засчитать просмотр. Обновите страницу и попробуйте снова.'), 'err');
       }
     }
 
@@ -317,7 +418,7 @@
 
     function trackPercent(percent) {
       if (videoSent) return;
-      maxPercent = Math.max(maxPercent, percent);
+      maxPercent = Math.max(maxPercent, clampPercent(percent));
       if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
     }
 
@@ -344,8 +445,8 @@
 
       function bindPlayer(player) {
         player.on(player.Events.TimeUpdate, function(event) {
-          const pct = event.data.percent != null ? event.data.percent / 100 : 0;
-          trackPercent(pct);
+          const raw = event.data.percent != null ? event.data.percent : event.data.played;
+          trackPercent(raw);
         });
         player.on(player.Events.Ended, function() {
           if (!videoSent) sendVideoComplete(Math.max(maxPercent, 1));
@@ -395,6 +496,22 @@
       document.head.appendChild(tag);
     }
 
+    function emotionLabel(id) {
+      if (!CFG.emotion || !CFG.emotion.emotions) return id;
+      const found = CFG.emotion.emotions.find(function (e) { return e.id === id; });
+      return found ? found.label : id;
+    }
+
+    function formatEmotionFail(data, selected) {
+      let text = 'Пока не верно. ' + (data.message || 'Попробуй ещё раз.');
+      const correct = new Set(data.correct || []);
+      const wrong = selected.filter(function (id) { return !correct.has(id); });
+      if (wrong.length) {
+        text += ' Неверный выбор: ' + wrong.map(emotionLabel).join(', ') + '.';
+      }
+      return text;
+    }
+
     function clearEmotionFeedback() {
       const msg = document.getElementById('emotion-msg');
       if (msg) {
@@ -429,11 +546,19 @@
       const answers = {};
       answers[q.id] = selected;
       const data = await postJson('/api/lesson/' + CFG.slug + '/emotion-quiz', authBody({ answers }));
-      if (data.status === 'failed') {
+      const okStatus = data && (data.status === 'accepted' || data.status === 'duplicate');
+      const failedStatus = data && data.status === 'failed';
+      if (!okStatus && !failedStatus) {
+        const errDetail = data && data.message;
+        showEmotionVerdict('err', errDetail || 'Не удалось проверить ответ. Обновите страницу и попробуйте снова.');
+        btn.disabled = !emotionWheel.isComplete();
+        return;
+      }
+      if (failedStatus) {
         if (data.correct && emotionWheel.markResult) {
           emotionWheel.markResult(data.correct, false);
         }
-        showEmotionVerdict('err', 'Пока не верно. ' + (data.message || 'Попробуй ещё раз.'));
+        showEmotionVerdict('err', formatEmotionFail(data, selected));
         btn.disabled = !emotionWheel.isComplete();
         return;
       }
@@ -486,23 +611,25 @@
       }
       document.getElementById(btnId).disabled = true;
       const data = await postJson('/api/lesson/' + CFG.slug + '/quiz', authBody({ quiz_type: quizType, answers }));
-      const passNeed = data.pass_score || quiz.pass_score || data.total;
-      if (data.status === 'failed') {
+      const okStatus = data && (data.status === 'accepted' || data.status === 'duplicate');
+      const failedStatus = data && data.status === 'failed';
+      if (!okStatus && !failedStatus) {
+        const errDetail = data && (data.message || data.detail);
+        const errText = typeof errDetail === 'string'
+          ? errDetail
+          : 'Не удалось проверить ответы. Попробуйте ещё раз.';
+        showQuizVerdict(formId, 'err', errText);
+        document.getElementById(btnId).disabled = false;
+        return;
+      }
+      if (failedStatus) {
         markQuizResults(formId, data.results);
-        showQuizVerdict(
-          formId,
-          'err',
-          'Пока не засчитано: ' + data.score + ' из ' + data.total + ' верно (нужно ' + passNeed + '). ' + (data.message || '')
-        );
+        showQuizVerdict(formId, 'err', formatQuizVerdict(data, quiz, false));
         document.getElementById(btnId).disabled = false;
         return;
       }
       markQuizResults(formId, data.results);
-      showQuizVerdict(
-        formId,
-        'ok',
-        'Засчитано! ' + data.score + ' из ' + data.total + ' верно. ' + (data.message || '')
-      );
+      showQuizVerdict(formId, 'ok', formatQuizVerdict(data, quiz, true));
       markDone(quizType === 'comprehension' ? 'step-comprehension' : 'step-meaning');
       if (nextBtnId) document.getElementById(nextBtnId).disabled = false;
       if (quizType === 'comprehension') lessonState.comprehensionDone = true;

@@ -116,6 +116,7 @@ def quiz_for_client(quiz: dict[str, Any], *, shuffle_options: bool = True) -> di
         )
     return {
         "title": quiz.get("title", ""),
+        "pass_score": int(quiz.get("pass_score", len(questions))),
         "questions": questions,
     }
 

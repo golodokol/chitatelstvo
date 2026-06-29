@@ -6,7 +6,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from sqlalchemy.orm import Session
 
 from api.deps import rate_limit
@@ -32,8 +32,17 @@ templates = Jinja2Templates(directory=str(ROOT / "templates"))
 class LessonAuth(BaseModel):
     child_id: uuid.UUID
     exp: int
-    sig: str = Field(min_length=8)
+    sig: str = ""
     test_key: str | None = None
+
+    @model_validator(mode="after")
+    def _normalize_sig(self) -> "LessonAuth":
+        if verify_test_lesson_key(self.test_key):
+            if len(self.sig) < 8:
+                self.sig = "00000000"
+        elif len(self.sig) < 8:
+            raise ValueError("sig must be at least 8 characters")
+        return self
 
 
 class VideoCompleteBody(LessonAuth):

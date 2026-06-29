@@ -424,6 +424,14 @@ body.chit-student {
   border-color: #e57373;
 }
 
+.chit-q-badge {
+  font-weight: 700;
+  font-size: 0.9em;
+}
+
+.chit-q-badge.is-ok { color: var(--success); }
+.chit-q-badge.is-err { color: #c62828; }
+
 .chit-q label.is-correct-option {
   color: var(--success);
   font-weight: 700;
@@ -438,6 +446,11 @@ body.chit-student {
 .chit-step.is-ok {
   border-color: var(--success);
   box-shadow: inset 4px 0 0 var(--success);
+}
+
+.chit-step.is-partial {
+  border-color: #f9a825;
+  box-shadow: inset 4px 0 0 #f9a825;
 }
 
 .chit-step.is-wrong {

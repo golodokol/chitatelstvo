@@ -43,7 +43,7 @@ def _lesson_url_with_test_key(
         {
             "child": str(child_id),
             "exp": "0",
-            "sig": "0",
+            "sig": "00000000",
             "test_key": test_key,
         }
     )

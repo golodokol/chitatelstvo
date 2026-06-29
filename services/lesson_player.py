@@ -163,7 +163,7 @@ def handle_video_complete(
         lesson,
         bypass=verify_test_lesson_key(test_key),
     )
-    if percent < VIDEO_WATCH_THRESHOLD:
+    if not verify_test_lesson_key(test_key) and percent < VIDEO_WATCH_THRESHOLD:
         raise HTTPException(400, f"Нужно досмотреть минимум {int(VIDEO_WATCH_THRESHOLD * 100)}%")
 
     status, event_id = submit_learning_event(
