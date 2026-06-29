@@ -1816,65 +1816,67 @@ body.chit-cabinet--parent {
 }
 
 .chit-emotion-wheel {
-  max-width: 420px;
+  max-width: 440px;
   margin: 8px auto 0;
 }
 
-.chit-emotion-wheel svg {
+.chit-emotion-wheel__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  margin: 0 auto 4px;
+}
+
+.chit-emotion-wheel__art {
   display: block;
   width: 100%;
-  height: auto;
-  filter: drop-shadow(0 6px 18px rgba(61, 82, 102, 0.12));
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 8px 22px rgba(61, 82, 102, 0.14));
+}
+
+.chit-emotion-wheel__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .chit-emotion-wheel__sector {
-  stroke: #fff;
-  stroke-width: 2.5;
+  pointer-events: all;
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 0;
   cursor: pointer;
-  transition: filter 0.15s, transform 0.15s;
-  transform-origin: 200px 200px;
+  transition: fill 0.18s ease, fill-opacity 0.18s ease, stroke 0.18s ease, filter 0.18s ease;
 }
 
 .chit-emotion-wheel__sector:hover,
 .chit-emotion-wheel__sector:focus-visible {
-  filter: brightness(1.08);
+  fill: rgba(255, 255, 255, 0.22);
   outline: none;
 }
 
 .chit-emotion-wheel__sector.is-selected {
-  filter: brightness(1.12);
   stroke: #fff;
-  stroke-width: 4;
+  stroke-width: 5;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.55));
 }
 
 .chit-emotion-wheel__sector.is-correct {
   stroke: var(--success);
-  stroke-width: 4;
+  stroke-width: 6;
+  filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.45));
 }
 
 .chit-emotion-wheel__sector.is-wrong {
   stroke: #c62828;
-  stroke-width: 4;
-}
-
-.chit-emotion-wheel__label {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 11px;
-  font-weight: 800;
-  fill: #2a3540;
-  letter-spacing: 0.02em;
-}
-
-.chit-emotion-wheel__hub {
-  fill: #fff;
-  stroke: #fff;
-  stroke-width: 3;
-  pointer-events: none;
-}
-
-.chit-emotion-wheel__hub-dot {
-  fill: #3D5266;
-  pointer-events: none;
+  stroke-width: 6;
+  filter: drop-shadow(0 0 8px rgba(198, 40, 40, 0.35));
 }
 
 .chit-emotion-chips {
@@ -1972,6 +1974,5 @@ body.chit-cabinet--parent {
 
 @media (max-width: 520px) {
   .chit-emotion-chips { display: flex; }
-  .chit-emotion-wheel__label { font-size: 9px; }
 }
 

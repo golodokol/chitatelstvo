@@ -581,12 +581,13 @@
       const qEl = document.getElementById('emotion-question-text');
       if (qEl) {
         const hint = q.pick === 1
-          ? 'Выбери одну эмоцию на колесе.'
-          : 'Можно выбрать две эмоции — отметь обе на колесе.';
+          ? 'Нажми на лепесток колеса.'
+          : 'Можно выбрать две эмоции — нажми на два лепестка.';
         qEl.textContent = q.text + ' ' + hint;
       }
       emotionWheel = ChitEmotionWheel.init(document.getElementById('emotion-wheel-root'), {
         emotions: CFG.emotion.emotions,
+        imageUrl: CFG.emotion.wheel_image,
         pick: q.pick,
         onChange: function (_selected, complete) {
           if (!lessonState.emotionDone) clearEmotionFeedback();

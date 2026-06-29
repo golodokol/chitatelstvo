@@ -145,16 +145,20 @@ def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, str]) -> list[d
     return items
 
 
+EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png"
+
+# Порядок — по часовой стрелке с верхнего лепестка (как на иллюстрации).
 EMOTION_WHEEL: list[dict[str, str]] = [
-    {"id": "joy", "label": "Радость", "color": "#3D5A8C"},
+    {"id": "joy", "label": "Радость", "color": "#8EC4E8"},
     {"id": "interest", "label": "Интерес", "color": "#C8B8E4"},
-    {"id": "surprise", "label": "Удивление", "color": "#5E4A78"},
-    {"id": "sadness", "label": "Грусть", "color": "#6E94BE"},
-    {"id": "fear", "label": "Страх", "color": "#4A3D68"},
-    {"id": "loneliness", "label": "Одиночество", "color": "#B8A6D8"},
-    {"id": "tired", "label": "Усталость", "color": "#5A82AE"},
+    {"id": "surprise", "label": "Удивление", "color": "#9A84BC"},
+    {"id": "sadness", "label": "Грусть", "color": "#8FAAC8"},
+    {"id": "fear", "label": "Страх", "color": "#6E94BE"},
+    {"id": "anger", "label": "Злость", "color": "#7A7098"},
+    {"id": "resentment", "label": "Обида", "color": "#C4B0D8"},
+    {"id": "tired", "label": "Усталость", "color": "#8AB4D8"},
     {"id": "pride", "label": "Гордость", "color": "#F2E4A8"},
-    {"id": "calm", "label": "Спокойствие", "color": "#C4DCE8"},
+    {"id": "calm", "label": "Спокойствие", "color": "#B8DCE8"},
 ]
 
 
@@ -165,6 +169,7 @@ def emotion_quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
         "title": quiz.get("title", "Эмоции героя"),
         "character": quiz.get("character", ""),
         "emotions": EMOTION_WHEEL,
+        "wheel_image": EMOTION_WHEEL_IMAGE,
         "question": {
             "id": q["id"],
             "text": q["text"],

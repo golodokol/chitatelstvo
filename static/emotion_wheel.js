@@ -1,67 +1,73 @@
 (function (global) {
-  var SECTOR_COUNT = 9;
-  var CX = 200;
-  var CY = 200;
-  var R = 178;
-  var LABEL_R = 128;
+  var VIEW = 1000;
+  var CX = VIEW / 2;
+  var CY = VIEW / 2;
+  var R_INNER = 72;
+  var R_OUTER = 492;
+  var DEFAULT_IMAGE = '/static/images/emotion-wheel.png';
 
   function toRad(deg) {
     return ((deg - 90) * Math.PI) / 180;
   }
 
   function sectorPath(startDeg, endDeg) {
-    var x1 = CX + R * Math.cos(toRad(startDeg));
-    var y1 = CY + R * Math.sin(toRad(startDeg));
-    var x2 = CX + R * Math.cos(toRad(endDeg));
-    var y2 = CY + R * Math.sin(toRad(endDeg));
+    var x1o = CX + R_OUTER * Math.cos(toRad(startDeg));
+    var y1o = CY + R_OUTER * Math.sin(toRad(startDeg));
+    var x2o = CX + R_OUTER * Math.cos(toRad(endDeg));
+    var y2o = CY + R_OUTER * Math.sin(toRad(endDeg));
+    var x1i = CX + R_INNER * Math.cos(toRad(startDeg));
+    var y1i = CY + R_INNER * Math.sin(toRad(startDeg));
+    var x2i = CX + R_INNER * Math.cos(toRad(endDeg));
+    var y2i = CY + R_INNER * Math.sin(toRad(endDeg));
     var large = endDeg - startDeg > 180 ? 1 : 0;
-    return 'M ' + CX + ' ' + CY + ' L ' + x1 + ' ' + y1 +
-      ' A ' + R + ' ' + R + ' 0 ' + large + ' 1 ' + x2 + ' ' + y2 + ' Z';
-  }
-
-  function labelPos(midDeg) {
-    return {
-      x: CX + LABEL_R * Math.cos(toRad(midDeg)),
-      y: CY + LABEL_R * Math.sin(toRad(midDeg)),
-      rotate: midDeg,
-    };
-  }
-
-  function splitLabel(text) {
-    if (text.length <= 9) return [text];
-    var parts = text.split(' ');
-    if (parts.length > 1) return parts;
-    var mid = Math.ceil(text.length / 2);
-    return [text.slice(0, mid), text.slice(mid)];
+    return 'M ' + x1i + ' ' + y1i +
+      ' L ' + x1o + ' ' + y1o +
+      ' A ' + R_OUTER + ' ' + R_OUTER + ' 0 ' + large + ' 1 ' + x2o + ' ' + y2o +
+      ' L ' + x2i + ' ' + y2i +
+      ' A ' + R_INNER + ' ' + R_INNER + ' 0 ' + large + ' 0 ' + x1i + ' ' + y1i +
+      ' Z';
   }
 
   function init(container, options) {
     var emotions = options.emotions || [];
     var pickN = parseInt(options.pick, 10) || 1;
+    var imageUrl = options.imageUrl || DEFAULT_IMAGE;
+    var sectorOffset = Number(options.sectorOffset) || 0;
     var selected = new Set();
     var onChange = options.onChange || function () {};
+    var sectorCount = emotions.length || 10;
+    var step = 360 / sectorCount;
 
     container.innerHTML = '';
     container.classList.add('chit-emotion-wheel');
 
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 400 400');
-    svg.setAttribute('role', 'group');
-    svg.setAttribute('aria-label', 'Колесо эмоций');
+    var stage = document.createElement('div');
+    stage.className = 'chit-emotion-wheel__stage';
 
-    var step = 360 / SECTOR_COUNT;
+    var art = document.createElement('img');
+    art.className = 'chit-emotion-wheel__art';
+    art.src = imageUrl;
+    art.alt = 'Колесо эмоций — нажми на лепесток, чтобы выбрать чувство';
+    art.setAttribute('draggable', 'false');
+    stage.appendChild(art);
+
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + VIEW + ' ' + VIEW);
+    svg.setAttribute('class', 'chit-emotion-wheel__overlay');
+    svg.setAttribute('role', 'group');
+    svg.setAttribute('aria-label', 'Выбор эмоции на колесе');
+
     var gSectors = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     gSectors.setAttribute('class', 'chit-emotion-wheel__sectors');
 
     emotions.forEach(function (emo, i) {
-      var start = i * step;
+      var start = sectorOffset + i * step;
       var end = start + step;
-      var mid = start + step / 2;
       var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', sectorPath(start, end));
-      path.setAttribute('fill', emo.color);
       path.setAttribute('class', 'chit-emotion-wheel__sector');
       path.setAttribute('data-id', emo.id);
+      path.setAttribute('data-color', emo.color || '#ffffff');
       path.setAttribute('tabindex', '0');
       path.setAttribute('role', 'button');
       path.setAttribute('aria-label', emo.label);
@@ -76,49 +82,11 @@
       });
 
       gSectors.appendChild(path);
-
-      var lp = labelPos(mid);
-      var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', lp.x);
-      text.setAttribute('y', lp.y);
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('dominant-baseline', 'middle');
-      text.setAttribute('transform', 'rotate(' + lp.rotate + ' ' + lp.x + ' ' + lp.y + ')');
-      text.setAttribute('class', 'chit-emotion-wheel__label');
-      text.setAttribute('pointer-events', 'none');
-
-      var lines = splitLabel(emo.label);
-      if (lines.length === 1) {
-        text.textContent = lines[0];
-      } else {
-        lines.forEach(function (line, li) {
-          var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-          tspan.setAttribute('x', lp.x);
-          tspan.setAttribute('dy', li === 0 ? '-0.35em' : '1.1em');
-          tspan.textContent = line;
-          text.appendChild(tspan);
-        });
-      }
-      gSectors.appendChild(text);
     });
 
     svg.appendChild(gSectors);
-
-    var hub = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    hub.setAttribute('cx', String(CX));
-    hub.setAttribute('cy', String(CY));
-    hub.setAttribute('r', '14');
-    hub.setAttribute('class', 'chit-emotion-wheel__hub');
-    svg.appendChild(hub);
-
-    var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    dot.setAttribute('cx', String(CX));
-    dot.setAttribute('cy', String(CY));
-    dot.setAttribute('r', '4');
-    dot.setAttribute('class', 'chit-emotion-wheel__hub-dot');
-    svg.appendChild(dot);
-
-    container.appendChild(svg);
+    stage.appendChild(svg);
+    container.appendChild(stage);
 
     var chips = document.createElement('div');
     chips.className = 'chit-emotion-chips';
@@ -150,8 +118,8 @@
     function renderPicked() {
       if (!selected.size) {
         pickedEl.textContent = pickN === 1
-          ? 'Выбери одну эмоцию'
-          : 'Выбери ' + pickN + ' эмоции';
+          ? 'Нажми на лепесток колеса'
+          : 'Нажми на ' + pickN + ' лепестка на колесе';
         return;
       }
       var names = Array.from(selected).map(emotionLabel);
@@ -162,12 +130,24 @@
       return selected.size === pickN;
     }
 
+    function syncSectorVisual(node, id, on) {
+      var color = node.getAttribute('data-color') || '#fff';
+      if (on) {
+        node.style.fill = color;
+        node.style.fillOpacity = '0.42';
+      } else if (!node.classList.contains('is-correct') && !node.classList.contains('is-wrong')) {
+        node.style.fill = '';
+        node.style.fillOpacity = '';
+      }
+    }
+
     function syncUI() {
       container.querySelectorAll('.chit-emotion-wheel__sector').forEach(function (node) {
         var id = node.getAttribute('data-id');
         var on = selected.has(id);
         node.classList.toggle('is-selected', on);
         node.setAttribute('aria-pressed', on ? 'true' : 'false');
+        syncSectorVisual(node, id, on);
       });
       container.querySelectorAll('.chit-emotion-chip').forEach(function (node) {
         node.classList.toggle('is-selected', selected.has(node.dataset.id));
@@ -210,6 +190,7 @@
         if (ok && correct.has(id)) node.classList.add('is-correct');
         if (!ok && selected.has(id) && !correct.has(id)) node.classList.add('is-wrong');
         if (!ok && correct.has(id)) node.classList.add('is-correct');
+        syncSectorVisual(node, id, selected.has(id));
       });
       container.querySelectorAll('.chit-emotion-chip').forEach(function (node) {
         var id = node.dataset.id;
@@ -223,7 +204,12 @@
     function clearResult() {
       container.querySelectorAll('.chit-emotion-wheel__sector, .chit-emotion-chip').forEach(function (node) {
         node.classList.remove('is-correct', 'is-wrong');
+        if (node.classList.contains('chit-emotion-wheel__sector')) {
+          node.style.fill = '';
+          node.style.fillOpacity = '';
+        }
       });
+      syncUI();
     }
 
     syncUI();
