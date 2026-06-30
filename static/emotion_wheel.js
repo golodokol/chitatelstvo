@@ -4,11 +4,11 @@
   // Калибровка под иллюстрацию emotion-wheel.png (круг ≈ 976×976 в кадре 1000×1000).
   var DEFAULT_CALIB = {
     view: 1000,
-    cx: 500,
-    cy: 500,
-    rInner: 78,
-    rOuter: 488,
-    sectorOffset: 0,
+    cx: 501,
+    cy: 497,
+    rInner: 80,
+    rOuter: 486,
+    sectorOffset: -6.5,
   };
 
   function mergeCalib(options) {

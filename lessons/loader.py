@@ -145,14 +145,14 @@ def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, str]) -> list[d
     return items
 
 
-EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=3"
+EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=4"
 
 EMOTION_WHEEL_CALIBRATION = {
-    "cx": 500,
-    "cy": 500,
-    "rInner": 78,
-    "rOuter": 488,
-    "sectorOffset": 0,
+    "cx": 501,
+    "cy": 497,
+    "rInner": 80,
+    "rOuter": 486,
+    "sectorOffset": -6.5,
 }
 
 # Порядок — по часовой стрелке с верхнего лепестка (как на иллюстрации).
