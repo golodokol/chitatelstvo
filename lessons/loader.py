@@ -145,7 +145,15 @@ def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, str]) -> list[d
     return items
 
 
-EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=2"
+EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=3"
+
+EMOTION_WHEEL_CALIBRATION = {
+    "cx": 500,
+    "cy": 500,
+    "rInner": 78,
+    "rOuter": 488,
+    "sectorOffset": 0,
+}
 
 # Порядок — по часовой стрелке с верхнего лепестка (как на иллюстрации).
 EMOTION_WHEEL: list[dict[str, str]] = [
@@ -170,6 +178,7 @@ def emotion_quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
         "character": quiz.get("character", ""),
         "emotions": EMOTION_WHEEL,
         "wheel_image": EMOTION_WHEEL_IMAGE,
+        "wheel_calibration": EMOTION_WHEEL_CALIBRATION,
         "question": {
             "id": q["id"],
             "text": q["text"],

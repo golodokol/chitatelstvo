@@ -1,30 +1,51 @@
 (function (global) {
-  var VIEW = 1000;
-  var CX = VIEW / 2;
-  var CY = VIEW / 2;
-  var R_INNER = 72;
-  var R_OUTER = 492;
   var DEFAULT_IMAGE = '/static/images/emotion-wheel.png';
+
+  // Калибровка под иллюстрацию emotion-wheel.png (круг ≈ 976×976 в кадре 1000×1000).
+  var DEFAULT_CALIB = {
+    view: 1000,
+    cx: 500,
+    cy: 500,
+    rInner: 78,
+    rOuter: 488,
+    sectorOffset: 0,
+  };
+
+  function mergeCalib(options) {
+    var c = options.calibration || {};
+    return {
+      view: Number(c.view) || DEFAULT_CALIB.view,
+      cx: Number(c.cx) || DEFAULT_CALIB.cx,
+      cy: Number(c.cy) || DEFAULT_CALIB.cy,
+      rInner: Number(c.rInner) || DEFAULT_CALIB.rInner,
+      rOuter: Number(c.rOuter) || DEFAULT_CALIB.rOuter,
+      sectorOffset: Number(c.sectorOffset != null ? c.sectorOffset : DEFAULT_CALIB.sectorOffset),
+    };
+  }
 
   function toRad(deg) {
     return ((deg - 90) * Math.PI) / 180;
   }
 
-  function sectorPath(startDeg, endDeg) {
-    var x1o = CX + R_OUTER * Math.cos(toRad(startDeg));
-    var y1o = CY + R_OUTER * Math.sin(toRad(startDeg));
-    var x2o = CX + R_OUTER * Math.cos(toRad(endDeg));
-    var y2o = CY + R_OUTER * Math.sin(toRad(endDeg));
-    var x1i = CX + R_INNER * Math.cos(toRad(startDeg));
-    var y1i = CY + R_INNER * Math.sin(toRad(startDeg));
-    var x2i = CX + R_INNER * Math.cos(toRad(endDeg));
-    var y2i = CY + R_INNER * Math.sin(toRad(endDeg));
+  function sectorPath(calib, startDeg, endDeg) {
+    var cx = calib.cx;
+    var cy = calib.cy;
+    var ri = calib.rInner;
+    var ro = calib.rOuter;
+    var x1o = cx + ro * Math.cos(toRad(startDeg));
+    var y1o = cy + ro * Math.sin(toRad(startDeg));
+    var x2o = cx + ro * Math.cos(toRad(endDeg));
+    var y2o = cy + ro * Math.sin(toRad(endDeg));
+    var x1i = cx + ri * Math.cos(toRad(startDeg));
+    var y1i = cy + ri * Math.sin(toRad(startDeg));
+    var x2i = cx + ri * Math.cos(toRad(endDeg));
+    var y2i = cy + ri * Math.sin(toRad(endDeg));
     var large = endDeg - startDeg > 180 ? 1 : 0;
     return 'M ' + x1i + ' ' + y1i +
       ' L ' + x1o + ' ' + y1o +
-      ' A ' + R_OUTER + ' ' + R_OUTER + ' 0 ' + large + ' 1 ' + x2o + ' ' + y2o +
+      ' A ' + ro + ' ' + ro + ' 0 ' + large + ' 1 ' + x2o + ' ' + y2o +
       ' L ' + x2i + ' ' + y2i +
-      ' A ' + R_INNER + ' ' + R_INNER + ' 0 ' + large + ' 0 ' + x1i + ' ' + y1i +
+      ' A ' + ri + ' ' + ri + ' 0 ' + large + ' 0 ' + x1i + ' ' + y1i +
       ' Z';
   }
 
@@ -32,39 +53,42 @@
     var emotions = options.emotions || [];
     var pickN = parseInt(options.pick, 10) || 1;
     var imageUrl = options.imageUrl || DEFAULT_IMAGE;
-    var sectorOffset = Number(options.sectorOffset) || 0;
+    var calib = mergeCalib(options);
     var selected = new Set();
     var onChange = options.onChange || function () {};
     var sectorCount = emotions.length || 10;
     var step = 360 / sectorCount;
+    var half = step / 2;
 
     container.innerHTML = '';
     container.classList.add('chit-emotion-wheel');
 
-    var stage = document.createElement('div');
-    stage.className = 'chit-emotion-wheel__stage';
-
-    var art = document.createElement('img');
-    art.className = 'chit-emotion-wheel__art';
-    art.src = imageUrl;
-    art.alt = 'Колесо эмоций — нажми на лепесток, чтобы выбрать чувство';
-    art.setAttribute('draggable', 'false');
-    stage.appendChild(art);
-
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 ' + VIEW + ' ' + VIEW);
-    svg.setAttribute('class', 'chit-emotion-wheel__overlay');
+    svg.setAttribute('viewBox', '0 0 ' + calib.view + ' ' + calib.view);
+    svg.setAttribute('class', 'chit-emotion-wheel__svg');
     svg.setAttribute('role', 'group');
-    svg.setAttribute('aria-label', 'Выбор эмоции на колесе');
+    svg.setAttribute('aria-label', 'Колесо эмоций');
+
+    var art = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    art.setAttributeNS('http://www.w3.org/1999/xlink', 'href', imageUrl);
+    art.setAttribute('href', imageUrl);
+    art.setAttribute('x', '0');
+    art.setAttribute('y', '0');
+    art.setAttribute('width', String(calib.view));
+    art.setAttribute('height', String(calib.view));
+    art.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    art.setAttribute('class', 'chit-emotion-wheel__art');
+    svg.appendChild(art);
 
     var gSectors = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     gSectors.setAttribute('class', 'chit-emotion-wheel__sectors');
 
     emotions.forEach(function (emo, i) {
-      var start = sectorOffset + i * step;
+      // Центр лепестка i — на середине сектора (Радость ровно вверху).
+      var start = calib.sectorOffset + i * step - half;
       var end = start + step;
       var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', sectorPath(start, end));
+      path.setAttribute('d', sectorPath(calib, start, end));
       path.setAttribute('class', 'chit-emotion-wheel__sector');
       path.setAttribute('data-id', emo.id);
       path.setAttribute('data-color', emo.color || '#ffffff');
@@ -85,8 +109,7 @@
     });
 
     svg.appendChild(gSectors);
-    stage.appendChild(svg);
-    container.appendChild(stage);
+    container.appendChild(svg);
 
     var chips = document.createElement('div');
     chips.className = 'chit-emotion-chips';
@@ -130,7 +153,7 @@
       return selected.size === pickN;
     }
 
-    function syncSectorVisual(node, id, on) {
+    function syncSectorVisual(node, on) {
       var color = node.getAttribute('data-color') || '#fff';
       if (on) {
         node.style.fill = color;
@@ -147,7 +170,7 @@
         var on = selected.has(id);
         node.classList.toggle('is-selected', on);
         node.setAttribute('aria-pressed', on ? 'true' : 'false');
-        syncSectorVisual(node, id, on);
+        syncSectorVisual(node, on);
       });
       container.querySelectorAll('.chit-emotion-chip').forEach(function (node) {
         node.classList.toggle('is-selected', selected.has(node.dataset.id));
@@ -190,7 +213,7 @@
         if (ok && correct.has(id)) node.classList.add('is-correct');
         if (!ok && selected.has(id) && !correct.has(id)) node.classList.add('is-wrong');
         if (!ok && correct.has(id)) node.classList.add('is-correct');
-        syncSectorVisual(node, id, selected.has(id));
+        syncSectorVisual(node, selected.has(id));
       });
       container.querySelectorAll('.chit-emotion-chip').forEach(function (node) {
         var id = node.dataset.id;
