@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Калибровка эмоциометра</title>
+  <style>
+    body { font-family: sans-serif; background: #f3eef9; margin: 24px; }
+    .wrap { max-width: 520px; margin: 0 auto; }
+    svg { width: 100%; height: auto; display: block; background: #fff; border-radius: 50%; }
+    path { fill: rgba(255,0,0,.18); stroke: rgba(255,0,0,.55); stroke-width: 2; cursor: pointer; }
+    path:hover { fill: rgba(0,120,255,.28); }
+    h1 { font-size: 1.1rem; }
+    p { color: #555; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Проверка контуров лепестков</h1>
+    <p>Красная обводка должна совпадать с границами на картинке. Наведи на лепесток — подсветка.</p>
+    <svg id="wheel" viewBox="0 0 1000 1000"></svg>
+  </div>
+  <script>
+    const ORDER = ['joy','interest','surprise','sadness','fear','anger','resentment','tired','pride','calm'];
+    const LABELS = {
+      joy:'Радость', interest:'Интерес', surprise:'Удивление', sadness:'Грусть', fear:'Страх',
+      anger:'Злость', resentment:'Обида', tired:'Усталость', pride:'Гордость', calm:'Спокойствие'
+    };
+    fetch('emotion_wheel_petals.json').then(r => r.json()).then(paths => {
+      const svg = document.getElementById('wheel');
+      const img = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+      img.setAttribute('href', 'images/emotion-wheel.png');
+      img.setAttribute('width', '1000');
+      img.setAttribute('height', '1000');
+      svg.appendChild(img);
+      ORDER.forEach(id => {
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('d', paths[id]);
+        p.setAttribute('title', LABELS[id]);
+        svg.appendChild(p);
+      });
+    });
+  </script>
+</body>
+</html>
