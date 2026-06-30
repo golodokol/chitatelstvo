@@ -7,6 +7,14 @@ from typing import Any
 
 LESSONS_DIR = Path(__file__).resolve().parent
 LESSONS_CATALOG_DIR = LESSONS_DIR / "catalog"
+PROJECT_ROOT = LESSONS_DIR.parent
+EMOTION_PETAL_PATHS_FILE = PROJECT_ROOT / "static" / "emotion_wheel_petals.json"
+
+
+def _load_emotion_petal_paths() -> dict[str, str]:
+    if not EMOTION_PETAL_PATHS_FILE.is_file():
+        return {}
+    return json.loads(EMOTION_PETAL_PATHS_FILE.read_text(encoding="utf-8"))
 
 
 def _iter_lesson_files() -> list[Path]:
@@ -145,15 +153,7 @@ def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, str]) -> list[d
     return items
 
 
-EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=4"
-
-EMOTION_WHEEL_CALIBRATION = {
-    "cx": 501,
-    "cy": 497,
-    "rInner": 80,
-    "rOuter": 486,
-    "sectorOffset": -6.5,
-}
+EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=5"
 
 # Порядок — по часовой стрелке с верхнего лепестка (как на иллюстрации).
 EMOTION_WHEEL: list[dict[str, str]] = [
@@ -178,7 +178,7 @@ def emotion_quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
         "character": quiz.get("character", ""),
         "emotions": EMOTION_WHEEL,
         "wheel_image": EMOTION_WHEEL_IMAGE,
-        "wheel_calibration": EMOTION_WHEEL_CALIBRATION,
+        "wheel_petals": _load_emotion_petal_paths(),
         "question": {
             "id": q["id"],
             "text": q["text"],

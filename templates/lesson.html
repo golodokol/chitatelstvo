@@ -588,7 +588,7 @@
       emotionWheel = ChitEmotionWheel.init(document.getElementById('emotion-wheel-root'), {
         emotions: CFG.emotion.emotions,
         imageUrl: CFG.emotion.wheel_image,
-        calibration: CFG.emotion.wheel_calibration,
+        petalPaths: CFG.emotion.wheel_petals,
         pick: q.pick,
         onChange: function (_selected, complete) {
           if (!lessonState.emotionDone) clearEmotionFeedback();
