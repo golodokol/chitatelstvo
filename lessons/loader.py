@@ -108,20 +108,56 @@ def get_lesson(slug: str) -> dict[str, Any] | None:
     return None
 
 
+def _question_type(q: dict[str, Any]) -> str:
+    return str(q.get("type") or "single")
+
+
+def _shuffle_copy(items: list[Any], *, shuffle: bool) -> list[Any]:
+    copy = list(items)
+    if shuffle and len(copy) > 1:
+        random.shuffle(copy)
+    return copy
+
+
+def quiz_question_for_client(q: dict[str, Any], *, shuffle_options: bool = True) -> dict[str, Any]:
+    """Один вопрос квиза без правильных ответов."""
+    qtype = _question_type(q)
+    payload: dict[str, Any] = {
+        "id": q["id"],
+        "text": q["text"],
+        "type": qtype,
+    }
+    if q.get("hint"):
+        payload["hint"] = q["hint"]
+
+    if qtype == "single":
+        payload["options"] = _shuffle_copy(q.get("options", []), shuffle=shuffle_options)
+    elif qtype == "multi":
+        payload["options"] = _shuffle_copy(q.get("options", []), shuffle=shuffle_options)
+    elif qtype == "true_false":
+        payload["statements"] = [
+            {"id": item["id"], "text": item["text"]}
+            for item in q.get("statements", [])
+        ]
+    elif qtype == "matching":
+        payload["left"] = list(q.get("left", []))
+        payload["right"] = _shuffle_copy(q.get("right", []), shuffle=shuffle_options)
+    elif qtype == "ordering":
+        payload["items"] = _shuffle_copy(q.get("items", []), shuffle=shuffle_options)
+    elif qtype == "picture_match":
+        payload["pictures"] = list(q.get("pictures", []))
+        payload["labels"] = _shuffle_copy(q.get("labels", []), shuffle=shuffle_options)
+    else:
+        payload["options"] = _shuffle_copy(q.get("options", []), shuffle=shuffle_options)
+    return payload
+
+
 def quiz_for_client(quiz: dict[str, Any], *, shuffle_options: bool = True) -> dict[str, Any]:
     """Вопросы без правильных ответов — только для браузера."""
-    questions = []
-    for q in quiz.get("questions", []):
-        options = list(q.get("options", []))
-        if shuffle_options and len(options) > 1:
-            random.shuffle(options)
-        questions.append(
-            {
-                "id": q["id"],
-                "text": q["text"],
-                "options": options,
-            }
-        )
+    questions = [
+        quiz_question_for_client(q, shuffle_options=shuffle_options)
+        for q in quiz.get("questions", [])
+    ]
     return {
         "title": quiz.get("title", ""),
         "pass_score": int(quiz.get("pass_score", len(questions))),
@@ -129,26 +165,89 @@ def quiz_for_client(quiz: dict[str, Any], *, shuffle_options: bool = True) -> di
     }
 
 
-def score_quiz(quiz: dict[str, Any], answers: dict[str, str]) -> tuple[int, int]:
+def _normalize_list_answer(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return sorted(str(item) for item in value)
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        if text.startswith("["):
+            try:
+                parsed = json.loads(text)
+                if isinstance(parsed, list):
+                    return sorted(str(item) for item in parsed)
+            except json.JSONDecodeError:
+                pass
+        return sorted(part.strip() for part in text.split(",") if part.strip())
+    return [str(value)]
+
+
+def _normalize_map_answer(value: Any) -> dict[str, str]:
+    if isinstance(value, dict):
+        return {str(key): str(val) for key, val in sorted(value.items())}
+    if isinstance(value, str) and value.strip().startswith("{"):
+        try:
+            parsed = json.loads(value)
+            if isinstance(parsed, dict):
+                return {str(key): str(val) for key, val in sorted(parsed.items())}
+        except json.JSONDecodeError:
+            pass
+    return {}
+
+
+def _normalize_order_answer(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return _normalize_list_answer(value)
+
+
+def score_question(q: dict[str, Any], answer: Any) -> bool:
+    qtype = _question_type(q)
+    correct = q.get("correct")
+
+    if qtype == "single":
+        return str(answer or "") == str(correct or "")
+
+    if qtype in {"multi", "true_false"}:
+        return _normalize_list_answer(answer) == _normalize_list_answer(correct)
+
+    if qtype in {"matching", "picture_match"}:
+        return _normalize_map_answer(answer) == _normalize_map_answer(correct)
+
+    if qtype == "ordering":
+        return _normalize_order_answer(answer) == _normalize_order_answer(correct)
+
+    return str(answer or "") == str(correct or "")
+
+
+def score_quiz(quiz: dict[str, Any], answers: dict[str, Any]) -> tuple[int, int]:
     total = len(quiz.get("questions", []))
-    correct = 0
-    for q in quiz.get("questions", []):
-        if answers.get(q["id"]) == q.get("correct"):
-            correct += 1
+    correct = sum(1 for q in quiz.get("questions", []) if score_question(q, answers.get(q["id"])))
     return correct, total
 
 
-def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, str]) -> list[dict[str, Any]]:
-    """По каждому вопросу — верно ли; при ошибке id правильного варианта."""
+def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, Any]) -> list[dict[str, Any]]:
+    """По каждому вопросу — верно ли; при ошибке — подсказка для UI."""
     items: list[dict[str, Any]] = []
     for q in quiz.get("questions", []):
         qid = q["id"]
         picked = answers.get(qid)
-        correct_id = q.get("correct")
-        ok = picked == correct_id
+        ok = score_question(q, picked)
         item: dict[str, Any] = {"id": qid, "ok": ok}
-        if not ok and correct_id:
-            item["correct_option"] = correct_id
+        if not ok:
+            qtype = _question_type(q)
+            correct = q.get("correct")
+            if qtype == "single" and correct:
+                item["correct_option"] = correct
+            elif qtype in {"multi", "true_false"}:
+                item["correct_options"] = _normalize_list_answer(correct)
+            elif qtype in {"matching", "picture_match"}:
+                item["correct_map"] = _normalize_map_answer(correct)
+            elif qtype == "ordering":
+                item["correct_order"] = _normalize_order_answer(correct)
         items.append(item)
     return items
 

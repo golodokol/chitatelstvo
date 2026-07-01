@@ -73,6 +73,40 @@
     </div>
     {% endif %}
 
+    {% if creative_tasks %}
+    <div class="chit-card chit-step" id="step-creative">
+      <div class="chit-badge-step">Шаг 5 · творчество</div>
+      <h2>{{ creative_tasks.title }}</h2>
+      {% if creative_tasks.chest_note %}
+      <p>{{ creative_tasks.chest_note }}</p>
+      {% endif %}
+      {% if creative_tasks.items %}
+      <ul class="chit-creative-list">
+        {% for item in creative_tasks.items %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <p class="chit-hint">Выполни задания дома — награды появятся в сундуке на странице прогресса.</p>
+    </div>
+    {% endif %}
+
+    {% if live_lesson %}
+    <div class="chit-card chit-step chit-live-lesson" id="step-live-lesson">
+      <div class="chit-badge-step">Живая встреча</div>
+      <h2>Урок с преподавателем</h2>
+      {% if live_lesson.mode == 'link' %}
+      <p>Здесь появится ссылка на урок с преподавателем.</p>
+      {% if live_lesson.url %}
+      <p><a class="chit-btn" href="{{ live_lesson.url }}" target="_blank" rel="noopener">Перейти к встрече</a></p>
+      {% endif %}
+      {% else %}
+      <p>Ближайший урок с преподавателем — <strong>{{ live_lesson.date }}</strong>. Докупить одну встречу к этой сказке?</p>
+      <p><a class="chit-btn" href="{{ live_lesson.purchase_url }}">Записаться на занятие · {{ live_lesson.price }} ₽</a></p>
+      {% endif %}
+    </div>
+    {% endif %}
+
     <div class="chit-card chit-step chit-step-rating" id="step-rating" hidden>
       <div class="chit-badge-step">Оценка сказки</div>
       <h2>Как тебе эта сказка?</h2>
@@ -98,6 +132,7 @@
 
   <script src="/static/lesson_slovik.js"></script>
   <script src="/static/emotion_wheel.js"></script>
+  <script src="/static/lesson_quiz.js"></script>
   <script>
     const CFG = {
       slug: {{ slug|tojson }},
@@ -205,6 +240,19 @@
     }
 
     function renderQuiz(formId, quiz) {
+      if (window.ChitLessonQuiz) {
+        ChitLessonQuiz.render(formId, quiz);
+        const form = document.getElementById(formId);
+        if (form) {
+          form.addEventListener('change', function () {
+            clearQuizFeedback(formId);
+          });
+          form.addEventListener('click', function (event) {
+            if (event.target.closest('.chit-order-btn')) clearQuizFeedback(formId);
+          });
+        }
+        return;
+      }
       const form = document.getElementById(formId);
       quiz.questions.forEach((q, idx) => {
         const div = document.createElement('div');
@@ -346,6 +394,7 @@
     }
 
     function collectAnswers(formId, quiz) {
+      if (window.ChitLessonQuiz) return ChitLessonQuiz.collect(formId, quiz);
       const answers = {};
       for (const q of quiz.questions) {
         const picked = document.querySelector('#' + formId + ' input[name="' + q.id + '"]:checked');

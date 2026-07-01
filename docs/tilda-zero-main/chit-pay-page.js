@@ -1,6 +1,6 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты:
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=4"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=5"></script>
  */
 (function () {
   var STORAGE_KEY = 'chit_checkout';
@@ -27,7 +27,8 @@
   var ORDER_PRODUCTS = {
     single: { uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2', title: 'Читательство · Разовое', price: 1490 },
     self_paced: { uid: '206548598642', lid: '205285061796', sku: 'SKU0002', title: 'Читательство · Индивидуальное', price: 1990 },
-    with_teacher: { uid: '956231952022', lid: '776534181255', sku: 'SKU0003', title: 'Читательство · С преподавателем', price: 4990 }
+    with_teacher: { uid: '956231952022', lid: '776534181255', sku: 'SKU0003', title: 'Читательство · С преподавателем', price: 4990 },
+    meeting_addon: { uid: 'REPLACE_AFTER_TILDA_CATALOG', lid: 'REPLACE_AFTER_TILDA_CATALOG', sku: 'SKU0004', title: 'Читательство · Занятие с преподавателем', price: 899 }
   };
 
   var PAY_CSS = [
@@ -92,7 +93,7 @@
     if (recType && STORE_REC_TYPES.indexOf(recType) >= 0) return true;
     if (rec.querySelector('.js-store-product, .js-product[data-product-gen-uid], .t-store__card-one, .t-store')) return true;
     var text = rec.textContent || '';
-    return /SKU0001|SKU0002|SKU0003/i.test(text) && /Артикул/i.test(text);
+    return /SKU0001|SKU0002|SKU0003|SKU0004/i.test(text) && /Артикул/i.test(text);
   }
 
   function hideStoreBlocks() {
@@ -158,7 +159,8 @@
       notification_channel: ['notification_channel'],
       module_id: ['module_id'],
       chosen_stage: ['chosen_stage'],
-      chosen_tale_number: ['chosen_tale_number']
+      chosen_tale_number: ['chosen_tale_number'],
+      lesson_slug: ['lesson_slug']
     };
     var names = aliases[name] || [name];
     names.forEach(function (fieldName) {
@@ -330,7 +332,7 @@
     waitFor(function () {
       return typeof window.tcart__addProduct === 'function' && document.querySelector('.t706');
     }, function () {
-      ['module_id', 'chosen_stage', 'chosen_tale_number', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
+      ['module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
         setField(name, data[name]);
       });
 

@@ -13,12 +13,18 @@ from api.event_types import MANUAL_MARK_ONLY
 from api.lesson_signing import build_lesson_url
 from api.test_lesson_auth import verify_test_lesson_key
 from catalog.loader import get_module
-from config.settings import LESSON_WEEK_DAYS, PUBLIC_BASE_URL, VIDEO_WATCH_THRESHOLD
+from config.settings import (
+    LESSON_WEEK_DAYS,
+    MEETING_ADDON_MODULE_ID,
+    MEETING_ADDON_PRICE_RUB,
+    PUBLIC_BASE_URL,
+    VIDEO_WATCH_THRESHOLD,
+)
 from db import repository as repo
-from db.models import Child
+from db.models import Child, Enrollment
 from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from lessons.access import is_lesson_unlocked
-from lessons.enrollment_access import child_can_access_lesson, find_enrollment_for_lesson
+from lessons.enrollment_access import child_can_access_lesson, find_enrollment_for_lesson, normalize_stage
 from lessons.loader import (
     emotion_quiz_for_client,
     get_lesson,
@@ -111,6 +117,71 @@ def build_video_payload(lesson: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def _child_has_meeting_addon(child: Child, lesson: dict[str, Any]) -> bool:
+    """Докупленная встреча с преподавателем (module_id=19) для этой сказки."""
+    lesson_slug = (lesson.get("slug") or "").strip()
+    tale_slug = (lesson.get("tale_slug") or lesson_slug).strip()
+    tale_number = lesson.get("tale_number")
+    stage = lesson.get("stage")
+    for enrollment in child.enrollments:
+        if enrollment.status != "active" or enrollment.module_id != MEETING_ADDON_MODULE_ID:
+            continue
+        if lesson_slug and enrollment.chosen_tale_slug == lesson_slug:
+            return True
+        if tale_slug and enrollment.chosen_tale_slug == tale_slug:
+            return True
+        if (
+            tale_number
+            and stage
+            and enrollment.chosen_tale_number == tale_number
+            and normalize_stage(enrollment.chosen_stage) == normalize_stage(stage)
+        ):
+            return True
+    return False
+
+
+def build_live_lesson_block(
+    lesson: dict[str, Any],
+    enrollment: Enrollment | None,
+    *,
+    child: Child | None = None,
+) -> dict[str, Any] | None:
+    """Блок живой встречи: ссылка при тарифе с преподавателем, иначе — запись на разовый урок."""
+    live = lesson.get("live_lesson")
+    if live is False:
+        return None
+
+    config = live if isinstance(live, dict) else {}
+    has_live_access = False
+    if child and _child_has_meeting_addon(child, lesson):
+        has_live_access = True
+    if enrollment and enrollment.status == "active":
+        module = get_module(enrollment.module_id)
+        if module and module.get("tariff_code") in ("with_teacher", "single"):
+            has_live_access = True
+
+    if has_live_access:
+        return {
+            "mode": "link",
+            "url": config.get("meeting_url"),
+        }
+
+    group_code = lesson.get("group_code") or "grade-1"
+    stage = lesson.get("stage") or "stage-1"
+    tale_number = lesson.get("tale_number") or lesson.get("lesson_number") or 1
+    slug = lesson.get("slug", "")
+    purchase_url = (
+        f"/order/meeting?group={group_code}&stage={stage}&tale={tale_number}&slug={slug}"
+    )
+    default_price = int(config.get("price_rub", MEETING_ADDON_PRICE_RUB))
+    return {
+        "mode": "upsell",
+        "date": config.get("next_meeting_label", "20 июля 2026"),
+        "purchase_url": purchase_url,
+        "price": default_price,
+    }
+
+
 def build_lesson_json(
     db: Session,
     *,
@@ -120,6 +191,7 @@ def build_lesson_json(
 ) -> dict[str, Any]:
     lesson = load_lesson(db, slug)
     require_lesson_unlocked(db, child.id, lesson, bypass=test_bypass)
+    enrollment = find_enrollment_for_lesson(child, lesson)
 
     emotion = lesson.get("emotion_quiz")
     comprehension = lesson.get("comprehension_quiz")
@@ -139,6 +211,8 @@ def build_lesson_json(
         "emotion_quiz": emotion_quiz_for_client(emotion) if emotion else None,
         "comprehension_quiz": quiz_for_client(comprehension) if comprehension else None,
         "meaning_quiz": quiz_for_client(meaning) if meaning else None,
+        "creative_tasks": lesson.get("creative_tasks"),
+        "live_lesson": build_live_lesson_block(lesson, enrollment, child=child),
         "slovik": build_slovik_payload(lesson),
         "existing_rating": existing_rating.rating if existing_rating else None,
         "can_rate": can_rate,
@@ -241,7 +315,7 @@ def handle_quiz_submit(
     child_id: uuid.UUID,
     slug: str,
     quiz_type: Literal["comprehension", "meaning_analysis"],
-    answers: dict[str, str],
+    answers: dict[str, Any],
     test_key: str | None = None,
 ) -> dict[str, Any]:
     lesson = load_lesson(db, slug)

@@ -270,5 +270,21 @@
       "status": "черновик",
       "note": "4 сказки + 4 встречи одного периода: старт 22 июня или 20 июля — выбор при записи (chosen_stage). Сказки — лист СКАЗКИ"
     }
+    ,
+    {
+      "id": 19,
+      "group_code": "addon",
+      "group_label": "Дополнение",
+      "tariff_code": "meeting_addon",
+      "tariff_label": "Занятие с преподавателем",
+      "title": "Разовое занятие с преподавателем (дополнение к курсу)",
+      "tales_count": 0,
+      "stages": "к любой купленной сказке",
+      "tale_numbers": "номер сказки 1–4 выбранного периода",
+      "meetings": 1,
+      "price_rub": 899,
+      "status": "черновик",
+      "note": "Докупка одной живой встречи для тарифа «Индивидуальное». module_id=19, chosen_stage + chosen_tale_number + lesson_slug в webhook."
+    }
   ]
 }

@@ -42,6 +42,37 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
             "chosen_tale_title": tale["tale_title"],
         }
 
+    if module["tariff_code"] == "meeting_addon":
+        stage = normalize_stage(body.chosen_stage)
+        if not stage or not body.chosen_tale_number:
+            raise HTTPException(
+                400,
+                "Для докупки встречи укажите chosen_stage (1 или 2) и chosen_tale_number (1–4).",
+            )
+        lesson_slug = (body.lesson_slug or "").strip() or None
+        chosen_tale_slug = lesson_slug
+        chosen_tale_title = None
+        if not chosen_tale_slug:
+            for group_code in ("grade-1", "grade-2", "grade-3", "grade-4", "extra-6-8", "extra-9-11"):
+                tale = resolve_chosen_tale(
+                    group_code=group_code,
+                    chosen_stage=stage,
+                    chosen_tale_number=body.chosen_tale_number,
+                )
+                if tale:
+                    chosen_tale_slug = tale["slug"]
+                    chosen_tale_title = tale["tale_title"]
+                    break
+        if not chosen_tale_slug:
+            raise HTTPException(400, "Не удалось определить сказку для докупки встречи")
+        return {
+            "module": module,
+            "chosen_stage": stage,
+            "chosen_tale_number": body.chosen_tale_number,
+            "chosen_tale_slug": chosen_tale_slug,
+            "chosen_tale_title": chosen_tale_title,
+        }
+
     stage = normalize_stage(body.chosen_stage)
     if not stage:
         raise HTTPException(

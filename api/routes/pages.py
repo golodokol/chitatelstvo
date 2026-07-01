@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from config.settings import PUBLIC_BASE_URL, ROOT
+from config.settings import MEETING_ADDON_MODULE_ID, MEETING_ADDON_PRICE_RUB, ROOT
 
 router = APIRouter(tags=["pages"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
@@ -38,3 +38,37 @@ def page_spasibo(request: Request) -> HTMLResponse:
 def page_zapis_redirect() -> RedirectResponse:
     """Запись на главной — редирект на блок «Выберите свой путь»."""
     return RedirectResponse(url=f"{SITE_URL}/#program", status_code=302)
+
+
+@router.get("/order/meeting", response_class=HTMLResponse)
+def page_order_meeting(
+    request: Request,
+    group: str = "grade-1",
+    stage: str = "stage-1",
+    tale: int = 1,
+    slug: str = "",
+) -> HTMLResponse:
+    """Страница покупки разового урока с преподавателем для выбранной сказки."""
+    from catalog.loader import get_tale
+
+    tale_info = get_tale(group, stage, tale) or {}
+    tale_title = tale_info.get("tale_title") or tale_info.get("title") or "Царевна лягушка"
+    stage_num = "1" if stage in ("stage-1", "1") else "2" if stage in ("stage-2", "2") else "1"
+    pay_url = f"{SITE_URL}/oplata"
+    return templates.TemplateResponse(
+        request,
+        "order_meeting.html",
+        {
+            **PAGE_CONTEXT,
+            "tale_title": tale_title,
+            "price": MEETING_ADDON_PRICE_RUB,
+            "meeting_date": "20 июля 2026",
+            "pay_url": pay_url,
+            "module_id": MEETING_ADDON_MODULE_ID,
+            "group_code": group,
+            "stage": stage,
+            "stage_num": stage_num,
+            "tale_number": tale,
+            "lesson_slug": slug,
+        },
+    )

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
@@ -37,7 +37,7 @@ class VideoCompleteMobileBody(LessonChildBody):
 
 class QuizSubmitMobileBody(LessonChildBody):
     quiz_type: Literal["comprehension", "meaning_analysis"]
-    answers: dict[str, str]
+    answers: dict[str, Any]
 
 
 class EmotionQuizSubmitMobileBody(LessonChildBody):

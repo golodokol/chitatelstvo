@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
@@ -51,7 +51,7 @@ class VideoCompleteBody(LessonAuth):
 
 class QuizSubmitBody(LessonAuth):
     quiz_type: Literal["comprehension", "meaning_analysis"]
-    answers: dict[str, str]
+    answers: dict[str, Any]
 
 
 class EmotionQuizSubmitBody(LessonAuth):
@@ -91,12 +91,13 @@ def lesson_page(
 
     child_row = get_child_or_404(db, child)
     payload = build_lesson_json(db, child=child_row, slug=slug, test_bypass=test_bypass)
+    lesson_data = get_lesson(slug) or {}
 
     return templates.TemplateResponse(
         request,
         "lesson.html",
         {
-            "lesson": get_lesson(slug),
+            "lesson": lesson_data,
             "slug": slug,
             "child_id": str(child),
             "child_name": child_row.name,
@@ -107,6 +108,8 @@ def lesson_page(
             "comprehension_quiz": payload["comprehension_quiz"],
             "meaning_quiz": payload["meaning_quiz"],
             "emotion_quiz": payload["emotion_quiz"],
+            "creative_tasks": payload.get("creative_tasks"),
+            "live_lesson": payload.get("live_lesson"),
             "slovik": payload["slovik"],
             "existing_rating": payload["existing_rating"],
             "can_rate": payload["can_rate"],

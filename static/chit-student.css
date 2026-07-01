@@ -475,7 +475,139 @@ body.chit-student {
   font-size: 0.95rem;
 }
 
-.chit-msg {
+.chit-q-hint {
+  margin: 6px 0 10px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.chit-q-check {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+}
+
+.chit-match-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chit-match-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 220px);
+  gap: 10px;
+  align-items: center;
+}
+
+.chit-match-left {
+  font-weight: 600;
+  color: var(--text-warm);
+}
+
+.chit-match-row select,
+.chit-picture-card select {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: var(--white);
+}
+
+.chit-order-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.chit-order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+}
+
+.chit-order-text {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.chit-order-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.chit-order-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--blue-pale);
+  color: var(--blue-deep);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chit-picture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.chit-picture-card {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  background: var(--white);
+  text-align: center;
+}
+
+.chit-picture-card img {
+  width: 100%;
+  max-width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin: 0 auto 8px;
+  display: block;
+}
+
+.chit-creative-list {
+  margin: 10px 0 0;
+  padding-left: 1.2rem;
+  color: var(--text-warm);
+}
+
+.chit-creative-list li {
+  margin: 6px 0;
+}
+
+.chit-live-lesson {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--blue-light);
+  background: linear-gradient(180deg, #fff, var(--blue-pale));
+}
+
+.chit-live-lesson p {
+  margin: 0 0 10px;
+  color: var(--text-warm);
+}
+
+.chit-live-lesson .chit-btn {
+  margin-top: 4px;
+}
+
   padding: 10px 14px;
   border-radius: 10px;
   margin-top: 10px;

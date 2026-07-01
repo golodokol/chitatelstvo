@@ -58,9 +58,10 @@ class RegisterWebhook(BaseModel):
     notification_channel: NotificationChannel = "email"
     child_name: str = Field(min_length=1, max_length=100)
     child_age: int | None = Field(default=None)
-    module_id: int | None = Field(default=None, ge=1, le=18)
+    module_id: int | None = Field(default=None, ge=1, le=19)
     chosen_stage: str | None = Field(default=None, max_length=50)
     chosen_tale_number: int | None = Field(default=None, ge=1, le=4)
+    lesson_slug: str | None = Field(default=None, max_length=120)
     promo_code: str | None = Field(default=None, max_length=50)
 
     @model_validator(mode="before")
@@ -83,6 +84,8 @@ class RegisterWebhook(BaseModel):
             "tale_number": "chosen_tale_number",
             "chosen_tale_number": "chosen_tale_number",
             "tale": "chosen_tale_number",
+            "lesson_slug": "lesson_slug",
+            "lesson": "lesson_slug",
             "child": "child_name",
             "age": "child_age",
             "promocode": "promo_code",
