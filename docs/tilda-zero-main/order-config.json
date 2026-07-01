@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "pay_page_url": "https://chitatelstvo.ru/oplata",
   "products": {
     "single": {
@@ -24,11 +24,12 @@
       "price": 4990
     },
     "meeting_addon": {
-      "uid": "REPLACE_AFTER_TILDA_CATALOG",
-      "lid": "REPLACE_AFTER_TILDA_CATALOG",
+      "uid": "168614126213",
+      "lid": "168614126213",
+      "external_code": "dBZzgmd0Rx8AmAY9ip7Y",
       "sku": "SKU0004",
       "title": "Читательство · Занятие с преподавателем",
-      "price": 899
+      "price": 799
     }
   }
 }

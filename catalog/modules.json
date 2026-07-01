@@ -282,7 +282,7 @@
       "stages": "к любой купленной сказке",
       "tale_numbers": "номер сказки 1–4 выбранного периода",
       "meetings": 1,
-      "price_rub": 899,
+      "price_rub": 799,
       "status": "черновик",
       "note": "Докупка одной живой встречи для тарифа «Индивидуальное». module_id=19, chosen_stage + chosen_tale_number + lesson_slug в webhook."
     }

@@ -89,7 +89,7 @@ def _parse_module_start_date(raw: str) -> date | None:
 
 
 MEETING_ADDON_MODULE_ID = int(os.getenv("MEETING_ADDON_MODULE_ID", "19"))
-MEETING_ADDON_PRICE_RUB = int(os.getenv("MEETING_ADDON_PRICE_RUB", "899"))
+MEETING_ADDON_PRICE_RUB = int(os.getenv("MEETING_ADDON_PRICE_RUB", "799"))
 
 MODULE_START_DATE = _parse_module_start_date(_MODULE_START_RAW)
 

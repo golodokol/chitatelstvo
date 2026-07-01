@@ -1,6 +1,6 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты:
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=5"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=6"></script>
  */
 (function () {
   var STORAGE_KEY = 'chit_checkout';
@@ -28,7 +28,7 @@
     single: { uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2', title: 'Читательство · Разовое', price: 1490 },
     self_paced: { uid: '206548598642', lid: '205285061796', sku: 'SKU0002', title: 'Читательство · Индивидуальное', price: 1990 },
     with_teacher: { uid: '956231952022', lid: '776534181255', sku: 'SKU0003', title: 'Читательство · С преподавателем', price: 4990 },
-    meeting_addon: { uid: 'REPLACE_AFTER_TILDA_CATALOG', lid: 'REPLACE_AFTER_TILDA_CATALOG', sku: 'SKU0004', title: 'Читательство · Занятие с преподавателем', price: 899 }
+    meeting_addon: { uid: '168614126213', lid: '168614126213', sku: 'SKU0004', title: 'Читательство · Занятие с преподавателем', price: 799 }
   };
 
   var PAY_CSS = [
