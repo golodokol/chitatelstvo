@@ -44,9 +44,9 @@ SPECS: list[tuple[str, float, float]] = [
     ("surprise", 49.0, 86.5),
     ("sadness", 86.5, 128.0),
     ("fear", 128.0, 162.0),
-    ("anger", 162.0, 196.0),
-    ("resentment", 196.0, 231.5),
-    ("tired", 231.5, 270.5),
+    ("anger", 162.0, 199.0),
+    ("resentment", 199.0, 234.5),
+    ("tired", 234.5, 270.5),
     ("pride", 270.5, 310.5),
     ("calm", 310.5, 340.5),
 ]
