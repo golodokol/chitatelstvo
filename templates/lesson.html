@@ -179,8 +179,27 @@
     function clampPercent(percent) {
       let p = Number(percent);
       if (!Number.isFinite(p) || p < 0) p = 0;
+      // 0–1: доля просмотра (HTML5, Vimeo). >1: проценты 0–100.
       if (p > 1) p = p / 100;
       return Math.min(1, Math.max(0, p));
+    }
+
+    function normalizeKinescopeProgress(event) {
+      const data = (event && event.data) || {};
+      if (data.percent != null && Number.isFinite(Number(data.percent))) {
+        return Math.min(1, Math.max(0, Number(data.percent) / 100));
+      }
+      const current = Number(data.currentTime);
+      const duration = Number(data.duration);
+      if (Number.isFinite(current) && Number.isFinite(duration) && duration > 0) {
+        return Math.min(1, Math.max(0, current / duration));
+      }
+      return null;
+    }
+
+    function maybeSendVideoComplete() {
+      if (videoSent) return;
+      if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
     }
 
     function apiErrorMessage(data, fallback) {
@@ -486,7 +505,7 @@
         trackPercent(v.currentTime / v.duration);
       });
       v.addEventListener('ended', function() {
-        if (!videoSent) sendVideoComplete(Math.max(maxPercent, 1));
+        maybeSendVideoComplete();
       });
     }
 
@@ -500,11 +519,11 @@
 
       function bindPlayer(player) {
         player.on(player.Events.TimeUpdate, function(event) {
-          const raw = event.data.percent != null ? event.data.percent : event.data.played;
-          trackPercent(raw);
+          const p = normalizeKinescopeProgress(event);
+          if (p != null) trackPercent(p);
         });
         player.on(player.Events.Ended, function() {
-          if (!videoSent) sendVideoComplete(Math.max(maxPercent, 1));
+          maybeSendVideoComplete();
         });
         player.on(player.Events.Error, function(event) {
           showMsg('video-msg', 'Ошибка загрузки видео Kinescope. Проверьте ID в lessons/kolobok.json', 'err');

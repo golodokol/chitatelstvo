@@ -8,7 +8,7 @@
 
 | Шаг | Событие | Как засчитывается |
 |-----|---------|-------------------|
-| Видео ≥80% | `lesson_complete` | **Kinescope** / **Yandex** / HTML5 |
+| Видео ≥50% | `lesson_complete` | **Kinescope** / **Yandex** / HTML5 |
 | Квиз «Понимание» | `comprehension` | ≥4 из 5 правильных |
 | Квиз «Смысл» | `meaning_analysis` | ≥2 из 3 правильных |
 | Творческое | `creative_task` | Кнопка родителя |
@@ -118,7 +118,7 @@ YANDEX_ENDPOINT=https://storage.yandexcloud.net
 
 `youtube`, `vimeo`, `html5` — оставлены для совместимости, в РФ не рекомендуются.
 
-Порог просмотра: `VIDEO_WATCH_THRESHOLD=0.8` в `.env`.
+Порог просмотра: `VIDEO_WATCH_THRESHOLD=0.5` в `.env` (50% длительности).
 
 ---
 
