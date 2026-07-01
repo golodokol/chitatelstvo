@@ -405,13 +405,19 @@
     }
 
     function enableNextAfterVideo() {
-      const btnEmotion = document.getElementById('btn-emotion');
+      updateEmotionButton();
       const btnComp = document.getElementById('btn-comprehension');
       const btnMean = document.getElementById('btn-meaning');
-      if (btnEmotion) {
-        btnEmotion.disabled = !(emotionWheel && emotionWheel.isComplete());
-      } else if (btnComp && !CFG.emotion) btnComp.disabled = false;
-      else if (btnMean) btnMean.disabled = false;
+      if (!CFG.emotion && btnComp) btnComp.disabled = false;
+      else if (!CFG.emotion && btnMean) btnMean.disabled = false;
+    }
+
+    function updateEmotionButton() {
+      const btn = document.getElementById('btn-emotion');
+      if (!btn || lessonState.emotionDone) return;
+      const picked = emotionWheel && emotionWheel.isComplete();
+      const videoOk = lessonState.videoDone || !!CFG.testKey;
+      btn.disabled = !(picked && videoOk);
     }
 
     async function sendVideoComplete(percent) {
@@ -584,6 +590,10 @@
 
     async function submitEmotionQuiz() {
       if (!CFG.emotion || !emotionWheel) return;
+      if (!lessonState.videoDone && !CFG.testKey) {
+        showEmotionVerdict('err', 'Сначала досмотрите видео-урок — тогда можно проверить эмоции.');
+        return;
+      }
       const q = CFG.emotion.question;
       const selected = emotionWheel.getSelected();
       if (selected.length !== Number(q.pick)) {
@@ -600,7 +610,7 @@
       if (!okStatus && !failedStatus) {
         const errDetail = data && data.message;
         showEmotionVerdict('err', errDetail || 'Не удалось проверить ответ. Обновите страницу и попробуйте снова.');
-        btn.disabled = !emotionWheel.isComplete();
+        updateEmotionButton();
         return;
       }
       if (failedStatus) {
@@ -608,7 +618,7 @@
           emotionWheel.markResult(data.correct, false);
         }
         showEmotionVerdict('err', formatEmotionFail(data, selected));
-        btn.disabled = !emotionWheel.isComplete();
+        updateEmotionButton();
         return;
       }
       if (emotionWheel.markResult && data.correct) {
@@ -640,18 +650,20 @@
         petalPaths: CFG.emotion.wheel_petals,
         pick: q.pick,
         onChange: function (_selected, complete) {
-          if (!lessonState.emotionDone) clearEmotionFeedback();
-          const btn = document.getElementById('btn-emotion');
-          if (btn && !lessonState.emotionDone) {
-            btn.disabled = !complete;
+          if (!lessonState.emotionDone) {
+            const msg = document.getElementById('emotion-msg');
+            if (msg && msg.style.display !== 'none') {
+              msg.className = 'chit-msg';
+              msg.textContent = '';
+              msg.style.display = 'none';
+              document.getElementById('step-emotion').classList.remove('is-wrong', 'is-ok');
+            }
           }
+          updateEmotionButton();
         },
       });
       document.getElementById('btn-emotion').addEventListener('click', submitEmotionQuiz);
-      const emotionBtn = document.getElementById('btn-emotion');
-      if (emotionBtn && !lessonState.emotionDone) {
-        emotionBtn.disabled = !emotionWheel.isComplete();
-      }
+      updateEmotionButton();
     }
 
     async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {

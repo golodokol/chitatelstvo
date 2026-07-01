@@ -1977,7 +1977,11 @@ body.chit-cabinet--parent {
 .chit-emotion-wheel__sector:focus,
 .chit-emotion-wheel__sector:focus-visible {
   fill: rgba(255, 255, 255, 0.22);
-  outline: none;
+  outline: none !important;
+}
+
+.chit-emotion-wheel__sector:focus:not(:focus-visible) {
+  outline: none !important;
 }
 
 .chit-emotion-wheel__sector.is-selected {

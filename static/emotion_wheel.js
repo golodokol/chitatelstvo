@@ -117,7 +117,8 @@
       }
     }
 
-    function syncUI() {
+    function syncUI(notifyChange) {
+      if (notifyChange === undefined) notifyChange = true;
       container.querySelectorAll('.chit-emotion-wheel__sector').forEach(function (node) {
         var id = node.getAttribute('data-id');
         var on = selected.has(id);
@@ -130,7 +131,7 @@
         node.setAttribute('aria-pressed', selected.has(node.dataset.id) ? 'true' : 'false');
       });
       renderPicked();
-      onChange(Array.from(selected), selectionComplete());
+      if (notifyChange) onChange(Array.from(selected), selectionComplete());
     }
 
     function toggle(id) {
@@ -185,7 +186,7 @@
           node.style.fillOpacity = '';
         }
       });
-      syncUI();
+      syncUI(false);
     }
 
     syncUI();
