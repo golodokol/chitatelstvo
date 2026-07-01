@@ -223,6 +223,7 @@ def build_lesson_json(
     return {
         "slug": slug,
         "title": lesson["title"],
+        "lesson": lesson,
         "child_id": str(child.id),
         "child_name": child.name,
         "module_week": lesson.get("module_week"),

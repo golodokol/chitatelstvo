@@ -14,7 +14,6 @@ from api.lesson_signing import verify_lesson_access
 from api.test_lesson_auth import verify_test_lesson_key
 from config.settings import ROOT, VIDEO_WATCH_THRESHOLD
 from db.session import get_db
-from lessons.loader import get_lesson, quiz_for_client
 from services.lesson_player import (
     build_lesson_json,
     get_child_or_404,
@@ -91,17 +90,12 @@ def lesson_page(
 
     child_row = get_child_or_404(db, child)
     payload = build_lesson_json(db, child=child_row, slug=slug, test_bypass=test_bypass)
-    lesson_data = {
-        **(get_lesson(slug) or {}),
-        "title": payload["title"],
-        "module_week": payload.get("module_week"),
-    }
 
     return templates.TemplateResponse(
         request,
         "lesson.html",
         {
-            "lesson": lesson_data,
+            "lesson": payload["lesson"],
             "slug": slug,
             "child_id": str(child),
             "child_name": child_row.name,
