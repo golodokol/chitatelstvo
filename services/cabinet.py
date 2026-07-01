@@ -72,12 +72,12 @@ def build_lesson_links_for_track(
             "tale_slug": les.get("tale_slug") or les["slug"],
             "module_id": les.get("module_id"),
             "group_code": module.get("group_code"),
-            "ready": les.get("active", True),
+            "ready": les.get("playable", les.get("active", True)),
         }
         if access.get("meeting_on_label"):
             link["meeting_on"] = access["meeting_on"]
             link["meeting_on_label"] = access["meeting_on_label"]
-        if access["unlocked"] and les.get("active", True):
+        if access["unlocked"] and les.get("playable", les.get("active", True)):
             link["url"] = build_lesson_url(child.id, les["slug"])
         enrich_lesson_link(link)
         lesson_links.append(link)

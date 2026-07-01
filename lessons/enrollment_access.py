@@ -7,6 +7,7 @@ from typing import Any
 from catalog.loader import get_module, get_tale
 from db.models import Child, Enrollment
 from lessons.loader import list_legacy_lessons, list_module_lessons
+from lessons.single_content import single_lesson_playable
 
 
 def normalize_stage(value: str | None) -> str | None:
@@ -100,17 +101,25 @@ def _lesson_summary(lesson: dict[str, Any], enrollment: Enrollment | None) -> di
     ):
         title = enrollment.chosen_tale_title
 
+    stage = lesson.get("stage")
+    if enrollment and lesson.get("tariff_code") == "single":
+        stage = normalize_stage(enrollment.chosen_stage) or stage
+
+    tale_slug = lesson.get("tale_slug") or lesson["slug"]
+    if enrollment and lesson.get("tariff_code") == "single" and enrollment.chosen_tale_slug:
+        tale_slug = enrollment.chosen_tale_slug
+
     return {
         "slug": lesson["slug"],
         "title": title,
-        "tale_slug": lesson.get("tale_slug") or lesson["slug"],
+        "tale_slug": tale_slug,
         "module_week": lesson.get("module_week", 1),
         "module_id": lesson.get("module_id"),
         "stage_label": lesson.get("stage_label"),
-        "stage": lesson.get("stage"),
+        "stage": stage,
         "group_code": lesson.get("group_code"),
         "active": lesson.get("active", True),
-        "playable": bool(lesson.get("active", True) and lesson.get("video")),
+        "playable": single_lesson_playable(lesson, enrollment),
     }
 
 

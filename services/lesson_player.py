@@ -34,6 +34,7 @@ from lessons.loader import (
     score_quiz,
 )
 from lessons.schedule import effective_module_week
+from lessons.single_content import merge_single_lesson_content
 from services.events import submit_learning_event
 from storage.yandex import resolve_video_src
 
@@ -72,16 +73,20 @@ def require_lesson_unlocked(
             403,
             f"Урок недели {week} ещё закрыт. Новая сказка откроется по расписанию модуля.",
         )
-    if lesson.get("module_id") is not None and not lesson.get("active", True):
+    playable = merge_single_lesson_content(lesson, enrollment)
+    if playable.get("module_id") is not None and not playable.get("active", True):
         raise HTTPException(403, "Урок ещё готовится — скоро появится на странице прогресса.")
     return child
 
 
-def load_lesson(db: Session, slug: str) -> dict[str, Any]:
+def load_lesson(db: Session, slug: str, *, child: Child | None = None) -> dict[str, Any]:
     lesson = get_lesson(slug)
     if not lesson:
         raise HTTPException(404, "Урок не найден")
-    return lesson
+    if child is None:
+        return lesson
+    enrollment = find_enrollment_for_lesson(child, lesson)
+    return merge_single_lesson_content(lesson, enrollment)
 
 
 def build_slovik_payload(lesson: dict[str, Any]) -> dict[str, Any]:
@@ -182,6 +187,21 @@ def build_live_lesson_block(
     }
 
 
+def prepare_lesson_for_child(
+    db: Session,
+    child_id: uuid.UUID,
+    slug: str,
+    *,
+    bypass: bool = False,
+) -> tuple[Child, dict[str, Any]]:
+    lesson = get_lesson(slug)
+    if not lesson:
+        raise HTTPException(404, "Урок не найден")
+    child = require_lesson_unlocked(db, child_id, lesson, bypass=bypass)
+    enrollment = find_enrollment_for_lesson(child, lesson)
+    return child, merge_single_lesson_content(lesson, enrollment)
+
+
 def build_lesson_json(
     db: Session,
     *,
@@ -189,14 +209,15 @@ def build_lesson_json(
     slug: str,
     test_bypass: bool = False,
 ) -> dict[str, Any]:
-    lesson = load_lesson(db, slug)
-    require_lesson_unlocked(db, child.id, lesson, bypass=test_bypass)
-    enrollment = find_enrollment_for_lesson(child, lesson)
+    _, lesson = prepare_lesson_for_child(db, child.id, slug, bypass=test_bypass)
+    raw = get_lesson(slug)
+    enrollment = find_enrollment_for_lesson(child, raw) if raw else None
 
     emotion = lesson.get("emotion_quiz")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
-    existing_rating = repo.get_tale_rating(db, child.id, slug)
+    tale_slug = lesson.get("tale_slug") or slug
+    existing_rating = repo.get_tale_rating(db, child.id, tale_slug)
     can_rate = repo.child_has_lesson_complete(db, child.id, tale_title=lesson["title"])
 
     return {
@@ -230,11 +251,10 @@ def handle_video_complete(
     percent: float,
     test_key: str | None = None,
 ) -> dict[str, Any]:
-    lesson = load_lesson(db, slug)
-    require_lesson_unlocked(
+    _, lesson = prepare_lesson_for_child(
         db,
         child_id,
-        lesson,
+        slug,
         bypass=verify_test_lesson_key(test_key),
     )
     if not verify_test_lesson_key(test_key) and percent < VIDEO_WATCH_THRESHOLD:
@@ -264,11 +284,10 @@ def handle_emotion_quiz_submit(
     answers: dict[str, list[str]],
     test_key: str | None = None,
 ) -> dict[str, Any]:
-    lesson = load_lesson(db, slug)
-    require_lesson_unlocked(
+    _, lesson = prepare_lesson_for_child(
         db,
         child_id,
-        lesson,
+        slug,
         bypass=verify_test_lesson_key(test_key),
     )
 
@@ -318,11 +337,10 @@ def handle_quiz_submit(
     answers: dict[str, Any],
     test_key: str | None = None,
 ) -> dict[str, Any]:
-    lesson = load_lesson(db, slug)
-    require_lesson_unlocked(
+    _, lesson = prepare_lesson_for_child(
         db,
         child_id,
-        lesson,
+        slug,
         bypass=verify_test_lesson_key(test_key),
     )
 
@@ -374,11 +392,10 @@ def handle_manual_mark(
     notes: str | None,
     test_key: str | None = None,
 ) -> dict[str, Any]:
-    lesson = load_lesson(db, slug)
-    require_lesson_unlocked(
+    _, lesson = prepare_lesson_for_child(
         db,
         child_id,
-        lesson,
+        slug,
         bypass=verify_test_lesson_key(test_key),
     )
     if event_type not in MANUAL_MARK_ONLY:
@@ -408,20 +425,20 @@ def handle_tale_rating(
     rating: int,
     test_key: str | None = None,
 ) -> dict[str, Any]:
-    lesson = load_lesson(db, slug)
-    require_lesson_unlocked(
+    _, lesson = prepare_lesson_for_child(
         db,
         child_id,
-        lesson,
+        slug,
         bypass=verify_test_lesson_key(test_key),
     )
     if not repo.child_has_lesson_complete(db, child_id, tale_title=lesson["title"]):
         raise HTTPException(400, "Сначала нужно досмотреть видео-урок по сказке.")
 
+    tale_slug = lesson.get("tale_slug") or slug
     row = repo.save_tale_rating(
         db,
         child_id=child_id,
-        tale_slug=slug,
+        tale_slug=tale_slug,
         tale_title=lesson["title"],
         rating=rating,
     )

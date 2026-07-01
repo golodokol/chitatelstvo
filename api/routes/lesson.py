@@ -91,7 +91,11 @@ def lesson_page(
 
     child_row = get_child_or_404(db, child)
     payload = build_lesson_json(db, child=child_row, slug=slug, test_bypass=test_bypass)
-    lesson_data = get_lesson(slug) or {}
+    lesson_data = {
+        **(get_lesson(slug) or {}),
+        "title": payload["title"],
+        "module_week": payload.get("module_week"),
+    }
 
     return templates.TemplateResponse(
         request,
