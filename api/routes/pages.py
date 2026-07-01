@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from config.settings import MEETING_ADDON_MODULE_ID, MEETING_ADDON_PRICE_RUB, ROOT
+from config.settings import MEETING_ADDON_MODULE_ID, MEETING_ADDON_PRICE_RUB, PUBLIC_BASE_URL, ROOT
 
 router = APIRouter(tags=["pages"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
