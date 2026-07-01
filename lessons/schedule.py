@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
-from lessons.enrollment_access import normalize_stage
+from lessons.stages import normalize_stage
 
 _MONTHS_RU = (
     "января",

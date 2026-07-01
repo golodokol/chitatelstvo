@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from db.models import Enrollment
-from lessons.enrollment_access import normalize_stage
+from lessons.stages import normalize_stage
 from lessons.loader import get_lesson
 
 

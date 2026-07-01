@@ -8,21 +8,7 @@ from catalog.loader import get_module, get_tale
 from db.models import Child, Enrollment
 from lessons.loader import list_legacy_lessons, list_module_lessons
 from lessons.single_content import single_lesson_playable
-
-
-def normalize_stage(value: str | None) -> str | None:
-    if not value:
-        return None
-    raw = str(value).strip().lower()
-    if raw in ("1", "stage-1", "этап 1", "этап1"):
-        return "stage-1"
-    if raw in ("2", "stage-2", "этап 2", "этап2"):
-        return "stage-2"
-    if raw.startswith("этап 1"):
-        return "stage-1"
-    if raw.startswith("этап 2"):
-        return "stage-2"
-    return None
+from lessons.stages import normalize_stage
 
 
 def resolve_chosen_tale(
