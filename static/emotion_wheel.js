@@ -47,7 +47,10 @@
       path.setAttribute('aria-label', emo.label);
       path.setAttribute('aria-pressed', 'false');
 
-      path.addEventListener('click', function () { toggle(emo.id); });
+      path.addEventListener('click', function () {
+        toggle(emo.id);
+        path.blur();
+      });
       path.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();

@@ -1974,6 +1974,7 @@ body.chit-cabinet--parent {
 }
 
 .chit-emotion-wheel__sector:hover,
+.chit-emotion-wheel__sector:focus,
 .chit-emotion-wheel__sector:focus-visible {
   fill: rgba(255, 255, 255, 0.22);
   outline: none;
