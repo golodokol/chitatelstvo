@@ -80,9 +80,9 @@
       {% if creative_tasks.chest_note %}
       <p>{{ creative_tasks.chest_note }}</p>
       {% endif %}
-      {% if creative_tasks.items %}
+      {% if creative_tasks['items'] %}
       <ul class="chit-creative-list">
-        {% for item in creative_tasks.items %}
+        {% for item in creative_tasks['items'] %}
         <li>{{ item }}</li>
         {% endfor %}
       </ul>
