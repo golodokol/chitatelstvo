@@ -153,7 +153,7 @@ def quiz_answer_results(quiz: dict[str, Any], answers: dict[str, str]) -> list[d
     return items
 
 
-EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=11"
+EMOTION_WHEEL_IMAGE = "/static/images/emotion-wheel.png?v=12"
 
 # Порядок — по часовой стрелке с верхнего лепестка (как на иллюстрации).
 EMOTION_WHEEL: list[dict[str, str]] = [
