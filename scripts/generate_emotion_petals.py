@@ -39,7 +39,7 @@ def wedge_path(a0: float, a1: float) -> str:
 
 # Границы по макету (offset −6.5°, грусть шире). Обида ~31°, спокойствие ~36°.
 SPECS: list[tuple[str, float, float]] = [
-    ("joy", -24.5, 11.5),
+    ("joy", -19.5, 11.5),
     ("interest", 11.5, 49.0),
     ("surprise", 49.0, 86.5),
     ("sadness", 86.5, 128.0),
@@ -48,7 +48,7 @@ SPECS: list[tuple[str, float, float]] = [
     ("resentment", 196.0, 227.5),
     ("tired", 227.5, 263.5),
     ("pride", 263.5, 299.5),
-    ("calm", 299.5, 335.5),
+    ("calm", 299.5, 340.5),
 ]
 
 
