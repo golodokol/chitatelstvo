@@ -711,7 +711,7 @@ body.chit-student {
   width: auto;
   min-width: min(100%, 280px);
   text-align: center;
-  box-shadow: 0 6px 20px rgba(201, 160, 48, 0.28);
+  box-shadow: 0 6px 20px rgba(91, 127, 166, 0.28);
 }
 
 .chit-btn--chest-lesson:hover {
@@ -1084,13 +1084,16 @@ body.chit-cabinet--parent {
 .chit-btn--hero { width: 100%; text-align: center; padding: 14px 20px; font-size: 1rem; border-radius: 14px; }
 .chit-btn--ghost { opacity: 0.65; cursor: default; pointer-events: none; }
 .chit-btn--chest {
-  background: linear-gradient(135deg, #c9a030, #e8c872);
-  color: #4a3800 !important;
+  background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+  color: #fff !important;
   width: 100%;
   margin-top: 12px;
   padding: 14px;
   font-size: 1rem;
   border-radius: 14px;
+}
+.chit-btn--chest:hover {
+  background: linear-gradient(135deg, var(--blue), var(--accent));
 }
 .chit-btn--chest:disabled { opacity: 0.45; cursor: not-allowed; }
 .chit-btn--sm { padding: 8px 14px; font-size: 0.85rem; }
