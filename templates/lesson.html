@@ -476,9 +476,8 @@
     function updateEmotionButton() {
       const btn = document.getElementById('btn-emotion');
       if (!btn || lessonState.emotionDone) return;
-      const picked = emotionWheel && emotionWheel.isComplete();
-      const videoOk = lessonState.videoDone || !!CFG.testKey;
-      btn.disabled = !(picked && videoOk);
+      const complete = emotionWheel && emotionWheel.isComplete();
+      btn.disabled = !complete;
     }
 
     async function sendVideoComplete(percent) {
@@ -651,10 +650,6 @@
 
     async function submitEmotionQuiz() {
       if (!CFG.emotion || !emotionWheel) return;
-      if (!lessonState.videoDone && !CFG.testKey) {
-        showEmotionVerdict('err', 'Сначала досмотрите видео-урок — тогда можно проверить эмоции.');
-        return;
-      }
       const q = CFG.emotion.question;
       const selected = emotionWheel.getSelected();
       if (selected.length !== Number(q.pick)) {
