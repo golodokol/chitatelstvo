@@ -767,8 +767,8 @@ body.chit-student {
 
 .chit-order-slot-drop {
   width: 100%;
-  min-height: 88px;
-  padding: 6px;
+  min-height: 108px;
+  padding: 8px;
   border: 2px dashed var(--border);
   border-radius: 10px;
   background: #fcf9f7;
@@ -794,10 +794,10 @@ body.chit-student {
 
 .chit-order-pool-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
   gap: 10px;
-  min-height: 72px;
-  padding: 10px;
+  min-height: 96px;
+  padding: 12px;
   border: 1.5px dashed var(--border);
   border-radius: 12px;
   background: var(--white);
@@ -858,9 +858,13 @@ body.chit-student {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 120px;
+  max-height: 155px;
   object-fit: contain;
   pointer-events: none;
+}
+
+.chit-order-pool-cards .chit-order-img {
+  max-height: 100px;
 }
 
 .chit-order-slot-drop .chit-order-card {
@@ -868,35 +872,43 @@ body.chit-student {
 }
 
 .chit-order-slot-drop .chit-order-img {
-  max-height: 96px;
+  max-height: 125px;
 }
 
 @media (min-width: 640px) {
   .chit-order-slot-drop {
-    min-height: 104px;
+    min-height: 128px;
   }
 
   .chit-order-pool-cards {
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    max-width: 640px;
+    max-width: 100%;
   }
 
   .chit-order-img {
-    max-height: 140px;
+    max-height: 180px;
+  }
+
+  .chit-order-pool-cards .chit-order-img {
+    max-height: 120px;
   }
 
   .chit-order-slot-drop .chit-order-img {
-    max-height: 110px;
+    max-height: 140px;
   }
 }
 
 @media (min-width: 960px) {
   .chit-order-slot-drop {
-    min-height: 120px;
+    min-height: 148px;
   }
 
   .chit-order-img {
-    max-height: 160px;
+    max-height: 205px;
+  }
+
+  .chit-order-pool-cards .chit-order-img {
+    max-height: 135px;
   }
 }
 
