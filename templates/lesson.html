@@ -485,20 +485,37 @@
       return lessonState.videoDone || !!CFG.testKey || maxPercent >= CFG.threshold;
     }
 
+    function updateEmotionVideoHint(complete, videoOk) {
+      let hintEl = document.getElementById('emotion-video-hint');
+      const btn = document.getElementById('btn-emotion');
+      if (!btn) return;
+      if (!hintEl) {
+        hintEl = document.createElement('p');
+        hintEl.id = 'emotion-video-hint';
+        hintEl.className = 'chit-hint';
+        btn.insertAdjacentElement('afterend', hintEl);
+      }
+      if (complete && !videoOk && !lessonState.emotionDone) {
+        hintEl.textContent = 'Сначала досмотрите видео-урок выше — хотя бы половину.';
+        hintEl.style.display = 'block';
+      } else {
+        hintEl.style.display = 'none';
+      }
+    }
+
     function updateEmotionButton(completeOverride) {
       const btn = document.getElementById('btn-emotion');
       if (!btn) return;
       if (lessonState.emotionDone) {
         btn.disabled = true;
         btn.title = '';
+        updateEmotionVideoHint(false, true);
         return;
       }
       const complete = emotionSelectionComplete(completeOverride);
       const videoOk = emotionVideoOk();
-      btn.disabled = !(complete && videoOk);
-      if (!videoOk && complete) {
-        btn.title = 'Сначала досмотрите видео-урок';
-      } else if (!complete) {
+      btn.disabled = !complete;
+      if (!complete) {
         const pickN = Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
         btn.title = pickN === 1
           ? 'Выберите эмоцию на колесе'
@@ -506,6 +523,7 @@
       } else {
         btn.title = '';
       }
+      updateEmotionVideoHint(complete, videoOk);
     }
 
     async function sendVideoComplete(percent) {
@@ -587,6 +605,29 @@
       initHtml5(src);
     }
 
+    let kinescopePollTimer = null;
+
+    function pollKinescopeProgress(player) {
+      if (videoSent || !player) return;
+      const timePromise = typeof player.getCurrentTime === 'function' ? player.getCurrentTime() : null;
+      const durationPromise = typeof player.getDuration === 'function' ? player.getDuration() : null;
+      if (!timePromise || !durationPromise) return;
+      Promise.all([timePromise, durationPromise]).then(function(values) {
+        const current = Number(values[0]);
+        const duration = Number(values[1]);
+        if (Number.isFinite(current) && Number.isFinite(duration) && duration > 0) {
+          trackPercent(current / duration);
+        }
+      }).catch(function() {});
+    }
+
+    function stopKinescopePoll() {
+      if (kinescopePollTimer) {
+        clearInterval(kinescopePollTimer);
+        kinescopePollTimer = null;
+      }
+    }
+
     function initKinescope() {
       const container = document.getElementById('player-container');
       container.innerHTML = '<div id="kinescope-player" style="position:absolute;inset:0;width:100%;height:100%"></div>';
@@ -596,8 +637,21 @@
           const p = normalizeKinescopeProgress(event);
           if (p != null) trackPercent(p);
         });
+        if (player.Events.Playing) {
+          player.on(player.Events.Playing, function() {
+            stopKinescopePoll();
+            pollKinescopeProgress(player);
+            kinescopePollTimer = setInterval(function() { pollKinescopeProgress(player); }, 2000);
+          });
+        }
+        if (player.Events.Pause) {
+          player.on(player.Events.Pause, function() { stopKinescopePoll(); });
+        }
         player.on(player.Events.Ended, function() {
+          stopKinescopePoll();
+          maxPercent = Math.max(maxPercent, 1);
           maybeSendVideoComplete();
+          updateEmotionButton();
         });
         player.on(player.Events.Error, function(event) {
           showMsg('video-msg', 'Ошибка загрузки видео Kinescope. Проверьте ID в lessons/kolobok.json', 'err');
@@ -638,7 +692,11 @@
         player.on('timeupdate', function(data) {
           if (videoSent) return;
           maxPercent = Math.max(maxPercent, data.percent);
-          if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
+          if (maxPercent >= CFG.threshold) {
+            sendVideoComplete(maxPercent);
+          } else {
+            updateEmotionButton();
+          }
         });
       };
       document.head.appendChild(tag);
@@ -687,6 +745,12 @@
       const selected = emotionWheel.getSelected();
       if (selected.length !== Number(q.pick)) {
         showEmotionVerdict('err', q.pick === 1 ? 'Выбери одну эмоцию на колесе.' : 'Нужно выбрать ' + q.pick + ' эмоции.');
+        return;
+      }
+      if (!emotionVideoOk()) {
+        showEmotionVerdict('err', 'Сначала досмотрите видео-урок выше — хотя бы половину.');
+        const videoStep = document.getElementById('step-video');
+        if (videoStep) videoStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
       const btn = document.getElementById('btn-emotion');
