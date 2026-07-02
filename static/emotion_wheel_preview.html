@@ -17,7 +17,7 @@
   <div class="wrap">
     <h1>Проверка контуров лепестков</h1>
     <p>Красная обводка должна совпадать с границами на картинке. Наведи на лепесток — подсветка.</p>
-    <svg id="wheel" viewBox="0 0 1024 1024"></svg>
+    <svg id="wheel" viewBox="0 0 1000 1000"></svg>
   </div>
   <script>
     const ORDER = ['joy','interest','surprise','sadness','fear','anger','resentment','tired','pride','calm'];
@@ -29,8 +29,8 @@
       const svg = document.getElementById('wheel');
       const img = document.createElementNS('http://www.w3.org/2000/svg', 'image');
       img.setAttribute('href', 'images/emotion-wheel.png');
-      img.setAttribute('width', '1024');
-      img.setAttribute('height', '1024');
+      img.setAttribute('width', '1000');
+      img.setAttribute('height', '1000');
       svg.appendChild(img);
       ORDER.forEach(id => {
         const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');

@@ -1,6 +1,6 @@
 (function (global) {
   var DEFAULT_IMAGE = '/static/images/emotion-wheel.png';
-  var VIEW = 1024;
+  var VIEW = 1000;
 
   function init(container, options) {
     var emotions = options.emotions || [];
