@@ -75,11 +75,9 @@
     {% endif %}
 
     {% if creative_tasks %}
-    <div class="chit-card chit-step chit-step-creative{% if meaning_quiz %} chit-step-continued{% endif %}" id="step-creative">
-      {% if not meaning_quiz %}
-      <div class="chit-badge-step">{{ step_badges.tasks }}</div>
-      <h2>{{ step_labels.tasks }}</h2>
-      {% endif %}
+    <div class="chit-card chit-step chit-step-creative" id="step-creative">
+      <div class="chit-badge-step">{{ step_badges.creative }}</div>
+      <h2>{{ step_labels.creative }}</h2>
       <p class="chit-creative-intro">Ты уже выполнил все задания урока? Тогда скорее переходи в волшебный сундук, там появились творческие задания для выполнения дома!</p>
       {% if creative_tasks['items'] %}
       <ul class="chit-creative-list">

@@ -126,6 +126,7 @@ def lesson_page(
                 "emotion_quiz": lesson_step_badge("emotion_quiz"),
                 "comprehension_quiz": lesson_step_badge("comprehension_quiz"),
                 "tasks": lesson_step_badge("tasks"),
+                "creative": lesson_step_badge("creative", suffix="творчество"),
             },
         },
     )
