@@ -491,7 +491,7 @@ body.chit-student {
 .chit-match-grid {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
   margin-top: 14px;
   max-width: 420px;
 }
@@ -505,56 +505,53 @@ body.chit-student {
 
 .chit-match-left {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   color: var(--text-warm);
 }
 
-.chit-match-select-wrap {
-  position: relative;
-}
-
-.chit-match-select-wrap::after {
-  content: '';
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 6px solid var(--blue-deep);
-  pointer-events: none;
-}
-
-.chit-match-select,
-.chit-picture-card select {
+.chit-q-select {
   width: 100%;
-  appearance: none;
-  -webkit-appearance: none;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 12px;
-  padding: 12px 40px 12px 14px;
+  padding: 12px 40px 12px 16px;
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--blue-deep);
-  background: var(--blue-pale);
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-}
-
-.chit-match-select:hover,
-.chit-picture-card select:hover {
-  border-color: var(--blue-light);
+  color: var(--text-warm);
   background: var(--white);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8' fill='none'%3E%3Cpath d='M1 1.5L7 6.5L13 1.5' stroke='%235B7FA6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
 }
 
-.chit-match-select:focus,
-.chit-picture-card select:focus {
+.chit-q-select:hover {
+  border-color: var(--blue-light);
+  background-color: var(--blue-pale);
+}
+
+.chit-q-select:focus {
   outline: none;
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(91, 127, 166, 0.18);
+}
+
+.chit-q-select:has(option[value=""]:checked) {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.chit-match-select:not(:has(option[value=""]:checked)) {
+  border-color: var(--blue-light);
+  background-color: var(--blue-pale);
+  color: var(--blue-deep);
+}
+
+.chit-picture-card select {
+  width: 100%;
 }
 
 .chit-order-list {

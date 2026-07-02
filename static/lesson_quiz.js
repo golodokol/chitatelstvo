@@ -70,7 +70,7 @@
       label.className = 'chit-match-left';
       label.textContent = left.text;
       const select = document.createElement('select');
-      select.className = 'chit-match-select';
+      select.className = 'chit-q-select chit-match-select';
       select.name = formId + '-' + q.id + '-' + left.id;
       select.dataset.leftId = left.id;
       select.innerHTML = '<option value="">— выбери место —</option>';
@@ -80,11 +80,8 @@
         opt.textContent = right.text;
         select.appendChild(opt);
       });
-      const selectWrap = document.createElement('div');
-      selectWrap.className = 'chit-match-select-wrap';
-      selectWrap.appendChild(select);
       row.appendChild(label);
-      row.appendChild(selectWrap);
+      row.appendChild(select);
       table.appendChild(row);
     });
     div.appendChild(table);
@@ -149,6 +146,7 @@
       img.loading = 'lazy';
       card.appendChild(img);
       const select = document.createElement('select');
+      select.className = 'chit-q-select';
       select.name = formId + '-' + q.id + '-' + pic.id;
       select.dataset.pictureId = pic.id;
       select.innerHTML = '<option value="">— кто это? —</option>';
