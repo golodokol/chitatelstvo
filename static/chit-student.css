@@ -2171,6 +2171,20 @@ body.chit-cabinet--parent {
   filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.72));
 }
 
+/* Спокойствие — бледный лепесток: белая заливка смывает подпись */
+.chit-emotion-wheel__sector[data-id="calm"]:hover:not(.is-selected),
+.chit-emotion-wheel__sector[data-id="calm"]:focus:not(.is-selected),
+.chit-emotion-wheel__sector[data-id="calm"]:focus-visible:not(.is-selected) {
+  fill: rgba(61, 82, 102, 0.1);
+}
+
+.chit-emotion-wheel__sector[data-id="calm"].is-selected {
+  fill: rgba(61, 82, 102, 0.14);
+  stroke: #3d5266;
+  stroke-width: 5;
+  filter: drop-shadow(0 0 10px rgba(61, 82, 102, 0.35));
+}
+
 .chit-emotion-wheel__sector.is-correct {
   fill: rgba(232, 245, 233, 0.55);
   stroke: var(--success);
