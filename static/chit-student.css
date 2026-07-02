@@ -2005,9 +2005,9 @@ body.chit-cabinet--parent {
   transition: fill 0.18s ease, fill-opacity 0.18s ease, stroke 0.18s ease, filter 0.18s ease;
 }
 
-.chit-emotion-wheel__sector:hover,
-.chit-emotion-wheel__sector:focus,
-.chit-emotion-wheel__sector:focus-visible {
+.chit-emotion-wheel__sector:hover:not(.is-selected),
+.chit-emotion-wheel__sector:focus:not(.is-selected),
+.chit-emotion-wheel__sector:focus-visible:not(.is-selected) {
   fill: rgba(255, 255, 255, 0.22);
   outline: none !important;
 }
@@ -2017,18 +2017,21 @@ body.chit-cabinet--parent {
 }
 
 .chit-emotion-wheel__sector.is-selected {
-  stroke: #fff;
-  stroke-width: 5;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.55));
+  fill: rgba(255, 255, 255, 0.44);
+  stroke: #ffffff;
+  stroke-width: 6;
+  filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.72));
 }
 
 .chit-emotion-wheel__sector.is-correct {
+  fill: rgba(232, 245, 233, 0.55);
   stroke: var(--success);
   stroke-width: 6;
   filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.45));
 }
 
 .chit-emotion-wheel__sector.is-wrong {
+  fill: rgba(255, 235, 238, 0.55);
   stroke: #c62828;
   stroke-width: 6;
   filter: drop-shadow(0 0 8px rgba(198, 40, 40, 0.35));

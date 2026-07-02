@@ -106,17 +106,6 @@
       return selected.size === pickN;
     }
 
-    function syncSectorVisual(node, on) {
-      var color = node.getAttribute('data-color') || '#fff';
-      if (on) {
-        node.style.fill = color;
-        node.style.fillOpacity = '0.42';
-      } else if (!node.classList.contains('is-correct') && !node.classList.contains('is-wrong')) {
-        node.style.fill = '';
-        node.style.fillOpacity = '';
-      }
-    }
-
     function syncUI(notifyChange) {
       if (notifyChange === undefined) notifyChange = true;
       container.querySelectorAll('.chit-emotion-wheel__sector').forEach(function (node) {
@@ -124,7 +113,6 @@
         var on = selected.has(id);
         node.classList.toggle('is-selected', on);
         node.setAttribute('aria-pressed', on ? 'true' : 'false');
-        syncSectorVisual(node, on);
       });
       container.querySelectorAll('.chit-emotion-chip').forEach(function (node) {
         node.classList.toggle('is-selected', selected.has(node.dataset.id));
@@ -167,7 +155,6 @@
         if (ok && correct.has(id)) node.classList.add('is-correct');
         if (!ok && selected.has(id) && !correct.has(id)) node.classList.add('is-wrong');
         if (!ok && correct.has(id)) node.classList.add('is-correct');
-        syncSectorVisual(node, selected.has(id));
       });
       container.querySelectorAll('.chit-emotion-chip').forEach(function (node) {
         var id = node.dataset.id;
@@ -181,10 +168,6 @@
     function clearResult() {
       container.querySelectorAll('.chit-emotion-wheel__sector, .chit-emotion-chip').forEach(function (node) {
         node.classList.remove('is-correct', 'is-wrong');
-        if (node.classList.contains('chit-emotion-wheel__sector')) {
-          node.style.fill = '';
-          node.style.fillOpacity = '';
-        }
       });
       syncUI(false);
     }
