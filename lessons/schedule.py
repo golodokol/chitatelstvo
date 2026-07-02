@@ -75,6 +75,36 @@ def meeting_on(module_week: int) -> date:
     return STAGE_2_MEETINGS[module_week - 5]
 
 
+def module_week_for_tale(stage: str | None, tale_number: int) -> int:
+    """Неделя модуля (1–8) по этапу и номеру сказки в блоке."""
+    from lessons.stages import normalize_stage
+
+    tale = max(1, min(4, int(tale_number)))
+    if normalize_stage(stage) == "stage-2":
+        return 4 + tale
+    return tale
+
+
+def meeting_date_label(
+    module_week: int | None = None,
+    *,
+    stage: str | None = None,
+    tale_number: int | None = None,
+    weekday: str | None = None,
+    with_year: bool = True,
+) -> str:
+    """Подпись даты встречи для апселла и страницы заказа."""
+    if module_week is None:
+        if stage is None or tale_number is None:
+            raise ValueError("meeting_date_label needs module_week or stage+tale_number")
+        module_week = module_week_for_tale(stage, tale_number)
+    meet = meeting_on(module_week)
+    text = format_date_ru(meet, weekday=weekday)
+    if with_year:
+        return f"{text} {meet.year}"
+    return text
+
+
 def week_in_stage(module_week: int) -> int:
     return module_week if module_week <= 4 else module_week - 4
 

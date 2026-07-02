@@ -34,7 +34,7 @@ from lessons.loader import (
     score_quiz,
 )
 from lessons.step_labels import lesson_step_labels_payload
-from lessons.schedule import effective_module_week
+from lessons.schedule import effective_module_week, meeting_date_label, module_week_for_tale
 from lessons.single_content import merge_single_lesson_content
 from services.cabinet import build_child_payload
 from services.events import submit_learning_event
@@ -221,9 +221,10 @@ def build_live_lesson_block(
         f"/order/meeting?group={group_code}&stage={stage}&tale={tale_number}&slug={slug}"
     )
     default_price = int(config.get("price_rub", MEETING_ADDON_PRICE_RUB))
+    week = int(lesson.get("module_week") or 0) or module_week_for_tale(stage, tale_number)
     return {
         "mode": "upsell",
-        "date": config.get("next_meeting_label", "20 июля 2026"),
+        "date": meeting_date_label(week),
         "purchase_url": purchase_url,
         "price": default_price,
     }
@@ -296,8 +297,8 @@ def build_lesson_json(
         "video_threshold": VIDEO_WATCH_THRESHOLD,
         "video": build_video_payload(lesson),
         "emotion_quiz": emotion_quiz_for_client(emotion) if emotion else None,
-        "comprehension_quiz": quiz_for_client(comprehension) if comprehension else None,
-        "meaning_quiz": quiz_for_client(meaning) if meaning else None,
+        "comprehension_quiz": quiz_for_client(comprehension, block_key="comprehension_quiz") if comprehension else None,
+        "meaning_quiz": quiz_for_client(meaning, block_key="meaning_quiz") if meaning else None,
         "creative_tasks": lesson.get("creative_tasks"),
         "live_lesson": build_live_lesson_block(lesson, enrollment, child=child),
         "slovik": build_slovik_payload(lesson),
