@@ -38,6 +38,8 @@
     const container = withImages ? document.createElement('div') : div;
     if (withImages) {
       container.className = 'chit-opt-grid';
+      const optCount = (q.options || []).length;
+      if (optCount === 7) container.classList.add('chit-opt-grid--7');
       div.appendChild(container);
     }
     (q.options || []).forEach(function (opt) {

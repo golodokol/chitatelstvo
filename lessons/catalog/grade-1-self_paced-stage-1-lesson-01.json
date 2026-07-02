@@ -133,7 +133,7 @@
           {"id": "zhar_ptitsa", "text": "Жар-птица", "image": "/static/lessons/tsarevna/zhar-ptitsa.png", "alt": "Жар-птица"},
           {"id": "bogatyr", "text": "Богатырь", "image": "/static/lessons/tsarevna/bogatyr.png", "alt": "Богатырь"},
           {"id": "shchuka", "text": "Щука", "image": "/static/lessons/tsarevna/schuka.png", "alt": "Щука"},
-          {"id": "koshka", "text": "Кошка", "image": "/static/lessons/tsarevna/kot.png", "alt": "Кот в сапогах"},
+          {"id": "koshka", "text": "Кот", "image": "/static/lessons/tsarevna/kot.png", "alt": "Кот в сапогах"},
           {"id": "rusalka", "text": "Русалка", "image": "/static/lessons/tsarevna/rusalka.png", "alt": "Русалка"},
           {"id": "koschei", "text": "Кощей Бессмертный", "image": "/static/lessons/tsarevna/koschei.png", "alt": "Кощей Бессмертный"}
         ],

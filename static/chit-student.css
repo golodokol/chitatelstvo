@@ -501,7 +501,9 @@ body.chit-student {
 .chit-q-with-images label.chit-opt-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
   margin: 0;
   padding: 10px;
   border: 1.5px solid var(--border);
@@ -532,23 +534,46 @@ body.chit-student {
 
 .chit-opt-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
 
+/* 7 hero cards: 4 on top row, 3 centered below */
+.chit-opt-grid--7 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.chit-opt-grid--7 .chit-opt-card:nth-child(5) {
+  grid-column: 2;
+}
+
+.chit-opt-grid--7 .chit-opt-card:nth-child(6) {
+  grid-column: 3;
+}
+
+.chit-opt-grid--7 .chit-opt-card:nth-child(7) {
+  grid-column: 4;
+}
+
 .chit-opt-img-wrap {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  aspect-ratio: 1 / 1;
   margin-bottom: 8px;
+  background: var(--cream-warm);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .chit-opt-img {
   width: 100%;
-  max-width: 110px;
-  height: 110px;
+  height: 100%;
+  max-width: none;
   object-fit: contain;
-  margin: 0 auto;
+  margin: 0;
   display: block;
 }
 
@@ -558,6 +583,39 @@ body.chit-student {
   font-weight: 700;
   color: var(--text-warm);
   line-height: 1.25;
+}
+
+@media (max-width: 640px) {
+  .chit-opt-grid--7 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .chit-opt-grid--7 .chit-opt-card:nth-child(5),
+  .chit-opt-grid--7 .chit-opt-card:nth-child(6) {
+    grid-column: auto;
+  }
+
+  .chit-opt-grid--7 .chit-opt-card:nth-child(7) {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 420px) {
+  .chit-opt-grid--7 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chit-opt-grid--7 .chit-opt-card:nth-child(5),
+  .chit-opt-grid--7 .chit-opt-card:nth-child(6),
+  .chit-opt-grid--7 .chit-opt-card:nth-child(7) {
+    grid-column: auto;
+  }
+
+  .chit-opt-grid--7 .chit-opt-card:nth-child(7):last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 6px);
+  }
 }
 
 .chit-match-card {
