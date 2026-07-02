@@ -145,7 +145,15 @@ def quiz_question_for_client(q: dict[str, Any], *, shuffle_options: bool = True)
         payload["left"] = list(q.get("left", []))
         payload["right"] = _shuffle_copy(q.get("right", []), shuffle=shuffle_options)
     elif qtype == "ordering":
-        payload["items"] = _shuffle_copy(q.get("items", []), shuffle=shuffle_options)
+        payload["items"] = [
+            {
+                "id": item["id"],
+                **({"text": item["text"]} if item.get("text") else {}),
+                **({"image": item["image"]} if item.get("image") else {}),
+                **({"alt": item["alt"]} if item.get("alt") else {}),
+            }
+            for item in _shuffle_copy(q.get("items", []), shuffle=shuffle_options)
+        ]
     elif qtype == "picture_match":
         payload["pictures"] = list(q.get("pictures", []))
         payload["labels"] = _shuffle_copy(q.get("labels", []), shuffle=shuffle_options)
