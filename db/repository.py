@@ -604,6 +604,29 @@ def child_has_lesson_complete(
     return db.scalar(stmt) is not None
 
 
+def child_has_learning_event(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    tale_title: str,
+    event_type: str,
+) -> bool:
+    title = tale_title.strip()
+    if not title:
+        return False
+    stmt = (
+        select(Event.id)
+        .where(
+            Event.child_id == child_id,
+            Event.event_type == event_type,
+            Event.tale_title == title,
+            Event.status.in_(("done", "pending", "processing")),
+        )
+        .limit(1)
+    )
+    return db.scalar(stmt) is not None
+
+
 def get_tale_rating(db: Session, child_id: uuid.UUID, tale_slug: str) -> TaleRating | None:
     stmt = select(TaleRating).where(
         TaleRating.child_id == child_id,

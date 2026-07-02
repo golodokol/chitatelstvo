@@ -219,6 +219,25 @@ def build_lesson_json(
     tale_slug = lesson.get("tale_slug") or slug
     existing_rating = repo.get_tale_rating(db, child.id, tale_slug)
     can_rate = repo.child_has_lesson_complete(db, child.id, tale_title=lesson["title"])
+    tale_title = lesson["title"]
+    progress = {
+        "video_done": can_rate,
+        "emotion_done": (
+            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="emotion_quiz")
+            if emotion
+            else False
+        ),
+        "comprehension_done": (
+            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="comprehension")
+            if comprehension
+            else False
+        ),
+        "meaning_done": (
+            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="meaning_analysis")
+            if meaning
+            else False
+        ),
+    }
 
     return {
         "slug": slug,
@@ -238,6 +257,7 @@ def build_lesson_json(
         "slovik": build_slovik_payload(lesson),
         "existing_rating": existing_rating.rating if existing_rating else None,
         "can_rate": can_rate,
+        "progress": progress,
         "lesson_url": build_lesson_url(child.id, slug),
         "manual_mark_types": list(MANUAL_MARK_ONLY),
         "assets_base": PUBLIC_BASE_URL,

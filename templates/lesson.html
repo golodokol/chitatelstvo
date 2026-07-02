@@ -138,10 +138,16 @@
       existingRating: {{ existing_rating|tojson }},
       canRate: {{ can_rate|tojson }},
       testKey: {{ test_key|tojson }},
+      progress: {{ (progress or {})|tojson }},
     };
 
     const SLOVIK = CFG.slovik.urls || {};
-    const lessonState = { videoDone: false, emotionDone: false, comprehensionDone: false, meaningDone: false };
+    const lessonState = {
+      videoDone: !!(CFG.progress && CFG.progress.video_done),
+      emotionDone: !!(CFG.progress && CFG.progress.emotion_done),
+      comprehensionDone: !!(CFG.progress && CFG.progress.comprehension_done),
+      meaningDone: !!(CFG.progress && CFG.progress.meaning_done),
+    };
     let emotionWheel = null;
     let selectedRating = CFG.existingRating || 0;
     let ratingSaved = !!CFG.existingRating;
@@ -162,7 +168,7 @@
       refreshCompanion();
     }
 
-    let videoSent = false;
+    let videoSent = !!(CFG.progress && CFG.progress.video_done);
     let maxPercent = 0;
 
     function clampPercent(percent) {
@@ -412,12 +418,29 @@
       return answers;
     }
 
-    function enableNextAfterVideo() {
-      updateEmotionButton();
+    function quizPrerequisitesMet(step) {
+      const videoOk = lessonState.videoDone || !!CFG.testKey;
+      if (!videoOk) return false;
+      if (CFG.emotion && !lessonState.emotionDone) return false;
+      if (step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone) return false;
+      return true;
+    }
+
+    function syncQuizButtons() {
       const btnComp = document.getElementById('btn-comprehension');
       const btnMean = document.getElementById('btn-meaning');
-      if (!CFG.emotion && btnComp) btnComp.disabled = false;
-      else if (!CFG.emotion && btnMean) btnMean.disabled = false;
+      if (btnComp && !lessonState.comprehensionDone) {
+        btnComp.disabled = !quizPrerequisitesMet('comprehension');
+      }
+      if (btnMean && !lessonState.meaningDone) {
+        btnMean.disabled = !quizPrerequisitesMet('meaning');
+      }
+    }
+
+    function enableNextAfterVideo() {
+      lessonState.videoDone = true;
+      updateEmotionButton();
+      syncQuizButtons();
     }
 
     function updateEmotionButton() {
@@ -436,9 +459,9 @@
       if (data.status === 'accepted' || data.status === 'duplicate') {
         showMsg('video-msg', data.message + ' Словики начисляются — загляните на страницу прогресса.', 'ok');
         markDone('step-video');
+        lessonState.videoDone = true;
         enableNextAfterVideo();
         if (data.status === 'accepted') {
-          lessonState.videoDone = true;
           onReward('lesson_complete', data.status);
           showRatingStep();
         } else {
@@ -636,10 +659,7 @@
       markDone('step-emotion');
       lessonState.emotionDone = true;
       onReward('emotion_quiz', data.status);
-      const btnComp = document.getElementById('btn-comprehension');
-      const btnMean = document.getElementById('btn-meaning');
-      if (btnComp) btnComp.disabled = false;
-      else if (btnMean) btnMean.disabled = false;
+      syncQuizButtons();
     }
 
     function initEmotionWheel() {
@@ -702,9 +722,9 @@
       markQuizResults(formId, data.results);
       showQuizVerdict(formId, 'ok', formatQuizVerdict(data, quiz, true));
       markDone(quizType === 'comprehension' ? 'step-comprehension' : 'step-meaning');
-      if (nextBtnId) document.getElementById(nextBtnId).disabled = false;
       if (quizType === 'comprehension') lessonState.comprehensionDone = true;
       if (quizType === 'meaning_analysis') lessonState.meaningDone = true;
+      syncQuizButtons();
       onReward(quizType, data.status);
     }
 
@@ -760,13 +780,21 @@
       }
     }
 
+    function initLessonProgress() {
+      if (lessonState.videoDone) markDone('step-video');
+      if (lessonState.emotionDone) markDone('step-emotion');
+      if (lessonState.comprehensionDone) markDone('step-comprehension');
+      if (lessonState.meaningDone) markDone('step-meaning');
+      syncQuizButtons();
+      updateEmotionButton();
+    }
+
     initEmotionWheel();
 
     if (CFG.comprehension) {
       renderQuiz('form-comprehension', CFG.comprehension);
       document.getElementById('btn-comprehension').addEventListener('click', () =>
         submitQuiz('comprehension', 'form-comprehension', CFG.comprehension, 'btn-comprehension', 'comprehension-msg', CFG.meaning ? 'btn-meaning' : null));
-      if (CFG.emotion) document.getElementById('btn-comprehension').disabled = true;
     }
     if (CFG.meaning) {
       renderQuiz('form-meaning', CFG.meaning);
@@ -799,6 +827,7 @@
       enableNextAfterVideo();
     }
 
+    initLessonProgress();
     refreshCompanion();
   </script>
 </body>

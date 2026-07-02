@@ -111,6 +111,7 @@ def lesson_page(
             "slovik": payload["slovik"],
             "existing_rating": payload["existing_rating"],
             "can_rate": payload["can_rate"],
+            "progress": payload["progress"],
             "test_key": test_key if test_bypass else None,
         },
     )
