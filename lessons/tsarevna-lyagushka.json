@@ -120,13 +120,13 @@
         "text": "Выбери лишних героев сказки",
         "hint": "Отметь только тех героев, которых не было в нашей сказке.",
         "options": [
-          {"id": "baba_yaga", "text": "Баба-яга"},
-          {"id": "zhar_ptitsa", "text": "Жар-птица"},
-          {"id": "bogatyr", "text": "Богатырь"},
-          {"id": "shchuka", "text": "Щука"},
-          {"id": "koshka", "text": "Кошка"},
-          {"id": "rusalka", "text": "Русалка"},
-          {"id": "koschei", "text": "Кощей Бессмертный"}
+          {"id": "baba_yaga", "text": "Баба-яга", "image": "/static/lessons/tsarevna/baba-yaga.png", "alt": "Баба-яга"},
+          {"id": "zhar_ptitsa", "text": "Жар-птица", "image": "/static/lessons/tsarevna/zhar-ptitsa.png", "alt": "Жар-птица"},
+          {"id": "bogatyr", "text": "Богатырь", "image": "/static/lessons/tsarevna/bogatyr.png", "alt": "Богатырь"},
+          {"id": "shchuka", "text": "Щука", "image": "/static/lessons/tsarevna/schuka.png", "alt": "Щука"},
+          {"id": "koshka", "text": "Кошка", "image": "/static/lessons/tsarevna/kot.png", "alt": "Кот в сапогах"},
+          {"id": "rusalka", "text": "Русалка", "image": "/static/lessons/tsarevna/rusalka.png", "alt": "Русалка"},
+          {"id": "koschei", "text": "Кощей Бессмертный", "image": "/static/lessons/tsarevna/koschei.png", "alt": "Кощей Бессмертный"}
         ],
         "correct": ["zhar_ptitsa", "bogatyr", "koshka", "rusalka"]
       },
@@ -135,22 +135,22 @@
         "type": "matching",
         "text": "Кто где? Соедини героя и место.",
         "left": [
-          {"id": "ivan", "text": "Иван-царевич"},
           {"id": "frog", "text": "Лягушка"},
           {"id": "tsar", "text": "Царь"},
-          {"id": "arrow", "text": "Стрела"}
+          {"id": "koschei", "text": "Кощей Бессмертный"},
+          {"id": "baba_yaga", "text": "Баба-Яга"}
         ],
         "right": [
-          {"id": "yard", "text": "двор"},
           {"id": "swamp", "text": "болото"},
           {"id": "palace", "text": "царский дом"},
-          {"id": "sky", "text": "небо"}
+          {"id": "thirtieth_kingdom", "text": "Тридесятое Царство"},
+          {"id": "chicken_hut", "text": "Избушка на курьих ножках"}
         ],
         "correct": {
-          "ivan": "yard",
           "frog": "swamp",
           "tsar": "palace",
-          "arrow": "sky"
+          "koschei": "thirtieth_kingdom",
+          "baba_yaga": "chicken_hut"
         }
       },
       {

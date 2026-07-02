@@ -12,23 +12,51 @@
       .replace(/"/g, '&quot;');
   }
 
+  function optionHasImages(items) {
+    return (items || []).some(function (item) { return item && item.image; });
+  }
+
+  function renderOptionImage(item) {
+    if (!item || !item.image) return '';
+    const alt = item.alt || item.text || '';
+    return (
+      '<span class="chit-opt-img-wrap">' +
+      '<img class="chit-opt-img" src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(alt) + '" loading="lazy">' +
+      '</span>'
+    );
+  }
+
   function renderSingleOrMulti(formId, q, idx, multi) {
     const div = document.createElement('div');
-    div.className = 'chit-q';
+    const withImages = optionHasImages(q.options);
+    div.className = withImages ? 'chit-q chit-q-with-images' : 'chit-q';
     div.dataset.qid = q.id;
     div.dataset.qtype = q.type || 'single';
     let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
     if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
     div.innerHTML = html;
+    const container = withImages ? document.createElement('div') : div;
+    if (withImages) {
+      container.className = 'chit-opt-grid';
+      div.appendChild(container);
+    }
     (q.options || []).forEach(function (opt) {
       const id = formId + '-' + q.id + '-' + opt.id;
       const inputType = multi ? 'checkbox' : 'radio';
       const name = multi ? formId + '-' + q.id : q.id;
       const label = document.createElement('label');
-      label.innerHTML =
-        '<input type="' + inputType + '" name="' + name + '" value="' + escapeHtml(opt.id) + '" id="' + id + '"> ' +
-        escapeHtml(opt.text);
-      div.appendChild(label);
+      label.className = withImages ? 'chit-opt-card' : '';
+      if (withImages) {
+        label.innerHTML =
+          '<input type="' + inputType + '" name="' + name + '" value="' + escapeHtml(opt.id) + '" id="' + id + '">' +
+          renderOptionImage(opt) +
+          '<span class="chit-opt-caption">' + escapeHtml(opt.text) + '</span>';
+      } else {
+        label.innerHTML =
+          '<input type="' + inputType + '" name="' + name + '" value="' + escapeHtml(opt.id) + '" id="' + id + '"> ' +
+          escapeHtml(opt.text);
+      }
+      container.appendChild(label);
     });
     return div;
   }
@@ -63,12 +91,18 @@
     div.innerHTML = html;
     const table = document.createElement('div');
     table.className = 'chit-match-grid';
+    const matchWithImages = optionHasImages(q.left);
+    if (matchWithImages) div.classList.add('chit-q-with-images');
     (q.left || []).forEach(function (left) {
       const row = document.createElement('div');
       row.className = 'chit-match-row';
       const label = document.createElement('span');
-      label.className = 'chit-match-left';
-      label.textContent = left.text;
+      label.className = matchWithImages ? 'chit-match-left chit-opt-card chit-match-card' : 'chit-match-left';
+      if (matchWithImages && left.image) {
+        label.innerHTML = renderOptionImage(left) + '<span class="chit-opt-caption">' + escapeHtml(left.text) + '</span>';
+      } else {
+        label.textContent = left.text;
+      }
       const select = document.createElement('select');
       select.className = 'chit-q-select chit-match-select';
       select.name = formId + '-' + q.id + '-' + left.id;

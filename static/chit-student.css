@@ -451,6 +451,21 @@ body.chit-student {
   text-decoration: line-through;
 }
 
+.chit-q-with-images label.chit-opt-card.is-correct-option {
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.chit-q-with-images label.chit-opt-card.is-wrong-pick {
+  border-color: #c62828;
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.18);
+  text-decoration: none;
+}
+
+.chit-q-with-images label.chit-opt-card.is-wrong-pick .chit-opt-caption {
+  text-decoration: line-through;
+}
+
 .chit-step.is-ok {
   border-color: var(--success);
   box-shadow: inset 4px 0 0 var(--success);
@@ -481,6 +496,76 @@ body.chit-student {
   margin: 6px 0;
   cursor: pointer;
   font-size: 0.95rem;
+}
+
+.chit-q-with-images label.chit-opt-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  text-align: center;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.chit-q-with-images label.chit-opt-card:hover {
+  border-color: var(--blue-light);
+  background: var(--blue-pale);
+}
+
+.chit-q-with-images label.chit-opt-card:has(input:checked) {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(91, 127, 166, 0.18);
+  background: var(--blue-pale);
+}
+
+.chit-q-with-images label.chit-opt-card input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+
+.chit-opt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.chit-opt-img-wrap {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.chit-opt-img {
+  width: 100%;
+  max-width: 110px;
+  height: 110px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.chit-opt-caption {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-warm);
+  line-height: 1.25;
+}
+
+.chit-match-card {
+  max-width: 160px;
+}
+
+.chit-q-with-images .chit-match-row {
+  align-items: flex-start;
 }
 
 .chit-q-hint {
