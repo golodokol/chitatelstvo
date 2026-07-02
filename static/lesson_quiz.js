@@ -39,7 +39,13 @@
     if (withImages) {
       container.className = 'chit-opt-grid';
       const optCount = (q.options || []).length;
-      if (optCount === 6) container.classList.add('chit-opt-grid--6');
+      if (optCount === 6) {
+        container.classList.add('chit-opt-grid--6');
+        container.dataset.optCount = '6';
+      } else if (optCount === 7) {
+        container.classList.add('chit-opt-grid--7');
+        container.dataset.optCount = '7';
+      }
       div.appendChild(container);
     }
     (q.options || []).forEach(function (opt) {
@@ -135,56 +141,195 @@
     return copy;
   }
 
+  function renderOrderCardContent(item, withImages) {
+    if (withImages && item.image) {
+      const alt = item.alt || item.text || '';
+      return (
+        '<span class="chit-order-media">' +
+        '<img class="chit-order-img" src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(alt) + '" loading="lazy" draggable="false">' +
+        '</span>'
+      );
+    }
+    return '<span class="chit-order-text">' + escapeHtml(item.text) + '</span>';
+  }
+
+  function attachOrderBoard(board) {
+    const pool = board.querySelector('.chit-order-pool-cards');
+    const drops = board.querySelectorAll('.chit-order-slot-drop');
+    let selectedCard = null;
+
+    function clearSelection() {
+      if (!selectedCard) return;
+      selectedCard.classList.remove('chit-order-card--selected');
+      selectedCard = null;
+    }
+
+    function selectCard(card) {
+      if (selectedCard === card) {
+        clearSelection();
+        return;
+      }
+      clearSelection();
+      selectedCard = card;
+      card.classList.add('chit-order-card--selected');
+    }
+
+    function cardDropZone(card) {
+      return card.closest('.chit-order-slot-drop, .chit-order-pool-cards');
+    }
+
+    function findCard(itemId) {
+      return board.querySelector('.chit-order-card[data-item-id="' + itemId + '"]');
+    }
+
+    function notifyChange() {
+      clearSelection();
+      board.dispatchEvent(new CustomEvent('chit-order-change', { bubbles: true }));
+    }
+
+    function returnToPool(card) {
+      pool.appendChild(card);
+    }
+
+    function placeCard(card, targetDrop) {
+      if (!card || !targetDrop) return;
+      const existing = targetDrop.querySelector('.chit-order-card');
+      if (existing && existing !== card && targetDrop.classList.contains('chit-order-slot-drop')) {
+        returnToPool(existing);
+      }
+      targetDrop.appendChild(card);
+      notifyChange();
+    }
+
+    board.querySelectorAll('.chit-order-card').forEach(function (card) {
+      card.addEventListener('dragstart', function (event) {
+        card.classList.add('chit-order-card--dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', card.dataset.itemId);
+      });
+      card.addEventListener('dragend', function () {
+        card.classList.remove('chit-order-card--dragging');
+        drops.forEach(function (drop) { drop.classList.remove('chit-order-slot-drop--over'); });
+        pool.classList.remove('chit-order-pool-cards--over');
+      });
+      card.addEventListener('click', function (event) {
+        event.stopPropagation();
+        selectCard(card);
+      });
+    });
+
+    drops.forEach(function (drop) {
+      drop.addEventListener('dragover', function (event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+        drop.classList.add('chit-order-slot-drop--over');
+      });
+      drop.addEventListener('dragleave', function () {
+        drop.classList.remove('chit-order-slot-drop--over');
+      });
+      drop.addEventListener('drop', function (event) {
+        event.preventDefault();
+        drop.classList.remove('chit-order-slot-drop--over');
+        const card = findCard(event.dataTransfer.getData('text/plain'));
+        if (card) placeCard(card, drop);
+      });
+      drop.addEventListener('click', function () {
+        if (selectedCard) placeCard(selectedCard, drop);
+      });
+    });
+
+    pool.addEventListener('dragover', function (event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      pool.classList.add('chit-order-pool-cards--over');
+    });
+    pool.addEventListener('dragleave', function (event) {
+      if (!pool.contains(event.relatedTarget)) {
+        pool.classList.remove('chit-order-pool-cards--over');
+      }
+    });
+    pool.addEventListener('drop', function (event) {
+      event.preventDefault();
+      pool.classList.remove('chit-order-pool-cards--over');
+      const card = findCard(event.dataTransfer.getData('text/plain'));
+      if (card) {
+        returnToPool(card);
+        notifyChange();
+      }
+    });
+    pool.addEventListener('click', function (event) {
+      if (!selectedCard || event.target.closest('.chit-order-card')) return;
+      if (cardDropZone(selectedCard) !== pool) {
+        returnToPool(selectedCard);
+        notifyChange();
+      }
+    });
+  }
+
   function renderOrdering(formId, q, idx) {
     const div = document.createElement('div');
     const withImages = optionHasImages(q.items);
+    const items = q.items || [];
     div.className = withImages ? 'chit-q chit-q-ordering chit-q-ordering-images' : 'chit-q chit-q-ordering';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'ordering';
     let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
     if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
+    const instruction = withImages
+      ? 'Перетащи картинки в ячейки 1–5 по порядку сказки'
+      : 'Перетащи события в ячейки по порядку сказки';
+    html += '<p class="chit-order-instruction">' + instruction + '</p>';
     div.innerHTML = html;
-    const list = document.createElement('ol');
-    list.className = withImages ? 'chit-order-list chit-order-list--images' : 'chit-order-list';
-    list.dataset.orderList = q.id;
-    const items = shuffleItems(q.items);
-    items.forEach(function (item) {
-      const li = document.createElement('li');
-      li.className = withImages ? 'chit-order-item chit-order-item--image' : 'chit-order-item';
-      li.dataset.itemId = item.id;
-      if (withImages && item.image) {
-        const alt = item.alt || item.text || '';
-        li.innerHTML =
-          '<span class="chit-order-media">' +
-          '<img class="chit-order-img" src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(alt) + '" loading="lazy">' +
-          '</span>' +
-          '<span class="chit-order-actions">' +
-          '<button type="button" class="chit-order-btn" data-dir="up" aria-label="Выше">↑</button>' +
-          '<button type="button" class="chit-order-btn" data-dir="down" aria-label="Ниже">↓</button>' +
-          '</span>';
-      } else {
-        li.innerHTML =
-          '<span class="chit-order-text">' + escapeHtml(item.text) + '</span>' +
-          '<span class="chit-order-actions">' +
-          '<button type="button" class="chit-order-btn" data-dir="up" aria-label="Выше">↑</button>' +
-          '<button type="button" class="chit-order-btn" data-dir="down" aria-label="Ниже">↓</button>' +
-          '</span>';
-      }
-      list.appendChild(li);
+
+    const board = document.createElement('div');
+    board.className = 'chit-order-board';
+    board.dataset.orderBoard = q.id;
+
+    const slotsWrap = document.createElement('div');
+    slotsWrap.className = 'chit-order-slots';
+    slotsWrap.setAttribute('role', 'list');
+    items.forEach(function (_item, slotIdx) {
+      const slot = document.createElement('div');
+      slot.className = 'chit-order-slot';
+      slot.dataset.slot = String(slotIdx + 1);
+      slot.setAttribute('role', 'listitem');
+      const num = document.createElement('span');
+      num.className = 'chit-order-slot-num';
+      num.textContent = String(slotIdx + 1);
+      num.setAttribute('aria-hidden', 'true');
+      const drop = document.createElement('div');
+      drop.className = 'chit-order-slot-drop';
+      drop.setAttribute('role', 'button');
+      drop.setAttribute('aria-label', 'Ячейка ' + (slotIdx + 1));
+      drop.tabIndex = 0;
+      slot.appendChild(num);
+      slot.appendChild(drop);
+      slotsWrap.appendChild(slot);
     });
-    div.appendChild(list);
-    list.addEventListener('click', function (event) {
-      const btn = event.target.closest('.chit-order-btn');
-      if (!btn) return;
-      const item = btn.closest('.chit-order-item');
-      if (!item) return;
-      const dir = btn.dataset.dir;
-      if (dir === 'up' && item.previousElementSibling) {
-        list.insertBefore(item, item.previousElementSibling);
-      } else if (dir === 'down' && item.nextElementSibling) {
-        list.insertBefore(item.nextElementSibling, item);
-      }
+    board.appendChild(slotsWrap);
+
+    const poolWrap = document.createElement('div');
+    poolWrap.className = 'chit-order-pool';
+    const poolLabel = document.createElement('p');
+    poolLabel.className = 'chit-order-pool-label';
+    poolLabel.textContent = withImages ? 'Картинки' : 'События';
+    poolWrap.appendChild(poolLabel);
+    const pool = document.createElement('div');
+    pool.className = 'chit-order-pool-cards';
+    pool.setAttribute('aria-label', 'Запас картинок');
+    shuffleItems(items).forEach(function (item) {
+      const card = document.createElement('div');
+      card.className = withImages ? 'chit-order-card chit-order-card--image' : 'chit-order-card';
+      card.dataset.itemId = item.id;
+      card.draggable = true;
+      card.tabIndex = 0;
+      card.innerHTML = renderOrderCardContent(item, withImages);
+      pool.appendChild(card);
     });
+    poolWrap.appendChild(pool);
+    board.appendChild(poolWrap);
+    div.appendChild(board);
+    attachOrderBoard(board);
     return div;
   }
 
@@ -266,12 +411,16 @@
   }
 
   function collectOrderingAnswer(formId, q) {
-    const list = document.querySelector('#' + formId + ' ol[data-order-list="' + q.id + '"]');
-    if (!list) return null;
-    return Array.prototype.map.call(
-      list.querySelectorAll('.chit-order-item'),
-      function (item) { return item.dataset.itemId; }
-    );
+    const board = document.querySelector('#' + formId + ' [data-order-board="' + q.id + '"]');
+    if (!board) return null;
+    const order = [];
+    const slots = board.querySelectorAll('.chit-order-slot-drop');
+    for (let i = 0; i < slots.length; i += 1) {
+      const card = slots[i].querySelector('.chit-order-card');
+      if (!card) return null;
+      order.push(card.dataset.itemId);
+    }
+    return order.length ? order : null;
   }
 
   function collectPictureMatchAnswer(formId, q) {
