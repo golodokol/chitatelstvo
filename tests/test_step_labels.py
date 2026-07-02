@@ -5,6 +5,7 @@ from lessons.step_labels import (
     LESSON_STEP_LABELS,
     event_type_label,
     lesson_step_badge,
+    lesson_step_badges_payload,
     lesson_step_label,
     lesson_step_labels_payload,
 )
@@ -20,11 +21,16 @@ def test_lesson_step_labels_payload():
 
 
 def test_lesson_step_badge_fixed_numbers():
-    assert lesson_step_badge("video") == "Шаг 1 · автоматически"
-    assert lesson_step_badge("emotion_quiz") == "Шаг 2 · автоматически"
-    assert lesson_step_badge("comprehension_quiz") == "Шаг 3 · автоматически"
-    assert lesson_step_badge("tasks") == "Шаг 4 · автоматически"
-    assert lesson_step_badge("creative", suffix="творчество") == "Шаг 5 · творчество"
+    assert lesson_step_badge("video") == "Шаг 1 · Смотрим видео-урок"
+    assert lesson_step_badge("emotion_quiz") == "Шаг 2 · Изучаем эмоциональный интеллект"
+    assert lesson_step_badge("comprehension_quiz") == "Шаг 3 · Мини-тест по сказке"
+    assert lesson_step_badge("tasks") == "Шаг 4 · Выполняем задания"
+    assert lesson_step_badge("creative") == "Шаг 5 · Творчество"
+
+
+def test_lesson_step_badges_payload():
+    badges = lesson_step_badges_payload()
+    assert badges == {key: lesson_step_badge(key) for key in LESSON_STEP_LABELS}
 
 
 def test_lesson_block_to_step_mapping():

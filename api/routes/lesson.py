@@ -14,7 +14,7 @@ from api.lesson_signing import verify_lesson_access
 from api.test_lesson_auth import verify_test_lesson_key
 from config.settings import ROOT, VIDEO_WATCH_THRESHOLD
 from db.session import get_db
-from lessons.step_labels import lesson_step_badge, lesson_step_labels_payload
+from lessons.step_labels import lesson_step_badges_payload, lesson_step_labels_payload
 from services.lesson_player import (
     build_lesson_json,
     get_child_or_404,
@@ -121,13 +121,7 @@ def lesson_page(
             "progress": payload["progress"],
             "test_key": test_key if test_bypass else None,
             "step_labels": lesson_step_labels_payload(),
-            "step_badges": {
-                "video": lesson_step_badge("video"),
-                "emotion_quiz": lesson_step_badge("emotion_quiz"),
-                "comprehension_quiz": lesson_step_badge("comprehension_quiz"),
-                "tasks": lesson_step_badge("tasks"),
-                "creative": lesson_step_badge("creative", suffix="творчество"),
-            },
+            "step_badges": lesson_step_badges_payload(),
         },
     )
 

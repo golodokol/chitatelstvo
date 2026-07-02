@@ -32,9 +32,14 @@ def lesson_step_labels_payload() -> dict[str, str]:
     return dict(LESSON_STEP_LABELS)
 
 
-def lesson_step_badge(step_key: str, *, suffix: str = "автоматически") -> str:
+def lesson_step_badge(step_key: str) -> str:
     number = LESSON_STEP_NUMBERS[step_key]
-    return f"Шаг {number} · {suffix}"
+    label = LESSON_STEP_LABELS[step_key]
+    return f"Шаг {number} · {label}"
+
+
+def lesson_step_badges_payload() -> dict[str, str]:
+    return {key: lesson_step_badge(key) for key in LESSON_STEP_LABELS}
 
 
 def lesson_step_label(block_key: str) -> str:
