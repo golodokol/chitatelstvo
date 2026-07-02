@@ -10,8 +10,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "static" / "emotion_wheel_petals.json"
 
-CX, CY = 501.0, 497.0
-RI, RO = 80.0, 486.0
+# PNG 1024×1024 — центр и радиусы подогнаны под макет колеса.
+CX, CY = 512.0, 512.0
+RI, RO = 82.0, 458.0
 
 
 def pt(deg: float, r: float) -> tuple[float, float]:
@@ -37,10 +38,10 @@ def wedge_path(a0: float, a1: float) -> str:
     )
 
 
-# Границы по макету (offset −6.5°, грусть шире). Обида ~31°, спокойствие ~36°.
+# Границы по макету. «Радость» уже — верхний лепесток на макете уже соседних.
 SPECS: list[tuple[str, float, float]] = [
-    ("joy", -19.5, 11.5),
-    ("interest", 11.5, 49.0),
+    ("joy", -16.0, 8.5),
+    ("interest", 8.5, 49.0),
     ("surprise", 49.0, 86.5),
     ("sadness", 86.5, 128.0),
     ("fear", 128.0, 162.0),
@@ -48,7 +49,7 @@ SPECS: list[tuple[str, float, float]] = [
     ("resentment", 199.0, 234.5),
     ("tired", 234.5, 270.5),
     ("pride", 270.5, 310.5),
-    ("calm", 310.5, 340.5),
+    ("calm", 310.5, 344.0),
 ]
 
 
