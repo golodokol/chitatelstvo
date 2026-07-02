@@ -260,9 +260,13 @@
         if (form) {
           form.addEventListener('change', function () {
             clearQuizFeedback(formId);
+            syncQuizButtons();
           });
           form.addEventListener('click', function (event) {
-            if (event.target.closest('.chit-order-btn')) clearQuizFeedback(formId);
+            if (event.target.closest('.chit-order-btn')) {
+              clearQuizFeedback(formId);
+              syncQuizButtons();
+            }
           });
         }
         return;
@@ -283,6 +287,7 @@
       });
       form.addEventListener('change', function () {
         clearQuizFeedback(formId);
+        syncQuizButtons();
       });
     }
 
@@ -418,11 +423,22 @@
       return answers;
     }
 
+    function quizForForm(formId) {
+      if (formId === 'form-comprehension') return CFG.comprehension;
+      if (formId === 'form-meaning') return CFG.meaning;
+      return null;
+    }
+
+    function quizFormComplete(formId) {
+      const quiz = quizForForm(formId);
+      if (!quiz || !window.ChitLessonQuiz) return false;
+      return ChitLessonQuiz.collect(formId, quiz) != null;
+    }
+
     function quizPrerequisitesMet(step) {
       const videoOk = lessonState.videoDone || !!CFG.testKey;
       if (!videoOk) return false;
       if (CFG.emotion && !lessonState.emotionDone) return false;
-      if (step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone) return false;
       return true;
     }
 
@@ -430,10 +446,10 @@
       const btnComp = document.getElementById('btn-comprehension');
       const btnMean = document.getElementById('btn-meaning');
       if (btnComp && !lessonState.comprehensionDone) {
-        btnComp.disabled = !quizPrerequisitesMet('comprehension');
+        btnComp.disabled = !(quizPrerequisitesMet('comprehension') && quizFormComplete('form-comprehension'));
       }
       if (btnMean && !lessonState.meaningDone) {
-        btnMean.disabled = !quizPrerequisitesMet('meaning');
+        btnMean.disabled = !(quizPrerequisitesMet('meaning') && quizFormComplete('form-meaning'));
       }
     }
 
@@ -688,6 +704,7 @@
             }
           }
           updateEmotionButton();
+          syncQuizButtons();
         },
       });
       document.getElementById('btn-emotion').addEventListener('click', submitEmotionQuiz);
@@ -695,6 +712,10 @@
     }
 
     async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {
+      if (quizType === 'meaning_analysis' && CFG.comprehension && !lessonState.comprehensionDone) {
+        showQuizVerdict(formId, 'err', 'Сначала отправьте ответы в блоке «Понимание сказки» выше.');
+        return;
+      }
       const answers = collectAnswers(formId, quiz);
       if (!answers) {
         showQuizVerdict(formId, 'err', 'Ответьте на все вопросы, затем нажмите «Отправить ответы».');
@@ -710,13 +731,13 @@
           ? errDetail
           : 'Не удалось проверить ответы. Попробуйте ещё раз.';
         showQuizVerdict(formId, 'err', errText);
-        document.getElementById(btnId).disabled = false;
+        syncQuizButtons();
         return;
       }
       if (failedStatus) {
         markQuizResults(formId, data.results);
         showQuizVerdict(formId, 'err', formatQuizVerdict(data, quiz, false));
-        document.getElementById(btnId).disabled = false;
+        syncQuizButtons();
         return;
       }
       markQuizResults(formId, data.results);
@@ -801,6 +822,7 @@
       document.getElementById('btn-meaning').addEventListener('click', () =>
         submitQuiz('meaning_analysis', 'form-meaning', CFG.meaning, 'btn-meaning', 'meaning-msg', null));
     }
+    syncQuizButtons();
     document.getElementById('btn-rating').addEventListener('click', submitRating);
 
     if (CFG.canRate || CFG.existingRating) showRatingStep();
