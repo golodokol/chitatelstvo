@@ -90,6 +90,7 @@ export type LessonStage = {
 
 export type ChildEvent = {
   type: string;
+  type_label?: string;
   tale: string;
   date: string;
 };

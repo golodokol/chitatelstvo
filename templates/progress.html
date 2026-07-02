@@ -144,7 +144,7 @@
           data-chest-open="{{ track.chest.image_open }}"
           data-chest-ready="{{ '1' if track.chest.ready else '0' }}"
           data-chest-claimed="{{ '1' if track.chest.claimed else '0' }}"
-          data-auto-open="{{ '1' if open_chest and track.chest.ready and not track.chest.claimed and loop_index == 1 else '0' }}">
+          data-auto-open="{{ '1' if track.chest.ready and not track.chest.claimed and ((chest_tale and track.chest.tale_slug == chest_tale) or (open_chest and not chest_tale and loop_index == 1)) else '0' }}">
           <script type="application/json" class="chit-chest-data">{{ {"items": track.chest["items"], "tale_title": track.missions_subtitle or track.chest["title"]} | tojson }}</script>
           {% if track.group_label %}
           <p class="chit-section-sub chit-section-sub--track">{{ track.group_label }}</p>

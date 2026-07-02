@@ -1,12 +1,19 @@
 import type { CabinetParentSummary } from "@/lib/types";
 
 const EVENT_LABELS: Record<string, string> = {
-  lesson_complete: "Просмотр видео",
-  comprehension: "Квиз «Понимание»",
-  meaning_analysis: "Квиз «Смысл»",
+  lesson_complete: "Смотрим видео-урок",
+  emotion_quiz: "Изучаем эмоциональный интеллект",
+  comprehension: "Мини-тест по сказке",
+  meaning_analysis: "Выполняем задания",
   creative_task: "Творческое задание",
   retelling: "Пересказ",
   live_meeting: "Живая встреча",
+  first_task: "Первый шаг",
+  mini_check: "Мини-проверка",
+  initiative: "Своя инициатива",
+  streak_3: "Серия из 3 дней",
+  streak_5: "Серия из 5 дней",
+  module_complete: "Модуль завершён",
 };
 
 export function formatEventType(type: string): string {

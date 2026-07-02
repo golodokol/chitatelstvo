@@ -31,6 +31,7 @@ def family_progress(
         {
             "progress_token": token,
             "open_chest": request.query_params.get("open_chest") == "1",
+            "chest_tale": (request.query_params.get("chest") or "").strip(),
             "parent_name": payload["parent_name"],
             "assets_url": PUBLIC_BASE_URL,
             "logo_url": f"{PUBLIC_BASE_URL}/assets/logo-chitatelstvo.png",
@@ -42,5 +43,6 @@ def family_progress(
             "children": payload["children"],
             "module_start_date": payload["module_start_date"],
             "notifications": payload["notifications"],
+            "parent_guide": payload["parent_guide"],
         },
     )

@@ -11,12 +11,17 @@ from api.lesson_signing import build_lesson_url
 from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, PUBLIC_BASE_URL, TELEGRAM_ENABLED
 from db import repository as repo
 from db.models import Child, Enrollment, Family
-from gamification.cabinet_ui import build_child_cabinet
+from gamification.cabinet_ui import (
+    build_child_cabinet,
+    parent_lesson_guide_steps,
+    parent_points_rows,
+)
 from gamification.rules import level_from_points
 from lessons.access import lesson_access_info
 from lessons.covers import enrich_lesson_link
 from lessons.enrollment_access import list_enrollment_tracks, list_lessons_for_enrollment
 from lessons.schedule import STAGE_LABELS, tariff_has_meetings
+from lessons.step_labels import event_type_label
 from notifications.telegram_bot import build_link_url
 
 
@@ -144,6 +149,7 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
         "events": [
             {
                 "type": e.event_type,
+                "type_label": event_type_label(e.event_type),
                 "tale": e.tale_title or "—",
                 "date": e.created_at.strftime("%d.%m.%Y %H:%M") if e.created_at else "",
             }
@@ -204,4 +210,8 @@ def build_family_cabinet(
         ],
         "selected_child_id": str(child_id) if child_id else None,
         "children": [build_child_payload(db, child, assets_base=assets_base) for child in children_rows],
+        "parent_guide": {
+            "steps": parent_lesson_guide_steps(),
+            "points": parent_points_rows(),
+        },
     }

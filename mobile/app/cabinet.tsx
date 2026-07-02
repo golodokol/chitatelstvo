@@ -477,7 +477,7 @@ export default function CabinetScreen() {
                 <Text style={styles.panelTitle}>Недавние занятия</Text>
                 {data.events.slice(0, 8).map((e, i) => (
                   <Text key={i} style={styles.note}>
-                    {e.date} — {formatEventType(e.type)}
+                    {e.date} — {e.type_label ?? formatEventType(e.type)}
                     {e.tale !== "—" ? ` («${e.tale}»)` : ""}
                   </Text>
                 ))}

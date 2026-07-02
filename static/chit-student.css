@@ -385,6 +385,14 @@ body.chit-student {
   opacity: 0.9;
 }
 
+.chit-lesson-page .chit-step.chit-step-continued {
+  margin-top: -12px;
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding-top: 0;
+}
+
 .chit-badge-step {
   font-size: 0.78rem;
   color: var(--muted);
@@ -657,6 +665,58 @@ body.chit-student {
 
 .chit-back {
   margin-bottom: 16px;
+}
+
+.chit-back--bottom {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.chit-back__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--blue-deep);
+  text-decoration: none;
+}
+
+.chit-back__link:hover {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+.chit-step-creative {
+  border-color: #e8d48a;
+  background: linear-gradient(180deg, #fff, #fff9e6);
+}
+
+.chit-creative-intro {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-warm);
+  margin: 0 0 14px;
+}
+
+.chit-creative-list {
+  margin: 0 0 16px;
+  padding-left: 1.2rem;
+  color: var(--text-warm);
+  line-height: 1.5;
+}
+
+.chit-btn--chest-lesson {
+  display: inline-block;
+  width: auto;
+  min-width: min(100%, 280px);
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(201, 160, 48, 0.28);
+}
+
+.chit-btn--chest-lesson:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 600px) {

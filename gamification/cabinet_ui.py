@@ -14,7 +14,8 @@ from gamification.chest_rewards import (
     reward_summary_text,
     rewards_for_tale,
 )
-from gamification.rules import LEVELS, LEVEL_SLOVIK_THRESHOLDS, level_from_points
+from gamification.rules import EVENT_RULES, LEVELS, LEVEL_SLOVIK_THRESHOLDS, level_from_points
+from lessons.step_labels import LESSON_STEP_LABELS, event_type_label
 from gamification.sloviki import (
     COMPANION_HINTS,
     chest_slovik_key,
@@ -26,6 +27,73 @@ from gamification.sloviki import (
 from lessons.diary_covers import diary_cover_url_for_tale
 from lessons.schedule import STAGE_LABELS
 from notifications.russian_morph import name_genitive
+
+
+def _guide_reward_note(event_type: str) -> str:
+    rule = EVENT_RULES.get(event_type, {})
+    pts = int(rule.get("points") or 0)
+    badge = rule.get("badge")
+    parts: list[str] = []
+    if pts:
+        parts.append(f"+{pts} {_sloviki_word(pts)}")
+    if badge:
+        parts.append(f"бейдж «{badge}»")
+    return ", ".join(parts)
+
+
+def parent_lesson_guide_steps() -> list[dict[str, str]]:
+    """Шаги урока для блока «Как проходит урок» на вкладке родителя."""
+    meaning = _guide_reward_note("meaning_analysis")
+    creative = _guide_reward_note("creative_task")
+    return [
+        {
+            "label": LESSON_STEP_LABELS["video"],
+            "note": _guide_reward_note("lesson_complete") + ".",
+        },
+        {
+            "label": LESSON_STEP_LABELS["emotion_quiz"],
+            "note": _guide_reward_note("emotion_quiz") + ".",
+        },
+        {
+            "label": LESSON_STEP_LABELS["comprehension_quiz"],
+            "note": _guide_reward_note("comprehension") + ".",
+        },
+        {
+            "label": LESSON_STEP_LABELS["tasks"],
+            "note": (
+                f"задания на смысл проверяются автоматически ({meaning}); "
+                f"творческие выполняются дома — по желанию отметьте кнопкой в уроке ({creative})."
+            ),
+        },
+        {
+            "label": "Пересказ или встреча",
+            "note": "по желанию и тарифу.",
+        },
+    ]
+
+
+def parent_points_rows() -> list[dict[str, str]]:
+    """Таблица «За что начисляются Словики» на вкладке родителя."""
+    rows: list[tuple[str, str]] = [
+        ("lesson_complete", LESSON_STEP_LABELS["video"]),
+        ("emotion_quiz", LESSON_STEP_LABELS["emotion_quiz"]),
+        ("comprehension", LESSON_STEP_LABELS["comprehension_quiz"]),
+        ("meaning_analysis", "Задание на смысл сказки"),
+        ("creative_task", "Творческое задание"),
+        ("retelling", "Пересказ сказки"),
+        ("live_meeting", "Живая встреча"),
+        ("streak_3", "3 дня подряд"),
+    ]
+    result: list[dict[str, str]] = []
+    for event_type, label in rows:
+        rule = EVENT_RULES.get(event_type, {})
+        pts = int(rule.get("points") or 0)
+        if event_type == "streak_3":
+            value = "+3 и бейдж"
+        else:
+            value = f"+{pts}"
+        result.append({"label": label, "value": value})
+    return result
 
 
 LEVEL_IMAGES: dict[str, str] = {

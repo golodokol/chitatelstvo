@@ -33,8 +33,10 @@ from lessons.loader import (
     score_emotion_quiz,
     score_quiz,
 )
+from lessons.step_labels import lesson_step_labels_payload
 from lessons.schedule import effective_module_week
 from lessons.single_content import merge_single_lesson_content
+from services.cabinet import build_child_payload
 from services.events import submit_learning_event
 from storage.yandex import resolve_video_src
 
@@ -87,6 +89,46 @@ def load_lesson(db: Session, slug: str, *, child: Child | None = None) -> dict[s
         return lesson
     enrollment = find_enrollment_for_lesson(child, lesson)
     return merge_single_lesson_content(lesson, enrollment)
+
+
+def _chest_track_index(child_payload: dict[str, Any], lesson: dict[str, Any]) -> int | None:
+    tale_slug = (lesson.get("tale_slug") or lesson.get("slug") or "").strip()
+    slug = (lesson.get("slug") or "").strip()
+    tracks = (child_payload.get("cabinet") or {}).get("tracks") or []
+    for idx, track in enumerate(tracks, start=1):
+        chest = track.get("chest") or {}
+        if tale_slug and chest.get("tale_slug") == tale_slug:
+            return idx
+        for les in track.get("lesson_links") or []:
+            if slug and les.get("slug") == slug:
+                return idx
+            if tale_slug and les.get("tale_slug") == tale_slug:
+                return idx
+    return 1 if tracks else None
+
+
+def build_lesson_nav_urls(db: Session, child: Child, lesson: dict[str, Any]) -> dict[str, str]:
+    """Ссылки на комнату приключений и сундук текущей сказки."""
+    child = repo.get_child_with_family(db, child.id) or child
+    family = child.family
+    if not family:
+        raise HTTPException(404, "Семья не найдена")
+
+    progress_url = f"{PUBLIC_BASE_URL.rstrip('/')}/progress/{family.progress_token}"
+    child_payload = build_child_payload(db, child)
+    chest_idx = _chest_track_index(child_payload, lesson)
+    tale_slug = (lesson.get("tale_slug") or lesson.get("slug") or "").strip()
+
+    chest_url = progress_url
+    if tale_slug:
+        chest_url += f"?chest={tale_slug}"
+    if chest_idx:
+        chest_url += f"#chest-{chest_idx}"
+
+    return {
+        "progress_url": progress_url,
+        "chest_url": chest_url,
+    }
 
 
 def build_slovik_payload(lesson: dict[str, Any]) -> dict[str, Any]:
@@ -239,12 +281,16 @@ def build_lesson_json(
         ),
     }
 
+    nav_urls = build_lesson_nav_urls(db, child, lesson)
+
     return {
         "slug": slug,
         "title": lesson["title"],
         "lesson": lesson,
         "child_id": str(child.id),
         "child_name": child.name,
+        "progress_url": nav_urls["progress_url"],
+        "chest_url": nav_urls["chest_url"],
         "module_week": lesson.get("module_week"),
         "active": lesson.get("active", True),
         "video_threshold": VIDEO_WATCH_THRESHOLD,
@@ -261,6 +307,7 @@ def build_lesson_json(
         "lesson_url": build_lesson_url(child.id, slug),
         "manual_mark_types": list(MANUAL_MARK_ONLY),
         "assets_base": PUBLIC_BASE_URL,
+        "step_labels": lesson_step_labels_payload(),
     }
 
 
