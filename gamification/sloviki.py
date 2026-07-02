@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from gamification.rules import EVENT_RULES
+from lessons.step_labels import LESSON_STEP_LABELS
 
 STATIC_PREFIX = "/static/sloviki"
 
@@ -61,10 +62,10 @@ COMPANION_HINTS: dict[str, str] = {
     "main": "Скоро начнётся новое приключение!",
     "preparing": "Скоро начнётся новое приключение!",
     "walks": "Пора в путь — урок ждёт!",
-    "reads": "Смотрим видео-урок",
-    "emotion": "Изучаем эмоциональный интеллект",
-    "writes": "Мини-тест по сказке",
-    "dreams": "Выполняем задания",
+    "reads": LESSON_STEP_LABELS["video"],
+    "emotion": LESSON_STEP_LABELS["emotion_quiz"],
+    "writes": LESSON_STEP_LABELS["comprehension_quiz"],
+    "dreams": LESSON_STEP_LABELS["tasks"],
     "cloud": "Сундук совсем близко!",
     "reward": "Ещё чуть-чуть!",
     "victory": "Ура! Можно открывать сундук!",

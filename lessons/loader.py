@@ -5,6 +5,8 @@ import random
 from pathlib import Path
 from typing import Any
 
+from lessons.step_labels import lesson_step_label
+
 LESSONS_DIR = Path(__file__).resolve().parent
 LESSONS_CATALOG_DIR = LESSONS_DIR / "catalog"
 PROJECT_ROOT = LESSONS_DIR.parent
@@ -152,14 +154,20 @@ def quiz_question_for_client(q: dict[str, Any], *, shuffle_options: bool = True)
     return payload
 
 
-def quiz_for_client(quiz: dict[str, Any], *, shuffle_options: bool = True) -> dict[str, Any]:
+def quiz_for_client(
+    quiz: dict[str, Any],
+    *,
+    block_key: str = "",
+    shuffle_options: bool = True,
+) -> dict[str, Any]:
     """Вопросы без правильных ответов — только для браузера."""
     questions = [
         quiz_question_for_client(q, shuffle_options=shuffle_options)
         for q in quiz.get("questions", [])
     ]
+    default_title = lesson_step_label(block_key) if block_key else ""
     return {
-        "title": quiz.get("title", ""),
+        "title": quiz.get("title") or default_title,
         "pass_score": int(quiz.get("pass_score", len(questions))),
         "questions": questions,
     }
@@ -273,7 +281,7 @@ def emotion_quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
     """Вопрос эмоциометра без правильных ответов."""
     q = quiz.get("question") or {}
     return {
-        "title": quiz.get("title", "Эмоции героя"),
+        "title": quiz.get("title") or lesson_step_label("emotion_quiz"),
         "character": quiz.get("character", ""),
         "emotions": EMOTION_WHEEL,
         "wheel_image": EMOTION_WHEEL_IMAGE,

@@ -61,7 +61,7 @@ def parent_lesson_guide_steps() -> list[dict[str, str]]:
         {
             "label": LESSON_STEP_LABELS["tasks"],
             "note": (
-                f"задания на смысл проверяются автоматически ({meaning}); "
+                f"проверяются автоматически ({meaning}); "
                 f"творческие выполняются дома — по желанию отметьте кнопкой в уроке ({creative})."
             ),
         },
@@ -78,7 +78,7 @@ def parent_points_rows() -> list[dict[str, str]]:
         ("lesson_complete", LESSON_STEP_LABELS["video"]),
         ("emotion_quiz", LESSON_STEP_LABELS["emotion_quiz"]),
         ("comprehension", LESSON_STEP_LABELS["comprehension_quiz"]),
-        ("meaning_analysis", "Задание на смысл сказки"),
+        ("meaning_analysis", LESSON_STEP_LABELS["tasks"]),
         ("creative_task", "Творческое задание"),
         ("retelling", "Пересказ сказки"),
         ("live_meeting", "Живая встреча"),
@@ -345,12 +345,12 @@ def _missions(events: list[Any], lesson: dict | None, points: int, chest: dict) 
     items = [
         {
             "id": "read",
-            "text": "Посмотреть сказку недели",
+            "text": LESSON_STEP_LABELS["video"],
             "status": status("lesson_complete"),
         },
         {
             "id": "quiz",
-            "text": "Ответить на вопросы по сказке",
+            "text": LESSON_STEP_LABELS["comprehension_quiz"],
             "status": status("comprehension"),
         },
         {
@@ -365,7 +365,7 @@ def _missions(events: list[Any], lesson: dict | None, points: int, chest: dict) 
         },
         {
             "id": "secret",
-            "text": "Найти секретный знак в сказке",
+            "text": LESSON_STEP_LABELS["tasks"],
             "status": status("meaning_analysis"),
         },
     ]

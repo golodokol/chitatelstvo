@@ -70,3 +70,21 @@ def event_type_label(event_type: str) -> str:
     if step_key:
         return LESSON_STEP_LABELS[step_key]
     return EXTRA_EVENT_LABELS.get(event_type, event_type)
+
+
+# Ключ картинки Словика на уроке → ключ шага в LESSON_STEP_LABELS
+SLOVIK_KEY_TO_STEP: dict[str, str] = {
+    "reads": "video",
+    "emotion": "emotion_quiz",
+    "writes": "comprehension_quiz",
+    "dreams": "tasks",
+    "grows": "creative",
+}
+
+
+def companion_hint_for_slovik_key(slovik_key: str) -> str | None:
+    """Подпись шага для подсказки Словика рядом с уроком."""
+    step_key = SLOVIK_KEY_TO_STEP.get(slovik_key)
+    if step_key:
+        return LESSON_STEP_LABELS[step_key]
+    return None

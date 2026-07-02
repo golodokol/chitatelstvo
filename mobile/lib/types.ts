@@ -159,12 +159,28 @@ export type CabinetChild = {
   };
 };
 
+export type ParentGuideStep = {
+  label: string;
+  note: string;
+};
+
+export type ParentGuidePoint = {
+  label: string;
+  value: string;
+};
+
+export type ParentGuide = {
+  steps: ParentGuideStep[];
+  points: ParentGuidePoint[];
+};
+
 export type CabinetResponse = {
   parent_name: string;
   email: string;
   module_start_date?: string | null;
   progress_url?: string;
   notification_channel?: string;
+  parent_guide?: ParentGuide;
   telegram?: {
     enabled?: boolean;
     linked?: boolean;

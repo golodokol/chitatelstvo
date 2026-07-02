@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from lessons.step_labels import EXTRA_EVENT_LABELS, LESSON_STEP_LABELS
+
 LEVELS = [
     "Старт",
     "Юный читатель",
@@ -29,35 +31,35 @@ EVENT_RULES: dict[str, dict] = {
         "badge": "Первый шаг",
         "level": "Старт",
         "reward_type": "badge",
-        "next_action": "Посмотреть видео-урок и заполнить рабочий лист по сказке.",
+        "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['video']}».",
     },
     "lesson_complete": {
         "points": 2,
         "badge": "Читатель",
         "level": "Юный читатель",
         "reward_type": "badge",
-        "next_action": "Определить эмоции героя на эмоциометре.",
+        "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['emotion_quiz']}».",
     },
     "emotion_quiz": {
         "points": 1,
         "badge": None,
         "level": None,
         "reward_type": "points",
-        "next_action": "Выполнить задание на понимание текста.",
+        "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['comprehension_quiz']}».",
     },
     "comprehension": {
         "points": 2,
         "badge": "Следопыт",
         "level": "Исследователь",
         "reward_type": "badge",
-        "next_action": "Перейти к заданию на анализ смысла сказки.",
+        "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['tasks']}».",
     },
     "meaning_analysis": {
         "points": 2,
         "badge": "Ловец смысла",
         "level": "Исследователь",
         "reward_type": "badge",
-        "next_action": "Выполнить творческое задание — придумать свой вариант конца.",
+        "next_action": f"По желанию — шаг «{LESSON_STEP_LABELS['creative']}».",
     },
     "creative_task": {
         "points": 3,
@@ -194,16 +196,19 @@ def _parent_progress_line(
 
     templates: dict[str, str] = {
         "lesson_complete": (
-            f"{child_name} досмотрел(а) видео по сказке{tale} в Читательстве.{pts}"
+            f"{child_name} завершил(а) шаг «{LESSON_STEP_LABELS['video']}»{tale}.{pts}"
+        ),
+        "emotion_quiz": (
+            f"{child_name} прошёл(а) шаг «{LESSON_STEP_LABELS['emotion_quiz']}»{tale}.{pts}"
         ),
         "comprehension": (
-            f"{child_name} ответил(а) на вопросы по тексту{tale}.{badge_part}{pts}"
+            f"{child_name} прошёл(а) шаг «{LESSON_STEP_LABELS['comprehension_quiz']}»{tale}.{badge_part}{pts}"
         ),
         "meaning_analysis": (
-            f"{child_name} разобрал(а) смысл сказки{tale}.{badge_part}{pts}"
+            f"{child_name} прошёл(а) шаг «{LESSON_STEP_LABELS['tasks']}»{tale}.{badge_part}{pts}"
         ),
         "creative_task": (
-            f"Творческое задание по сказке{tale} отмечено.{badge_part}{pts}"
+            f"Шаг «{EXTRA_EVENT_LABELS['creative_task']}» по сказке{tale} отмечен.{badge_part}{pts}"
             f" Можно пересказать историю за ужином — просто для удовольствия."
         ),
         "live_meeting": (

@@ -58,11 +58,24 @@
     }, 4200);
   }
 
-  function updateCompanion(urls, key, hint) {
+  function updateCompanion(urls, key, hint, stepLabels) {
     var img = document.querySelector('[data-lesson-companion-img]');
     var hintEl = document.querySelector('[data-lesson-companion-hint]');
     if (img && urls && urls[key]) img.src = urls[key];
-    if (hintEl) hintEl.textContent = hint || STEP_HINTS[key] || '';
+    if (hintEl) {
+      var resolved = hint;
+      if (!resolved && stepLabels) {
+        var map = {
+          reads: 'video',
+          emotion: 'emotion_quiz',
+          writes: 'comprehension_quiz',
+          dreams: 'tasks',
+          grows: 'creative',
+        };
+        resolved = stepLabels[map[key]] || '';
+      }
+      hintEl.textContent = resolved || STEP_HINTS[key] || '';
+    }
   }
 
   function rewardMessage(eventType, status) {

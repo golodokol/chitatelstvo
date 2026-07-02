@@ -32,4 +32,6 @@ def test_parent_points_rows_include_emotion_step():
     rows = {row["label"]: row["value"] for row in parent_points_rows()}
     assert LESSON_STEP_LABELS["emotion_quiz"] in rows
     assert rows[LESSON_STEP_LABELS["emotion_quiz"]] == "+1"
+    assert LESSON_STEP_LABELS["tasks"] in rows
     assert "Квиз «Понимание»" not in rows
+    assert "Задание на смысл" not in rows

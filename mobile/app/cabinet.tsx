@@ -18,9 +18,7 @@ import { RemoteImage, textNoBreak } from "@/components/RemoteImage";
 import {
   LESSON_GUIDE_FOOTER,
   LESSON_GUIDE_INTRO,
-  LESSON_GUIDE_STEPS,
   PARENT_INTRO,
-  POINTS_RULES,
 } from "@/constants/cabinet-guide";
 import { colors, spacing, API_BASE_URL } from "@/constants/theme";
 import { claimChest, fetchCabinet } from "@/lib/api";
@@ -520,9 +518,9 @@ export default function CabinetScreen() {
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>Как проходит урок</Text>
               <Text style={styles.hint}>{LESSON_GUIDE_INTRO}</Text>
-              {LESSON_GUIDE_STEPS.map((step, i) => (
-                <Text key={step.title} style={styles.guideStep}>
-                  {i + 1}. {step.title} — {step.points}
+              {(payload?.parent_guide?.steps ?? []).map((step, i) => (
+                <Text key={step.label} style={styles.guideStep}>
+                  {i + 1}. {step.label} — {step.note}
                 </Text>
               ))}
               <Text style={styles.hint}>{LESSON_GUIDE_FOOTER}</Text>
@@ -530,10 +528,10 @@ export default function CabinetScreen() {
 
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>За что начисляются Словики</Text>
-              {POINTS_RULES.map((row) => (
-                <View key={row.action} style={styles.pointsRow}>
-                  <Text style={styles.pointsAction}>{row.action}</Text>
-                  <Text style={styles.pointsValue}>{row.points}</Text>
+              {(payload?.parent_guide?.points ?? []).map((row) => (
+                <View key={row.label} style={styles.pointsRow}>
+                  <Text style={styles.pointsAction}>{row.label}</Text>
+                  <Text style={styles.pointsValue}>{row.value}</Text>
                 </View>
               ))}
             </View>
