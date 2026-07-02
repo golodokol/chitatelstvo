@@ -539,6 +539,14 @@ body.chit-student {
   margin-top: 12px;
 }
 
+/* 6 hero cards: 3 per row, 2 rows, centered */
+.chit-opt-grid--6 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 540px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* 7 hero cards: 4 on top row, 3 centered below */
 .chit-opt-grid--7 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -563,7 +571,7 @@ body.chit-student {
   width: 100%;
   aspect-ratio: 1 / 1;
   margin-bottom: 8px;
-  background: var(--cream-warm);
+  background: #fcf9f7;
   border-radius: 8px;
   overflow: hidden;
 }
