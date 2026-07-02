@@ -695,10 +695,26 @@ body.chit-student {
 }
 
 .chit-picture-card {
+  position: relative;
   border: 1.5px solid var(--border);
   border-radius: 12px;
   padding: 10px;
   background: var(--white);
+  text-align: center;
+}
+
+.chit-picture-num {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--blue-deep);
+  color: var(--white);
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 26px;
   text-align: center;
 }
 

@@ -182,22 +182,22 @@
       {
         "id": "m5",
         "type": "picture_match",
-        "text": "Кто это? Соедини картинку героя с названием.",
+        "text": "Посмотри на картинки с номерами и выбери имя героя.",
         "pictures": [
-          {"id": "p1", "image": "/static/lessons/tsarevna/ivan.svg", "alt": "Иван-царевич"},
-          {"id": "p2", "image": "/static/lessons/tsarevna/tsar.svg", "alt": "Царь"},
-          {"id": "p3", "image": "/static/lessons/tsarevna/frog.svg", "alt": "Лягушка"},
-          {"id": "p4", "image": "/static/lessons/tsarevna/vasilisa.svg", "alt": "Василиса Премудрая"}
+          {"id": "p1", "image": "/static/lessons/tsarevna/ivan.png", "alt": "Фото 1: юноша с луком и стрелами"},
+          {"id": "p2", "image": "/static/lessons/tsarevna/lyagushka.png", "alt": "Фото 2: лягушка в короне на кувшинке"},
+          {"id": "p3", "image": "/static/lessons/tsarevna/koschei.png", "alt": "Фото 3: высокий царь с посохом и черепом"},
+          {"id": "p4", "image": "/static/lessons/tsarevna/vasilisa.png", "alt": "Фото 4: девушка в кокошнике"}
         ],
         "labels": [
-          {"id": "l1", "text": "Иван-царевич"},
-          {"id": "l2", "text": "царь"},
-          {"id": "l3", "text": "лягушка"},
+          {"id": "l1", "text": "Царевна Лягушка"},
+          {"id": "l2", "text": "Иван-царевич"},
+          {"id": "l3", "text": "Кощей бессмертный"},
           {"id": "l4", "text": "Василиса Премудрая"}
         ],
         "correct": {
-          "p1": "l1",
-          "p2": "l2",
+          "p1": "l2",
+          "p2": "l1",
           "p3": "l3",
           "p4": "l4"
         }

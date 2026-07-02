@@ -25,6 +25,16 @@ def test_score_matching_question():
     assert score_question(q, {"ivan": "swamp", "frog": "yard"}) is False
 
 
+def test_score_picture_match_question():
+    q = {
+        "id": "m5",
+        "type": "picture_match",
+        "correct": {"p1": "l2", "p2": "l1", "p3": "l3", "p4": "l4"},
+    }
+    assert score_question(q, {"p1": "l2", "p2": "l1", "p3": "l3", "p4": "l4"}) is True
+    assert score_question(q, {"p1": "l1", "p2": "l2", "p3": "l3", "p4": "l4"}) is False
+
+
 def test_score_ordering_question():
     q = {"id": "m4", "type": "ordering", "correct": ["e1", "e2", "e3"]}
     assert score_question(q, ["e1", "e2", "e3"]) is True

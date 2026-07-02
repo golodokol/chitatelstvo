@@ -171,9 +171,13 @@
     div.innerHTML = html;
     const grid = document.createElement('div');
     grid.className = 'chit-picture-grid';
-    (q.pictures || []).forEach(function (pic) {
+    (q.pictures || []).forEach(function (pic, picIdx) {
       const card = document.createElement('div');
       card.className = 'chit-picture-card';
+      const badge = document.createElement('span');
+      badge.className = 'chit-picture-num';
+      badge.textContent = String(picIdx + 1);
+      card.appendChild(badge);
       const img = document.createElement('img');
       img.src = pic.image;
       img.alt = pic.alt || '';
