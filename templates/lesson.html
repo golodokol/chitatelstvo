@@ -160,7 +160,19 @@
         { hasEmotion: !!CFG.emotion, hasComprehension: !!CFG.comprehension, hasMeaning: !!CFG.meaning },
         lessonState
       );
-      ChitSlovik.updateCompanion(SLOVIK, key);
+      ChitSlovik.updateCompanion(SLOVIK, key, stepHintFor(key));
+    }
+
+    function stepHintFor(slovikKey) {
+      var labels = CFG.stepLabels || {};
+      var map = {
+        reads: 'video',
+        emotion: 'emotion_quiz',
+        writes: 'comprehension_quiz',
+        dreams: 'tasks',
+        grows: 'creative',
+      };
+      return labels[map[slovikKey]] || '';
     }
 
     function onReward(eventType, status) {
