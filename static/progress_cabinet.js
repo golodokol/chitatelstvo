@@ -55,7 +55,7 @@
     } catch (e) {}
   });
 
-  document.querySelectorAll('[data-chest-open]').forEach(function (btn) {
+  document.querySelectorAll('button[data-chest-open]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       if (btn.disabled) return;
       var panel = btn.closest('.chit-panel--chest');

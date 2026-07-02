@@ -155,10 +155,13 @@
     var img = panel.querySelector('[data-chest-img]');
     var openUrl = panel.getAttribute('data-chest-open');
     if (img && openUrl) img.src = openUrl;
-    var btn = panel.querySelector('[data-chest-open]');
+    var btn = panel.querySelector('button[data-chest-open]');
     if (btn) {
-      btn.disabled = true;
-      btn.textContent = 'В сокровищнице';
+      var link = document.createElement('a');
+      link.className = btn.className;
+      link.href = panel.getAttribute('data-treasury-href') || '#treasury-1';
+      link.textContent = 'В сокровищницу';
+      btn.replaceWith(link);
     }
     var hint = panel.querySelector('.chit-chest__hint');
     if (hint) hint.textContent = 'Награда уже в сокровищнице';

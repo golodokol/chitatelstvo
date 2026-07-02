@@ -136,6 +136,7 @@
 
         {% macro render_chest(track, child, loop_index) %}
         <section class="chit-panel chit-panel--chest{% if track.chest.ready %} is-ready{% endif %}{% if track.chest.claimed %} is-claimed{% endif %}{% if track.chest.visual == 'opening' %} is-opening{% endif %}" id="chest-{{ loop_index }}"
+          data-treasury-href="#treasury-{{ loop_index }}"
           data-child-id="{{ child.id }}"
           data-tale-slug="{{ track.chest.tale_slug }}"
           data-progress-token="{{ progress_token }}"
@@ -164,9 +165,13 @@
                 </div>
                 <p class="chit-chest__hint">{{ track.chest.hint }}</p>
               </div>
-              <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not track.chest.ready or track.chest.claimed %} disabled{% endif %}>
-                {% if track.chest.claimed %}В сокровищнице{% elif track.chest.ready %}Открыть сундук{% else %}Сундук закрыт{% endif %}
+              {% if track.chest.claimed %}
+              <a class="chit-btn chit-btn--chest" href="#treasury-{{ loop_index }}">В сокровищницу</a>
+              {% else %}
+              <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not track.chest.ready %} disabled{% endif %}>
+                {% if track.chest.ready %}Открыть сундук{% else %}Сундук закрыт{% endif %}
               </button>
+              {% endif %}
             </div>
           </div>
         </section>
