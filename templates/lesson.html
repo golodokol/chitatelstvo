@@ -121,7 +121,7 @@
   </div>
 
   <script src="/static/lesson_slovik.js?v=20260702b"></script>
-  <script src="/static/emotion_wheel.js?v=20260702b"></script>
+  <script src="/static/emotion_wheel.js?v=20260702c"></script>
   <script src="/static/lesson_quiz.js?v=20260702f"></script>
   <script>
     const CFG = {
@@ -471,11 +471,41 @@
       syncQuizButtons();
     }
 
-    function updateEmotionButton() {
+    function emotionSelectionComplete(completeOverride) {
+      if (completeOverride !== undefined) return !!completeOverride;
+      if (emotionWheel && typeof emotionWheel.isComplete === 'function') {
+        return emotionWheel.isComplete();
+      }
+      const pickN = Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
+      const selected = emotionWheel && emotionWheel.getSelected ? emotionWheel.getSelected() : [];
+      return selected.length === pickN;
+    }
+
+    function emotionVideoOk() {
+      return lessonState.videoDone || !!CFG.testKey || maxPercent >= CFG.threshold;
+    }
+
+    function updateEmotionButton(completeOverride) {
       const btn = document.getElementById('btn-emotion');
-      if (!btn || lessonState.emotionDone) return;
-      const complete = emotionWheel && emotionWheel.isComplete();
-      btn.disabled = !complete;
+      if (!btn) return;
+      if (lessonState.emotionDone) {
+        btn.disabled = true;
+        btn.title = '';
+        return;
+      }
+      const complete = emotionSelectionComplete(completeOverride);
+      const videoOk = emotionVideoOk();
+      btn.disabled = !(complete && videoOk);
+      if (!videoOk && complete) {
+        btn.title = 'Сначала досмотрите видео-урок';
+      } else if (!complete) {
+        const pickN = Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
+        btn.title = pickN === 1
+          ? 'Выберите эмоцию на колесе'
+          : 'Выберите ' + pickN + ' эмоции на колесе';
+      } else {
+        btn.title = '';
+      }
     }
 
     async function sendVideoComplete(percent) {
@@ -532,7 +562,12 @@
     function trackPercent(percent) {
       if (videoSent) return;
       maxPercent = Math.max(maxPercent, clampPercent(percent));
-      if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
+      if (maxPercent >= CFG.threshold) {
+        updateEmotionButton();
+        sendVideoComplete(maxPercent);
+      } else {
+        updateEmotionButton();
+      }
     }
 
     function initHtml5(src) {
@@ -699,7 +734,7 @@
         emotions: CFG.emotion.emotions,
         imageUrl: CFG.emotion.wheel_image,
         petalPaths: CFG.emotion.wheel_petals,
-        pick: q.pick,
+        pick: Number(q.pick) || 1,
         onChange: function (_selected, complete) {
           if (!lessonState.emotionDone) {
             const msg = document.getElementById('emotion-msg');
@@ -710,7 +745,7 @@
               document.getElementById('step-emotion').classList.remove('is-wrong', 'is-ok');
             }
           }
-          updateEmotionButton();
+          updateEmotionButton(complete);
           syncQuizButtons();
         },
       });

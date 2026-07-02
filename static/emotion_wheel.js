@@ -172,7 +172,7 @@
       syncUI(false);
     }
 
-    syncUI();
+    syncUI(false);
 
     return {
       getSelected: getSelected,
