@@ -79,10 +79,7 @@ CHEST_CONTENTS: list[dict[str, Any]] = [
 
 TREASURY_KINDS = frozenset({BONUS_KIND, COLORING_KIND, STICKER_KIND})
 
-CHEST_REWARD_SUMMARY = (
-    "письмо от школы, бонусная страница с заданием, "
-    "сказочная раскраска и секретная наклейка"
-)
+CHEST_REWARD_SUMMARY = "бонусная страница с заданием и ещё сюрпризы"
 
 
 def _rewards_dir(tale_slug: str) -> Path:
@@ -165,7 +162,11 @@ def chest_image_for_state(visual: str) -> str:
 
 def reward_summary_text(items: list[dict[str, Any]] | None = None) -> str:
     if items:
-        labels = [item.get("label", "") for item in items if item.get("label")]
+        labels = [
+            item.get("label", "")
+            for item in items
+            if item.get("label") and item.get("kind") != LETTER_KIND
+        ]
         if labels:
             return ", ".join(labels[:2]).lower() + " и ещё сюрпризы"
     return CHEST_REWARD_SUMMARY
