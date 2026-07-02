@@ -655,11 +655,6 @@ body.chit-student {
 .chit-msg.err { background: #ffebee; color: #c62828; }
 .chit-msg.info { background: var(--blue-pale); color: var(--blue-deep); }
 
-.chit-manual {
-  background: var(--cream-warm);
-  border: 1.5px dashed var(--accent);
-}
-
 .chit-back {
   margin-bottom: 16px;
 }

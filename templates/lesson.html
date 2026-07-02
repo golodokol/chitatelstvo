@@ -117,17 +117,6 @@
       <div id="rating-msg"></div>
     </div>
 
-    <div class="chit-card chit-manual">
-      <div class="chit-badge-step">Шаг 4–5 · вручную</div>
-      <h2>Творчество и встреча</h2>
-      <p>Эти шаги отмечает родитель, когда ребёнок действительно их сделал.</p>
-      <p>
-        <button type="button" class="chit-btn" id="btn-creative">Творческое задание выполнено</button>
-        <button type="button" class="chit-btn chit-tg-btn" id="btn-meeting" style="margin-left:8px">Живая встреча была</button>
-      </p>
-      <textarea id="manual-notes" rows="2" placeholder="Комментарий (необязательно)"></textarea>
-      <div id="manual-msg"></div>
-    </div>
   </div>
 
   <script src="/static/lesson_slovik.js"></script>
@@ -719,13 +708,6 @@
       onReward(quizType, data.status);
     }
 
-    async function manualMark(eventType) {
-      const notes = document.getElementById('manual-notes').value;
-      const data = await postJson('/api/lesson/' + CFG.slug + '/manual', authBody({ event_type: eventType, notes }));
-      showMsg('manual-msg', data.message, data.status === 'failed' ? 'err' : 'ok');
-      if (data.status === 'accepted') onReward(eventType, data.status);
-    }
-
     function updateRatingValue() {
       const el = document.getElementById('rating-value');
       if (!el) return;
@@ -791,8 +773,6 @@
       document.getElementById('btn-meaning').addEventListener('click', () =>
         submitQuiz('meaning_analysis', 'form-meaning', CFG.meaning, 'btn-meaning', 'meaning-msg', null));
     }
-    document.getElementById('btn-creative').addEventListener('click', () => manualMark('creative_task'));
-    document.getElementById('btn-meeting').addEventListener('click', () => manualMark('live_meeting'));
     document.getElementById('btn-rating').addEventListener('click', submitRating);
 
     if (CFG.canRate || CFG.existingRating) showRatingStep();
