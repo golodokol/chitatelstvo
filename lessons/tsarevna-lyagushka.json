@@ -122,13 +122,12 @@
         "options": [
           {"id": "baba_yaga", "text": "Баба-яга", "image": "/static/lessons/tsarevna/baba-yaga.png", "alt": "Баба-яга"},
           {"id": "zhar_ptitsa", "text": "Жар-птица", "image": "/static/lessons/tsarevna/zhar-ptitsa.png", "alt": "Жар-птица"},
-          {"id": "bogatyr", "text": "Богатырь", "image": "/static/lessons/tsarevna/bogatyr.png", "alt": "Богатырь"},
           {"id": "shchuka", "text": "Щука", "image": "/static/lessons/tsarevna/schuka.png", "alt": "Щука"},
           {"id": "koshka", "text": "Кот", "image": "/static/lessons/tsarevna/kot.png", "alt": "Кот в сапогах"},
           {"id": "rusalka", "text": "Русалка", "image": "/static/lessons/tsarevna/rusalka.png", "alt": "Русалка"},
           {"id": "koschei", "text": "Кощей Бессмертный", "image": "/static/lessons/tsarevna/koschei.png", "alt": "Кощей Бессмертный"}
         ],
-        "correct": ["zhar_ptitsa", "bogatyr", "koshka", "rusalka"]
+        "correct": ["zhar_ptitsa", "koshka", "rusalka"]
       },
       {
         "id": "m2",
@@ -172,12 +171,13 @@
         "text": "Расставь события по порядку.",
         "hint": "Используй стрелки ↑ и ↓, чтобы выстроить ход сказки.",
         "items": [
-          {"id": "e1", "text": "царь велит сыновьям пустить стрелы"},
-          {"id": "e2", "text": "стрела падает в болото"},
-          {"id": "e3", "text": "Иван находит лягушку"},
-          {"id": "e4", "text": "лягушка превращается в царевну"}
+          {"id": "e1", "image": "/static/lessons/tsarevna/event-01.png", "alt": "Царь и три сына у замка"},
+          {"id": "e2", "image": "/static/lessons/tsarevna/event-02.png", "alt": "Братья стреляют из луков у пруда"},
+          {"id": "e3", "image": "/static/lessons/tsarevna/event-03.png", "alt": "Иван и лягушка на кувшинке"},
+          {"id": "e4", "image": "/static/lessons/tsarevna/event-04.png", "alt": "Иван сражается с Кощеем"},
+          {"id": "e5", "image": "/static/lessons/tsarevna/event-05.png", "alt": "Свадьба и счастливый конец"}
         ],
-        "correct": ["e1", "e2", "e3", "e4"]
+        "correct": ["e1", "e2", "e3", "e4", "e5"]
       },
       {
         "id": "m5",

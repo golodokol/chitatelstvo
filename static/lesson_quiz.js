@@ -39,7 +39,7 @@
     if (withImages) {
       container.className = 'chit-opt-grid';
       const optCount = (q.options || []).length;
-      if (optCount === 7) container.classList.add('chit-opt-grid--7');
+      if (optCount === 6) container.classList.add('chit-opt-grid--6');
       div.appendChild(container);
     }
     (q.options || []).forEach(function (opt) {
@@ -124,27 +124,52 @@
     return div;
   }
 
+  function shuffleItems(items) {
+    const copy = (items || []).slice();
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = copy[i];
+      copy[i] = copy[j];
+      copy[j] = tmp;
+    }
+    return copy;
+  }
+
   function renderOrdering(formId, q, idx) {
     const div = document.createElement('div');
-    div.className = 'chit-q chit-q-ordering';
+    const withImages = optionHasImages(q.items);
+    div.className = withImages ? 'chit-q chit-q-ordering chit-q-ordering-images' : 'chit-q chit-q-ordering';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'ordering';
     let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
     if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
     div.innerHTML = html;
     const list = document.createElement('ol');
-    list.className = 'chit-order-list';
+    list.className = withImages ? 'chit-order-list chit-order-list--images' : 'chit-order-list';
     list.dataset.orderList = q.id;
-    (q.items || []).forEach(function (item) {
+    const items = shuffleItems(q.items);
+    items.forEach(function (item) {
       const li = document.createElement('li');
-      li.className = 'chit-order-item';
+      li.className = withImages ? 'chit-order-item chit-order-item--image' : 'chit-order-item';
       li.dataset.itemId = item.id;
-      li.innerHTML =
-        '<span class="chit-order-text">' + escapeHtml(item.text) + '</span>' +
-        '<span class="chit-order-actions">' +
-        '<button type="button" class="chit-order-btn" data-dir="up" aria-label="Выше">↑</button>' +
-        '<button type="button" class="chit-order-btn" data-dir="down" aria-label="Ниже">↓</button>' +
-        '</span>';
+      if (withImages && item.image) {
+        const alt = item.alt || item.text || '';
+        li.innerHTML =
+          '<span class="chit-order-media">' +
+          '<img class="chit-order-img" src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(alt) + '" loading="lazy">' +
+          '</span>' +
+          '<span class="chit-order-actions">' +
+          '<button type="button" class="chit-order-btn" data-dir="up" aria-label="Выше">↑</button>' +
+          '<button type="button" class="chit-order-btn" data-dir="down" aria-label="Ниже">↓</button>' +
+          '</span>';
+      } else {
+        li.innerHTML =
+          '<span class="chit-order-text">' + escapeHtml(item.text) + '</span>' +
+          '<span class="chit-order-actions">' +
+          '<button type="button" class="chit-order-btn" data-dir="up" aria-label="Выше">↑</button>' +
+          '<button type="button" class="chit-order-btn" data-dir="down" aria-label="Ниже">↓</button>' +
+          '</span>';
+      }
       list.appendChild(li);
     });
     div.appendChild(list);

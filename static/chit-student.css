@@ -485,7 +485,7 @@ body.chit-student {
   font-weight: 700;
   font-size: 1rem;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 14px 16px;
 }
 
 .chit-quiz-verdict.ok { border: 2px solid var(--success); }
@@ -745,6 +745,53 @@ body.chit-student {
   cursor: pointer;
 }
 
+.chit-order-list--images {
+  gap: 12px;
+}
+
+.chit-order-item--image {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 10px;
+  gap: 8px;
+}
+
+.chit-order-media {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--blue-pale);
+}
+
+.chit-order-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+}
+
+.chit-order-item--image .chit-order-actions {
+  justify-content: flex-end;
+}
+
+@media (min-width: 640px) {
+  .chit-order-list--images {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .chit-order-list--images {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .chit-order-img {
+    max-height: 180px;
+  }
+}
+
 .chit-picture-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -812,10 +859,16 @@ body.chit-student {
   margin-top: 4px;
 }
 
-  padding: 10px 14px;
+.chit-msg {
+  padding: 14px 16px;
   border-radius: 10px;
-  margin-top: 10px;
+  margin-top: 18px;
   font-size: 0.92rem;
+}
+
+.chit-step .chit-btn + .chit-msg,
+.chit-step .chit-btn + #emotion-msg {
+  margin-top: 18px;
 }
 
 .chit-msg.ok { background: var(--success-bg); color: var(--success); }
@@ -2328,9 +2381,9 @@ body.chit-cabinet--parent {
 .chit-emotion-verdict {
   font-weight: 700;
   font-size: 1rem;
-  margin-top: 12px;
+  margin-top: 18px;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 14px 16px;
 }
 
 .chit-emotion-verdict.ok {
