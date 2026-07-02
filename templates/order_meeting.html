@@ -13,26 +13,10 @@
     <p>Одна живая встреча в мини-группе — дополнение к уже купленному видеоуроку и заданиям на платформе.</p>
     <p><strong>{{ price }} ₽</strong> · ближайший старт: {{ meeting_date }}</p>
     <p>
-      <button type="button" class="chit-btn" id="btn-pay-meeting">Перейти к оплате</button>
+      <a class="chit-btn" href="{{ pay_url }}" id="btn-pay-meeting">Перейти к оплате</a>
       <a class="chit-btn" href="{{ site_url }}/#program" style="margin-left:8px">Вернуться на сайт</a>
     </p>
     <p class="chit-hint">После оплаты мы пришлём ссылку на личную страницу прогресса и сообщим время встречи.</p>
   </div>
-  <script>
-    document.getElementById('btn-pay-meeting').addEventListener('click', function () {
-      var payload = {
-        tariff: 'meeting_addon',
-        module_id: {{ module_id }},
-        chosen_stage: {{ stage_num|tojson }},
-        chosen_tale_number: {{ tale_number }},
-        lesson_slug: {{ lesson_slug|tojson }},
-        notification_channel: 'email'
-      };
-      try {
-        sessionStorage.setItem('chit_checkout', JSON.stringify(payload));
-      } catch (e) {}
-      window.location.href = {{ pay_url|tojson }};
-    });
-  </script>
 </body>
 </html>

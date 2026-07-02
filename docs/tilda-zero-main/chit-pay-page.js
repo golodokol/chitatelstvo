@@ -1,6 +1,6 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты:
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=6"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=7"></script>
  */
 (function () {
   var STORAGE_KEY = 'chit_checkout';
@@ -137,13 +137,38 @@
     return !!document.querySelector('.t706__cartwin_showed, .t706__cartwin_active, .t706__cartwin-wrapper_showed');
   }
 
-  function readCheckout() {
+  function readCheckoutFromUrl() {
     try {
-      var raw = sessionStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
+      var params = new URLSearchParams(window.location.search);
+      var tariff = params.get('tariff');
+      if (!tariff || !ORDER_PRODUCTS[tariff]) return null;
+      var data = { tariff: tariff };
+      [
+        'module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug',
+        'group_code', 'group', 'parent_name', 'parent_email', 'parent_telegram',
+        'child_name', 'child_age', 'promo_code', 'notification_channel'
+      ].forEach(function (name) {
+        var val = params.get(name);
+        if (val !== null && val !== '') data[name] = val;
+      });
+      if (data.group && !data.group_code) data.group_code = data.group;
+      if (data.group_code && !data.group) data.group = data.group_code;
+      return data;
     } catch (e) {
       return null;
     }
+  }
+
+  function readCheckout() {
+    try {
+      var raw = sessionStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    var fromUrl = readCheckoutFromUrl();
+    if (fromUrl) {
+      try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fromUrl)); } catch (e2) {}
+    }
+    return fromUrl;
   }
 
   function setField(name, value) {
@@ -158,9 +183,10 @@
       promo_code: ['promo_code', 'promocode', 'promo'],
       notification_channel: ['notification_channel'],
       module_id: ['module_id'],
-      chosen_stage: ['chosen_stage'],
-      chosen_tale_number: ['chosen_tale_number'],
-      lesson_slug: ['lesson_slug']
+      chosen_stage: ['chosen_stage', 'stage'],
+      chosen_tale_number: ['chosen_tale_number', 'tale'],
+      lesson_slug: ['lesson_slug'],
+      group_code: ['group_code', 'group']
     };
     var names = aliases[name] || [name];
     names.forEach(function (fieldName) {
@@ -332,7 +358,7 @@
     waitFor(function () {
       return typeof window.tcart__addProduct === 'function' && document.querySelector('.t706');
     }, function () {
-      ['module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
+      ['module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
         setField(name, data[name]);
       });
 

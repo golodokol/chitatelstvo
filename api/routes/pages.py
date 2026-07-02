@@ -6,6 +6,8 @@ from fastapi.templating import Jinja2Templates
 
 from config.settings import MEETING_ADDON_MODULE_ID, MEETING_ADDON_PRICE_RUB, PUBLIC_BASE_URL, ROOT
 from lessons.schedule import meeting_date_label, module_week_for_tale
+from lessons.single_content import content_slug_for_single
+from services.checkout_urls import build_meeting_addon_pay_url
 
 router = APIRouter(tags=["pages"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
@@ -56,7 +58,18 @@ def page_order_meeting(
     tale_title = tale_info.get("tale_title") or tale_info.get("title") or "Царевна лягушка"
     stage_num = "1" if stage in ("stage-1", "1") else "2" if stage in ("stage-2", "2") else "1"
     module_week = module_week_for_tale(stage, tale)
-    pay_url = f"{SITE_URL}/oplata"
+    lesson_slug = slug or content_slug_for_single(
+        group_code=group,
+        stage=stage,
+        tale_number=tale,
+    )
+    pay_url = build_meeting_addon_pay_url(
+        module_id=MEETING_ADDON_MODULE_ID,
+        chosen_stage=stage_num,
+        chosen_tale_number=tale,
+        lesson_slug=lesson_slug,
+        group_code=group,
+    )
     return templates.TemplateResponse(
         request,
         "order_meeting.html",
@@ -71,6 +84,6 @@ def page_order_meeting(
             "stage": stage,
             "stage_num": stage_num,
             "tale_number": tale,
-            "lesson_slug": slug,
+            "lesson_slug": lesson_slug,
         },
     )
