@@ -191,7 +191,7 @@
       {
         "id": "m5",
         "type": "picture_match",
-        "text": "Посмотри на картинки с номерами и выбери имя героя.",
+        "text": "Кто на картинке? Выбери имя героя.",
         "pictures": [
           {"id": "p1", "image": "/static/lessons/tsarevna/ivan.png", "alt": "Фото 1: юноша с луком и стрелами"},
           {"id": "p2", "image": "/static/lessons/tsarevna/lyagushka.png", "alt": "Фото 2: лягушка в короне на кувшинке"},

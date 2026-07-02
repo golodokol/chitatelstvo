@@ -1,6 +1,6 @@
 """Тесты расширенных типов вопросов в квизах урока."""
 
-from lessons.loader import score_question, score_quiz
+from lessons.loader import get_lesson, quiz_for_client, score_question, score_quiz
 
 
 def test_score_single_question():
@@ -23,6 +23,25 @@ def test_score_matching_question():
     }
     assert score_question(q, {"frog": "swamp", "ivan": "yard"}) is True
     assert score_question(q, {"ivan": "swamp", "frog": "yard"}) is False
+
+
+def test_quiz_for_client_keeps_picture_match_images():
+    quiz = get_lesson("tsarevna-lyagushka")["meaning_quiz"]
+    client = quiz_for_client(quiz, shuffle_options=False)
+    q5 = next(q for q in client["questions"] if q["id"] == "m5")
+    assert q5["type"] == "picture_match"
+    assert [pic["image"] for pic in q5["pictures"]] == [
+        "/static/lessons/tsarevna/ivan.png",
+        "/static/lessons/tsarevna/lyagushka.png",
+        "/static/lessons/tsarevna/koschei.png",
+        "/static/lessons/tsarevna/vasilisa.png",
+    ]
+    assert {label["text"] for label in q5["labels"]} == {
+        "Царевна Лягушка",
+        "Иван-царевич",
+        "Кощей бессмертный",
+        "Василиса Премудрая",
+    }
 
 
 def test_score_picture_match_question():
