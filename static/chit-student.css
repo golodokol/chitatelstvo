@@ -714,8 +714,15 @@ body.chit-student {
   color: var(--blue-deep);
 }
 
-.chit-picture-card select {
+.chit-picture-card select,
+.chit-picture-card .chit-picture-select {
   width: 100%;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.25;
+  padding: 7px 26px 7px 8px;
+  background-position: right 8px center;
+  background-size: 10px 6px;
 }
 
 .chit-order-instruction {
@@ -896,7 +903,7 @@ body.chit-student {
 
 .chit-picture-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
   gap: 12px;
   margin-top: 12px;
 }

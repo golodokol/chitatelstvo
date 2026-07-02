@@ -356,7 +356,7 @@
       img.loading = 'lazy';
       card.appendChild(img);
       const select = document.createElement('select');
-      select.className = 'chit-q-select';
+      select.className = 'chit-q-select chit-picture-select';
       select.name = formId + '-' + q.id + '-' + pic.id;
       select.dataset.pictureId = pic.id;
       select.innerHTML = '<option value="">— кто это? —</option>';
