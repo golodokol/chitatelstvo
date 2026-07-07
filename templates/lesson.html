@@ -122,7 +122,7 @@
   </div>
 
   <script src="/static/lesson_slovik.js?v=20260707b"></script>
-  <script src="/static/emotion_wheel.js?v=20260707b"></script>
+  <script src="/static/emotion_wheel.js?v=20260707i"></script>
   <script src="/static/lesson_quiz.js?v=20260702f"></script>
   <script>
     const CFG = {
@@ -155,6 +155,7 @@
       meaningDone: !!(CFG.progress && CFG.progress.meaning_done),
     };
     let emotionWheel = null;
+    let emotionSelectedIds = [];
     let selectedRating = CFG.existingRating || 0;
     let ratingSaved = !!CFG.existingRating;
 
@@ -241,7 +242,9 @@
       }
       maybeSendVideoUnlock();
       maybeSendVideoBadge();
-      updateEmotionButton();
+      if (CFG.emotion && !lessonState.emotionDone) {
+        updateEmotionVideoHint(emotionSelectionComplete(), emotionVideoOk());
+      }
       syncQuizButtons();
     }
 
@@ -510,10 +513,25 @@
       return Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
     }
 
+    function emotionSelectedList() {
+      if (emotionSelectedIds.length) return emotionSelectedIds.slice();
+      if (emotionWheel && typeof emotionWheel.getSelected === 'function') {
+        return emotionWheel.getSelected();
+      }
+      return [];
+    }
+
     function emotionSelectionComplete() {
       const pickN = emotionPickCount();
-      if (!emotionWheel || typeof emotionWheel.getSelected !== 'function') return false;
-      return emotionWheel.getSelected().length === pickN;
+      if (pickN < 1) return false;
+      if (emotionSelectedIds.length === pickN) return true;
+      if (emotionWheel && typeof emotionWheel.isComplete === 'function' && emotionWheel.isComplete()) {
+        return true;
+      }
+      if (emotionWheel && typeof emotionWheel.getSelected === 'function') {
+        return emotionWheel.getSelected().length === pickN;
+      }
+      return false;
     }
 
     function emotionVideoOk() {
@@ -548,17 +566,21 @@
         updateEmotionVideoHint(false, true);
         return;
       }
+      const pickN = emotionPickCount();
       const complete = emotionSelectionComplete();
       const videoOk = emotionVideoOk();
-      btn.disabled = !complete;
-      btn.classList.toggle('is-ready', complete);
-      if (!complete) {
-        const pickN = emotionPickCount();
+      if (complete) {
+        btn.disabled = false;
+        btn.removeAttribute('disabled');
+        btn.classList.add('is-ready');
+        btn.title = videoOk ? '' : 'Можно проверить — если видео ещё не засчитано, посмотрите первые 3 минуты';
+      } else {
+        btn.disabled = true;
+        btn.setAttribute('disabled', 'disabled');
+        btn.classList.remove('is-ready');
         btn.title = pickN === 1
           ? 'Выберите эмоцию на колесе'
           : 'Выберите ' + pickN + ' эмоции на колесе';
-      } else {
-        btn.title = videoOk ? '' : 'Можно проверить — если видео ещё не засчитано, посмотрите первые 3 минуты';
       }
       updateEmotionVideoHint(complete, videoOk);
     }
@@ -733,7 +755,9 @@
           stopKinescopePoll();
           maxPercent = Math.max(maxPercent, 1);
           maybeSendVideoComplete();
-          updateEmotionButton();
+          if (CFG.emotion && !lessonState.emotionDone) {
+            updateEmotionVideoHint(emotionSelectionComplete(), emotionVideoOk());
+          }
         });
         player.on(player.Events.Error, function(event) {
           showMsg('video-msg', 'Ошибка загрузки видео Kinescope. Проверьте ID в lessons/kolobok.json', 'err');
@@ -816,9 +840,9 @@
     }
 
     async function submitEmotionQuiz() {
-      if (!CFG.emotion || !emotionWheel) return;
+      if (!CFG.emotion) return;
       const q = CFG.emotion.question;
-      const selected = emotionWheel.getSelected();
+      const selected = emotionSelectedList();
       if (selected.length !== Number(q.pick)) {
         showEmotionVerdict('err', q.pick === 1 ? 'Выбери одну эмоцию на колесе.' : 'Нужно выбрать ' + q.pick + ' эмоции.');
         return;
@@ -881,7 +905,8 @@
         imageUrl: CFG.emotion.wheel_image,
         petalPaths: CFG.emotion.wheel_petals,
         pick: Number(q.pick) || 1,
-        onChange: function () {
+        onChange: function (selected, ready) {
+          emotionSelectedIds = Array.isArray(selected) ? selected.slice() : emotionSelectedList();
           if (!lessonState.emotionDone) {
             const msg = document.getElementById('emotion-msg');
             if (msg && msg.style.display !== 'none') {
