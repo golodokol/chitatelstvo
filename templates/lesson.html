@@ -33,7 +33,7 @@
     {% if test_key %}
     <p class="chit-msg info" style="display:block;margin-bottom:12px">Тестовый режим — без ограничений по дате и модулю. Квизы доступны сразу, видео можно не досматривать.</p>
     {% endif %}
-    <p>Привет, <strong style="color:var(--text-warm)">{{ child_name }}</strong>! Сказка {{ lesson.module_week if lesson.module_week <= 4 else lesson.module_week - 4 }} — видео и вопросы засчитываются сами, иди в своём темпе.</p>
+    <p>Привет, <strong style="color:var(--text-warm)">{{ child_name }}</strong>! Это страница посвящена уроку {{ lesson.title }}. Посмотри видео, затем приступай к выполнению заданий. Иди в своём удобном темпе.</p>
 
     <div class="chit-card chit-step" id="step-video">
       <div class="chit-badge-step">{{ step_badges.video }}</div>
