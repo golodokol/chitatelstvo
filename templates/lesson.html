@@ -122,7 +122,7 @@
   </div>
 
   <script src="/static/lesson_slovik.js?v=20260707b"></script>
-  <script src="/static/emotion_wheel.js?v=20260707a"></script>
+  <script src="/static/emotion_wheel.js?v=20260707b"></script>
   <script src="/static/lesson_quiz.js?v=20260702f"></script>
   <script>
     const CFG = {
@@ -510,8 +510,7 @@
       return Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
     }
 
-    function emotionSelectionComplete(completeOverride) {
-      if (completeOverride !== undefined) return !!completeOverride;
+    function emotionSelectionComplete() {
       const pickN = emotionPickCount();
       if (!emotionWheel || typeof emotionWheel.getSelected !== 'function') return false;
       return emotionWheel.getSelected().length === pickN;
@@ -539,7 +538,7 @@
       }
     }
 
-    function updateEmotionButton(completeOverride) {
+    function updateEmotionButton() {
       const btn = document.getElementById('btn-emotion');
       if (!btn) return;
       if (lessonState.emotionDone) {
@@ -549,7 +548,7 @@
         updateEmotionVideoHint(false, true);
         return;
       }
-      const complete = emotionSelectionComplete(completeOverride);
+      const complete = emotionSelectionComplete();
       const videoOk = emotionVideoOk();
       btn.disabled = !complete;
       btn.classList.toggle('is-ready', complete);
@@ -559,7 +558,7 @@
           ? 'Выберите эмоцию на колесе'
           : 'Выберите ' + pickN + ' эмоции на колесе';
       } else {
-        btn.title = '';
+        btn.title = videoOk ? '' : 'Можно проверить — если видео ещё не засчитано, посмотрите первые 3 минуты';
       }
       updateEmotionVideoHint(complete, videoOk);
     }
@@ -790,14 +789,9 @@
       return found ? found.label : id;
     }
 
-    function formatEmotionFail(data, selected) {
-      let text = 'Пока не верно. ' + (data.message || 'Попробуй ещё раз.');
-      const correct = new Set(data.correct || []);
-      const wrong = selected.filter(function (id) { return !correct.has(id); });
-      if (wrong.length) {
-        text += ' Неверный выбор: ' + wrong.map(emotionLabel).join(', ') + '.';
-      }
-      return text;
+    function formatEmotionFail(data) {
+      if (CFG.emotion && CFG.emotion.feedback_retry) return CFG.emotion.feedback_retry;
+      return (data && data.message) || 'Попробуй ещё раз — подумай, что чувствовал герой в этот момент.';
     }
 
     function clearEmotionFeedback() {
@@ -830,9 +824,15 @@
         return;
       }
       if (!emotionVideoOk()) {
+        if (maxWatchedSeconds >= videoUnlockTargetSeconds()) {
+          await sendVideoUnlock();
+        }
+      }
+      if (!emotionVideoOk()) {
         showEmotionVerdict('err', 'Сначала посмотрите первые 3 минуты видео-урока выше.');
         const videoStep = document.getElementById('step-video');
         if (videoStep) videoStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        updateEmotionButton();
         return;
       }
       const btn = document.getElementById('btn-emotion');
@@ -852,7 +852,7 @@
         if (data.correct && emotionWheel.markResult) {
           emotionWheel.markResult(data.correct, false);
         }
-        showEmotionVerdict('err', formatEmotionFail(data, selected));
+        showEmotionVerdict('err', formatEmotionFail(data));
         updateEmotionButton();
         return;
       }
@@ -881,7 +881,7 @@
         imageUrl: CFG.emotion.wheel_image,
         petalPaths: CFG.emotion.wheel_petals,
         pick: Number(q.pick) || 1,
-        onChange: function (selected, complete) {
+        onChange: function () {
           if (!lessonState.emotionDone) {
             const msg = document.getElementById('emotion-msg');
             if (msg && msg.style.display !== 'none') {
@@ -891,9 +891,7 @@
               document.getElementById('step-emotion').classList.remove('is-wrong', 'is-ok');
             }
           }
-          const ready = complete === true
-            || (Array.isArray(selected) && selected.length === emotionPickCount());
-          updateEmotionButton(ready);
+          updateEmotionButton();
           syncQuizButtons();
         },
       });
