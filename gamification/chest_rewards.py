@@ -79,6 +79,52 @@ CHEST_CONTENTS: list[dict[str, Any]] = [
 
 TREASURY_KINDS = frozenset({BONUS_KIND, COLORING_KIND, STICKER_KIND})
 
+# Состав сундука для отдельных сказок (если задан — вместо CHEST_CONTENTS)
+TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
+    "grade-1-stage1-tale-01": [
+        {
+            "kind": LETTER_KIND,
+            "label": "Письмо от школы",
+            "description": "Личное письмо от школы — прочитай сразу после открытия сундука",
+            "preview_files": ("letter.png", "letter.jpg"),
+            "download_files": ("letter.pdf",),
+            "fallback_image": "/static/sloviki/slovik-writes.png",
+            "downloadable": False,
+            "in_treasury": False,
+        },
+        {
+            "kind": "creative_1",
+            "label": "Раскрась лягушку",
+            "description": "Раскраска по сказке — скачай и распечатай",
+            "preview_files": ("creative-1.png", "creative-1.jpg"),
+            "download_files": ("creative-1.pdf",),
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Обведи стрелу",
+            "description": "Задание со стрелой — скачай и распечатай",
+            "preview_files": ("creative-2.png", "creative-2.jpg"),
+            "download_files": ("creative-2.pdf",),
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Нарисуй свою лягушку в болоте",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-3.png", "creative-3.jpg"),
+            "download_files": ("creative-3.pdf",),
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
+}
+
 CHEST_REWARD_SUMMARY = "бонусная страница с заданием и ещё сюрпризы"
 
 
@@ -128,12 +174,18 @@ def rewards_for_tale(tale_slug: str, tale_title: str) -> list[dict[str, Any]]:
     """Все предметы сундука для показа при открытии (включая письмо)."""
     slug = (tale_slug or "").strip()
     title = (tale_title or "").strip() or "Сказка недели"
-    return [_build_item(entry, slug, title) for entry in CHEST_CONTENTS]
+    entries = TALE_CHEST_ITEMS.get(slug) or CHEST_CONTENTS
+    return [_build_item(entry, slug, title) for entry in entries]
 
 
 def items_for_treasury(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Только то, что сохраняем в сокровищнице (без письма от школы)."""
-    return [item for item in items if item.get("kind") in TREASURY_KINDS]
+    return [
+        item
+        for item in items
+        if item.get("kind") in TREASURY_KINDS
+        or str(item.get("kind", "")).startswith("creative_")
+    ]
 
 
 def chest_visual_state(
