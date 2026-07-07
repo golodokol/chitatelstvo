@@ -1552,6 +1552,19 @@ body.chit-cabinet--parent {
   background: linear-gradient(165deg, #fffdf8 0%, #fff9ef 100%);
   border-color: #e8dcc8;
 }
+
+.chit-panel--chest + .chit-panel--treasury-under-chest {
+  margin-top: -10px;
+  padding-top: 18px;
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  box-shadow: 0 8px 24px rgba(61, 82, 102, 0.06);
+}
+
+.chit-panel--chest + .chit-panel--treasury-under-chest .chit-section-title {
+  font-size: 1.15rem;
+}
 .chit-treasury-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));

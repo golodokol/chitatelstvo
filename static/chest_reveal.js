@@ -201,7 +201,7 @@
       activePanel = panel;
       activeItems = panelItems(panel);
       if (subEl) {
-        subEl.textContent = 'Письмо прочитай сразу. Раскраску и бонусную страницу можно скачать — они сохранятся в сокровищнице.';
+        subEl.textContent = 'Скачай творческие задания — они сохранятся в сокровищнице под сундуком.';
       }
       renderRewards(activeItems);
       playOpenAnimation(panel);

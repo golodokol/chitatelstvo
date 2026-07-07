@@ -11,6 +11,7 @@ from gamification.chest_rewards import (
     LETTER_KIND,
     chest_image_for_state,
     chest_visual_state,
+    items_for_treasury,
     reward_summary_text,
     rewards_for_tale,
 )
@@ -477,28 +478,63 @@ def _reading_diary(ratings: list[Any], lesson_links: list[dict]) -> list[dict[st
     return entries
 
 
+def _treasury_row(
+    *,
+    tale_title: str,
+    tale_slug: str,
+    claimed_at_label: str,
+    item: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "tale_title": tale_title,
+        "tale_slug": tale_slug,
+        "claimed_at_label": claimed_at_label,
+        "kind": item.get("kind", ""),
+        "label": item.get("label", ""),
+        "description": item.get("description", ""),
+        "image_url": item.get("image_url"),
+        "download_url": item.get("download_url"),
+        "downloadable": bool(item.get("downloadable")),
+    }
+
+
+def _treasury_items_for_claim(claim: Any) -> list[dict[str, Any]]:
+    """Актуальные награды сказки — из текущего конфига сундука, не из устаревшего JSON в БД."""
+    title = (claim.tale_title or "").strip() or "Сказка"
+    claimed_at = getattr(claim, "claimed_at", None)
+    claimed_at_label = claimed_at.strftime("%d.%m.%Y") if claimed_at else ""
+    current = items_for_treasury(rewards_for_tale(claim.tale_slug, title))
+    if current:
+        source_items = current
+    else:
+        source_items = [
+            item for item in (claim.items or []) if item.get("kind") != LETTER_KIND
+        ]
+    return [
+        _treasury_row(
+            tale_title=title,
+            tale_slug=claim.tale_slug,
+            claimed_at_label=claimed_at_label,
+            item=item,
+        )
+        for item in source_items
+    ]
+
+
+def _treasury_for_tale(chest_claims: list[Any], tale_slug: str) -> list[dict[str, Any]]:
+    if not tale_slug:
+        return []
+    claim = next((c for c in chest_claims if c.tale_slug == tale_slug), None)
+    if not claim:
+        return []
+    return _treasury_items_for_claim(claim)
+
+
 def _treasury(chest_claims: list[Any]) -> list[dict[str, Any]]:
-    """Сокровищница: награды из сундуков (без письма от школы)."""
+    """Сокровищница: все награды из открытых сундуков."""
     rows: list[dict[str, Any]] = []
     for claim in chest_claims:
-        title = (claim.tale_title or "").strip() or "Сказка"
-        claimed_at = getattr(claim, "claimed_at", None)
-        for item in claim.items or []:
-            if item.get("kind") == LETTER_KIND:
-                continue
-            rows.append(
-                {
-                    "tale_title": title,
-                    "tale_slug": claim.tale_slug,
-                    "claimed_at_label": claimed_at.strftime("%d.%m.%Y") if claimed_at else "",
-                    "kind": item.get("kind", ""),
-                    "label": item.get("label", ""),
-                    "description": item.get("description", ""),
-                    "image_url": item.get("image_url"),
-                    "download_url": item.get("download_url"),
-                    "downloadable": bool(item.get("downloadable")),
-                }
-            )
+        rows.extend(_treasury_items_for_claim(claim))
     return rows
 
 
@@ -524,6 +560,7 @@ def _build_track_section(
 
     missions = _missions(events, lesson, points, chest)
     story_stages = track.get("lesson_stages") or _story_stages(lesson_links)
+    treasury = _treasury_for_tale(claims, tale_slug) if current_claim else []
 
     return {
         "group_code": track.get("group_code", ""),
@@ -531,6 +568,7 @@ def _build_track_section(
         "module_title": track.get("module_title", ""),
         "module_id": track.get("module_id"),
         "chest": chest,
+        "treasury": treasury,
         "weekly_lessons": _weekly_lesson_cards(weekly_source),
         "weekly_lessons_label": weekly_label,
         "daily_lesson": _weekly_lesson_cards(weekly_source)[0] if weekly_source else None,

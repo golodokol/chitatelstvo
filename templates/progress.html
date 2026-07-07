@@ -6,7 +6,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260707f">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -177,6 +177,31 @@
         </section>
         {% endmacro %}
 
+        {% macro render_treasury(track, loop_index) %}
+        {% if track.chest.claimed or track.treasury %}
+        <section class="chit-panel chit-panel--treasury chit-panel--treasury-under-chest" id="treasury-{{ loop_index }}">
+          <h2 class="chit-section-title">Моя сокровищница</h2>
+          <p class="chit-section-sub">Творческие задания из сундука — можно скачать снова.</p>
+          {% if track.treasury %}
+          <div class="chit-treasury-grid">
+            {% for item in track.treasury %}
+            <article class="chit-treasury-item">
+              {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.tale_title }}{% if item.claimed_at_label %} · {{ item.claimed_at_label }}{% endif %}</span>
+              {% if item.downloadable and item.download_url %}
+              <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
+              {% endif %}
+            </article>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="chit-treasury-empty">Открой сундук выше — награды появятся здесь.</p>
+          {% endif %}
+        </section>
+        {% endif %}
+        {% endmacro %}
+
         {% macro render_weekly_lessons(track) %}
         {% if track.weekly_lessons %}
         <section class="chit-panel chit-panel--mission">
@@ -220,6 +245,7 @@
         {% if cab.tracks %}
           {% for track in cab.tracks %}
           {{ render_chest(track, child, loop.index) }}
+          {{ render_treasury(track, loop.index) }}
           {{ render_weekly_lessons(track) }}
           {% if track.story_stages %}
           <section class="chit-panel chit-panel--stories">
@@ -287,6 +313,7 @@
         {% else %}
         {% set legacy_track = {
           'chest': cab.chest,
+          'treasury': cab.treasury if cab.chest.claimed else [],
           'weekly_lessons': cab.weekly_lessons or ([cab.daily_lesson] if cab.daily_lesson else []),
           'weekly_lessons_label': cab.weekly_lessons_label or 'Урок этой недели',
           'story_stages': cab.story_stages,
@@ -296,6 +323,7 @@
           'group_label': ''
         } %}
         {{ render_chest(legacy_track, child, loop.index) }}
+        {{ render_treasury(legacy_track, loop.index) }}
         {{ render_weekly_lessons(legacy_track) }}
         {% if cab.story_stages %}
         <section class="chit-panel chit-panel--stories">
@@ -360,27 +388,6 @@
           </ul>
         </section>
         {% endif %}
-
-        <section class="chit-panel chit-panel--treasury" id="treasury-{{ loop.index }}">
-          <h2 class="chit-section-title">Моя сокровищница</h2>
-          <p class="chit-section-sub">Раскраски, наклейки и бонусные страницы из сундуков сказок — их можно скачать снова.</p>
-          {% if cab.treasury %}
-          <div class="chit-treasury-grid">
-            {% for item in cab.treasury %}
-            <article class="chit-treasury-item">
-              {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
-              <strong>{{ item.label }}</strong>
-              <span>{{ item.tale_title }}{% if item.claimed_at_label %} · {{ item.claimed_at_label }}{% endif %}</span>
-              {% if item.downloadable and item.download_url %}
-              <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
-              {% endif %}
-            </article>
-            {% endfor %}
-          </div>
-          {% else %}
-          <p class="chit-treasury-empty">Пока пусто. Заверши урок и открой сундук сказки — награды появятся здесь.</p>
-          {% endif %}
-        </section>
 
         <section class="chit-panel chit-panel--diary">
           <h2 class="chit-section-title">Читательский дневник</h2>
@@ -642,7 +649,7 @@
     </div>
   </div>
 
-  <script src="/static/chest_reveal.js"></script>
+  <script src="/static/chest_reveal.js?v=20260707f"></script>
   <script src="/static/progress_cabinet.js"></script>
 </body>
 </html>
