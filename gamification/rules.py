@@ -40,6 +40,13 @@ EVENT_RULES: dict[str, dict] = {
         "reward_type": "badge",
         "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['emotion_quiz']}».",
     },
+    "video_unlock": {
+        "points": 0,
+        "badge": None,
+        "level": None,
+        "reward_type": "points",
+        "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['emotion_quiz']}».",
+    },
     "emotion_quiz": {
         "points": 1,
         "badge": None,

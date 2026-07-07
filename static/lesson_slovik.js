@@ -97,15 +97,16 @@
   function nextStepKey(cfg, state) {
     state = state || {};
     cfg = cfg || {};
-    if (state.meaningDone || (state.videoDone && !cfg.hasEmotion && !cfg.hasComprehension && !cfg.hasMeaning)) {
+    if (state.meaningDone || (state.videoUnlocked && !cfg.hasEmotion && !cfg.hasComprehension && !cfg.hasMeaning)) {
       return 'grows';
     }
     if (state.comprehensionDone && !cfg.hasMeaning) return 'grows';
     if (state.comprehensionDone) return 'dreams';
     if (state.emotionDone && cfg.hasComprehension) return 'writes';
     if (state.emotionDone) return 'grows';
-    if (state.videoDone && cfg.hasEmotion) return 'emotion';
-    if (state.videoDone) return 'writes';
+    if (state.videoUnlocked && cfg.hasEmotion) return 'emotion';
+    if (state.videoUnlocked && cfg.hasComprehension) return 'writes';
+    if (state.videoUnlocked) return 'grows';
     return 'reads';
   }
 

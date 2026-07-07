@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from api.deps import rate_limit
 from api.lesson_signing import verify_lesson_access
 from api.test_lesson_auth import verify_test_lesson_key
-from config.settings import ROOT, VIDEO_WATCH_THRESHOLD
+from config.settings import ROOT, VIDEO_BADGE_THRESHOLD, VIDEO_UNLOCK_SECONDS
 from db.session import get_db
 from lessons.step_labels import lesson_step_badges_payload, lesson_step_labels_payload
 from services.lesson_player import (
@@ -22,6 +22,7 @@ from services.lesson_player import (
     handle_manual_mark,
     handle_quiz_submit,
     handle_tale_rating,
+    handle_video_unlock,
     handle_video_complete,
 )
 
@@ -47,6 +48,11 @@ class LessonAuth(BaseModel):
 
 class VideoCompleteBody(LessonAuth):
     percent: float = Field(ge=0, le=1)
+
+
+class VideoUnlockBody(LessonAuth):
+    watched_seconds: float = Field(ge=0)
+    duration_seconds: float | None = Field(default=None, ge=0)
 
 
 class QuizSubmitBody(LessonAuth):
@@ -108,7 +114,9 @@ def lesson_page(
             "chest_url": nav_urls["chest_url"],
             "exp": exp,
             "sig": sig,
-            "video_threshold": VIDEO_WATCH_THRESHOLD,
+            "video_threshold": VIDEO_BADGE_THRESHOLD,
+            "video_unlock_seconds": VIDEO_UNLOCK_SECONDS,
+            "video_badge_threshold": VIDEO_BADGE_THRESHOLD,
             "video_src": payload["video"]["src"],
             "comprehension_quiz": payload["comprehension_quiz"],
             "meaning_quiz": payload["meaning_quiz"],
@@ -123,6 +131,26 @@ def lesson_page(
             "step_labels": lesson_step_labels_payload(),
             "step_badges": lesson_step_badges_payload(),
         },
+    )
+
+
+@router.post("/api/lesson/{slug}/video-unlock")
+def video_unlock(
+    slug: str,
+    body: VideoUnlockBody,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child_id = _verify_access(body, slug)
+    get_child_or_404(db, child_id)
+    return handle_video_unlock(
+        db,
+        child_id=child_id,
+        slug=slug,
+        watched_seconds=body.watched_seconds,
+        duration_seconds=body.duration_seconds,
+        test_key=body.test_key,
     )
 
 

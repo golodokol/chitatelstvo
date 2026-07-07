@@ -20,6 +20,7 @@ from services.lesson_player import (
     handle_manual_mark,
     handle_quiz_submit,
     handle_tale_rating,
+    handle_video_unlock,
     handle_video_complete,
 )
 
@@ -33,6 +34,11 @@ class LessonChildBody(BaseModel):
 
 class VideoCompleteMobileBody(LessonChildBody):
     percent: float = Field(ge=0, le=1)
+
+
+class VideoUnlockMobileBody(LessonChildBody):
+    watched_seconds: float = Field(ge=0)
+    duration_seconds: float | None = Field(default=None, ge=0)
 
 
 class QuizSubmitMobileBody(LessonChildBody):
@@ -73,6 +79,26 @@ def lesson_json(
         child=child,
         slug=slug,
         test_bypass=verify_test_lesson_key(test_key),
+    )
+
+
+@router.post("/{slug}/video-unlock")
+def video_unlock_v1(
+    slug: str,
+    body: VideoUnlockMobileBody,
+    request: Request,
+    family: Family = Depends(get_current_family),
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child = _child_in_family(db, family, body.child_id)
+    return handle_video_unlock(
+        db,
+        child_id=child.id,
+        slug=slug,
+        watched_seconds=body.watched_seconds,
+        duration_seconds=body.duration_seconds,
+        test_key=body.test_key,
     )
 
 

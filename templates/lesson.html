@@ -120,7 +120,7 @@
 
   </div>
 
-  <script src="/static/lesson_slovik.js?v=20260702b"></script>
+  <script src="/static/lesson_slovik.js?v=20260707b"></script>
   <script src="/static/emotion_wheel.js?v=20260707a"></script>
   <script src="/static/lesson_quiz.js?v=20260702f"></script>
   <script>
@@ -129,7 +129,9 @@
       childId: {{ child_id|tojson }},
       exp: {{ exp }},
       sig: {{ sig|tojson }},
-      threshold: {{ video_threshold }},
+      threshold: {{ video_badge_threshold }},
+      unlockSeconds: {{ video_unlock_seconds }},
+      badgeThreshold: {{ video_badge_threshold }},
       video: {{ lesson.video|tojson }},
       videoSrc: {{ video_src|tojson }},
       emotion: {{ emotion_quiz|tojson }},
@@ -145,6 +147,7 @@
 
     const SLOVIK = CFG.slovik.urls || {};
     const lessonState = {
+      videoUnlocked: !!(CFG.progress && CFG.progress.video_unlocked),
       videoDone: !!(CFG.progress && CFG.progress.video_done),
       emotionDone: !!(CFG.progress && CFG.progress.emotion_done),
       comprehensionDone: !!(CFG.progress && CFG.progress.comprehension_done),
@@ -182,8 +185,25 @@
       refreshCompanion();
     }
 
-    let videoSent = !!(CFG.progress && CFG.progress.video_done);
+    let videoBadgeSent = !!(CFG.progress && CFG.progress.video_done);
+    let videoUnlockSent = !!(CFG.progress && CFG.progress.video_unlocked);
     let maxPercent = 0;
+    let maxWatchedSeconds = 0;
+    let videoDurationSeconds = 0;
+
+    function videoUnlockTargetSeconds() {
+      const unlock = Number(CFG.unlockSeconds) || 180;
+      if (videoDurationSeconds > 0) return Math.min(unlock, videoDurationSeconds);
+      return unlock;
+    }
+
+    function videoUnlockedLocally() {
+      return lessonState.videoUnlocked || videoUnlockSent || maxWatchedSeconds >= videoUnlockTargetSeconds();
+    }
+
+    function videoBadgeReadyLocally() {
+      return lessonState.videoDone || videoBadgeSent || maxPercent >= CFG.badgeThreshold;
+    }
 
     function clampPercent(percent) {
       let p = Number(percent);
@@ -206,9 +226,22 @@
       return null;
     }
 
-    function maybeSendVideoComplete() {
-      if (videoSent) return;
-      if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
+    function trackVideoProgress(currentSeconds, durationSeconds) {
+      if (Number.isFinite(durationSeconds) && durationSeconds > 0) {
+        videoDurationSeconds = durationSeconds;
+      }
+      if (Number.isFinite(currentSeconds) && currentSeconds >= 0) {
+        maxWatchedSeconds = Math.max(maxWatchedSeconds, currentSeconds);
+      }
+      if (videoDurationSeconds > 0 && Number.isFinite(currentSeconds)) {
+        maxPercent = Math.max(maxPercent, currentSeconds / videoDurationSeconds);
+      } else if (arguments.length === 1 && currentSeconds <= 1) {
+        maxPercent = Math.max(maxPercent, clampPercent(currentSeconds));
+      }
+      maybeSendVideoUnlock();
+      maybeSendVideoBadge();
+      updateEmotionButton();
+      syncQuizButtons();
     }
 
     function apiErrorMessage(data, fallback) {
@@ -448,7 +481,7 @@
     }
 
     function quizPrerequisitesMet(step) {
-      const videoOk = lessonState.videoDone || !!CFG.testKey;
+      const videoOk = lessonState.videoUnlocked || !!CFG.testKey;
       if (!videoOk) return false;
       if (CFG.emotion && !lessonState.emotionDone) return false;
       return true;
@@ -465,10 +498,11 @@
       }
     }
 
-    function enableNextAfterVideo() {
-      lessonState.videoDone = true;
+    function enableVideoUnlock() {
+      lessonState.videoUnlocked = true;
       updateEmotionButton();
       syncQuizButtons();
+      refreshCompanion();
     }
 
     function emotionPickCount() {
@@ -483,7 +517,7 @@
     }
 
     function emotionVideoOk() {
-      return lessonState.videoDone || !!CFG.testKey || maxPercent >= CFG.threshold;
+      return videoUnlockedLocally() || !!CFG.testKey;
     }
 
     function updateEmotionVideoHint(complete, videoOk) {
@@ -497,7 +531,7 @@
         btn.insertAdjacentElement('afterend', hintEl);
       }
       if (complete && !videoOk && !lessonState.emotionDone) {
-        hintEl.textContent = 'Сначала досмотрите видео-урок выше — хотя бы половину.';
+        hintEl.textContent = 'Сначала посмотрите первые 3 минуты видео-урока выше.';
         hintEl.style.display = 'block';
       } else {
         hintEl.style.display = 'none';
@@ -529,25 +563,72 @@
       updateEmotionVideoHint(complete, videoOk);
     }
 
-    async function sendVideoComplete(percent) {
-      if (videoSent) return;
-      videoSent = true;
+    function maybeSendVideoUnlock() {
+      if (videoUnlockSent || lessonState.videoUnlocked) return;
+      if (!videoUnlockedLocally()) return;
+      sendVideoUnlock();
+    }
+
+    function maybeSendVideoBadge() {
+      if (videoBadgeSent || lessonState.videoDone) return;
+      if (!videoBadgeReadyLocally()) return;
+      sendVideoBadge(maxPercent);
+    }
+
+    function maybeSendVideoComplete() {
+      maybeSendVideoUnlock();
+      maybeSendVideoBadge();
+    }
+
+    async function sendVideoUnlock() {
+      if (videoUnlockSent) return;
+      videoUnlockSent = true;
+      const data = await postJson(
+        '/api/lesson/' + CFG.slug + '/video-unlock',
+        authBody({
+          watched_seconds: maxWatchedSeconds,
+          duration_seconds: videoDurationSeconds > 0 ? videoDurationSeconds : null,
+        })
+      );
+      if (data.status === 'accepted' || data.status === 'duplicate') {
+        lessonState.videoUnlocked = true;
+        enableVideoUnlock();
+        if (data.status === 'accepted' && !lessonState.videoDone) {
+          showMsg(
+            'video-msg',
+            data.message + ' Бейдж «Читатель» — после ' + Math.round(CFG.badgeThreshold * 100) + '% видео.',
+            'info'
+          );
+        }
+      } else {
+        videoUnlockSent = false;
+      }
+    }
+
+    async function sendVideoBadge(percent) {
+      if (videoBadgeSent) return;
+      videoBadgeSent = true;
       percent = clampPercent(percent);
       const data = await postJson('/api/lesson/' + CFG.slug + '/video-complete', authBody({ percent }));
       if (data.status === 'accepted' || data.status === 'duplicate') {
-        showMsg('video-msg', data.message + ' Словики начисляются — загляните на страницу прогресса.', 'ok');
+        showMsg('video-msg', data.message + ' Загляните на страницу прогресса.', 'ok');
         markDone('step-video');
         lessonState.videoDone = true;
-        enableNextAfterVideo();
+        if (!lessonState.videoUnlocked) {
+          lessonState.videoUnlocked = true;
+          videoUnlockSent = true;
+        }
+        updateEmotionButton();
+        syncQuizButtons();
+        refreshCompanion();
         if (data.status === 'accepted') {
           onReward('lesson_complete', data.status);
           showRatingStep();
         } else {
-          refreshCompanion();
           if (CFG.canRate || CFG.existingRating) showRatingStep();
         }
       } else {
-        videoSent = false;
+        videoBadgeSent = false;
         showMsg('video-msg', apiErrorMessage(data, 'Не удалось засчитать просмотр. Обновите страницу и попробуйте снова.'), 'err');
       }
     }
@@ -567,28 +648,14 @@
           },
         });
         function pollTime(p) {
-          if (videoSent || !p.getDuration) return;
+          if (!p.getDuration) return;
           const cur = p.getCurrentTime();
           const dur = p.getDuration();
-          if (dur > 0) {
-            maxPercent = Math.max(maxPercent, cur / dur);
-            if (maxPercent >= CFG.threshold) sendVideoComplete(maxPercent);
-          }
-          if (!videoSent) setTimeout(() => pollTime(p), 2000);
+          if (dur > 0) trackVideoProgress(cur, dur);
+          if (!videoBadgeSent || !videoUnlockSent) setTimeout(() => pollTime(p), 2000);
         }
       };
       document.getElementById('player-container').innerHTML = '';
-    }
-
-    function trackPercent(percent) {
-      if (videoSent) return;
-      maxPercent = Math.max(maxPercent, clampPercent(percent));
-      if (maxPercent >= CFG.threshold) {
-        updateEmotionButton();
-        sendVideoComplete(maxPercent);
-      } else {
-        updateEmotionButton();
-      }
     }
 
     function initHtml5(src) {
@@ -597,9 +664,10 @@
       const v = document.getElementById('html5-video');
       v.addEventListener('timeupdate', function() {
         if (!v.duration) return;
-        trackPercent(v.currentTime / v.duration);
+        trackVideoProgress(v.currentTime, v.duration);
       });
       v.addEventListener('ended', function() {
+        if (v.duration) trackVideoProgress(v.duration, v.duration);
         maybeSendVideoComplete();
       });
     }
@@ -611,7 +679,7 @@
     let kinescopePollTimer = null;
 
     function pollKinescopeProgress(player) {
-      if (videoSent || !player) return;
+      if (!player) return;
       const timePromise = typeof player.getCurrentTime === 'function' ? player.getCurrentTime() : null;
       const durationPromise = typeof player.getDuration === 'function' ? player.getDuration() : null;
       if (!timePromise || !durationPromise) return;
@@ -619,7 +687,7 @@
         const current = Number(values[0]);
         const duration = Number(values[1]);
         if (Number.isFinite(current) && Number.isFinite(duration) && duration > 0) {
-          trackPercent(current / duration);
+          trackVideoProgress(current, duration);
         }
       }).catch(function() {});
     }
@@ -637,8 +705,19 @@
 
       function bindPlayer(player) {
         player.on(player.Events.TimeUpdate, function(event) {
+          const data = (event && event.data) || {};
+          const current = Number(data.currentTime);
+          const duration = Number(data.duration);
+          if (Number.isFinite(current) && Number.isFinite(duration) && duration > 0) {
+            trackVideoProgress(current, duration);
+            return;
+          }
           const p = normalizeKinescopeProgress(event);
-          if (p != null) trackPercent(p);
+          if (p != null && videoDurationSeconds > 0) {
+            trackVideoProgress(p * videoDurationSeconds, videoDurationSeconds);
+          } else if (p != null) {
+            trackVideoProgress(p, 0);
+          }
         });
         if (player.Events.Playing) {
           player.on(player.Events.Playing, function() {
@@ -693,12 +772,11 @@
       tag.onload = function() {
         const player = new Vimeo.Player(document.getElementById('vimeo-frame'));
         player.on('timeupdate', function(data) {
-          if (videoSent) return;
-          maxPercent = Math.max(maxPercent, data.percent);
-          if (maxPercent >= CFG.threshold) {
-            sendVideoComplete(maxPercent);
+          const percent = clampPercent(data.percent);
+          if (videoDurationSeconds > 0) {
+            trackVideoProgress(percent * videoDurationSeconds, videoDurationSeconds);
           } else {
-            updateEmotionButton();
+            trackVideoProgress(percent, 0);
           }
         });
       };
@@ -751,7 +829,7 @@
         return;
       }
       if (!emotionVideoOk()) {
-        showEmotionVerdict('err', 'Сначала досмотрите видео-урок выше — хотя бы половину.');
+        showEmotionVerdict('err', 'Сначала посмотрите первые 3 минуты видео-урока выше.');
         const videoStep = document.getElementById('step-video');
         if (videoStep) videoStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
@@ -912,8 +990,18 @@
       }
     }
 
+    function enableAllVideoProgress() {
+      lessonState.videoUnlocked = true;
+      lessonState.videoDone = true;
+      videoUnlockSent = true;
+      videoBadgeSent = true;
+      updateEmotionButton();
+      syncQuizButtons();
+      refreshCompanion();
+    }
+
     function initLessonProgress() {
-      if (lessonState.videoDone) markDone('step-video');
+      if (lessonState.videoUnlocked || lessonState.videoDone) markDone('step-video');
       if (lessonState.emotionDone) markDone('step-emotion');
       if (lessonState.comprehensionDone) markDone('step-comprehension');
       if (lessonState.meaningDone) markDone('step-meaning');
@@ -953,11 +1041,11 @@
     } else {
       document.getElementById('player-container').innerHTML =
         '<p style="padding:20px;color:#fff">Видео для этого урока ещё не добавлено.</p>';
-      enableNextAfterVideo();
+      enableAllVideoProgress();
     }
 
     if (CFG.testKey) {
-      enableNextAfterVideo();
+      enableAllVideoProgress();
     }
 
     initLessonProgress();

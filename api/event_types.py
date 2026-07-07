@@ -2,6 +2,7 @@
 
 AUTO_LESSON_PLAYER = frozenset(
     {
+        "video_unlock",
         "lesson_complete",
         "emotion_quiz",
         "comprehension",

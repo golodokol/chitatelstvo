@@ -18,7 +18,8 @@ from config.settings import (
     MEETING_ADDON_MODULE_ID,
     MEETING_ADDON_PRICE_RUB,
     PUBLIC_BASE_URL,
-    VIDEO_WATCH_THRESHOLD,
+    VIDEO_BADGE_THRESHOLD,
+    VIDEO_UNLOCK_SECONDS,
 )
 from db import repository as repo
 from db.models import Child, Enrollment
@@ -244,6 +245,23 @@ def prepare_lesson_for_child(
     return child, merge_single_lesson_content(lesson, enrollment)
 
 
+def child_has_video_unlock(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    tale_title: str,
+) -> bool:
+    """Достаточно просмотра для шагов после видео (3 мин или любой следующий шаг)."""
+    if repo.child_has_lesson_complete(db, child_id, tale_title=tale_title):
+        return True
+    if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type="video_unlock"):
+        return True
+    for event_type in ("emotion_quiz", "comprehension", "meaning_analysis"):
+        if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type=event_type):
+            return True
+    return False
+
+
 def build_lesson_json(
     db: Session,
     *,
@@ -259,10 +277,12 @@ def build_lesson_json(
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
     tale_slug = lesson.get("tale_slug") or slug
+    tale_title = lesson["title"]
     existing_rating = repo.get_tale_rating(db, child.id, tale_slug)
     can_rate = repo.child_has_lesson_complete(db, child.id, tale_title=lesson["title"])
-    tale_title = lesson["title"]
+    video_unlocked = child_has_video_unlock(db, child.id, tale_title=tale_title)
     progress = {
+        "video_unlocked": video_unlocked,
         "video_done": can_rate,
         "emotion_done": (
             repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="emotion_quiz")
@@ -293,7 +313,9 @@ def build_lesson_json(
         "chest_url": nav_urls["chest_url"],
         "module_week": lesson.get("module_week"),
         "active": lesson.get("active", True),
-        "video_threshold": VIDEO_WATCH_THRESHOLD,
+        "video_unlock_seconds": VIDEO_UNLOCK_SECONDS,
+        "video_badge_threshold": VIDEO_BADGE_THRESHOLD,
+        "video_threshold": VIDEO_BADGE_THRESHOLD,
         "video": build_video_payload(lesson),
         "emotion_quiz": emotion_quiz_for_client(emotion) if emotion else None,
         "comprehension_quiz": quiz_for_client(comprehension, block_key="comprehension_quiz") if comprehension else None,
@@ -311,6 +333,60 @@ def build_lesson_json(
     }
 
 
+def _required_video_unlock_seconds(duration_seconds: float | None) -> float:
+    if duration_seconds and duration_seconds > 0 and duration_seconds < VIDEO_UNLOCK_SECONDS:
+        return float(duration_seconds)
+    return float(VIDEO_UNLOCK_SECONDS)
+
+
+def handle_video_unlock(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    slug: str,
+    watched_seconds: float,
+    duration_seconds: float | None = None,
+    test_key: str | None = None,
+) -> dict[str, Any]:
+    _, lesson = prepare_lesson_for_child(
+        db,
+        child_id,
+        slug,
+        bypass=verify_test_lesson_key(test_key),
+    )
+    tale_title = lesson["title"]
+    if child_has_video_unlock(db, child_id, tale_title=tale_title):
+        return {
+            "status": "duplicate",
+            "message": "Можно переходить к заданиям ниже.",
+        }
+
+    if not verify_test_lesson_key(test_key):
+        required = _required_video_unlock_seconds(duration_seconds)
+        if watched_seconds < required:
+            minutes = max(1, int(round(required / 60)))
+            raise HTTPException(400, f"Нужно посмотреть первые {minutes} мин видео-урока.")
+
+    status, event_id = submit_learning_event(
+        db,
+        child_id=child_id,
+        event_type="video_unlock",
+        tale_title=tale_title,
+        lesson_date=date.today(),
+        notes=f"auto: video {int(watched_seconds)}s",
+        payload={"source": "lesson_player", "watched_seconds": watched_seconds},
+    )
+    return {
+        "status": status,
+        "event_id": str(event_id) if event_id else None,
+        "message": (
+            "Первые 3 минуты засчитаны — можно переходить к заданиям."
+            if status == "accepted"
+            else "Можно переходить к заданиям ниже."
+        ),
+    }
+
+
 def handle_video_complete(
     db: Session,
     *,
@@ -325,8 +401,11 @@ def handle_video_complete(
         slug,
         bypass=verify_test_lesson_key(test_key),
     )
-    if not verify_test_lesson_key(test_key) and percent < VIDEO_WATCH_THRESHOLD:
-        raise HTTPException(400, f"Нужно досмотреть минимум {int(VIDEO_WATCH_THRESHOLD * 100)}%")
+    if not verify_test_lesson_key(test_key) and percent < VIDEO_BADGE_THRESHOLD:
+        raise HTTPException(
+            400,
+            f"Для бейджа «Читатель» нужно досмотреть минимум {int(VIDEO_BADGE_THRESHOLD * 100)}% видео.",
+        )
 
     status, event_id = submit_learning_event(
         db,
@@ -340,7 +419,11 @@ def handle_video_complete(
     return {
         "status": status,
         "event_id": str(event_id) if event_id else None,
-        "message": "Урок засчитан" if status == "accepted" else "Уже было засчитано ранее",
+        "message": (
+            "Бейдж «Читатель» получен! +2 Словика."
+            if status == "accepted"
+            else "Бейдж за видео уже был получен ранее"
+        ),
     }
 
 

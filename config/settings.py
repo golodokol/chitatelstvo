@@ -73,7 +73,12 @@ DEFAULT_NOTIFICATION_CHANNEL = os.getenv("DEFAULT_NOTIFICATION_CHANNEL", "email"
 # --- Плеер урока ---
 LESSON_SIGNING_SECRET = os.getenv("LESSON_SIGNING_SECRET", WEBHOOK_SECRET).strip()
 LESSON_LINK_TTL_SECONDS = int(os.getenv("LESSON_LINK_TTL_SECONDS", str(60 * 60 * 24 * 90)))
-VIDEO_WATCH_THRESHOLD = float(os.getenv("VIDEO_WATCH_THRESHOLD", "0.5"))
+# Порог бейджа «Читатель» (lesson_complete): доля длительности видео.
+VIDEO_BADGE_THRESHOLD = float(os.getenv("VIDEO_BADGE_THRESHOLD", "0.7"))
+# Сколько секунд видео нужно для перехода к заданиям (без бейджа).
+VIDEO_UNLOCK_SECONDS = int(os.getenv("VIDEO_UNLOCK_SECONDS", "180"))
+# Обратная совместимость: старый порог = бейдж.
+VIDEO_WATCH_THRESHOLD = float(os.getenv("VIDEO_WATCH_THRESHOLD", str(VIDEO_BADGE_THRESHOLD)))
 # Секрет для /test/urok/{secret} — приватная страница теста урока (пусто = выключено)
 TEST_LESSON_SECRET = os.getenv("TEST_LESSON_SECRET", "").strip()
 # Новая сказка открывается каждые N дней (обычно 7 = понедельник)
