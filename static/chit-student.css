@@ -406,6 +406,11 @@ body.chit-student {
   letter-spacing: 0.01em;
 }
 
+.chit-video-unlock-hint {
+  margin: 0 0 14px;
+  display: block;
+}
+
 .chit-video-wrap {
   position: relative;
   padding-bottom: 56.25%;

@@ -116,6 +116,7 @@ def lesson_page(
             "sig": sig,
             "video_threshold": VIDEO_BADGE_THRESHOLD,
             "video_unlock_seconds": VIDEO_UNLOCK_SECONDS,
+            "video_unlock_minutes": max(1, VIDEO_UNLOCK_SECONDS // 60),
             "video_badge_threshold": VIDEO_BADGE_THRESHOLD,
             "video_src": payload["video"]["src"],
             "comprehension_quiz": payload["comprehension_quiz"],

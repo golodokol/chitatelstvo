@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260702g">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260707c">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -38,7 +38,7 @@
     <div class="chit-card chit-step" id="step-video">
       <div class="chit-badge-step">{{ step_badges.video }}</div>
       <h2>{{ step_labels.video }}</h2>
-      <p class="chit-hint chit-video-unlock-hint" id="video-unlock-hint">Чтобы выполнять задания ниже, посмотри первые {{ video_unlock_seconds // 60 }} минуты этого видео-урока.</p>
+      <p class="chit-hint chit-video-unlock-hint" id="video-unlock-hint">Чтобы выполнять задания ниже, посмотри первые {{ video_unlock_minutes }} минуты этого видео-урока.</p>
       <div class="chit-video-wrap" id="player-container"></div>
       <div id="video-msg" class="chit-msg info" style="display:none"></div>
     </div>
@@ -499,14 +499,8 @@
       }
     }
 
-    function hideVideoUnlockHint() {
-      const hint = document.getElementById('video-unlock-hint');
-      if (hint) hint.style.display = 'none';
-    }
-
     function enableVideoUnlock() {
       lessonState.videoUnlocked = true;
-      hideVideoUnlockHint();
       updateEmotionButton();
       syncQuizButtons();
       refreshCompanion();
@@ -1008,10 +1002,7 @@
     }
 
     function initLessonProgress() {
-      if (lessonState.videoUnlocked || lessonState.videoDone) {
-        markDone('step-video');
-        hideVideoUnlockHint();
-      }
+      if (lessonState.videoUnlocked || lessonState.videoDone) markDone('step-video');
       if (lessonState.emotionDone) markDone('step-emotion');
       if (lessonState.comprehensionDone) markDone('step-comprehension');
       if (lessonState.meaningDone) markDone('step-meaning');
