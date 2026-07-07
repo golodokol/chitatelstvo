@@ -878,6 +878,18 @@ body.chit-student {
   max-height: 100px;
 }
 
+/* Картинки в пуле (под ячейками) — крупнее и в одну линию с слотами */
+.chit-q-ordering-images .chit-order-pool-cards {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  justify-items: stretch;
+}
+
+.chit-q-ordering-images .chit-order-pool-cards .chit-order-img {
+  max-height: 200px;
+}
+
 .chit-order-slot-drop .chit-order-card {
   width: 100%;
 }
@@ -904,6 +916,10 @@ body.chit-student {
     max-height: 120px;
   }
 
+  .chit-q-ordering-images .chit-order-pool-cards .chit-order-img {
+    max-height: 240px;
+  }
+
   .chit-order-slot-drop .chit-order-img {
     max-height: 140px;
   }
@@ -920,6 +936,10 @@ body.chit-student {
 
   .chit-order-pool-cards .chit-order-img {
     max-height: 135px;
+  }
+
+  .chit-q-ordering-images .chit-order-pool-cards .chit-order-img {
+    max-height: 270px;
   }
 }
 
