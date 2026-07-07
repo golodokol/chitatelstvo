@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260702f">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260702g">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -121,7 +121,7 @@
   </div>
 
   <script src="/static/lesson_slovik.js?v=20260702b"></script>
-  <script src="/static/emotion_wheel.js?v=20260702c"></script>
+  <script src="/static/emotion_wheel.js?v=20260707a"></script>
   <script src="/static/lesson_quiz.js?v=20260702f"></script>
   <script>
     const CFG = {
@@ -471,14 +471,15 @@
       syncQuizButtons();
     }
 
+    function emotionPickCount() {
+      return Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
+    }
+
     function emotionSelectionComplete(completeOverride) {
       if (completeOverride !== undefined) return !!completeOverride;
-      if (emotionWheel && typeof emotionWheel.isComplete === 'function') {
-        return emotionWheel.isComplete();
-      }
-      const pickN = Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
-      const selected = emotionWheel && emotionWheel.getSelected ? emotionWheel.getSelected() : [];
-      return selected.length === pickN;
+      const pickN = emotionPickCount();
+      if (!emotionWheel || typeof emotionWheel.getSelected !== 'function') return false;
+      return emotionWheel.getSelected().length === pickN;
     }
 
     function emotionVideoOk() {
@@ -508,6 +509,7 @@
       if (!btn) return;
       if (lessonState.emotionDone) {
         btn.disabled = true;
+        btn.classList.remove('is-ready');
         btn.title = '';
         updateEmotionVideoHint(false, true);
         return;
@@ -515,8 +517,9 @@
       const complete = emotionSelectionComplete(completeOverride);
       const videoOk = emotionVideoOk();
       btn.disabled = !complete;
+      btn.classList.toggle('is-ready', complete);
       if (!complete) {
-        const pickN = Number((CFG.emotion && CFG.emotion.question && CFG.emotion.question.pick) || 1);
+        const pickN = emotionPickCount();
         btn.title = pickN === 1
           ? 'Выберите эмоцию на колесе'
           : 'Выберите ' + pickN + ' эмоции на колесе';
@@ -799,7 +802,7 @@
         imageUrl: CFG.emotion.wheel_image,
         petalPaths: CFG.emotion.wheel_petals,
         pick: Number(q.pick) || 1,
-        onChange: function (_selected, complete) {
+        onChange: function (selected, complete) {
           if (!lessonState.emotionDone) {
             const msg = document.getElementById('emotion-msg');
             if (msg && msg.style.display !== 'none') {
@@ -809,7 +812,9 @@
               document.getElementById('step-emotion').classList.remove('is-wrong', 'is-ok');
             }
           }
-          updateEmotionButton(complete);
+          const ready = complete === true
+            || (Array.isArray(selected) && selected.length === emotionPickCount());
+          updateEmotionButton(ready);
           syncQuizButtons();
         },
       });

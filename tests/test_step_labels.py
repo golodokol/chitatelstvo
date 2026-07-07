@@ -21,11 +21,11 @@ def test_lesson_step_labels_payload():
 
 
 def test_lesson_step_badge_fixed_numbers():
-    assert lesson_step_badge("video") == "Шаг 1 · Смотрим видео-урок"
-    assert lesson_step_badge("emotion_quiz") == "Шаг 2 · Изучаем эмоциональный интеллект"
-    assert lesson_step_badge("comprehension_quiz") == "Шаг 3 · Мини-тест по сказке"
-    assert lesson_step_badge("tasks") == "Шаг 4 · Выполняем задания"
-    assert lesson_step_badge("creative") == "Шаг 5 · Творчество"
+    assert lesson_step_badge("video") == "Шаг 1"
+    assert lesson_step_badge("emotion_quiz") == "Шаг 2"
+    assert lesson_step_badge("comprehension_quiz") == "Шаг 3"
+    assert lesson_step_badge("tasks") == "Шаг 4"
+    assert lesson_step_badge("creative") == "Шаг 5"
 
 
 def test_lesson_step_badges_payload():

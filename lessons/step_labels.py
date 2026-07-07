@@ -34,8 +34,7 @@ def lesson_step_labels_payload() -> dict[str, str]:
 
 def lesson_step_badge(step_key: str) -> str:
     number = LESSON_STEP_NUMBERS[step_key]
-    label = LESSON_STEP_LABELS[step_key]
-    return f"Шаг {number} · {label}"
+    return f"Шаг {number}"
 
 
 def lesson_step_badges_payload() -> dict[str, str]:

@@ -209,6 +209,12 @@ body.chit-student {
 
 .chit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.chit-step-emotion .chit-btn.is-ready:not(:disabled) {
+  opacity: 1;
+  background: var(--blue-deep);
+  box-shadow: 0 4px 14px rgba(91, 127, 166, 0.35);
+}
+
 .chit-btn--outline {
   background: transparent;
   color: var(--blue) !important;
