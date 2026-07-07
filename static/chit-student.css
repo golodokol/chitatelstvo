@@ -36,6 +36,12 @@ body.chit-student {
   line-height: 1.55;
 }
 
+body.chit-student img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 .chit-student h1,
 .chit-student h2,
 .chit-student .chit-title {
@@ -1151,8 +1157,8 @@ body.chit-student {
 }
 
 .chit-step-creative {
-  border-color: #e8d48a;
-  background: linear-gradient(180deg, #fff, #fff9e6);
+  border-color: var(--accent-pale);
+  background: linear-gradient(180deg, #fff, var(--accent-pale));
 }
 
 .chit-creative-intro {
