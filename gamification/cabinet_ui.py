@@ -530,6 +530,28 @@ def _treasury_for_tale(chest_claims: list[Any], tale_slug: str) -> list[dict[str
     return _treasury_items_for_claim(claim)
 
 
+def _track_tale_slugs(lesson_links: list[dict]) -> set[str]:
+    slugs: set[str] = set()
+    for les in lesson_links or []:
+        slug = (les.get("tale_slug") or les.get("slug") or "").strip()
+        if slug:
+            slugs.add(slug)
+    return slugs
+
+
+def _treasury_for_track(chest_claims: list[Any], lesson_links: list[dict]) -> list[dict[str, Any]]:
+    """Все награды сокровищницы по сказкам этого модуля (не только текущей недели)."""
+    tale_slugs = _track_tale_slugs(lesson_links)
+    if not tale_slugs:
+        return []
+    rows: list[dict[str, Any]] = []
+    for claim in chest_claims:
+        if claim.tale_slug not in tale_slugs:
+            continue
+        rows.extend(_treasury_items_for_claim(claim))
+    return rows
+
+
 def _treasury(chest_claims: list[Any]) -> list[dict[str, Any]]:
     """Сокровищница: все награды из открытых сундуков."""
     rows: list[dict[str, Any]] = []
@@ -560,7 +582,7 @@ def _build_track_section(
 
     missions = _missions(events, lesson, points, chest)
     story_stages = track.get("lesson_stages") or _story_stages(lesson_links)
-    treasury = _treasury_for_tale(claims, tale_slug) if current_claim else []
+    treasury = _treasury_for_track(claims, lesson_links)
 
     return {
         "group_code": track.get("group_code", ""),

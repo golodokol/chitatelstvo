@@ -2009,6 +2009,7 @@ body.chit-cabinet--parent {
   color: var(--text-warm);
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -2394,6 +2395,7 @@ body.chit-cabinet--parent {
   color: var(--text-warm);
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

@@ -147,6 +147,18 @@
       syncUI();
     }
 
+    function markWrongOnly() {
+      container.querySelectorAll('.chit-emotion-wheel__sector').forEach(function (node) {
+        var id = node.getAttribute('data-id');
+        node.classList.remove('is-correct', 'is-wrong');
+        if (selected.has(id)) node.classList.add('is-wrong');
+      });
+      container.querySelectorAll('.chit-emotion-chip').forEach(function (node) {
+        node.classList.remove('is-correct', 'is-wrong');
+        if (selected.has(node.dataset.id)) node.classList.add('is-wrong');
+      });
+    }
+
     function markResult(correctIds, ok) {
       var correct = new Set(correctIds || []);
       container.querySelectorAll('.chit-emotion-wheel__sector').forEach(function (node) {
@@ -178,6 +190,7 @@
       getSelected: getSelected,
       setSelected: setSelected,
       markResult: markResult,
+      markWrongOnly: markWrongOnly,
       clearResult: clearResult,
       isComplete: selectionComplete,
     };

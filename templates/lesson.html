@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260708a">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708b">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -122,7 +122,7 @@
   </div>
 
   <script src="/static/lesson_slovik.js?v=20260707b"></script>
-  <script src="/static/emotion_wheel.js?v=20260707i"></script>
+  <script src="/static/emotion_wheel.js?v=20260708c"></script>
   <script src="/static/lesson_quiz.js?v=20260702f"></script>
   <script>
     const CFG = {
@@ -156,6 +156,7 @@
     };
     let emotionWheel = null;
     let emotionSelectedIds = [];
+    let emotionWrongAttempts = 0;
     let selectedRating = CFG.existingRating || 0;
     let ratingSaved = !!CFG.existingRating;
 
@@ -823,6 +824,33 @@
       return found ? found.label : id;
     }
 
+    function emotionAttemptStorageKey() {
+      return 'chit-emotion-attempts:' + CFG.slug + ':' + CFG.childId;
+    }
+
+    function loadEmotionWrongAttempts() {
+      try {
+        const raw = sessionStorage.getItem(emotionAttemptStorageKey());
+        const n = parseInt(raw || '0', 10);
+        return Number.isFinite(n) && n > 0 ? n : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function saveEmotionWrongAttempts(count) {
+      try {
+        sessionStorage.setItem(emotionAttemptStorageKey(), String(count));
+      } catch (e) {}
+    }
+
+    emotionWrongAttempts = loadEmotionWrongAttempts();
+
+    function formatEmotionFailHint() {
+      if (CFG.emotion && CFG.emotion.feedback_retry_hint) return CFG.emotion.feedback_retry_hint;
+      return 'Пока не то. Попробуй выбрать другие эмоции.';
+    }
+
     function formatEmotionFail(data) {
       if (CFG.emotion && CFG.emotion.feedback_retry) return CFG.emotion.feedback_retry;
       return (data && data.message) || 'Попробуй ещё раз — подумай, что чувствовал герой в этот момент.';
@@ -882,12 +910,23 @@
           return;
         }
         if (failedStatus) {
-          if (data.correct && emotionWheel && emotionWheel.markResult) {
-            emotionWheel.markResult(data.correct, false);
+          emotionWrongAttempts += 1;
+          saveEmotionWrongAttempts(emotionWrongAttempts);
+          if (emotionWrongAttempts >= 2) {
+            if (data.correct && emotionWheel && emotionWheel.markResult) {
+              emotionWheel.markResult(data.correct, false);
+            }
+            showEmotionVerdict('err', formatEmotionFail(data));
+          } else {
+            if (emotionWheel && emotionWheel.markWrongOnly) {
+              emotionWheel.markWrongOnly();
+            }
+            showEmotionVerdict('err', formatEmotionFailHint());
           }
-          showEmotionVerdict('err', formatEmotionFail(data));
           return;
         }
+        emotionWrongAttempts = 0;
+        saveEmotionWrongAttempts(0);
         if (emotionWheel && emotionWheel.markResult && data.correct) {
           emotionWheel.markResult(data.correct, true);
         }
@@ -1050,53 +1089,72 @@
       updateEmotionButton();
     }
 
-    if (CFG.emotion) {
-      document.getElementById('btn-emotion').addEventListener('click', function (e) {
-        e.preventDefault();
-        submitEmotionQuiz();
-      });
-      initEmotionWheel();
+    function bindClick(id, handler) {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', handler);
     }
 
-    if (CFG.comprehension) {
-      renderQuiz('form-comprehension', CFG.comprehension);
-      document.getElementById('btn-comprehension').addEventListener('click', () =>
-        submitQuiz('comprehension', 'form-comprehension', CFG.comprehension, 'btn-comprehension', 'comprehension-msg', CFG.meaning ? 'btn-meaning' : null));
+    function bootLessonPage() {
+      if (CFG.emotion) {
+        bindClick('btn-emotion', function (e) {
+          e.preventDefault();
+          submitEmotionQuiz();
+        });
+        initEmotionWheel();
+      }
+
+      if (CFG.comprehension) {
+        renderQuiz('form-comprehension', CFG.comprehension);
+        bindClick('btn-comprehension', function () {
+          submitQuiz('comprehension', 'form-comprehension', CFG.comprehension, 'btn-comprehension', 'comprehension-msg', CFG.meaning ? 'btn-meaning' : null);
+        });
+      }
+      if (CFG.meaning) {
+        renderQuiz('form-meaning', CFG.meaning);
+        bindClick('btn-meaning', function () {
+          submitQuiz('meaning_analysis', 'form-meaning', CFG.meaning, 'btn-meaning', 'meaning-msg', null);
+        });
+      }
+      syncQuizButtons();
+      bindClick('btn-rating', submitRating);
+
+      if (CFG.canRate || CFG.existingRating) showRatingStep();
+
+      const PLACEHOLDER_IDS = ['KINESCOPE_VIDEO_ID', 'YOUTUBE_VIDEO_ID'];
+
+      if (CFG.video.type === 'kinescope' && CFG.video.id && !PLACEHOLDER_IDS.includes(CFG.video.id)) {
+        initKinescope();
+      } else if (CFG.video.type === 'yandex' && CFG.videoSrc) {
+        initYandex(CFG.videoSrc);
+      } else if (CFG.video.type === 'youtube' && CFG.video.id && !PLACEHOLDER_IDS.includes(CFG.video.id)) {
+        initYouTube();
+      } else if (CFG.video.type === 'vimeo' && CFG.video.id) {
+        initVimeo();
+      } else if ((CFG.video.type === 'html5' || CFG.video.type === 'yandex') && CFG.videoSrc) {
+        initHtml5(CFG.videoSrc);
+      } else {
+        document.getElementById('player-container').innerHTML =
+          '<p style="padding:20px;color:#fff">Видео для этого урока ещё не добавлено.</p>';
+        enableAllVideoProgress();
+      }
+
+      if (CFG.testKey) {
+        enableAllVideoProgress();
+      }
+
+      initLessonProgress();
+      refreshCompanion();
     }
-    if (CFG.meaning) {
-      renderQuiz('form-meaning', CFG.meaning);
-      document.getElementById('btn-meaning').addEventListener('click', () =>
-        submitQuiz('meaning_analysis', 'form-meaning', CFG.meaning, 'btn-meaning', 'meaning-msg', null));
+
+    try {
+      bootLessonPage();
+    } catch (err) {
+      console.error('Lesson page init failed', err);
+      const box = document.getElementById('player-container');
+      if (box) {
+        box.innerHTML = '<p style="padding:20px;color:#fff">Не удалось загрузить интерактивные блоки урока. Обновите страницу (Ctrl+F5).</p>';
+      }
     }
-    syncQuizButtons();
-    document.getElementById('btn-rating').addEventListener('click', submitRating);
-
-    if (CFG.canRate || CFG.existingRating) showRatingStep();
-
-    const PLACEHOLDER_IDS = ['KINESCOPE_VIDEO_ID', 'YOUTUBE_VIDEO_ID'];
-
-    if (CFG.video.type === 'kinescope' && CFG.video.id && !PLACEHOLDER_IDS.includes(CFG.video.id)) {
-      initKinescope();
-    } else if (CFG.video.type === 'yandex' && CFG.videoSrc) {
-      initYandex(CFG.videoSrc);
-    } else if (CFG.video.type === 'youtube' && CFG.video.id && !PLACEHOLDER_IDS.includes(CFG.video.id)) {
-      initYouTube();
-    } else if (CFG.video.type === 'vimeo' && CFG.video.id) {
-      initVimeo();
-    } else if ((CFG.video.type === 'html5' || CFG.video.type === 'yandex') && CFG.videoSrc) {
-      initHtml5(CFG.videoSrc);
-    } else {
-      document.getElementById('player-container').innerHTML =
-        '<p style="padding:20px;color:#fff">Видео для этого урока ещё не добавлено.</p>';
-      enableAllVideoProgress();
-    }
-
-    if (CFG.testKey) {
-      enableAllVideoProgress();
-    }
-
-    initLessonProgress();
-    refreshCompanion();
   </script>
 </body>
 </html>

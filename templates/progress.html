@@ -6,7 +6,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260707h">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708b">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -134,9 +134,10 @@
           </div>
         </section>
 
-        {% macro render_chest(track, child, loop_index) %}
+        {% macro render_chest(track, child, loop_index, treasury_href=none) %}
+        {% set chest_treasury_href = treasury_href if treasury_href else ('#treasury-' ~ loop_index) %}
         <section class="chit-panel chit-panel--chest{% if track.chest.ready %} is-ready{% endif %}{% if track.chest.claimed %} is-claimed{% endif %}{% if track.chest.visual == 'opening' %} is-opening{% endif %}" id="chest-{{ loop_index }}"
-          data-treasury-href="#treasury-{{ loop_index }}"
+          data-treasury-href="{{ chest_treasury_href }}"
           data-child-id="{{ child.id }}"
           data-tale-slug="{{ track.chest.tale_slug }}"
           data-progress-token="{{ progress_token }}"
@@ -166,7 +167,7 @@
                 <p class="chit-chest__hint">{{ track.chest.hint }}</p>
               </div>
               {% if track.chest.claimed %}
-              <a class="chit-btn chit-btn--chest" href="#treasury-{{ loop_index }}">В сокровищницу</a>
+              <a class="chit-btn chit-btn--chest" href="{{ chest_treasury_href }}">В сокровищницу</a>
               {% else %}
               <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not track.chest.ready %} disabled{% endif %}>
                 {% if track.chest.ready %}Открыть сундук{% else %}Сундук закрыт{% endif %}
@@ -180,7 +181,7 @@
         {% macro render_treasury(track, loop_index) %}
         {% if track.chest.claimed or track.treasury %}
         <section class="chit-panel chit-panel--treasury chit-panel--treasury-under-chest" id="treasury-{{ loop_index }}">
-          <h2 class="chit-section-title">Моя сокровищница</h2>
+          <h2 class="chit-section-title">Моя сокровищница{% if track.group_label %} · {{ track.group_label }}{% endif %}</h2>
           <p class="chit-section-sub">Творческие задания из сундука — можно скачать снова.</p>
           {% if track.treasury %}
           <div class="chit-treasury-grid">
@@ -243,9 +244,30 @@
         {% endmacro %}
 
         {% if cab.tracks %}
+          {% set multi_track_treasury = cab.tracks|length > 1 and cab.treasury %}
+          {% if multi_track_treasury %}
+          <section class="chit-panel chit-panel--treasury" id="treasury-all">
+            <h2 class="chit-section-title">Моя сокровищница</h2>
+            <p class="chit-section-sub">Творческие задания из всех открытых сундуков — можно скачать снова.</p>
+            <div class="chit-treasury-grid">
+              {% for item in cab.treasury %}
+              <article class="chit-treasury-item">
+                {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
+                <strong>{{ item.label }}</strong>
+                <span>{{ item.tale_title }}{% if item.claimed_at_label %} · {{ item.claimed_at_label }}{% endif %}</span>
+                {% if item.downloadable and item.download_url %}
+                <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
+                {% endif %}
+              </article>
+              {% endfor %}
+            </div>
+          </section>
+          {% endif %}
           {% for track in cab.tracks %}
-          {{ render_chest(track, child, loop.index) }}
+          {{ render_chest(track, child, loop.index, '#treasury-all' if multi_track_treasury else none) }}
+          {% if not multi_track_treasury %}
           {{ render_treasury(track, loop.index) }}
+          {% endif %}
           {{ render_weekly_lessons(track) }}
           {% if track.story_stages %}
           <section class="chit-panel chit-panel--stories">

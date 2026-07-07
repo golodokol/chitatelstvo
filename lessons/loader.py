@@ -301,6 +301,10 @@ def emotion_quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
         },
         "feedback_ok": quiz.get("feedback_ok", ""),
         "feedback_retry": quiz.get("feedback_retry", ""),
+        "feedback_retry_hint": quiz.get(
+            "feedback_retry_hint",
+            "Пока не то. Попробуй выбрать другие эмоции.",
+        ),
     }
 
 
