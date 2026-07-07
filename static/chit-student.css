@@ -879,15 +879,40 @@ body.chit-student {
 }
 
 /* Картинки в пуле (под ячейками) — крупнее и в одну линию с слотами */
+.chit-q-ordering-images .chit-order-slot-drop {
+  min-height: 140px;
+  padding: 10px;
+}
+
 .chit-q-ordering-images .chit-order-pool-cards {
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-  padding: 14px;
+  gap: 14px;
+  padding: 16px;
   justify-items: stretch;
 }
 
+.chit-q-ordering-images .chit-order-pool-cards .chit-order-card--image {
+  padding: 8px;
+}
+
+.chit-q-ordering-images .chit-order-pool-cards .chit-order-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  aspect-ratio: 4 / 3;
+}
+
 .chit-q-ordering-images .chit-order-pool-cards .chit-order-img {
-  max-height: 200px;
+  width: 100%;
+  height: auto;
+  min-height: 110px;
+  max-height: none;
+  object-fit: contain;
+}
+
+.chit-q-ordering-images .chit-order-slot-drop .chit-order-img {
+  max-height: 130px;
 }
 
 .chit-order-slot-drop .chit-order-card {
@@ -916,8 +941,20 @@ body.chit-student {
     max-height: 120px;
   }
 
+  .chit-q-ordering-images .chit-order-slot-drop {
+    min-height: 165px;
+  }
+
+  .chit-q-ordering-images .chit-order-pool-cards .chit-order-media {
+    min-height: 140px;
+  }
+
   .chit-q-ordering-images .chit-order-pool-cards .chit-order-img {
-    max-height: 240px;
+    min-height: 130px;
+  }
+
+  .chit-q-ordering-images .chit-order-slot-drop .chit-order-img {
+    max-height: 150px;
   }
 
   .chit-order-slot-drop .chit-order-img {
@@ -938,8 +975,20 @@ body.chit-student {
     max-height: 135px;
   }
 
+  .chit-q-ordering-images .chit-order-slot-drop {
+    min-height: 185px;
+  }
+
+  .chit-q-ordering-images .chit-order-pool-cards .chit-order-media {
+    min-height: 155px;
+  }
+
   .chit-q-ordering-images .chit-order-pool-cards .chit-order-img {
-    max-height: 270px;
+    min-height: 145px;
+  }
+
+  .chit-q-ordering-images .chit-order-slot-drop .chit-order-img {
+    max-height: 170px;
   }
 }
 
