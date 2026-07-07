@@ -15,8 +15,14 @@
   --border: #D4E2EF;
   --white: #FFFFFF;
   --shadow: 0 4px 24px rgba(61, 82, 102, 0.08);
-  --success: #2e7d32;
-  --success-bg: #e8f5e9;
+  --success: #6B9B7A;
+  --success-bg: #EDF5F0;
+  --success-border: #A8C9B4;
+  --success-soft: rgba(107, 155, 122, 0.28);
+  --error: #B58484;
+  --error-bg: #FAF5F5;
+  --error-border: #D4AFAF;
+  --error-soft: rgba(181, 132, 132, 0.22);
 }
 
 * { box-sizing: border-box; }
@@ -444,12 +450,12 @@ body.chit-student {
 
 .chit-q.is-correct {
   background: var(--success-bg);
-  border-color: var(--success);
+  border-color: var(--success-border);
 }
 
 .chit-q.is-wrong {
-  background: #fff5f5;
-  border-color: #e57373;
+  background: var(--error-bg);
+  border-color: var(--error-border);
 }
 
 .chit-q-badge {
@@ -458,7 +464,7 @@ body.chit-student {
 }
 
 .chit-q-badge.is-ok { color: var(--success); }
-.chit-q-badge.is-err { color: #c62828; }
+.chit-q-badge.is-err { color: var(--error); }
 
 .chit-q label.is-correct-option {
   color: var(--success);
@@ -466,19 +472,19 @@ body.chit-student {
 }
 
 .chit-q label.is-wrong-pick {
-  color: #c62828;
+  color: var(--error);
   font-weight: 700;
   text-decoration: line-through;
 }
 
 .chit-q-with-images label.chit-opt-card.is-correct-option {
-  border-color: var(--success);
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  border-color: var(--success-border);
+  box-shadow: 0 0 0 3px var(--success-soft);
 }
 
 .chit-q-with-images label.chit-opt-card.is-wrong-pick {
-  border-color: #c62828;
-  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.18);
+  border-color: var(--error-border);
+  box-shadow: 0 0 0 3px var(--error-soft);
   text-decoration: none;
 }
 
@@ -497,8 +503,8 @@ body.chit-student {
 }
 
 .chit-step.is-wrong {
-  border-color: #e57373;
-  box-shadow: inset 4px 0 0 #c62828;
+  border-color: var(--error-border);
+  box-shadow: inset 4px 0 0 var(--error);
 }
 
 .chit-quiz-verdict {
@@ -509,7 +515,7 @@ body.chit-student {
 }
 
 .chit-quiz-verdict.ok { border: 2px solid var(--success); }
-.chit-quiz-verdict.err { border: 2px solid #c62828; }
+.chit-quiz-verdict.err { border: 2px solid var(--error-border); }
 
 .chit-q label {
   display: block;
@@ -1099,7 +1105,7 @@ body.chit-student {
 }
 
 .chit-msg.ok { background: var(--success-bg); color: var(--success); }
-.chit-msg.err { background: #ffebee; color: #c62828; }
+.chit-msg.err { background: var(--error-bg); color: var(--error); }
 .chit-msg.info { background: var(--blue-pale); color: var(--blue-deep); }
 
 .chit-back {
@@ -2559,17 +2565,17 @@ body.chit-cabinet--parent {
 }
 
 .chit-emotion-wheel__sector.is-correct {
-  fill: rgba(232, 245, 233, 0.55);
-  stroke: var(--success);
+  fill: color-mix(in srgb, var(--success-bg) 75%, transparent);
+  stroke: var(--success-border);
   stroke-width: 6;
-  filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.45));
+  filter: drop-shadow(0 0 8px var(--success-soft));
 }
 
 .chit-emotion-wheel__sector.is-wrong {
-  fill: rgba(255, 235, 238, 0.55);
-  stroke: #c62828;
+  fill: color-mix(in srgb, var(--error-bg) 80%, transparent);
+  stroke: var(--error-border);
   stroke-width: 6;
-  filter: drop-shadow(0 0 8px rgba(198, 40, 40, 0.35));
+  filter: drop-shadow(0 0 8px var(--error-soft));
 }
 
 .chit-emotion-chips {
@@ -2604,13 +2610,13 @@ body.chit-cabinet--parent {
 }
 
 .chit-emotion-chip.is-correct {
-  border-color: var(--success);
+  border-color: var(--success-border);
   background: var(--success-bg);
 }
 
 .chit-emotion-chip.is-wrong {
-  border-color: #c62828;
-  background: #ffebee;
+  border-color: var(--error-border);
+  background: var(--error-bg);
 }
 
 .chit-emotion-picked {
@@ -2622,13 +2628,13 @@ body.chit-cabinet--parent {
 }
 
 .chit-step-emotion.is-ok {
-  border-color: var(--success);
+  border-color: var(--success-border);
   box-shadow: inset 4px 0 0 var(--success);
 }
 
 .chit-step-emotion.is-wrong {
-  border-color: #e57373;
-  box-shadow: inset 4px 0 0 #c62828;
+  border-color: var(--error-border);
+  box-shadow: inset 4px 0 0 var(--error);
 }
 
 .chit-emotion-verdict {
@@ -2640,11 +2646,11 @@ body.chit-cabinet--parent {
 }
 
 .chit-emotion-verdict.ok {
-  border: 2px solid var(--success);
+  border: 2px solid var(--success-border);
 }
 
 .chit-emotion-verdict.err {
-  border: 2px solid #c62828;
+  border: 2px solid var(--error-border);
 }
 
 .chit-emotion-next-hint {
