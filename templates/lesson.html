@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260708c">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708e">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -123,7 +123,7 @@
 
   <script src="/static/lesson_slovik.js?v=20260707b"></script>
   <script src="/static/emotion_wheel.js?v=20260708c"></script>
-  <script src="/static/lesson_quiz.js?v=20260702f"></script>
+  <script src="/static/lesson_quiz.js?v=20260708a"></script>
   <script>
     const CFG = {
       slug: {{ slug|tojson }},
@@ -356,31 +356,45 @@
       return { score: 0, total: total };
     }
 
-    function quizWrongNumbers(quiz, results) {
-      if (!quiz || !results) return [];
-      return results
-        .filter(function (r) { return !r.ok; })
-        .map(function (r) {
-          const idx = quiz.questions.findIndex(function (q) { return q.id === r.id; });
-          return idx >= 0 ? idx + 1 : null;
-        })
-        .filter(function (n) { return n != null; });
+    function quizWrongNumbers(quiz, results, formId) {
+      if (!quiz || !results) return { wrong: [], partial: [] };
+      const wrong = [];
+      const partial = [];
+      results.forEach(function (r) {
+        if (r.ok) return;
+        const idx = quiz.questions.findIndex(function (q) { return q.id === r.id; });
+        const num = idx >= 0 ? idx + 1 : null;
+        if (num == null) return;
+        if (formId) {
+          const qEl = document.querySelector('#' + formId + ' .chit-q[data-qid="' + r.id + '"]');
+          const info = qEl && analyzeMultiAnswer(qEl, formId, r);
+          if (info && info.isPartial) {
+            partial.push(num);
+            return;
+          }
+        }
+        wrong.push(num);
+      });
+      return { wrong: wrong, partial: partial };
     }
 
-    function formatQuizVerdict(data, quiz, passed) {
+    function formatQuizVerdict(data, quiz, passed, formId) {
       const stats = quizStats(data, quiz);
       const passNeed = (data && data.pass_score) || (quiz && quiz.pass_score) || stats.total;
-      const wrongNums = quizWrongNumbers(quiz, data && data.results);
+      const nums = quizWrongNumbers(quiz, data && data.results, formId);
       let text;
       if (passed) {
         text = 'Засчитано! ' + stats.score + ' из ' + stats.total + ' верно.';
-        if (wrongNums.length) {
-          text += ' Ошибки в вопросах: ' + wrongNums.join(', ') + '.';
+        if (nums.wrong.length) {
+          text += ' Ошибки в вопросах: ' + nums.wrong.join(', ') + '.';
         }
       } else {
         text = 'Пока не засчитано: ' + stats.score + ' из ' + stats.total + ' верно (нужно ' + passNeed + ').';
-        if (wrongNums.length) {
-          text += ' Ошибки в вопросах: ' + wrongNums.join(', ') + '.';
+        if (nums.partial.length) {
+          text += ' В вопросах ' + nums.partial.join(', ') + ' выбраны не все верные варианты.';
+        }
+        if (nums.wrong.length) {
+          text += ' Ошибки в вопросах: ' + nums.wrong.join(', ') + '.';
         }
         if (data && data.message) text += ' ' + data.message;
       }
@@ -393,7 +407,7 @@
       const step = form.closest('.chit-step');
       if (step) step.classList.remove('is-ok', 'is-wrong', 'is-partial');
       form.querySelectorAll('.chit-q').forEach(function (node) {
-        node.classList.remove('is-correct', 'is-wrong');
+        node.classList.remove('is-correct', 'is-wrong', 'is-incomplete', 'is-partial');
       });
       form.querySelectorAll('.chit-q-badge').forEach(function (node) {
         node.remove();
@@ -409,20 +423,73 @@
       }
     }
 
+    function analyzeMultiAnswer(qEl, formId, r) {
+      const qtype = qEl.dataset.qtype;
+      if (qtype !== 'multi' && qtype !== 'true_false') return null;
+      const name = formId + '-' + r.id;
+      const picked = [];
+      qEl.querySelectorAll('input[name="' + name + '"]:checked').forEach(function (inp) {
+        picked.push(inp.value);
+      });
+      const correct = (r.correct_options || []).slice();
+      const correctSet = new Set(correct);
+      const wrongPicks = picked.filter(function (v) { return !correctSet.has(v); });
+      const goodPicks = picked.filter(function (v) { return correctSet.has(v); });
+      const missing = correct.filter(function (v) { return picked.indexOf(v) === -1; });
+      return {
+        correct: correct,
+        wrongPicks: wrongPicks,
+        goodPicks: goodPicks,
+        missing: missing,
+        isPartial: !r.ok && wrongPicks.length === 0 && goodPicks.length > 0 && missing.length > 0,
+      };
+    }
+
+    function markMultiOptions(qEl, formId, r, info, revealCorrect) {
+      const name = formId + '-' + r.id;
+      qEl.querySelectorAll('input[name="' + name + '"]').forEach(function (inp) {
+        const label = inp.parentElement;
+        if (!label) return;
+        if (inp.checked && info.correct.indexOf(inp.value) >= 0) {
+          label.classList.add('is-correct-option');
+        } else if (inp.checked && info.correct.indexOf(inp.value) < 0) {
+          label.classList.add('is-wrong-pick');
+        } else if (revealCorrect && info.correct.indexOf(inp.value) >= 0) {
+          label.classList.add('is-correct-option');
+        }
+      });
+    }
+
     function markQuizResults(formId, results, revealCorrect) {
       if (revealCorrect === undefined) revealCorrect = true;
       (results || []).forEach(function (r) {
         const qEl = document.querySelector('#' + formId + ' .chit-q[data-qid="' + r.id + '"]');
         if (!qEl) return;
-        qEl.classList.add(r.ok ? 'is-correct' : 'is-wrong');
+        const multiInfo = analyzeMultiAnswer(qEl, formId, r);
+        const isPartial = multiInfo && multiInfo.isPartial;
+        qEl.classList.add(r.ok ? 'is-correct' : (isPartial ? 'is-partial' : 'is-wrong'));
         const strong = qEl.querySelector('strong');
         if (strong) {
           const oldBadge = qEl.querySelector('.chit-q-badge');
           if (oldBadge) oldBadge.remove();
           const badge = document.createElement('span');
-          badge.className = 'chit-q-badge ' + (r.ok ? 'is-ok' : 'is-err');
-          badge.textContent = r.ok ? ' — верно' : ' — исправь это задание';
+          if (r.ok) {
+            badge.className = 'chit-q-badge is-ok';
+            badge.textContent = ' — верно';
+          } else if (isPartial) {
+            badge.className = 'chit-q-badge is-partial-hint';
+            badge.textContent = multiInfo.missing.length === 1
+              ? ' — есть ещё один вариант'
+              : ' — есть ещё варианты';
+          } else {
+            badge.className = 'chit-q-badge is-err';
+            badge.textContent = ' — исправь это задание';
+          }
           strong.appendChild(badge);
+        }
+        if (multiInfo) {
+          markMultiOptions(qEl, formId, r, multiInfo, revealCorrect);
+          return;
         }
         if (!r.ok) {
           const picked = qEl.querySelector('input[name="' + r.id + '"]:checked')
@@ -521,22 +588,74 @@
       return ChitLessonQuiz.collect(formId, quiz) != null;
     }
 
+    function quizIncompleteMessage(formId, quiz) {
+      if (!quiz || !window.ChitLessonQuiz || !ChitLessonQuiz.missingQuestions) {
+        return 'Ответьте на все вопросы, затем нажмите «Отправить ответы».';
+      }
+      const missing = ChitLessonQuiz.missingQuestions(formId, quiz);
+      if (!missing.length) return null;
+      const parts = missing.map(function (entry) {
+        const q = entry.question;
+        if (q.type === 'ordering') {
+          const n = (q.items || []).length;
+          return 'задание ' + entry.index + ' — расставьте все ' + n + ' картинки по ячейкам';
+        }
+        if (q.type === 'picture_match') {
+          return 'задание ' + entry.index + ' — выберите имя героя у каждой картинки';
+        }
+        if (q.type === 'true_false') {
+          return 'задание ' + entry.index + ' — отметьте утверждения';
+        }
+        if (q.type === 'multi') {
+          return 'задание ' + entry.index + ' — выберите варианты';
+        }
+        if (q.type === 'matching') {
+          return 'задание ' + entry.index + ' — сопоставьте пары';
+        }
+        return 'задание ' + entry.index;
+      });
+      return 'Ещё не всё готово: ' + parts.join('; ') + '.';
+    }
+
+    function highlightQuizGaps(formId, quiz) {
+      if (!window.ChitLessonQuiz || !ChitLessonQuiz.missingQuestions) return;
+      ChitLessonQuiz.missingQuestions(formId, quiz).forEach(function (entry) {
+        const qEl = document.querySelector('#' + formId + ' .chit-q[data-qid="' + entry.question.id + '"]');
+        if (qEl) qEl.classList.add('is-incomplete');
+      });
+    }
+
     function quizPrerequisitesMet(step) {
       const videoOk = lessonState.videoUnlocked || !!CFG.testKey;
       if (!videoOk) return false;
       if (CFG.emotion && !lessonState.emotionDone) return false;
+      if (step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone) return false;
       return true;
+    }
+
+    function updateQuizSubmitButton(btn, step, formId, done) {
+      if (!btn || done) return;
+      const prereq = quizPrerequisitesMet(step);
+      const complete = quizFormComplete(formId);
+      if (prereq) {
+        btn.disabled = false;
+        btn.removeAttribute('disabled');
+        btn.title = complete ? '' : 'Можно отправить — подскажем, если что-то не заполнено';
+      } else {
+        btn.disabled = true;
+        btn.setAttribute('disabled', 'disabled');
+        btn.title = step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone
+          ? 'Сначала отправьте мини-тест выше'
+          : 'Сначала выполните шаги урока выше';
+      }
+      btn.classList.toggle('is-ready', prereq && complete);
     }
 
     function syncQuizButtons() {
       const btnComp = document.getElementById('btn-comprehension');
       const btnMean = document.getElementById('btn-meaning');
-      if (btnComp && !lessonState.comprehensionDone) {
-        btnComp.disabled = !(quizPrerequisitesMet('comprehension') && quizFormComplete('form-comprehension'));
-      }
-      if (btnMean && !lessonState.meaningDone) {
-        btnMean.disabled = !(quizPrerequisitesMet('meaning') && quizFormComplete('form-meaning'));
-      }
+      updateQuizSubmitButton(btnComp, 'comprehension', 'form-comprehension', lessonState.comprehensionDone);
+      updateQuizSubmitButton(btnMean, 'meaning', 'form-meaning', lessonState.meaningDone);
     }
 
     function enableVideoUnlock() {
@@ -1023,7 +1142,10 @@
       }
       const answers = collectAnswers(formId, quiz);
       if (!answers) {
-        showQuizVerdict(formId, 'err', 'Ответьте на все вопросы, затем нажмите «Отправить ответы».');
+        clearQuizFeedback(formId);
+        highlightQuizGaps(formId, quiz);
+        showQuizVerdict(formId, 'err', quizIncompleteMessage(formId, quiz));
+        syncQuizButtons();
         return;
       }
       document.getElementById(btnId).disabled = true;
@@ -1042,7 +1164,7 @@
       if (failedStatus) {
         const revealCorrect = quizRevealCorrect(formId, data.results);
         markQuizResults(formId, data.results, revealCorrect);
-        showQuizVerdict(formId, 'err', formatQuizVerdict(data, quiz, false));
+        showQuizVerdict(formId, 'err', formatQuizVerdict(data, quiz, false, formId));
         document.getElementById(btnId).disabled = false;
         syncQuizButtons();
         return;
@@ -1052,7 +1174,7 @@
         clearQuizWrongAttempts(formId);
       }
       markQuizResults(formId, data.results, revealCorrect);
-      showQuizVerdict(formId, 'ok', formatQuizVerdict(data, quiz, true));
+      showQuizVerdict(formId, 'ok', formatQuizVerdict(data, quiz, true, formId));
       markDone(quizType === 'comprehension' ? 'step-comprehension' : 'step-meaning');
       if (quizType === 'comprehension') lessonState.comprehensionDone = true;
       if (quizType === 'meaning_analysis') lessonState.meaningDone = true;

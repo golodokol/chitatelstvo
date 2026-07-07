@@ -458,6 +458,24 @@ body.chit-student {
   border-color: var(--error-border);
 }
 
+.chit-q.is-incomplete {
+  border-color: var(--error-border);
+  box-shadow: inset 0 0 0 1px var(--error-border);
+}
+
+.chit-q.is-partial {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.chit-q-badge.is-partial-hint { color: var(--success); }
+
+.chit-q label.chit-q-check.is-correct-option {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+
 .chit-q-badge {
   font-weight: 700;
   font-size: 0.9em;

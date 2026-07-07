@@ -6,7 +6,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260708c">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708d">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -189,7 +189,7 @@
             <article class="chit-treasury-item">
               {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
               <strong>{{ item.label }}</strong>
-              <span>{{ item.tale_title }}{% if item.claimed_at_label %} · {{ item.claimed_at_label }}{% endif %}</span>
+              <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
               {% if item.downloadable and item.download_url %}
               <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
               {% endif %}
@@ -254,7 +254,7 @@
               <article class="chit-treasury-item">
                 {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
                 <strong>{{ item.label }}</strong>
-                <span>{{ item.tale_title }}{% if item.claimed_at_label %} · {{ item.claimed_at_label }}{% endif %}</span>
+                <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
                 {% if item.downloadable and item.download_url %}
                 <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
                 {% endif %}

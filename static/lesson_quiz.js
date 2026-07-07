@@ -367,6 +367,10 @@
         select.appendChild(opt);
       });
       card.appendChild(select);
+      select.addEventListener('change', function () {
+        const form = document.getElementById(formId);
+        if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
+      });
       grid.appendChild(card);
     });
     div.appendChild(grid);
@@ -467,8 +471,20 @@
     return answers;
   }
 
+  function missingQuestions(formId, quiz) {
+    const missing = [];
+    (quiz.questions || []).forEach(function (q, idx) {
+      const value = collectQuestionAnswer(formId, q);
+      if (value == null || (Array.isArray(value) && !value.length)) {
+        missing.push({ index: idx + 1, question: q });
+      }
+    });
+    return missing;
+  }
+
   global.ChitLessonQuiz = {
     render: render,
     collect: collect,
+    missingQuestions: missingQuestions,
   };
 })(window);

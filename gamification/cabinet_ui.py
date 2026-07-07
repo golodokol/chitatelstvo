@@ -482,13 +482,13 @@ def _treasury_row(
     *,
     tale_title: str,
     tale_slug: str,
-    claimed_at_label: str,
     item: dict[str, Any],
 ) -> dict[str, Any]:
+    title = (tale_title or "").strip() or "Сказка"
     return {
-        "tale_title": tale_title,
+        "tale_title": title,
         "tale_slug": tale_slug,
-        "claimed_at_label": claimed_at_label,
+        "lesson_caption": f"Урок «{title}»",
         "kind": item.get("kind", ""),
         "label": item.get("label", ""),
         "description": item.get("description", ""),
@@ -501,8 +501,6 @@ def _treasury_row(
 def _treasury_items_for_claim(claim: Any) -> list[dict[str, Any]]:
     """Актуальные награды сказки — из текущего конфига сундука, не из устаревшего JSON в БД."""
     title = (claim.tale_title or "").strip() or "Сказка"
-    claimed_at = getattr(claim, "claimed_at", None)
-    claimed_at_label = claimed_at.strftime("%d.%m.%Y") if claimed_at else ""
     current = items_for_treasury(rewards_for_tale(claim.tale_slug, title))
     if current:
         source_items = current
@@ -514,7 +512,6 @@ def _treasury_items_for_claim(claim: Any) -> list[dict[str, Any]]:
         _treasury_row(
             tale_title=title,
             tale_slug=claim.tale_slug,
-            claimed_at_label=claimed_at_label,
             item=item,
         )
         for item in source_items
