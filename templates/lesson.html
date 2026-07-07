@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260707g">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708a">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -49,7 +49,7 @@
       <h2>{{ step_labels.emotion_quiz }}</h2>
       <p class="chit-emotion-question" id="emotion-question-text"></p>
       <div id="emotion-wheel-root"></div>
-      <button type="button" class="chit-btn" id="btn-emotion" disabled>Проверить</button>
+      <button type="button" class="chit-btn" id="btn-emotion">Проверить</button>
       <div id="emotion-msg"></div>
       <p class="chit-hint chit-emotion-next-hint">Дальше на странице — мини-тест и задания по сказке (прокрутите вниз).</p>
     </div>
@@ -556,32 +556,42 @@
       }
     }
 
+    function showEmotionCompletedState() {
+      if (!lessonState.emotionDone) return;
+      const root = document.getElementById('emotion-wheel-root');
+      if (root) root.classList.add('is-locked');
+      const msg = document.getElementById('emotion-msg');
+      if (msg && msg.style.display === 'none') {
+        showEmotionVerdict('ok', 'Задание уже засчитано. Можно перейти к следующему шагу ниже.');
+      }
+    }
+
     function updateEmotionButton() {
       const btn = document.getElementById('btn-emotion');
       if (!btn) return;
       if (lessonState.emotionDone) {
         btn.disabled = true;
+        btn.setAttribute('aria-disabled', 'true');
+        btn.textContent = 'Уже выполнено';
         btn.classList.remove('is-ready');
-        btn.title = '';
+        btn.title = 'Это задание уже выполнено';
         updateEmotionVideoHint(false, true);
+        showEmotionCompletedState();
         return;
       }
+      btn.textContent = 'Проверить';
+      btn.disabled = false;
+      btn.removeAttribute('disabled');
+      btn.removeAttribute('aria-disabled');
       const pickN = emotionPickCount();
       const complete = emotionSelectionComplete();
       const videoOk = emotionVideoOk();
-      if (complete) {
-        btn.disabled = false;
-        btn.removeAttribute('disabled');
-        btn.classList.add('is-ready');
-        btn.title = videoOk ? '' : 'Можно проверить — если видео ещё не засчитано, посмотрите первые 3 минуты';
-      } else {
-        btn.disabled = true;
-        btn.setAttribute('disabled', 'disabled');
-        btn.classList.remove('is-ready');
-        btn.title = pickN === 1
-          ? 'Выберите эмоцию на колесе'
-          : 'Выберите ' + pickN + ' эмоции на колесе';
-      }
+      btn.classList.toggle('is-ready', complete);
+      btn.title = complete
+        ? (videoOk ? '' : 'Можно проверить — если видео ещё не засчитано, посмотрите первые 3 минуты')
+        : (pickN === 1
+          ? 'Выберите эмоцию на колесе, затем нажмите «Проверить»'
+          : 'Выберите ' + pickN + ' эмоции на колесе, затем нажмите «Проверить»');
       updateEmotionVideoHint(complete, videoOk);
     }
 
@@ -841,53 +851,61 @@
 
     async function submitEmotionQuiz() {
       if (!CFG.emotion) return;
+      if (lessonState.emotionDone) {
+        showEmotionVerdict('ok', 'Это задание уже выполнено. Переходите к следующему шагу ниже.');
+        updateEmotionButton();
+        return;
+      }
       const q = CFG.emotion.question;
       const selected = emotionSelectedList();
       if (selected.length !== Number(q.pick)) {
         showEmotionVerdict('err', q.pick === 1 ? 'Выбери одну эмоцию на колесе.' : 'Нужно выбрать ' + q.pick + ' эмоции.');
-        return;
-      }
-      if (!emotionVideoOk()) {
-        if (maxWatchedSeconds >= videoUnlockTargetSeconds()) {
-          await sendVideoUnlock();
-        }
-      }
-      if (!emotionVideoOk()) {
-        showEmotionVerdict('err', 'Сначала посмотрите первые 3 минуты видео-урока выше.');
-        const videoStep = document.getElementById('step-video');
-        if (videoStep) videoStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
         updateEmotionButton();
         return;
+      }
+      if (!emotionVideoOk() && maxWatchedSeconds >= videoUnlockTargetSeconds()) {
+        try {
+          await sendVideoUnlock();
+        } catch (e) {}
       }
       const btn = document.getElementById('btn-emotion');
       btn.disabled = true;
-      const answers = {};
-      answers[q.id] = selected;
-      const data = await postJson('/api/lesson/' + CFG.slug + '/emotion-quiz', authBody({ answers }));
-      const okStatus = data && (data.status === 'accepted' || data.status === 'duplicate');
-      const failedStatus = data && data.status === 'failed';
-      if (!okStatus && !failedStatus) {
-        const errDetail = data && data.message;
-        showEmotionVerdict('err', errDetail || 'Не удалось проверить ответ. Обновите страницу и попробуйте снова.');
-        updateEmotionButton();
-        return;
-      }
-      if (failedStatus) {
-        if (data.correct && emotionWheel.markResult) {
-          emotionWheel.markResult(data.correct, false);
+      try {
+        const answers = {};
+        answers[q.id] = selected;
+        const data = await postJson('/api/lesson/' + CFG.slug + '/emotion-quiz', authBody({ answers }));
+        const okStatus = data && (data.status === 'accepted' || data.status === 'duplicate');
+        const failedStatus = data && data.status === 'failed';
+        if (!okStatus && !failedStatus) {
+          const errDetail = data && data.message;
+          showEmotionVerdict('err', errDetail || 'Не удалось проверить ответ. Обновите страницу и попробуйте снова.');
+          return;
         }
-        showEmotionVerdict('err', formatEmotionFail(data));
+        if (failedStatus) {
+          if (data.correct && emotionWheel && emotionWheel.markResult) {
+            emotionWheel.markResult(data.correct, false);
+          }
+          showEmotionVerdict('err', formatEmotionFail(data));
+          return;
+        }
+        if (emotionWheel && emotionWheel.markResult && data.correct) {
+          emotionWheel.markResult(data.correct, true);
+        }
+        showEmotionVerdict('ok', data.message || 'Верно!');
+        markDone('step-emotion');
+        lessonState.emotionDone = true;
+        onReward('emotion_quiz', data.status);
+        syncQuizButtons();
         updateEmotionButton();
-        return;
+      } catch (e) {
+        showEmotionVerdict('err', 'Не удалось проверить ответ. Проверьте интернет и попробуйте снова.');
+      } finally {
+        if (!lessonState.emotionDone) {
+          btn.disabled = false;
+          btn.removeAttribute('disabled');
+          updateEmotionButton();
+        }
       }
-      if (emotionWheel.markResult && data.correct) {
-        emotionWheel.markResult(data.correct, true);
-      }
-      showEmotionVerdict('ok', data.message || 'Верно!');
-      markDone('step-emotion');
-      lessonState.emotionDone = true;
-      onReward('emotion_quiz', data.status);
-      syncQuizButtons();
     }
 
     function initEmotionWheel() {
@@ -920,7 +938,6 @@
           syncQuizButtons();
         },
       });
-      document.getElementById('btn-emotion').addEventListener('click', submitEmotionQuiz);
       updateEmotionButton();
     }
 
@@ -1033,7 +1050,13 @@
       updateEmotionButton();
     }
 
-    initEmotionWheel();
+    if (CFG.emotion) {
+      document.getElementById('btn-emotion').addEventListener('click', function (e) {
+        e.preventDefault();
+        submitEmotionQuiz();
+      });
+      initEmotionWheel();
+    }
 
     if (CFG.comprehension) {
       renderQuiz('form-comprehension', CFG.comprehension);

@@ -215,6 +215,16 @@ body.chit-student {
   box-shadow: 0 4px 14px rgba(91, 127, 166, 0.35);
 }
 
+.chit-step-emotion .chit-btn:not(.is-ready):not(:disabled) {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.chit-emotion-wheel.is-locked {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
 .chit-btn--outline {
   background: transparent;
   color: var(--blue) !important;
