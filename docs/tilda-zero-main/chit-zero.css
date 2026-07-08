@@ -1098,7 +1098,24 @@
       font-weight: 800; margin-right: 8px; color: var(--blue);
     }
     .tale-btn.is-active .tale-num { background: var(--blue); color: #fff; }
+    .tale-btn__body { display: block; margin-top: 2px; }
+    .tale-btn__title { display: block; font-weight: 700; color: var(--text); }
+    .tale-schedule {
+      display: block; margin-top: 6px;
+      font-size: 13px; color: var(--muted); line-height: 1.45;
+    }
+    .tale-schedule__meet,
+    .tale-schedule__line { display: block; }
+    .tale-schedule__line { margin-top: 3px; }
     .block-preview { font-size: 14px; color: var(--muted); line-height: 1.6; margin-top: 12px; }
+    .block-preview__title { margin-bottom: 12px; }
+    .block-preview__cards { display: grid; gap: 10px; }
+    .block-preview__card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .block-preview__num { font-size: 12px; font-weight: 800; color: var(--accent); }
+    .block-preview__name { font-size: 15px; font-weight: 700; color: var(--blue); margin: 2px 0 4px; }
     .summary {
       background: var(--accent-pale); border-radius: 12px;
       padding: 18px 24px; font-size: 22px; min-height: 56px;
@@ -1480,6 +1497,11 @@
     #allrecords #chit-main .site-nav a { color: var(--muted) !important; }
     #allrecords #chit-main .site-nav a:hover { color: var(--blue) !important; }
     #allrecords #chit-main .header-cta { color: #fff !important; }
+    #allrecords #chit-main .btn,
+    #allrecords #chit-main a.btn,
+    #allrecords #chit-main .btn--pay { color: #fff !important; }
+    #allrecords #chit-main .btn--outline { color: var(--blue) !important; }
+    #allrecords #chit-main .pill.is-active { color: #fff !important; }
     #allrecords #chit-main .faq-a { display: none; }
     #allrecords #chit-main .faq-a.is-open { display: block; }
 
