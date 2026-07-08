@@ -150,8 +150,8 @@ var CHIT_SCHEDULE = {
     meetings: ['9 июля', '16 июля', '23 июля', '30 июля']
   },
   '2': {
-    lessons: ['27 июля', '3 августа', '10 августа', '17 августа'],
-    meetings: ['30 июля', '6 августа', '13 августа', '20 августа']
+    lessons: ['3 августа', '10 августа', '17 августа', '24 августа'],
+    meetings: ['6 августа', '13 августа', '20 августа', '27 августа']
   }
 };
 
@@ -195,7 +195,7 @@ function buildAccordion(containerId, items) {
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
         renderPeriod('Старт курса 6 июля', item.june) +
-        renderPeriod('Старт 27 июля', item.july) +
+        renderPeriod('Старт 3 августа', item.july) +
       '</div>';
     el.appendChild(div);
   });
@@ -236,7 +236,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
-  var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 27 июля' };
+  var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 3 августа' };
   var ORDER_LINKS = {
     single: '#order:Читательство · Разовое =1490',
     self_paced: '#order:Читательство · Индивидуальное =1990',
@@ -559,7 +559,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
 
   var BOOK_TEXTS = [
     '<strong style="color:var(--blue)">Разовое</strong> — можно начать с одной сказки, без обязательств',
-    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>6 июля</strong> и <strong>27 июля</strong>',
+    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>6 июля</strong> и <strong>3 августа</strong>',
     '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
   ];
   var bookStack = document.querySelector('.book-stack');

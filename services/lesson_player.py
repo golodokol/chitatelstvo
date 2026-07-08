@@ -231,7 +231,7 @@ def build_live_lesson_block(
     default_price = int(config.get("price_rub", MEETING_ADDON_PRICE_RUB))
     return {
         "mode": "upsell",
-        "date": config.get("next_meeting_label", "27 июля 2026"),
+        "date": config.get("next_meeting_label", "3 августа 2026"),
         "purchase_url": purchase_url,
         "price": default_price,
     }

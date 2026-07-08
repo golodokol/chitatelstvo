@@ -61,7 +61,7 @@ def _format_stage_label(chosen_stage: str | None) -> str:
     if stage == "stage-1":
         return "6 июля"
     if stage == "stage-2":
-        return "27 июля"
+        return "3 августа"
     if not chosen_stage:
         return "—"
     return str(chosen_stage)

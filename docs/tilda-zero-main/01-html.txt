@@ -58,7 +58,7 @@
             <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
           </button>
         </div>
-        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>6 июля</strong> и <strong>27 июля</strong></p>
+        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>6 июля</strong> и <strong>3 августа</strong></p>
       </div>
       <a href="#quiz" class="hero__visual-gift">Получите в подарок один урок-сказку</a>
     </div>
@@ -121,7 +121,7 @@
     <h2 class="section__title">ЧИТАТЕЛЬСТВО — это не просто «прочитать текст»</h2>
     <div class="about-text">
       <p><strong>ЧИТАТЕЛЬСТВО</strong> — онлайн-школа литературного чтения для детей. Мы помогаем понимать книги глубже — через видео, вопросы на понимание и задания на смысл. Родитель получает личную страницу: там виден прогресс и открытые сказки — можно начать занятие в один клик.</p>
-      <p><strong>Базовый курс</strong> — для 1–4 класса, <strong>внеклассное чтение</strong> — для детей 6–11 лет. <strong>12 сказок за лето</strong> — три блока по 4: старт <strong>6 июля</strong>, продолжение <strong>27 июля</strong> и <strong>внеклассная программа</strong>. Оплата — за блок из 4 сказок или за одну, если хотите попробовать.</p>
+      <p><strong>Базовый курс</strong> — для 1–4 класса, <strong>внеклассное чтение</strong> — для детей 6–11 лет. <strong>12 сказок за лето</strong> — три блока по 4: старт <strong>6 июля</strong>, продолжение <strong>3 августа</strong> и <strong>внеклассная программа</strong>. Оплата — за блок из 4 сказок или за одну, если хотите попробовать.</p>
     </div>
     <div class="summer-timeline" id="timeline">
       <div class="summer-timeline__track">
@@ -131,7 +131,7 @@
         </div>
         <span class="summer-timeline__arrow" aria-hidden="true">→</span>
         <div class="summer-timeline__node">
-          <span class="summer-timeline__date">27 июля</span>
+          <span class="summer-timeline__date">3 августа</span>
           <span class="summer-timeline__label">ещё 4 сказки · 4 недели</span>
         </div>
         <span class="summer-timeline__arrow" aria-hidden="true">→</span>
@@ -291,7 +291,7 @@
   <div class="section__inner">
     <span class="section__chapter"><em>глава 5</em> · формат</span>
     <h2 class="section__title">Выберите свой путь</h2>
-    <p class="section__lead">Все форматы — с выбором даты старта: 6 июля или 27 июля</p>
+    <p class="section__lead">Все форматы — с выбором даты старта: 6 июля или 3 августа</p>
     <div class="tariffs-grid">
       <div class="tariff-card">
         <h3 class="tariff-card__name">Разовое</h3>
@@ -414,7 +414,7 @@
         <div class="step-label"><em>шаг 3</em> · когда начать</div>
         <div class="stage-row" id="chit-stages">
           <button type="button" class="pill" data-stage="1">Старт курса 6 июля</button>
-          <button type="button" class="pill" data-stage="2">Старт 27 июля</button>
+          <button type="button" class="pill" data-stage="2">Старт 3 августа</button>
         </div>
         <div class="tales" id="chit-tales"></div>
         <div class="block-preview" id="chit-block-preview" style="display:none"></div>
@@ -489,7 +489,7 @@
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Когда начинается курс?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Два старта: <strong>6 июля</strong> и <strong>27 июля</strong>. Каждый — блок из 4 сказок (4 недели). При записи вы выбираете один период. Полная программа класса — 8 сказок, если пройти оба блока.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Два старта: <strong>6 июля</strong> и <strong>3 августа</strong>. Каждый — блок из 4 сказок (4 недели). При записи вы выбираете один период. Полная программа класса — 8 сказок, если пройти оба блока.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">

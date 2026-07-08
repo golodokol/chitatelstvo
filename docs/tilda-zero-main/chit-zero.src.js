@@ -255,8 +255,8 @@ var CHIT_SCHEDULE = {
     meetings: ['9 июля', '16 июля', '23 июля', '30 июля']
   },
   '2': {
-    lessons: ['27 июля', '3 августа', '10 августа', '17 августа'],
-    meetings: ['30 июля', '6 августа', '13 августа', '20 августа']
+    lessons: ['3 августа', '10 августа', '17 августа', '24 августа'],
+    meetings: ['6 августа', '13 августа', '20 августа', '27 августа']
   }
 };
 
@@ -307,7 +307,7 @@ function buildAccordion(containerId, items) {
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
         renderPeriod('Старт курса 6 июля', item.june, '1') +
-        renderPeriod('Старт 27 июля', item.july, '2') +
+        renderPeriod('Старт 3 августа', item.july, '2') +
       '</div>';
     el.appendChild(div);
   });
@@ -351,7 +351,7 @@ if (faqList) {
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
-  var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 27 июля' };
+  var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 3 августа' };
   var ORDER_PRODUCTS = {
     single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
