@@ -19,6 +19,7 @@ from services.lesson_player import (
     handle_emotion_quiz_submit,
     handle_manual_mark,
     handle_quiz_submit,
+    handle_retelling_submit,
     handle_tale_rating,
     handle_video_unlock,
     handle_video_complete,
@@ -48,6 +49,10 @@ class QuizSubmitMobileBody(LessonChildBody):
 
 class EmotionQuizSubmitMobileBody(LessonChildBody):
     answers: dict[str, list[str]]
+
+
+class RetellingSubmitMobileBody(LessonChildBody):
+    answers: dict[str, Any]
 
 
 class ManualMarkMobileBody(LessonChildBody):
@@ -155,6 +160,25 @@ def quiz_submit_v1(
         child_id=child.id,
         slug=slug,
         quiz_type=body.quiz_type,
+        answers=body.answers,
+        test_key=body.test_key,
+    )
+
+
+@router.post("/{slug}/retelling")
+def retelling_submit_v1(
+    slug: str,
+    body: RetellingSubmitMobileBody,
+    request: Request,
+    family: Family = Depends(get_current_family),
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child = _child_in_family(db, family, body.child_id)
+    return handle_retelling_submit(
+        db,
+        child_id=child.id,
+        slug=slug,
         answers=body.answers,
         test_key=body.test_key,
     )

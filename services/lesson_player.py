@@ -31,6 +31,7 @@ from lessons.loader import (
     get_lesson,
     quiz_answer_results,
     quiz_for_client,
+    retelling_quiz_for_client,
     score_emotion_quiz,
     score_quiz,
 )
@@ -136,10 +137,12 @@ def build_slovik_payload(lesson: dict[str, Any]) -> dict[str, Any]:
     emotion = lesson.get("emotion_quiz")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
+    retelling = lesson.get("retelling_quiz")
     initial_step = lesson_step_key(
         has_emotion=bool(emotion),
         has_comprehension=bool(comprehension),
         has_meaning=bool(meaning),
+        has_retelling=bool(retelling),
     )
     return {
         "urls": slovik_urls(),
@@ -256,7 +259,7 @@ def child_has_video_unlock(
         return True
     if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type="video_unlock"):
         return True
-    for event_type in ("emotion_quiz", "comprehension", "meaning_analysis"):
+    for event_type in ("emotion_quiz", "comprehension", "meaning_analysis", "retelling"):
         if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type=event_type):
             return True
     return False
@@ -276,6 +279,8 @@ def build_lesson_json(
     emotion = lesson.get("emotion_quiz")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
+    retelling = lesson.get("retelling_quiz")
+    group_code = lesson.get("group_code")
     tale_slug = lesson.get("tale_slug") or slug
     tale_title = lesson["title"]
     existing_rating = repo.get_tale_rating(db, child.id, tale_slug)
@@ -297,6 +302,11 @@ def build_lesson_json(
         "meaning_done": (
             repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="meaning_analysis")
             if meaning
+            else False
+        ),
+        "retelling_done": (
+            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="retelling")
+            if retelling
             else False
         ),
         "creative_done": repo.child_has_learning_event(
@@ -323,6 +333,7 @@ def build_lesson_json(
         "emotion_quiz": emotion_quiz_for_client(emotion) if emotion else None,
         "comprehension_quiz": quiz_for_client(comprehension, block_key="comprehension_quiz") if comprehension else None,
         "meaning_quiz": quiz_for_client(meaning, block_key="meaning_quiz") if meaning else None,
+        "retelling_quiz": retelling_quiz_for_client(retelling, group_code=group_code) if retelling else None,
         "creative_tasks": lesson.get("creative_tasks"),
         "live_lesson": build_live_lesson_block(lesson, enrollment, child=child),
         "slovik": build_slovik_payload(lesson),
@@ -524,6 +535,66 @@ def handle_quiz_submit(
         tale_title=lesson["title"],
         lesson_date=date.today(),
         notes=f"auto: quiz {correct}/{total}",
+        payload={"source": "lesson_player", "score": correct, "total": total},
+    )
+    return {
+        "status": status,
+        "event_id": str(event_id) if event_id else None,
+        "score": correct,
+        "total": total,
+        "pass_score": pass_score,
+        "results": results,
+        "message": "Задание засчитано!" if status == "accepted" else "Уже было засчитано ранее",
+    }
+
+
+def handle_retelling_submit(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    slug: str,
+    answers: dict[str, Any],
+    test_key: str | None = None,
+) -> dict[str, Any]:
+    _, lesson = prepare_lesson_for_child(
+        db,
+        child_id,
+        slug,
+        bypass=verify_test_lesson_key(test_key),
+    )
+
+    quiz = lesson.get("retelling_quiz")
+    if not quiz:
+        raise HTTPException(404, "Задание на пересказ для этого урока ещё не настроено")
+
+    tale_title = lesson["title"]
+    if lesson.get("meaning_quiz") and not repo.child_has_learning_event(
+        db, child_id, tale_title=tale_title, event_type="meaning_analysis"
+    ):
+        raise HTTPException(400, "Сначала выполните задания по сказке выше.")
+
+    correct, total = score_quiz(quiz, answers)
+    pass_score = int(quiz.get("pass_score", total))
+    results = quiz_answer_results(quiz, answers)
+    passed = correct >= pass_score
+
+    if not passed:
+        return {
+            "status": "failed",
+            "score": correct,
+            "total": total,
+            "pass_score": pass_score,
+            "results": results,
+            "message": "Попробуйте ещё раз — расставьте события по порядку сказки.",
+        }
+
+    status, event_id = submit_learning_event(
+        db,
+        child_id=child_id,
+        event_type="retelling",
+        tale_title=tale_title,
+        lesson_date=date.today(),
+        notes=f"auto: retelling {correct}/{total}",
         payload={"source": "lesson_player", "score": correct, "total": total},
     )
     return {

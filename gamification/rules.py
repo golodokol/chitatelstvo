@@ -76,7 +76,7 @@ EVENT_RULES: dict[str, dict] = {
         "next_action": "Пересказать сказку своими словами или подготовить вопрос к живой встрече.",
     },
     "retelling": {
-        "points": 3,
+        "points": 2,
         "badge": "Мастер пересказа",
         "level": "Мастер слова",
         "reward_type": "badge",

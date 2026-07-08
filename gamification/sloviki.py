@@ -53,6 +53,7 @@ LESSON_STEP_SLOVIK: dict[str, str] = {
     "emotion": "dreams",
     "comprehension": "writes",
     "meaning": "dreams",
+    "retelling": "reads",
     "creative": "writes",
     "manual": "grows",
     "done": "victory",
@@ -162,13 +163,27 @@ def lesson_step_key(
     has_emotion: bool = False,
     has_comprehension: bool,
     has_meaning: bool,
+    has_retelling: bool = False,
     video_done: bool = False,
     emotion_done: bool = False,
     comprehension_done: bool = False,
     meaning_done: bool = False,
+    retelling_done: bool = False,
 ) -> str:
-    if meaning_done or (video_done and not has_emotion and not has_comprehension and not has_meaning):
+    if (
+        retelling_done
+        or (meaning_done and not has_retelling)
+        or (
+            video_done
+            and not has_emotion
+            and not has_comprehension
+            and not has_meaning
+            and not has_retelling
+        )
+    ):
         return "grows"
+    if meaning_done and has_retelling:
+        return "retelling"
     if comprehension_done and not has_meaning:
         return "grows"
     if comprehension_done:

@@ -10,6 +10,7 @@ from db import repository as repo
 from db.models import ParentNotification
 from db.session import SessionLocal
 from gamification.bonus_badges import bonus_badges_for_event
+from gamification.streak_badges import STREAK_META_EVENTS, maybe_award_streak_3
 from gamification.engine import GamificationRequest, LearnerState, generate_reward
 from notifications.dispatcher import dispatch_parent_notifications, send_pending_notification
 
@@ -85,6 +86,20 @@ def process_event(event_id: str) -> None:
             note = db.get(ParentNotification, nid)
             if note and note.status == "pending":
                 enqueue("send_notification", {"notification_id": str(nid)})
+
+        if event.event_type not in STREAK_META_EVENTS:
+            from datetime import date
+
+            activity_day = event.lesson_date or date.today()
+            streak_result = maybe_award_streak_3(
+                db,
+                child_id=child.id,
+                activity_date=activity_day,
+            )
+            if streak_result:
+                streak_status, streak_event_id = streak_result
+                if streak_status == "accepted" and streak_event_id:
+                    enqueue("process_event", {"event_id": str(streak_event_id)})
 
         logger.info("Событие %s обработано (%s)", event_id, reward.source)
     except Exception as exc:

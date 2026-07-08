@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from api.deps import rate_limit, verify_webhook_secret
-from api.event_types import AUTO_LESSON_PLAYER
+from api.event_types import AUTO_LESSON_PLAYER, AUTO_SYSTEM_EVENTS
 from api.schemas import EventWebhook, RegisterWebhook, WebhookAccepted
 from config.settings import WEBHOOK_SECRET
 from db import repository as repo
@@ -132,10 +132,10 @@ async def webhook_event(
         child.module_week = body.module_week
         db.commit()
 
-    if body.event_type in AUTO_LESSON_PLAYER:
+    if body.event_type in AUTO_LESSON_PLAYER or body.event_type in AUTO_SYSTEM_EVENTS:
         raise HTTPException(
             400,
-            f"Событие «{body.event_type}» засчитывается автоматически в плеере урока.",
+            f"Событие «{body.event_type}» засчитывается автоматически.",
         )
 
     payload = body.model_dump(mode="json")

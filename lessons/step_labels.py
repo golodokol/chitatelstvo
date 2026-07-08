@@ -7,6 +7,7 @@ LESSON_STEP_LABELS: dict[str, str] = {
     "emotion_quiz": "Изучаем эмоциональный интеллект",
     "comprehension_quiz": "Мини-тест по сказке",
     "tasks": "Выполняем задания",
+    "retelling": "Пробуем пересказать",
     "creative": "Творчество",
 }
 
@@ -15,7 +16,8 @@ LESSON_STEP_NUMBERS: dict[str, int] = {
     "emotion_quiz": 2,
     "comprehension_quiz": 3,
     "tasks": 4,
-    "creative": 5,
+    "retelling": 5,
+    "creative": 6,
 }
 
 # Ключ блока в JSON урока → ключ шага в LESSON_STEP_LABELS
@@ -24,6 +26,7 @@ LESSON_BLOCK_TO_STEP: dict[str, str] = {
     "emotion_quiz": "emotion_quiz",
     "comprehension_quiz": "comprehension_quiz",
     "meaning_quiz": "tasks",
+    "retelling_quiz": "retelling",
     "creative_tasks": "creative",
 }
 
@@ -52,13 +55,13 @@ EVENT_TYPE_TO_STEP: dict[str, str] = {
     "emotion_quiz": "emotion_quiz",
     "comprehension": "comprehension_quiz",
     "meaning_analysis": "tasks",
+    "retelling": "retelling",
 }
 
 # События вне четырёх шагов урока — отдельные подписи для родителей
 EXTRA_EVENT_LABELS: dict[str, str] = {
     "first_task": "Первый шаг",
     "creative_task": "Творческое задание",
-    "retelling": "Пересказ",
     "live_meeting": "Живая встреча",
     "mini_check": "Мини-проверка",
     "initiative": "Своя инициатива",

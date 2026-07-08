@@ -22,6 +22,7 @@ from services.lesson_player import (
     handle_emotion_quiz_submit,
     handle_manual_mark,
     handle_quiz_submit,
+    handle_retelling_submit,
     handle_tale_rating,
     handle_video_unlock,
     handle_video_complete,
@@ -63,6 +64,10 @@ class QuizSubmitBody(LessonAuth):
 
 class EmotionQuizSubmitBody(LessonAuth):
     answers: dict[str, list[str]]
+
+
+class RetellingSubmitBody(LessonAuth):
+    answers: dict[str, Any]
 
 
 class ManualMarkBody(LessonAuth):
@@ -132,6 +137,7 @@ def lesson_page(
             "video_src": payload["video"]["src"],
             "comprehension_quiz": payload["comprehension_quiz"],
             "meaning_quiz": payload["meaning_quiz"],
+            "retelling_quiz": payload["retelling_quiz"],
             "emotion_quiz": payload["emotion_quiz"],
             "creative_tasks": payload.get("creative_tasks"),
             "live_lesson": payload.get("live_lesson"),
@@ -219,6 +225,25 @@ def quiz_submit(
         child_id=child_id,
         slug=slug,
         quiz_type=body.quiz_type,
+        answers=body.answers,
+        test_key=body.test_key,
+    )
+
+
+@router.post("/api/lesson/{slug}/retelling")
+def retelling_submit(
+    slug: str,
+    body: RetellingSubmitBody,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child_id = _verify_access(body, slug)
+    get_child_or_404(db, child_id)
+    return handle_retelling_submit(
+        db,
+        child_id=child_id,
+        slug=slug,
         answers=body.answers,
         test_key=body.test_key,
     )

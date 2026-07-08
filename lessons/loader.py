@@ -162,6 +162,38 @@ def quiz_question_for_client(q: dict[str, Any], *, shuffle_options: bool = True)
     return payload
 
 
+RETELLING_IMAGE_GROUPS = frozenset({"grade-1", "grade-2", "extra-6-8"})
+
+
+def retelling_uses_images(group_code: str | None) -> bool:
+    """Младшие классы — картинки; старшие — текстовые описания событий."""
+    return (group_code or "grade-1") in RETELLING_IMAGE_GROUPS
+
+
+def retelling_quiz_for_client(
+    quiz: dict[str, Any],
+    *,
+    group_code: str | None = None,
+    shuffle_options: bool = True,
+) -> dict[str, Any]:
+    """Квиз пересказа: для старших групп убираем картинки из ordering."""
+    client = quiz_for_client(quiz, block_key="retelling_quiz", shuffle_options=shuffle_options)
+    if retelling_uses_images(group_code):
+        return client
+    for q in client.get("questions", []):
+        if _question_type(q) != "ordering":
+            continue
+        if q.get("hint"):
+            q["hint"] = (
+                "Перетащи описания событий в ячейки 1–5 по порядку сказки. "
+                "На телефоне: нажми на событие, затем на ячейку."
+            )
+        for item in q.get("items", []):
+            item.pop("image", None)
+            item.pop("alt", None)
+    return client
+
+
 def quiz_for_client(
     quiz: dict[str, Any],
     *,

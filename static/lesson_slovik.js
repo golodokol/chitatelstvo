@@ -4,6 +4,7 @@
     emotion: 'Изучаем эмоциональный интеллект',
     writes: 'Мини-тест по сказке',
     dreams: 'Выполняем задания',
+    retelling: 'Пробуем пересказать',
     grows: 'Творчество и встреча — по желанию',
     victory: 'Ура! Урок почти пройден!',
     reward: 'Молодец!',
@@ -14,6 +15,7 @@
     emotion_quiz: 1,
     comprehension: 2,
     meaning_analysis: 2,
+    retelling: 2,
     creative_task: 3,
     live_meeting: 2,
   };
@@ -23,6 +25,7 @@
     emotion_quiz: 'emotion',
     comprehension: 'writes',
     meaning_analysis: 'dreams',
+    retelling: 'retelling',
     creative_task: 'writes',
     live_meeting: 'grows',
   };
@@ -70,6 +73,7 @@
           emotion: 'emotion_quiz',
           writes: 'comprehension_quiz',
           dreams: 'tasks',
+          retelling: 'retelling',
           grows: 'creative',
         };
         resolved = stepLabels[map[key]] || '';
@@ -97,9 +101,14 @@
   function nextStepKey(cfg, state) {
     state = state || {};
     cfg = cfg || {};
-    if (state.meaningDone || (state.videoUnlocked && !cfg.hasEmotion && !cfg.hasComprehension && !cfg.hasMeaning)) {
+    if (
+      state.retellingDone
+      || (state.meaningDone && !cfg.hasRetelling)
+      || (state.videoUnlocked && !cfg.hasEmotion && !cfg.hasComprehension && !cfg.hasMeaning && !cfg.hasRetelling)
+    ) {
       return 'grows';
     }
+    if (state.meaningDone && cfg.hasRetelling) return 'retelling';
     if (state.comprehensionDone && !cfg.hasMeaning) return 'grows';
     if (state.comprehensionDone) return 'dreams';
     if (state.emotionDone && cfg.hasComprehension) return 'writes';

@@ -1,6 +1,13 @@
 """Тесты расширенных типов вопросов в квизах урока."""
 
-from lessons.loader import get_lesson, quiz_for_client, score_question, score_quiz
+from lessons.loader import (
+    get_lesson,
+    quiz_for_client,
+    retelling_quiz_for_client,
+    retelling_uses_images,
+    score_question,
+    score_quiz,
+)
 
 
 def test_score_single_question():
@@ -44,25 +51,38 @@ def test_quiz_for_client_keeps_picture_match_images():
     }
 
 
-def test_quiz_for_client_ordering_images():
-    quiz = get_lesson("tsarevna-lyagushka")["meaning_quiz"]
-    client = quiz_for_client(quiz, shuffle_options=False)
-    q4 = next(q for q in client["questions"] if q["id"] == "m4")
-    assert q4["type"] == "ordering"
-    assert [item["id"] for item in q4["items"]] == ["e1", "e2", "e3", "e4", "e5"]
-    assert [item["image"] for item in q4["items"]] == [
-        "/static/lessons/tsarevna/event-01.png",
-        "/static/lessons/tsarevna/event-02.png",
-        "/static/lessons/tsarevna/event-03.png",
-        "/static/lessons/tsarevna/event-04.png",
-        "/static/lessons/tsarevna/event-05.png",
-    ]
+def test_retelling_uses_images_by_group():
+    assert retelling_uses_images("grade-1") is True
+    assert retelling_uses_images("grade-2") is True
+    assert retelling_uses_images("extra-6-8") is True
+    assert retelling_uses_images("grade-3") is False
+    assert retelling_uses_images("grade-4") is False
+    assert retelling_uses_images("extra-9-11") is False
 
 
-def test_quiz_for_client_shuffles_ordering_items():
-    quiz = get_lesson("tsarevna-lyagushka")["meaning_quiz"]
+def test_retelling_quiz_for_client_ordering_images():
+    quiz = get_lesson("tsarevna-lyagushka")["retelling_quiz"]
+    client = retelling_quiz_for_client(quiz, group_code="grade-1", shuffle_options=False)
+    q1 = client["questions"][0]
+    assert q1["type"] == "ordering"
+    assert q1["id"] == "r1"
+    assert [item["id"] for item in q1["items"]] == ["e1", "e2", "e3", "e4", "e5"]
+    assert all(item.get("image") for item in q1["items"])
+
+
+def test_retelling_quiz_for_client_strips_images_for_older():
+    quiz = get_lesson("tsarevna-lyagushka")["retelling_quiz"]
+    client = retelling_quiz_for_client(quiz, group_code="grade-3", shuffle_options=False)
+    q1 = client["questions"][0]
+    assert q1["type"] == "ordering"
+    assert all("image" not in item for item in q1["items"])
+    assert q1["items"][0]["text"] == "Царь собрал трёх сыновей у замка"
+
+
+def test_retelling_quiz_for_client_shuffles_ordering_items():
+    quiz = get_lesson("tsarevna-lyagushka")["retelling_quiz"]
     orders = {
-        tuple(item["id"] for item in quiz_for_client(quiz, shuffle_options=True)["questions"][3]["items"])
+        tuple(item["id"] for item in retelling_quiz_for_client(quiz, shuffle_options=True)["questions"][0]["items"])
         for _ in range(30)
     }
     assert len(orders) > 1
@@ -79,7 +99,7 @@ def test_score_picture_match_question():
 
 
 def test_score_ordering_question():
-    q = {"id": "m4", "type": "ordering", "correct": ["e1", "e2", "e3", "e4", "e5"]}
+    q = {"id": "r1", "type": "ordering", "correct": ["e1", "e2", "e3", "e4", "e5"]}
     assert score_question(q, ["e1", "e2", "e3", "e4", "e5"]) is True
     assert score_question(q, ["e2", "e1", "e3", "e4", "e5"]) is False
 

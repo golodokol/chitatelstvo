@@ -176,20 +176,6 @@
         "correct": ["s1", "s2"]
       },
       {
-        "id": "m4",
-        "type": "ordering",
-        "text": "Расставь события по порядку.",
-        "hint": "Перетащи картинки в ячейки 1–5 по порядку сказки. На телефоне: нажми на картинку, затем на ячейку.",
-        "items": [
-          {"id": "e1", "image": "/static/lessons/tsarevna/event-01.png", "alt": "Царь и три сына у замка"},
-          {"id": "e2", "image": "/static/lessons/tsarevna/event-02.png", "alt": "Братья стреляют из луков у пруда"},
-          {"id": "e3", "image": "/static/lessons/tsarevna/event-03.png", "alt": "Иван и лягушка на кувшинке"},
-          {"id": "e4", "image": "/static/lessons/tsarevna/event-04.png", "alt": "Иван сражается с Кощеем"},
-          {"id": "e5", "image": "/static/lessons/tsarevna/event-05.png", "alt": "Свадьба и счастливый конец"}
-        ],
-        "correct": ["e1", "e2", "e3", "e4", "e5"]
-      },
-      {
         "id": "m5",
         "type": "picture_match",
         "text": "Кто на картинке? Выбери имя героя.",
@@ -211,6 +197,26 @@
           "p3": "l3",
           "p4": "l4"
         }
+      }
+    ]
+  },
+  "retelling_quiz": {
+    "title": "Пробуем пересказать",
+    "pass_score": 1,
+    "questions": [
+      {
+        "id": "r1",
+        "type": "ordering",
+        "text": "Расставь события по порядку.",
+        "hint": "Перетащи картинки в ячейки 1–5 по порядку сказки. На телефоне: нажми на картинку, затем на ячейку.",
+        "items": [
+          {"id": "e1", "text": "Царь собрал трёх сыновей у замка", "image": "/static/lessons/tsarevna/event-01.png", "alt": "Царь и три сына у замка"},
+          {"id": "e2", "text": "Братья стреляют из луков у пруда", "image": "/static/lessons/tsarevna/event-02.png", "alt": "Братья стреляют из луков у пруда"},
+          {"id": "e3", "text": "Иван-царевич встретил лягушку на кувшинке в болоте", "image": "/static/lessons/tsarevna/event-03.png", "alt": "Иван и лягушка на кувшинке"},
+          {"id": "e4", "text": "Иван сражается с Кощеем Бессмертным", "image": "/static/lessons/tsarevna/event-04.png", "alt": "Иван сражается с Кощеем"},
+          {"id": "e5", "text": "Свадьба — счастливый конец сказки", "image": "/static/lessons/tsarevna/event-05.png", "alt": "Свадьба и счастливый конец"}
+        ],
+        "correct": ["e1", "e2", "e3", "e4", "e5"]
       }
     ]
   },
