@@ -1,4 +1,8 @@
 <!-- Читательство · главная · вкладка HTML Zero Block -->
+<!-- ВАЖНО: один этот файл НЕ запускает сайт. Нужны ещё вкладки CSS (02-css.txt) и JS (03-js.txt).
+     Либо вставьте целиком 00-tilda-lite.html в HTML-элемент Zero Block. -->
+<!-- ВАЖНО: один этот файл НЕ запускает сайт. Нужны ещё вкладки CSS (02-css.txt) и JS (03-js.txt).
+     Либо вставьте целиком 00-tilda-lite.html в HTML-элемент Zero Block. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <div id="chit-main">
