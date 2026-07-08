@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from api.lesson_signing import build_lesson_url
 from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, PUBLIC_BASE_URL, TELEGRAM_ENABLED
+from notifications.telegram_bot import build_link_url
 from db import repository as repo
 from db.child_age import child_age_years
 from db.models import Child, Enrollment, Family
