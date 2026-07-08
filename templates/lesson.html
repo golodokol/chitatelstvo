@@ -110,6 +110,7 @@
         {% endfor %}
       </ul>
       {% endif %}
+      <p><a class="chit-btn chit-btn--chest chit-btn--chest-lesson" href="{{ chest_url }}">В волшебный сундук</a></p>
       <div class="chit-creative-upload" id="creative-upload-block">
         <p class="chit-creative-upload__label">Здесь можно загрузить выполненные задания из сундука, чтобы получить бейдж «Сказочник»</p>
         <p class="chit-creative-upload__hint">Фото или PDF, до 5 файлов, каждый до 12 МБ</p>
@@ -121,7 +122,6 @@
         <button type="button" class="chit-btn" id="btn-creative-upload">Отправить работы</button>
         <div id="creative-upload-msg" class="chit-msg" style="display:none"></div>
       </div>
-      <p><a class="chit-btn chit-btn--chest chit-btn--chest-lesson" href="{{ chest_url }}">В волшебный сундук</a></p>
     </div>
     {% endif %}
 
