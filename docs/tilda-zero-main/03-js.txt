@@ -144,6 +144,31 @@ function getTaleInfo(title) {
   return { desc: 'Уточните название сказки — напишите команде Читательства.', quote: null };
 }
 
+var CHIT_SCHEDULE = {
+  '1': {
+    lessons: ['6 июля', '13 июля', '20 июля', '27 июля'],
+    meetings: ['9 июля', '16 июля', '23 июля', '30 июля']
+  },
+  '2': {
+    lessons: ['27 июля', '3 августа', '10 августа', '17 августа'],
+    meetings: ['30 июля', '6 августа', '13 августа', '20 августа']
+  }
+};
+
+function taleScheduleHtml(stage, index, tariff) {
+  var s = CHIT_SCHEDULE[stage];
+  if (!s || index < 0 || index > 3) return '';
+  var html = '<div class="tale-schedule">';
+  if (tariff === 'single' || tariff === 'with_teacher') {
+    html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>четверг, ' + s.meetings[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок откроется: понедельник, ' + s.lessons[index] + '</span>';
+  } else {
+    html += '<span class="tale-schedule__line">Урок откроется: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
+  }
+  html += '</div>';
+  return html;
+}
+
 function renderPeriod(title, rows) {
   var cards = rows.map(function(r) {
     var info = getTaleInfo(r[1]);
@@ -397,15 +422,31 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'tale-btn' + (state.taleNum === i + 1 ? ' is-active' : '');
-        btn.innerHTML = '<span class="tale-num">' + (i + 1) + '</span>' + title;
+        btn.innerHTML =
+          '<span class="tale-num">' + (i + 1) + '</span>' +
+          '<span class="tale-btn__body">' +
+            '<span class="tale-btn__title">' + title + '</span>' +
+            taleScheduleHtml(state.stage, i, state.tariff) +
+          '</span>';
         btn.onclick = function() { state.taleNum = i + 1; renderTales(); syncHidden(); };
         elTales.appendChild(btn);
       });
     } else {
       elTales.style.display = 'none';
       elPreview.style.display = 'block';
-      elPreview.innerHTML = '<strong style="color:var(--blue)">4 сказки в этом блоке:</strong><br>' +
-        list.map(function(t, i) { return (i + 1) + '. ' + t; }).join('<br>');
+      elPreview.innerHTML =
+        '<div class="block-preview__title"><strong>4 сказки в этом блоке</strong>' +
+        (state.tariff === 'with_teacher' ? ' · встречи по четвергам' : '') +
+        '</div>' +
+        '<div class="block-preview__cards">' +
+        list.map(function(t, i) {
+          return '<div class="block-preview__card">' +
+            '<div class="block-preview__num">Сказка ' + (i + 1) + '</div>' +
+            '<div class="block-preview__name">' + t + '</div>' +
+            taleScheduleHtml(state.stage, i, state.tariff) +
+          '</div>';
+        }).join('') +
+        '</div>';
     }
   }
 
