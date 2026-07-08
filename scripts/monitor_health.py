@@ -205,6 +205,15 @@ def should_send_alert(state: dict, *, failed: bool, cooldown_min: int) -> bool:
 
 
 def send_email(cfg: dict[str, str], recipients: list[str], subject: str, body: str) -> None:
+    try:
+        from notifications.email_channel import send_email as app_send_email
+
+        for to in recipients:
+            app_send_email(to, subject, body)
+        return
+    except Exception:
+        pass
+
     host = env("SMTP_HOST") or cfg.get("SMTP_HOST", "")
     if not host:
         raise RuntimeError("SMTP_HOST не задан в .env")
