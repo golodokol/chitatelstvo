@@ -164,6 +164,18 @@ def _sloviki_label(n: int) -> str:
     return f"{n} {_sloviki_word(n)}"
 
 
+def _badge_name_lines(name: str) -> list[str]:
+    """Строки подписи бейджа для ровного центрирования в узкой ячейке."""
+    if name == "Путешественник по сказке":
+        return ["Путешественник", "по сказке"]
+    parts = name.split()
+    if len(parts) <= 1:
+        return [name]
+    if len(parts) == 2:
+        return parts
+    return [parts[0], " ".join(parts[1:])]
+
+
 def _level_progress(points: int, level_name: str) -> dict[str, Any]:
     idx = _level_index(level_name)
     if idx >= len(LEVELS) - 1:
@@ -750,6 +762,7 @@ def build_child_cabinet(
         badges_ui.append(
             {
                 "name": badge["name"],
+                "name_lines": _badge_name_lines(badge["name"]),
                 "condition": badge["condition"],
                 "earned": earned,
                 "image": _asset_url(assets_base, BADGE_IMAGES.get(badge["name"])),
