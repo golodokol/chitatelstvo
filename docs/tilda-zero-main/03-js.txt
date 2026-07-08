@@ -298,7 +298,8 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     pushField('module_id', hidMid ? hidMid.value : '');
     pushField('chosen_stage', hidStage ? hidStage.value : '');
     pushField('chosen_tale_number', hidTale ? hidTale.value : '');
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'notification_channel'].forEach(function(name) {
+    pushField('notification_channel', 'email');
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (el) pushField(name, el.value);
     });
@@ -315,7 +316,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   }
 
   function bindContactSync() {
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'notification_channel'].forEach(function(name) {
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (!el) return;
       function syncContact() { pushField(name, el.value); }

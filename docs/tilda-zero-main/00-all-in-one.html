@@ -1861,16 +1861,12 @@
             <label for="chit_child_age">Возраст</label>
             <input type="number" id="chit_child_age" name="child_age" min="1" max="99">
           </div>
-          <div class="form-field form-field--full">
-            <label for="chit_notification_channel">Как присылать новости</label>
-            <select id="chit_notification_channel" name="notification_channel">
-              <option value="email">На email</option>
-              <option value="web">Только личная страница</option>
-              <option value="telegram">В Telegram</option>
-              <option value="both">Email и Telegram</option>
-            </select>
+          <div class="form-field">
+            <label for="chit_promo_code">Промокод</label>
+            <input type="text" id="chit_promo_code" name="promo_code" autocomplete="off" spellcheck="false" autocapitalize="characters">
           </div>
         </div>
+        <input type="hidden" name="notification_channel" id="chit_notification_channel" value="email">
 
         <div class="st100-warning" id="chit-st100-warning" hidden>
           <strong>Оплата пока не подключена.</strong>

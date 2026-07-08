@@ -358,6 +358,7 @@
     waitFor(function () {
       return typeof window.tcart__addProduct === 'function' && document.querySelector('.t706');
     }, function () {
+      if (!data.notification_channel) data.notification_channel = 'email';
       ['module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
         setField(name, data[name]);
       });

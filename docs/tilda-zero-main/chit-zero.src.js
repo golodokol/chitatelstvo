@@ -1193,7 +1193,6 @@ if (faqList) {
     var parentTelegram = src('parent_telegram');
     var childName = src('child_name');
     var childAge = src('child_age');
-    var notify = src('notification_channel') || 'email';
 
     form.querySelectorAll('input[type="email"]').forEach(function(el) {
       if (parentEmail) setInputValue(el, parentEmail);
@@ -1212,10 +1211,6 @@ if (faqList) {
     if (parentName && textInputs[0]) setInputValue(textInputs[0], parentName);
     if (childName && textInputs[1]) setInputValue(textInputs[1], childName);
     if (childAge && textInputs[2]) setInputValue(textInputs[2], childAge);
-
-    form.querySelectorAll('select').forEach(function(el) {
-      if (notify) setInputValue(el, notify);
-    });
 
     form.querySelectorAll('input[type="hidden"]').forEach(function(el) {
       var n = el.name || '';
@@ -1286,7 +1281,7 @@ if (faqList) {
       child_name: val('child_name'),
       child_age: val('child_age'),
       promo_code: val('promo_code'),
-      notification_channel: val('notification_channel') || 'email'
+      notification_channel: 'email'
     };
   }
 
