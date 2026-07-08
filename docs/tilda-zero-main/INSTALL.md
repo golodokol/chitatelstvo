@@ -18,7 +18,7 @@
 
 **Все три вкладки обязательны.** Если вставить только `01-html.txt`, на сайте пропадут стили, программы сказок и форма записи (на странице не будет `chit-zero.js` / `buildAccordion`).
 
-Альтернатива — один файл `00-tilda-lite.html` целиком в HTML-элемент Zero Block (CSS/JS грузятся с API).
+Альтернатива — один файл `00-tilda-zero-upload.html` (или `00-tilda-lite.html`) целиком в HTML-элемент Zero Block (CSS/JS грузятся с API). Собрать заново: `python scripts/build_tilda_upload.py`.
 
 Сохранить → **Опубликовать**.
 
