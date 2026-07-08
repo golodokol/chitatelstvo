@@ -17,19 +17,18 @@ def main() -> None:
     if not SMTP_HOST:
         print("ERROR: SMTP_HOST empty")
         return
-    use_ssl = SMTP_PORT == 465
-    cls = smtplib.SMTP_SSL if use_ssl else smtplib.SMTP
-    try:
-        with cls(SMTP_HOST, SMTP_PORT, timeout=20) as server:
-            print("connect_ok")
-            if not use_ssl and SMTP_USE_TLS:
-                server.starttls(context=ssl.create_default_context())
-                print("starttls_ok")
-            if SMTP_USER and SMTP_PASSWORD:
-                server.login(SMTP_USER, SMTP_PASSWORD)
-                print("login_ok")
-    except Exception as exc:  # noqa: BLE001
-        print("smtp_error", type(exc).__name__, str(exc)[:200])
+    for port, use_ssl in ((465, True), (587, False)):
+        label = f"port_{port}"
+        try:
+            cls = smtplib.SMTP_SSL if use_ssl else smtplib.SMTP
+            with cls(SMTP_HOST, port, timeout=20) as server:
+                if not use_ssl:
+                    server.starttls(context=ssl.create_default_context())
+                if SMTP_USER and SMTP_PASSWORD:
+                    server.login(SMTP_USER, SMTP_PASSWORD)
+                print(label, "login_ok")
+        except Exception as exc:  # noqa: BLE001
+            print(label, "fail", type(exc).__name__, str(exc)[:120])
 
 
 if __name__ == "__main__":
