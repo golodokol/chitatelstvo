@@ -138,9 +138,11 @@ class RegisterWebhook(BaseModel):
             return "2"
         if ("22" in raw or "29" in raw) and "июн" in raw:
             return "1"
-        if ("6" in raw or "29" in raw) and "июл" in raw and "27" not in raw:
+        if "6 июл" in raw:
             return "1"
-        if ("20" in raw or "27" in raw) and "июл" in raw:
+        if "27 июл" in raw:
+            return "2"
+        if "20" in raw and "июл" in raw:
             return "2"
         return str(value).strip()
 
