@@ -94,8 +94,8 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
         },
         {
             "kind": "creative_1",
-            "label": "Раскрась лягушку",
-            "description": "Раскраска по сказке — скачай и распечатай",
+            "label": "Нарисуй свою лягушку в болоте",
+            "description": "Творческое задание — скачай и распечатай",
             "preview_files": ("creative-1.png", "creative-1.jpg"),
             "download_files": ("creative-1.pdf",),
             "fallback_image": "/static/sloviki/slovik-grows.png",
@@ -104,8 +104,8 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
         },
         {
             "kind": "creative_2",
-            "label": "Обведи стрелу",
-            "description": "Задание со стрелой — скачай и распечатай",
+            "label": "Раскрась лягушку",
+            "description": "Раскраска по сказке — скачай и распечатай",
             "preview_files": ("creative-2.png", "creative-2.jpg"),
             "download_files": ("creative-2.pdf",),
             "fallback_image": "/static/sloviki/slovik-reads.png",
@@ -114,8 +114,8 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
         },
         {
             "kind": "creative_3",
-            "label": "Нарисуй свою лягушку в болоте",
-            "description": "Творческое задание — скачай и распечатай",
+            "label": "Обведи стрелу",
+            "description": "Задание со стрелой — скачай и распечатай",
             "preview_files": ("creative-3.png", "creative-3.jpg"),
             "download_files": ("creative-3.pdf",),
             "fallback_image": "/static/sloviki/slovik-dreams.png",
