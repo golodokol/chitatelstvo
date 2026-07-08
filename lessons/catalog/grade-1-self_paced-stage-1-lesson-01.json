@@ -43,43 +43,43 @@
     "cards": [
       {
         "id": "rp1",
-        "text": "У царя было три сына.",
+        "text": "У ца\u0301ря бы\u0301ло три сы\u0301на.",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-01.png",
         "alt": "Царь и три сына"
       },
       {
         "id": "rp2",
-        "text": "Они пустили стрелы, чтобы найти невест",
+        "text": "Они\u0301 пусти\u0301ли стре\u0301лы, что\u0301бы на\u0301йти неве\u0301ст",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-02.png",
         "alt": "Братья пускают стрелы"
       },
       {
         "id": "rp3",
-        "text": "Стрела младшего сына упала в болото.",
+        "text": "Стре\u0301ла мла\u0301дшего сы\u0301на упа\u0301ла в боло\u0301то.",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-03.png",
         "alt": "Стрела упала в болото"
       },
       {
         "id": "rp4",
-        "text": "Там он нашёл лягу\u0301шку.",
+        "text": "Там он на\u0301шёл лягу\u0301шку.",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-04.png",
         "alt": "Иван нашёл лягушку"
       },
       {
         "id": "rp5",
-        "text": "Лягушка оказалась доброй и умной Царевной",
+        "text": "Лягу\u0301шка оказа\u0301лась до\u0301брой и у\u0301мной Ца\u0301ревной",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-04b.png",
         "alt": "Лягушка — добрая и умная Царевна"
       },
       {
         "id": "rp6",
-        "text": "Иван-царевич должен был спасти царевну от Кощея бессмертного",
+        "text": "Ива\u0301н-царе\u0301вич до\u0301лжен был спасти\u0301 царе\u0301вну от Коще\u0301я бессме\u0301ртного",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-05.png",
         "alt": "Иван сражается с Кощеем"
       },
       {
         "id": "rp7",
-        "text": "Они вернулись домой и стали жить счастливо",
+        "text": "Они\u0301 верну\u0301лись домо\u0301й и ста\u0301ли жить счастли\u0301во",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-06.png",
         "alt": "Счастливый конец сказки"
       }
