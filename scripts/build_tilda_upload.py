@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260709d"
+VERSION = "20260709e"
 API = "https://api.chitatelstvo.ru/assets"
 OUT = DIR / "00-tilda-zero-upload.html"
 LITE = DIR / "00-tilda-lite.html"
@@ -37,7 +37,7 @@ def read_head_boilerplate() -> str:
     head = re.sub(r"chit-zero\.js\?v=[^\"']+", f"chit-zero.js?v={VERSION}", head)
     head = re.sub(r'V="[^"]+"', f'V="{VERSION}"', head)
     return (
-        f"<!-- CHIT VERSION {VERSION} · даты 6 июля / 3 августа, без поля «Как присылать новости», промокоды -->\n"
+        f"<!-- CHIT VERSION {VERSION} · даты 6 июля / 3 августа, пояснения в карточках формата -->\n"
         + head.rstrip()
         + "\n"
     )

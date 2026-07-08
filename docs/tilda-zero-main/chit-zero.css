@@ -1100,11 +1100,19 @@
     }
     .tariff-card__meet {
       font-size: 13px; color: var(--muted); line-height: 1.45;
-      margin: -12px 0 20px;
       padding: 10px 12px;
       background: var(--cream);
       border-radius: 10px;
     }
+    .tariff-card__meet-slot {
+      margin: -12px 0 20px;
+      min-height: 72px;
+    }
+    .tariff-card__meet-slot[aria-hidden="true"] {
+      visibility: hidden;
+    }
+    .tariff-card__meet-line { display: block; }
+    .tariff-card__meet-line--muted { font-size: 12px; }
 
     /* Programs accordion */
     .prog-block { margin-bottom: 40px; }
@@ -1281,6 +1289,9 @@
     .pick-card__tag { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
     .pick-card__name { font-size: 16px; font-weight: 800; color: var(--blue); margin: 6px 0; }
     .pick-card__price { font-size: 20px; font-weight: 800; color: var(--text); }
+    .pick-card__hint {
+      font-size: 12px; color: var(--muted); line-height: 1.35; margin-top: 8px;
+    }
     .date-box {
       display: none; background: var(--cream);
       border-radius: 14px; padding: 22px; border: 1px solid var(--border);
