@@ -23,6 +23,7 @@ from config.settings import (
 )
 from db import repository as repo
 from db.models import Child, Enrollment
+from gamification.chest_rewards import canonical_tale_slug
 from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from lessons.access import is_lesson_unlocked
 from lessons.enrollment_access import child_can_access_lesson, find_enrollment_for_lesson, normalize_stage
@@ -268,6 +269,44 @@ def child_has_video_unlock(
     return False
 
 
+def _resolve_tale_rating(db: Session, child_id: uuid.UUID, tale_slug: str):
+    canonical = canonical_tale_slug(tale_slug)
+    row = repo.get_tale_rating(db, child_id, canonical)
+    if row:
+        return row
+    if canonical != tale_slug:
+        return repo.get_tale_rating(db, child_id, tale_slug)
+    return None
+
+
+def child_can_rate_tale(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    lesson: dict[str, Any],
+    tale_title: str,
+) -> bool:
+    """Оценка сказки — после просмотра видео или финального блока заданий."""
+    title = tale_title.strip()
+    if not title:
+        return False
+    if repo.child_has_lesson_complete(db, child_id, tale_title=title):
+        return True
+    if lesson.get("retelling_quiz"):
+        return repo.child_has_learning_event(
+            db, child_id, tale_title=title, event_type="retelling"
+        )
+    if lesson.get("meaning_quiz"):
+        return repo.child_has_learning_event(
+            db, child_id, tale_title=title, event_type="meaning_analysis"
+        )
+    if lesson.get("comprehension_quiz"):
+        return repo.child_has_learning_event(
+            db, child_id, tale_title=title, event_type="comprehension"
+        )
+    return False
+
+
 def build_lesson_json(
     db: Session,
     *,
@@ -285,10 +324,12 @@ def build_lesson_json(
     meaning = lesson.get("meaning_quiz")
     retelling = lesson.get("retelling_quiz")
     group_code = lesson.get("group_code")
-    tale_slug = lesson.get("tale_slug") or slug
+    tale_slug = canonical_tale_slug(lesson.get("tale_slug") or slug)
     tale_title = lesson["title"]
-    existing_rating = repo.get_tale_rating(db, child.id, tale_slug)
-    can_rate = repo.child_has_lesson_complete(db, child.id, tale_title=lesson["title"])
+    existing_rating = _resolve_tale_rating(db, child.id, tale_slug)
+    can_rate = child_can_rate_tale(
+        db, child.id, lesson=lesson, tale_title=lesson["title"]
+    )
     video_unlocked = child_has_video_unlock(db, child.id, tale_title=tale_title)
     progress = {
         "video_unlocked": video_unlocked,
@@ -728,10 +769,12 @@ def handle_tale_rating(
         slug,
         bypass=verify_test_lesson_key(test_key),
     )
-    if not repo.child_has_lesson_complete(db, child_id, tale_title=lesson["title"]):
-        raise HTTPException(400, "Сначала нужно досмотреть видео-урок по сказке.")
+    if not child_can_rate_tale(
+        db, child_id, lesson=lesson, tale_title=lesson["title"]
+    ):
+        raise HTTPException(400, "Сначала пройди задания по сказке — затем можно поставить оценку.")
 
-    tale_slug = lesson.get("tale_slug") or slug
+    tale_slug = canonical_tale_slug(lesson.get("tale_slug") or slug)
     row = repo.save_tale_rating(
         db,
         child_id=child_id,

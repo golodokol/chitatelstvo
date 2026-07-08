@@ -475,10 +475,15 @@ def _story_stages(lesson_links: list[dict]) -> list[dict]:
 
 def _reading_diary(ratings: list[Any], lesson_links: list[dict]) -> list[dict[str, Any]]:
     """Записи дневника: оценённые сказки, от высшей оценки к низшей."""
-    by_slug = {les.get("slug"): les for les in lesson_links if les.get("slug")}
     entries: list[dict[str, Any]] = []
     for row in ratings:
-        lesson = by_slug.get(row.tale_slug)
+        lesson = None
+        row_slug = canonical_tale_slug(row.tale_slug)
+        for les in lesson_links:
+            les_slug = canonical_tale_slug(les.get("tale_slug") or les.get("slug") or "")
+            if les_slug and les_slug == row_slug:
+                lesson = les
+                break
         title = (row.tale_title or "").strip() or (lesson or {}).get("title") or "Сказка"
         rated_at = getattr(row, "updated_at", None) or getattr(row, "created_at", None)
         entries.append(

@@ -1250,6 +1250,13 @@
       if (quizType === 'meaning_analysis') lessonState.meaningDone = true;
       syncQuizButtons();
       onReward(quizType, data.status);
+      if (quizType === 'meaning_analysis' && !CFG.retelling) {
+        CFG.canRate = true;
+        showRatingStep();
+      } else if (quizType === 'comprehension' && !CFG.meaning && !CFG.retelling) {
+        CFG.canRate = true;
+        showRatingStep();
+      }
     }
 
     async function submitRetelling(formId, quiz, btnId, msgId) {
@@ -1296,6 +1303,8 @@
       lessonState.retellingDone = true;
       syncQuizButtons();
       onReward('retelling', data.status);
+      CFG.canRate = true;
+      showRatingStep();
     }
 
     const readingChecked = new Set();
