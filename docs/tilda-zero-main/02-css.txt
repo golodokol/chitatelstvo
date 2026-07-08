@@ -1427,6 +1427,43 @@
       color: var(--blue); margin-bottom: 8px;
     }
 
+    /* Единый паттерн луга: основатели + подвал (без шва между секциями) */
+    .chit-meadow-bg {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      background-color: var(--cream);
+      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
+      background-repeat: repeat;
+      background-position: center -72px;
+      background-size: 420px;
+    }
+    .chit-meadow-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.84) 0%,
+        rgba(246,244,249,0.76) 42%,
+        rgba(246,244,249,0.78) 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+    .chit-meadow-bg .founder,
+    .chit-meadow-bg .footer {
+      background-image: none;
+      background-color: transparent;
+      position: relative;
+      z-index: 1;
+    }
+    .chit-meadow-bg .founder::before,
+    .chit-meadow-bg .footer::before {
+      display: none;
+    }
+
     /* Декоративный паттерн — полоска и подвал */
     .pattern-strip {
       position: relative;
@@ -1460,8 +1497,9 @@
       background-color: var(--cream);
       background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
       background-repeat: repeat;
-      background-position: center;
-      background-size: 400px;
+      background-position: center top;
+      background-size: 420px;
+      background-attachment: fixed;
       padding: 48px 24px 56px;
       text-align: center; font-size: 14px; color: var(--muted);
     }
@@ -1528,8 +1566,9 @@
       background-color: var(--cream-warm);
       background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
       background-repeat: repeat;
-      background-position: center;
-      background-size: 460px;
+      background-position: center top;
+      background-size: 420px;
+      background-attachment: fixed;
     }
     .founder::before {
       content: '';

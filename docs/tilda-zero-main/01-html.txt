@@ -537,6 +537,7 @@
 </div>
 
 <!-- FOUNDER -->
+<div class="chit-meadow-bg">
 <section class="section founder reveal">
   <div class="section__inner">
     <span class="section__chapter"><em>глава 9</em> · команда</span>
@@ -583,6 +584,7 @@
     <p class="footer__copy">© Читательство · chitatelstvo.ru</p>
   </div>
 </footer>
+</div>
 
 <div class="qz-modal" id="qz-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="qz-modal-title">
   <div class="qz-modal__backdrop" data-qz-close tabindex="-1"></div>
