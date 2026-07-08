@@ -15,6 +15,6 @@ $cmd = "set -e; cd $dir; git pull origin main; cat db/migrations/002_tale_rating
 
 Invoke-Remote -Cfg $cfg -Command $cmd -TimeoutSec 600
 Write-Host "Post-deploy smoke..."
-$smoke = "set -e; cd $dir; python3 scripts/post_deploy_check.py"
+$smoke = "cd $dir; for i in 1 2 3; do sleep 6; if python3 scripts/post_deploy_check.py; then exit 0; fi; done; exit 1"
 Invoke-Remote -Cfg $cfg -Command $smoke -TimeoutSec 60
 Write-Host "Done."
