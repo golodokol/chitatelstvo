@@ -21,7 +21,7 @@
   "note": "Урок «Царевна лягушка» — задания по сценарию 1 класса.",
   "video": {
     "type": "kinescope",
-    "id": "q4FzUsArQVEyT4Yiydz3AJ",
+    "id": "08fAboLyxjwv6pTzkoEEGL",
     "title": "Сказка «Царевна лягушка»"
   },
   "emotion_quiz": {
@@ -164,7 +164,7 @@
   },
   "meaning_quiz": {
     "title": "Задания по сказке",
-    "pass_score": 4,
+    "pass_score": 3,
     "questions": [
       {
         "id": "m1",
@@ -203,19 +203,6 @@
           "koschei": "thirtieth_kingdom",
           "baba_yaga": "chicken_hut"
         }
-      },
-      {
-        "id": "m3",
-        "type": "true_false",
-        "text": "Верно или нет? Отметь верные утверждения.",
-        "hint": "Выбери только те фразы, которые соответствуют сказке.",
-        "statements": [
-          {"id": "s1", "text": "У царя было три сына"},
-          {"id": "s2", "text": "Стрела младшего сына упала в болото"},
-          {"id": "s3", "text": "Лягушка превращалась в Жар-птицу"},
-          {"id": "s4", "text": "Иван-царевич оставил лягушку в болоте"}
-        ],
-        "correct": ["s1", "s2"]
       },
       {
         "id": "m5",
