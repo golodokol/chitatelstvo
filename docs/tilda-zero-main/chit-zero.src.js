@@ -366,7 +366,7 @@ if (faqList) {
   }
 
   function usesPayPageRedirect() {
-    return !!PAY_PAGE_URL && !isOnPayPage() && !catalogBlocksOnPage();
+    return !!PAY_PAGE_URL && !isOnPayPage() && !findSt100Root();
   }
 
   function applyOrderConfig(cfg) {
@@ -1235,13 +1235,13 @@ if (faqList) {
   }
 
   function findSt100Root() {
-    return document.querySelector('.t706, .t-store, form[data-formcart="y"]');
+    return document.querySelector('.t706, form[data-formcart="y"]');
   }
 
   function checkSt100Block() {
     var warn = document.getElementById('chit-st100-warning');
     if (!warn) return;
-    warn.hidden = !!findSt100Root();
+    warn.hidden = !!findSt100Root() || usesPayPageRedirect();
   }
 
   function bindContactSync() {
