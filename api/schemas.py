@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
@@ -42,6 +42,7 @@ _REGISTER_FIELDS = frozenset(
         "notification_channel",
         "child_name",
         "child_age",
+        "child_birth_date",
         "module_id",
         "chosen_stage",
         "chosen_tale_number",
@@ -58,6 +59,7 @@ class RegisterWebhook(BaseModel):
     notification_channel: NotificationChannel = "email"
     child_name: str = Field(min_length=1, max_length=100)
     child_age: int | None = Field(default=None)
+    child_birth_date: date | None = Field(default=None)
     module_id: int | None = Field(default=None, ge=1, le=19)
     chosen_stage: str | None = Field(default=None, max_length=50)
     chosen_tale_number: int | None = Field(default=None, ge=1, le=4)
@@ -88,6 +90,8 @@ class RegisterWebhook(BaseModel):
             "lesson": "lesson_slug",
             "child": "child_name",
             "age": "child_age",
+            "birth_date": "child_birth_date",
+            "child_birth_date": "child_birth_date",
             "promocode": "promo_code",
             "promo": "promo_code",
         }
@@ -102,6 +106,14 @@ class RegisterWebhook(BaseModel):
                 out[key] = value
         return out
 
+    @model_validator(mode="after")
+    def derive_age_from_birth_date(self) -> RegisterWebhook:
+        if self.child_birth_date is not None:
+            from db.child_age import age_on_date
+
+            self.child_age = age_on_date(self.child_birth_date)
+        return self
+
     @field_validator("notification_channel", mode="before")
     @classmethod
     def normalize_channel(cls, value: object) -> object:
@@ -109,6 +121,23 @@ class RegisterWebhook(BaseModel):
             return "email"
         key = str(value).strip().lower()
         return _CHANNEL_ALIASES.get(key, key)
+
+    @field_validator("child_birth_date", mode="before")
+    @classmethod
+    def parse_birth_date(cls, value: object) -> object:
+        if value is None or value == "":
+            return None
+        if isinstance(value, date):
+            return value
+        raw = str(value).strip()
+        if not raw:
+            return None
+        for fmt in ("%Y-%m-%d", "%d.%m.%Y", "%d/%m/%Y"):
+            try:
+                return datetime.strptime(raw, fmt).date()  # type: ignore[name-defined]
+            except ValueError:
+                continue
+        raise ValueError("child_birth_date must be YYYY-MM-DD")
 
     @field_validator("module_id", "chosen_tale_number", "child_age", mode="before")
     @classmethod

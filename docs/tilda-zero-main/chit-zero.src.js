@@ -646,6 +646,7 @@ if (faqList) {
     parent_email: ['parent_email', 'Email', 'email'],
     parent_telegram: ['parent_telegram', 'Phone', 'phone', 'tel', 'your_phone'],
     child_name: ['child_name', 'childname'],
+    child_birth_date: ['child_birth_date', 'birth_date', 'childbirthdate'],
     child_age: ['child_age', 'childage'],
     promo_code: ['promo_code', 'promocode', 'promo'],
     notification_channel: ['notification_channel'],
@@ -654,6 +655,19 @@ if (faqList) {
     chosen_tale_number: ['chosen_tale_number']
   };
   var lastAppliedPromo = '';
+
+  function ageFromBirthDate(isoDate) {
+    if (!isoDate) return '';
+    var parts = String(isoDate).split('-');
+    if (parts.length !== 3) return '';
+    var birth = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    if (isNaN(birth.getTime())) return '';
+    var today = new Date();
+    var age = today.getFullYear() - birth.getFullYear();
+    var monthDelta = today.getMonth() - birth.getMonth();
+    if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < birth.getDate())) age -= 1;
+    return age > 0 ? String(age) : '';
+  }
 
   function setInputValue(dst, v) {
     if (!dst || dst.closest('#chit-main')) return;
@@ -1192,7 +1206,8 @@ if (faqList) {
     var parentEmail = src('parent_email');
     var parentTelegram = src('parent_telegram');
     var childName = src('child_name');
-    var childAge = src('child_age');
+    var childBirthDate = src('child_birth_date');
+    var childAge = ageFromBirthDate(childBirthDate) || src('child_age');
 
     form.querySelectorAll('input[type="email"]').forEach(function(el) {
       if (parentEmail) setInputValue(el, parentEmail);
@@ -1210,7 +1225,8 @@ if (faqList) {
 
     if (parentName && textInputs[0]) setInputValue(textInputs[0], parentName);
     if (childName && textInputs[1]) setInputValue(textInputs[1], childName);
-    if (childAge && textInputs[2]) setInputValue(textInputs[2], childAge);
+    if (childBirthDate && textInputs[2]) setInputValue(textInputs[2], childBirthDate);
+    else if (childAge && textInputs[2]) setInputValue(textInputs[2], childAge);
 
     form.querySelectorAll('input[type="hidden"]').forEach(function(el) {
       var n = el.name || '';
@@ -1226,10 +1242,14 @@ if (faqList) {
     pushField('chosen_tale_number', hidTale ? hidTale.value : '');
     pushField('notification_channel', 'email');
     pushField('promo_code', getPromoCodeValue());
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age'].forEach(function(name) {
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_birth_date'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (el) pushField(name, el.value);
     });
+    var birthEl = document.querySelector('#chit-main [name="child_birth_date"]');
+    if (birthEl && birthEl.value) {
+      pushField('child_age', ageFromBirthDate(birthEl.value));
+    }
     fillCartFormAggressive();
     pushCheckbox('legal_consent', true);
   }
@@ -1245,10 +1265,13 @@ if (faqList) {
   }
 
   function bindContactSync() {
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code'].forEach(function(name) {
+    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_birth_date', 'promo_code'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (!el) return;
-      function syncContact() { pushField(name, el.value); }
+      function syncContact() {
+        pushField(name, el.value);
+        if (name === 'child_birth_date') pushField('child_age', ageFromBirthDate(el.value));
+      }
       el.addEventListener('input', syncContact);
       el.addEventListener('change', syncContact);
     });
@@ -1279,7 +1302,8 @@ if (faqList) {
       parent_email: val('parent_email'),
       parent_telegram: val('parent_telegram'),
       child_name: val('child_name'),
-      child_age: val('child_age'),
+      child_birth_date: val('child_birth_date'),
+      child_age: ageFromBirthDate(val('child_birth_date')) || val('child_age'),
       promo_code: val('promo_code'),
       notification_channel: 'email'
     };

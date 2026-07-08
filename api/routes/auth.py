@@ -9,6 +9,7 @@ from api.deps import get_current_family, rate_limit
 from api.schemas import AuthChildSummary, AuthMeResponse, OtpRequestBody, OtpRequestResponse, OtpVerifyBody, OtpVerifyResponse
 from config.settings import JWT_SECRET, PUBLIC_BASE_URL
 from db import repository as repo
+from db.child_age import child_age_years
 from db.models import Child, Family
 from db.session import get_db
 from gamification.rules import level_from_points
@@ -23,7 +24,7 @@ def _child_summary(child: Child) -> AuthChildSummary:
     return AuthChildSummary(
         id=child.id,
         name=child.name,
-        age=child.age,
+        age=child_age_years(child),
         level=level_from_points(points),
         points=points,
         family_id=child.family_id,

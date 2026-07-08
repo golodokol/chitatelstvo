@@ -15,6 +15,7 @@
       <a href="#how-it-works">Как устроено</a>
       <a href="#programs">Программы</a>
       <a href="#tariffs">Тарифы</a>
+      <a href="#quiz">Подарок</a>
       <a href="#faq">Вопросы</a>
     </nav>
     <div class="site-header__right">
@@ -454,8 +455,8 @@
             <input type="text" id="chit_child_name" name="child_name" required>
           </div>
           <div class="form-field">
-            <label for="chit_child_age">Возраст</label>
-            <input type="number" id="chit_child_age" name="child_age" min="1" max="99">
+            <label for="chit_child_birth_date">День рождения ребёнка</label>
+            <input type="date" id="chit_child_birth_date" name="child_birth_date" autocomplete="bday">
           </div>
           <div class="form-field">
             <label for="chit_promo_code">Промокод</label>
@@ -471,7 +472,6 @@
         </div>
 
         <button type="button" class="btn btn--block btn--pay" id="chit-pay-btn" disabled>Записаться</button>
-        <p class="pay-note">После «Записаться» откроется корзина ST100 с оплатой. Данные выше подставятся автоматически.</p>
         <p class="form-consent">Нажимая «Записаться», вы соглашаетесь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">политикой конфиденциальности</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">офертой</a>.</p>
       </div>
     </div>

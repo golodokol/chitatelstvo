@@ -146,7 +146,7 @@
       [
         'module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug',
         'group_code', 'group', 'parent_name', 'parent_email', 'parent_telegram',
-        'child_name', 'child_age', 'promo_code', 'notification_channel'
+        'child_name', 'child_birth_date', 'child_age', 'promo_code', 'notification_channel'
       ].forEach(function (name) {
         var val = params.get(name);
         if (val !== null && val !== '') data[name] = val;
@@ -179,6 +179,7 @@
       parent_email: ['parent_email', 'Email', 'email'],
       parent_telegram: ['parent_telegram', 'Phone', 'phone', 'tel'],
       child_name: ['child_name'],
+      child_birth_date: ['child_birth_date', 'birth_date'],
       child_age: ['child_age'],
       promo_code: ['promo_code', 'promocode', 'promo'],
       notification_channel: ['notification_channel'],
@@ -359,7 +360,7 @@
       return typeof window.tcart__addProduct === 'function' && document.querySelector('.t706');
     }, function () {
       if (!data.notification_channel) data.notification_channel = 'email';
-      ['module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
+      ['module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_birth_date', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
         setField(name, data[name]);
       });
 

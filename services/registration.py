@@ -111,6 +111,7 @@ def process_registration(
         notification_channel=notification_channel,
         child_name=body.child_name,
         child_age=body.child_age,
+        child_birth_date=body.child_birth_date,
         telegram_chat_id=telegram_chat_id,
     )
 
@@ -160,6 +161,7 @@ def grant_enrollment_to_child(
         notification_channel=family.notification_channel,
         child_name=child.name,
         child_age=child.age,
+        child_birth_date=child.birth_date,
         module_id=module_id,
         chosen_stage=chosen_stage,
         chosen_tale_number=chosen_tale_number,

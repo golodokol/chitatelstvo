@@ -119,6 +119,7 @@ def resolve_or_create_family_child(
     notification_channel: str,
     child_name: str,
     child_age: int | None,
+    child_birth_date: date | None = None,
     telegram_chat_id: int | None = None,
 ) -> tuple[Family, Child, bool]:
     """Найти или создать семью и ребёнка по parent_email + child_name.
@@ -139,7 +140,10 @@ def resolve_or_create_family_child(
             notification_channel=notification_channel,
             telegram_chat_id=telegram_chat_id,
         )
-        if child_age is not None:
+        if child_birth_date is not None:
+            existing_child.birth_date = child_birth_date
+            existing_child.age = None
+        elif child_age is not None:
             existing_child.age = child_age
         db.commit()
         db.refresh(family)
@@ -158,7 +162,8 @@ def resolve_or_create_family_child(
         child = Child(
             family_id=family.id,
             name=name,
-            age=child_age,
+            age=child_age if child_birth_date is None else None,
+            birth_date=child_birth_date,
         )
         db.add(child)
         db.commit()
@@ -174,6 +179,7 @@ def resolve_or_create_family_child(
         notification_channel=notification_channel,
         child_name=name,
         child_age=child_age,
+        child_birth_date=child_birth_date,
         telegram_chat_id=telegram_chat_id,
     )
     return family, child, False
@@ -215,6 +221,7 @@ def register_family(
     notification_channel: str,
     child_name: str,
     child_age: int | None,
+    child_birth_date: date | None = None,
     telegram_chat_id: int | None = None,
 ) -> tuple[Family, Child]:
     family = Family(
@@ -231,7 +238,8 @@ def register_family(
     child = Child(
         family_id=family.id,
         name=child_name.strip(),
-        age=child_age,
+        age=child_age if child_birth_date is None else None,
+        birth_date=child_birth_date,
     )
     db.add(child)
     db.commit()

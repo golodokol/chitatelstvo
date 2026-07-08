@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from api.lesson_signing import build_lesson_url
 from config.settings import LESSON_WEEK_DAYS, MODULE_START_DATE, PUBLIC_BASE_URL, TELEGRAM_ENABLED
 from db import repository as repo
+from db.child_age import child_age_years
 from db.models import Child, Enrollment, Family
 from gamification.cabinet_ui import (
     build_child_cabinet,
@@ -22,7 +23,7 @@ from lessons.covers import enrich_lesson_link
 from lessons.enrollment_access import list_enrollment_tracks, list_lessons_for_enrollment
 from lessons.schedule import STAGE_LABELS, tariff_has_meetings
 from lessons.step_labels import event_type_label
-from notifications.telegram_bot import build_link_url
+from services.birthday_gift import maybe_grant_birthday_gift
 
 
 def group_lessons(lesson_links: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -90,6 +91,7 @@ def build_lesson_links_for_track(
 
 
 def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_BASE_URL) -> dict[str, Any]:
+    maybe_grant_birthday_gift(db, child)
     events = repo.get_child_events(db, child.id, limit=20)
     tale_ratings = repo.get_child_tale_ratings(db, child.id)
     chest_claims = repo.get_child_chest_claims(db, child.id)
@@ -125,7 +127,8 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
     return {
         "id": str(child.id),
         "name": child.name,
-        "age": child.age,
+        "age": child_age_years(child),
+        "birth_date": child.birth_date.isoformat() if child.birth_date else None,
         "level": level,
         "points": points,
         "badges": badges,

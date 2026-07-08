@@ -23,6 +23,7 @@ from api.admin_auth import (
 from api.schemas import RegisterWebhook
 from catalog.loader import get_module, load_modules
 from config.settings import ADMIN_PASSWORD, PUBLIC_BASE_URL, ROOT
+from db.child_age import child_age_years
 from db import repository as repo
 from db.session import get_db
 from lessons.enrollment_access import get_active_enrollments, normalize_stage
@@ -157,7 +158,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                         "channel": family.notification_channel,
                         "telegram_linked": "да" if family.telegram_chat_id else "нет",
                         "child_name": child.name,
-                        "child_age": str(child.age) if child.age is not None else "—",
+                        "child_age": str(child_age_years(child)) if child_age_years(child) is not None else "—",
                         "child_id": str(child.id),
                         "family_id": family_id,
                         "show_delete": show_delete,
@@ -189,7 +190,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                         "channel": family.notification_channel,
                         "telegram_linked": "да" if family.telegram_chat_id else "нет",
                         "child_name": child.name,
-                        "child_age": str(child.age) if child.age is not None else "—",
+                        "child_age": str(child_age_years(child)) if child_age_years(child) is not None else "—",
                         "child_id": str(child.id),
                         "family_id": family_id,
                         "show_delete": show_delete and idx == 0,

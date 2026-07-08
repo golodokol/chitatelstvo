@@ -66,8 +66,11 @@ def unlocked_week_number(
 
     manual_week = child.module_week or 1
     if manual_week > 1:
-        return max(auto_week, manual_week)
-    return auto_week
+        unlocked = max(auto_week, manual_week)
+    else:
+        unlocked = auto_week
+    bonus = child.bonus_unlock_weeks or 0
+    return unlocked + bonus if bonus > 0 else unlocked
 
 
 def is_lesson_unlocked(
