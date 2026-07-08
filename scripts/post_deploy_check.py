@@ -16,6 +16,7 @@ def _load_monitor():
     if not spec or not spec.loader:
         raise RuntimeError(f"Cannot load {path}")
     mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
     spec.loader.exec_module(mod)
     return mod
 
