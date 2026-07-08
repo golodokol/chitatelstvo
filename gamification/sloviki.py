@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from gamification.badge_assets import BADGE_ASSET_FILES
 from gamification.rules import EVENT_RULES
 from lessons.step_labels import LESSON_STEP_LABELS
 
@@ -212,7 +213,7 @@ def lesson_step_key(
     return "reads"
 
 
-def recent_event_slovik(events: list[Any]) -> dict[str, str] | None:
+def recent_event_slovik(events: list[Any]) -> dict[str, Any] | None:
     """Последнее событие для toast в кабинете."""
     if not events:
         return None
@@ -223,10 +224,20 @@ def recent_event_slovik(events: list[Any]) -> dict[str, str] | None:
         return None
     key = event_slovik_key(et, big=et in BIG_EVENT_SLOVIK)
     created = getattr(ev, "created_at", None)
+    badge = rule.get("badge")
+    pts = int(rule.get("points") or 0)
+    badge_image = None
+    if badge:
+        filename = BADGE_ASSET_FILES.get(badge)
+        if filename:
+            badge_image = f"/assets/{filename}"
     return {
         "key": key,
         "url": slovik_url(key),
         "event_type": et,
         "message": event_toast_message(et),
         "toast_id": f"{et}-{created.isoformat() if created else '0'}",
+        "points": pts,
+        "badge": badge,
+        "badge_image": badge_image,
     }

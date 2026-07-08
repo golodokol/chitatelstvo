@@ -28,32 +28,37 @@
     showTab('parent');
   }
 
-  function showSlovikToast(url, message) {
-    var toast = document.getElementById('slovik-toast');
-    if (!toast || !url) return;
-    var img = toast.querySelector('.chit-slovik-toast__img');
-    var text = toast.querySelector('.chit-slovik-toast__text');
-    if (img) img.src = url;
-    if (text) text.textContent = message || '';
-    toast.hidden = false;
-    toast.classList.add('is-visible');
-    clearTimeout(showSlovikToast._timer);
-    showSlovikToast._timer = setTimeout(function () {
-      toast.classList.remove('is-visible');
-      setTimeout(function () { toast.hidden = true; }, 300);
-    }, 4200);
+  function showRoomToast(data) {
+    if (!data || !data.toast_id) return;
+    var key = 'chit-slovik-toast-' + data.toast_id;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    if (!window.ChitSlovik || !window.ChitSlovik.showReward) return;
+    window.ChitSlovik.showReward({
+      eventType: data.event_type,
+      slovikKey: data.key,
+      slovikUrl: data.url,
+      message: data.message,
+      badge: data.badge,
+      badgeImage: data.badge_image,
+      points: data.points,
+    });
   }
 
   document.querySelectorAll('.chit-room-toast-data').forEach(function (node) {
     try {
-      var data = JSON.parse(node.textContent || '');
-      if (!data || !data.toast_id) return;
-      var key = 'chit-slovik-toast-' + data.toast_id;
-      if (sessionStorage.getItem(key)) return;
-      sessionStorage.setItem(key, '1');
-      showSlovikToast(data.url, data.message);
+      showRoomToast(JSON.parse(node.textContent || ''));
     } catch (e) {}
   });
+
+  var toast = document.getElementById('slovik-toast');
+  if (toast) {
+    toast.querySelector('[data-reward-dismiss]')?.addEventListener('click', function () {
+      if (window.ChitSlovik && window.ChitSlovik.hideToast) {
+        window.ChitSlovik.hideToast();
+      }
+    });
+  }
 
   document.querySelectorAll('button[data-chest-open]').forEach(function (btn) {
     btn.addEventListener('click', function () {

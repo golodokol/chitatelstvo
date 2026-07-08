@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260708h">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708i">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -636,9 +636,17 @@
     </div>
   </div>
 
-  <div class="chit-slovik-toast" id="slovik-toast" hidden aria-live="polite">
-    <img class="chit-slovik-toast__img" src="" alt="" width="56" height="56">
-    <p class="chit-slovik-toast__text"></p>
+  <div class="chit-reward-toast" id="slovik-toast" hidden aria-live="polite">
+    <div class="chit-reward-toast__backdrop" data-reward-dismiss></div>
+    <div class="chit-reward-toast__card" role="status">
+      <p class="chit-reward-toast__kicker"></p>
+      <div class="chit-reward-toast__hero">
+        <img class="chit-reward-toast__badge" alt="" width="120" height="120" hidden>
+        <img class="chit-reward-toast__slovik" alt="Словик" width="84" height="84">
+      </div>
+      <p class="chit-reward-toast__title"></p>
+      <p class="chit-reward-toast__sub"></p>
+    </div>
   </div>
 
   <div class="chit-modal" id="badge-modal" hidden>
@@ -674,6 +682,7 @@
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
   <script src="/static/chest_reveal.js?v=20260707h"></script>
-  <script src="/static/progress_cabinet.js"></script>
+  <script src="/static/lesson_slovik.js?v=20260708e"></script>
+  <script src="/static/progress_cabinet.js?v=20260708e"></script>
 </body>
 </html>
