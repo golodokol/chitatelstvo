@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="icon" href="/static/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="/static/favicon.png">
   <link rel="stylesheet" href="/static/chit-student.css?v=20260708j">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
@@ -425,6 +423,10 @@
         wrong.push(num);
       });
       return { wrong: wrong, partial: partial };
+    }
+
+    function formatRetellingVerdict(passed) {
+      return passed ? 'Засчитано' : 'Не верно, попробуй еще раз';
     }
 
     function formatQuizVerdict(data, quiz, passed, formId) {
@@ -1278,7 +1280,7 @@
       if (failedStatus) {
         const revealCorrect = quizRevealCorrect(formId, data.results);
         markQuizResults(formId, data.results, revealCorrect);
-        showQuizVerdict(formId, 'err', formatQuizVerdict(data, quiz, false, formId));
+        showQuizVerdict(formId, 'err', formatRetellingVerdict(false));
         document.getElementById(btnId).disabled = false;
         syncQuizButtons();
         return;
@@ -1288,7 +1290,7 @@
         clearQuizWrongAttempts(formId);
       }
       markQuizResults(formId, data.results, revealCorrect);
-      showQuizVerdict(formId, 'ok', formatQuizVerdict(data, quiz, true, formId));
+      showQuizVerdict(formId, 'ok', formatRetellingVerdict(true));
       markDone('step-retelling');
       lessonState.retellingDone = true;
       syncQuizButtons();
