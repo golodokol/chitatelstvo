@@ -13,7 +13,8 @@ LEVELS = [
 ]
 
 # Пороги Словиков для уровней (индекс = уровень в LEVELS).
-LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 18, 28]
+# Мастер слова ~4 сказки, Литературный детектив ~8 сказок.
+LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 40, 70]
 
 
 def level_from_points(points: int) -> str:
