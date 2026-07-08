@@ -67,12 +67,18 @@
       },
       {
         "id": "rp5",
-        "text": "Иван-царевич должен был спасти царевну от Кащея бессмертного",
+        "text": "Лягушка оказалась доброй и умной Царевной",
+        "image": "/static/lessons/tsarevna-lyagushka/reading/reading-04b.png",
+        "alt": "Лягушка — добрая и умная Царевна"
+      },
+      {
+        "id": "rp6",
+        "text": "Иван-царевич должен был спасти царевну от Кощея бессмертного",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-05.png",
         "alt": "Иван сражается с Кощеем"
       },
       {
-        "id": "rp6",
+        "id": "rp7",
         "text": "Они вернулись домой и стали жить счастливо",
         "image": "/static/lessons/tsarevna-lyagushka/reading/reading-06.png",
         "alt": "Счастливый конец сказки"
