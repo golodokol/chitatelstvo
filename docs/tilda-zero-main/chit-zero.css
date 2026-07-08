@@ -650,7 +650,7 @@
       position: sticky;
       top: 0;
       height: 100vh;
-      min-height: 760px;
+      min-height: 840px;
       text-align: center;
       padding: 48px 8% 64px 24px;
       display: flex; align-items: center; justify-content: flex-end;
@@ -658,8 +658,8 @@
     }
     .final-cta__bg {
       position: absolute; inset: 0; z-index: 0;
-      background: url('https://api.chitatelstvo.ru/assets/cta-fairy-tale-bg.png') center / cover no-repeat;
-      transform: scale(1.06);
+      background: url('https://api.chitatelstvo.ru/assets/cta-fairy-tale-bg.png') center bottom / cover no-repeat;
+      transform: scale(1.04);
       will-change: transform;
     }
     .final-cta__frame {
@@ -683,7 +683,7 @@
     @media (max-width: 768px) {
       .final-cta-scroller { height: max(120vh, 860px); }
       .final-cta {
-        min-height: 620px;
+        min-height: 700px;
         padding: 48px 20px 56px;
         justify-content: center;
         align-items: flex-start;
@@ -692,12 +692,12 @@
     }
     @media (max-width: 560px) {
       .final-cta-scroller { height: max(115vh, 780px); }
-      .final-cta { min-height: 540px; }
+      .final-cta { min-height: 620px; }
       .final-cta__frame { padding: 28px 24px 24px; }
     }
     @media (prefers-reduced-motion: reduce) {
       .final-cta-scroller { height: auto; }
-      .final-cta { position: relative; height: auto; min-height: 760px; }
+      .final-cta { position: relative; height: auto; min-height: 840px; }
       .final-cta__bg { transform: none !important; }
       .final-cta__frame { opacity: 1; transform: none; transition: none; }
     }
@@ -1542,7 +1542,7 @@
       .final-cta-scroller { height: auto !important; }
       .final-cta {
         position: relative !important;
-        min-height: 0 !important;
+        min-height: 620px !important;
         height: auto !important;
         padding: 48px 16px 56px;
       }
@@ -1550,7 +1550,10 @@
         opacity: 1 !important;
         transform: none !important;
       }
-      .final-cta__bg { transform: none !important; }
+      .final-cta__bg {
+        transform: none !important;
+        background-position: center bottom !important;
+      }
 
       .pull-quote {
         flex-direction: column;
