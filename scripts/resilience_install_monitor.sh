@@ -10,7 +10,7 @@ CRON_TAG="chitatelstvo-monitor"
 mkdir -p "$LOG_DIR" "$STATE_DIR"
 chmod 755 "$LOG_DIR" "$STATE_DIR"
 
-MONITOR_CMD="cd ${PROJECT_DIR} && docker compose exec -T api python scripts/monitor_health.py >> ${LOG_DIR}/monitor.log 2>&1"
+MONITOR_CMD="cd ${PROJECT_DIR} && PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /usr/bin/python3 scripts/monitor_health.py >> ${LOG_DIR}/monitor.log 2>&1"
 CRON_LINE="*/10 * * * * ${MONITOR_CMD} # ${CRON_TAG}"
 
 TMP="$(mktemp)"
