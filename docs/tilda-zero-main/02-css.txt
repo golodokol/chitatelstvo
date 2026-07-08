@@ -216,6 +216,11 @@
       max-width: 100%;
       height: auto;
     }
+    #chit-main .founder__photo {
+      height: 100% !important;
+      min-height: 100%;
+      max-height: none;
+    }
     .section__chapter {
       display: block; text-align: center;
       font-size: 14px; font-weight: 600;
@@ -1443,7 +1448,7 @@
       background-color: var(--cream);
       background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
       background-repeat: repeat;
-      background-position: center -72px;
+      background-position: center top;
       background-size: 420px;
     }
     .chit-meadow-bg::before {
@@ -1617,6 +1622,7 @@
       overflow: hidden;
       border: 4px solid var(--accent-pale);
       box-shadow: 0 8px 28px rgba(91,127,166,0.22);
+      background: #3d4a56;
     }
     .founder__photo {
       display: block;
@@ -1636,9 +1642,9 @@
       object-position: center 42%;
     }
     .founder__photo--anastasia {
-      transform: scale(1.14) translateY(-5%);
-      transform-origin: center 32%;
-      object-position: center 38%;
+      transform: scale(1.32) translateY(-1%);
+      transform-origin: center 30%;
+      object-position: center 18%;
     }
     .founder__body { flex: 1; min-width: 0; width: 100%; }
     .founder__name {
