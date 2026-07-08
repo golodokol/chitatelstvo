@@ -300,5 +300,25 @@ def main() -> int:
     return 1 if failed else 0
 
 
+def send_test_email() -> int:
+    cfg = load_env_file(ROOT / ".env")
+    recipients = alert_emails(cfg)
+    body = (
+        "Тестовое письмо мониторинга Читательства.\n\n"
+        "Если вы видите это сообщение, SMTP и алерты настроены правильно.\n\n"
+        "Проверки: API /health, статика, Docker.\n"
+        "Письма о сбоях приходят автоматически (каждые 10 минут).\n"
+    )
+    send_email(cfg, recipients, "Тест: мониторинг Читательства", body)
+    print(f"TEST_EMAIL_SENT to {', '.join(recipients)}")
+    return 0
+
+
 if __name__ == "__main__":
+    if "--test-email" in sys.argv:
+        try:
+            raise SystemExit(send_test_email())
+        except Exception as exc:  # noqa: BLE001
+            print(f"TEST_EMAIL_FAILED: {exc}", file=sys.stderr)
+            raise SystemExit(2) from exc
     raise SystemExit(main())
