@@ -5,6 +5,7 @@ AUTO_LESSON_PLAYER = frozenset(
         "video_unlock",
         "lesson_complete",
         "emotion_quiz",
+        "reading_practice",
         "comprehension",
         "meaning_analysis",
         "retelling",

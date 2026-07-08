@@ -2770,3 +2770,173 @@ body.chit-cabinet--parent {
   .chit-emotion-chips { display: flex; }
 }
 
+/* —— Практика чтения (1 класс) —— */
+.chit-step-reading {
+  border-color: #e8dcc8;
+  background: linear-gradient(180deg, #fffdf8 0%, #fff 100%);
+}
+
+.chit-reading-intro {
+  color: var(--text-warm);
+  font-size: 1.02rem;
+  line-height: 1.55;
+  margin: 0 0 12px;
+}
+
+.chit-reading-progress {
+  min-height: 1.2em;
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--blue-deep);
+}
+
+.chit-reading-cards {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 16px;
+}
+
+.chit-reading-card {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 4px 14px rgba(91, 70, 40, 0.06);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.chit-reading-card.is-read {
+  border-color: #9bc89a;
+  background: linear-gradient(180deg, #f6fff4 0%, #fff 100%);
+  box-shadow: 0 6px 16px rgba(72, 128, 70, 0.12);
+}
+
+.chit-reading-card.is-incomplete {
+  border-color: #e0a8a8;
+  animation: chit-reading-nudge 0.35s ease;
+}
+
+@keyframes chit-reading-nudge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.chit-reading-card__num {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--blue-deep);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid var(--border);
+}
+
+.chit-reading-card__img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #faf7f2;
+}
+
+.chit-reading-card__text {
+  margin: 0;
+  font-family: 'Literata', Georgia, serif;
+  font-size: clamp(1.05rem, 2.8vw, 1.25rem);
+  line-height: 1.45;
+  color: var(--text-warm);
+  text-align: center;
+}
+
+.chit-reading-card__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 2px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px dashed #c9b99a;
+  background: #fffaf2;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.chit-reading-card.is-read .chit-reading-card__check {
+  border-style: solid;
+  border-color: #9bc89a;
+  background: #eef8eb;
+}
+
+.chit-reading-card__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.chit-reading-card__mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid #c9b99a;
+  background: #fff;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.chit-reading-card__check:has(input:checked) .chit-reading-card__mark {
+  border-color: #5a9a57;
+  background: #5a9a57;
+}
+
+.chit-reading-card__check:has(input:checked) .chit-reading-card__mark::after {
+  content: '';
+  width: 6px;
+  height: 11px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.chit-reading-card__caption {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--blue-deep);
+}
+
+.chit-step-reading .chit-btn {
+  width: 100%;
+  max-width: 320px;
+}
+
+@media (min-width: 640px) {
+  .chit-reading-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chit-reading-card:nth-child(6):last-child {
+    grid-column: 1 / -1;
+    max-width: 520px;
+    justify-self: center;
+    width: 100%;
+  }
+}

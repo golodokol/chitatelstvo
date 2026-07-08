@@ -52,6 +52,13 @@ EVENT_RULES: dict[str, dict] = {
         "badge": None,
         "level": None,
         "reward_type": "points",
+        "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['reading_practice']}» или «{LESSON_STEP_LABELS['comprehension_quiz']}».",
+    },
+    "reading_practice": {
+        "points": 2,
+        "badge": "Читатель",
+        "level": "Юный читатель",
+        "reward_type": "badge",
         "next_action": f"Перейти к шагу «{LESSON_STEP_LABELS['comprehension_quiz']}».",
     },
     "comprehension": {
@@ -207,6 +214,9 @@ def _parent_progress_line(
         ),
         "emotion_quiz": (
             f"{child_name} прошёл(а) шаг «{LESSON_STEP_LABELS['emotion_quiz']}»{tale}.{pts}"
+        ),
+        "reading_practice": (
+            f"{child_name} прочитал(а) сказку по предложениям{tale}.{badge_part}{pts}"
         ),
         "comprehension": (
             f"{child_name} прошёл(а) шаг «{LESSON_STEP_LABELS['comprehension_quiz']}»{tale}.{badge_part}{pts}"

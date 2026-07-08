@@ -170,6 +170,25 @@ def retelling_uses_images(group_code: str | None) -> bool:
     return (group_code or "grade-1") in RETELLING_IMAGE_GROUPS
 
 
+def reading_practice_for_client(block: dict[str, Any]) -> dict[str, Any]:
+    """Карточки практики чтения — без серверных секретов."""
+    cards = []
+    for card in block.get("cards") or []:
+        cards.append(
+            {
+                "id": card.get("id"),
+                "text": card.get("text", ""),
+                "image": card.get("image"),
+                "alt": card.get("alt") or card.get("text", ""),
+            }
+        )
+    return {
+        "title": block.get("title") or lesson_step_label("reading_practice"),
+        "intro": block.get("intro", ""),
+        "cards": cards,
+    }
+
+
 def retelling_quiz_for_client(
     quiz: dict[str, Any],
     *,

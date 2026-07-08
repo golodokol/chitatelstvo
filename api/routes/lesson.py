@@ -14,7 +14,7 @@ from api.lesson_signing import verify_lesson_access
 from api.test_lesson_auth import verify_test_lesson_key
 from config.settings import ROOT, VIDEO_BADGE_THRESHOLD, VIDEO_UNLOCK_SECONDS
 from db.session import get_db
-from lessons.step_labels import lesson_step_badges_payload, lesson_step_labels_payload
+from lessons.step_labels import lesson_step_badges_for_lesson, lesson_step_labels_payload
 from services.creative_upload import handle_creative_upload
 from services.lesson_player import (
     build_lesson_json,
@@ -22,6 +22,7 @@ from services.lesson_player import (
     handle_emotion_quiz_submit,
     handle_manual_mark,
     handle_quiz_submit,
+    handle_reading_practice_submit,
     handle_retelling_submit,
     handle_tale_rating,
     handle_video_unlock,
@@ -68,6 +69,10 @@ class EmotionQuizSubmitBody(LessonAuth):
 
 class RetellingSubmitBody(LessonAuth):
     answers: dict[str, Any]
+
+
+class ReadingPracticeSubmitBody(LessonAuth):
+    cards_read: list[str]
 
 
 class ManualMarkBody(LessonAuth):
@@ -136,6 +141,7 @@ def lesson_page(
             "video_badge_threshold": VIDEO_BADGE_THRESHOLD,
             "video_src": payload["video"]["src"],
             "comprehension_quiz": payload["comprehension_quiz"],
+            "reading_practice": payload.get("reading_practice"),
             "meaning_quiz": payload["meaning_quiz"],
             "retelling_quiz": payload["retelling_quiz"],
             "emotion_quiz": payload["emotion_quiz"],
@@ -147,8 +153,27 @@ def lesson_page(
             "progress": payload["progress"],
             "test_key": test_key if test_bypass else None,
             "step_labels": lesson_step_labels_payload(),
-            "step_badges": lesson_step_badges_payload(),
+            "step_badges": lesson_step_badges_for_lesson(payload["lesson"]),
         },
+    )
+
+
+@router.post("/api/lesson/{slug}/reading-practice")
+def reading_practice_submit(
+    slug: str,
+    body: ReadingPracticeSubmitBody,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child_id = _verify_access(body, slug)
+    get_child_or_404(db, child_id)
+    return handle_reading_practice_submit(
+        db,
+        child_id=child_id,
+        slug=slug,
+        cards_read=body.cards_read,
+        test_key=body.test_key,
     )
 
 

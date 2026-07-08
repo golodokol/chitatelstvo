@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260708i">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708j">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -52,6 +52,18 @@
       <button type="button" class="chit-btn" id="btn-emotion">Проверить</button>
       <div id="emotion-msg"></div>
       <p class="chit-hint chit-emotion-next-hint">Дальше на странице — мини-тест и задания по сказке (прокрутите вниз).</p>
+    </div>
+    {% endif %}
+
+    {% if reading_practice %}
+    <div class="chit-card chit-step chit-step-reading" id="step-reading">
+      <div class="chit-badge-step">{{ step_badges.reading_practice }}</div>
+      <h2>{{ step_labels.reading_practice }}</h2>
+      <p class="chit-reading-intro" id="reading-intro"></p>
+      <p class="chit-reading-progress" id="reading-progress" aria-live="polite"></p>
+      <div class="chit-reading-cards" id="reading-cards"></div>
+      <button type="button" class="chit-btn" id="btn-reading" disabled>Я прочитал всё!</button>
+      <div id="reading-msg" class="chit-msg" style="display:none" aria-live="polite"></div>
     </div>
     {% endif %}
 
@@ -143,7 +155,7 @@
   </div>
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
-  <script src="/static/lesson_slovik.js?v=20260708c"></script>
+  <script src="/static/lesson_slovik.js?v=20260708d"></script>
   <script src="/static/emotion_wheel.js?v=20260708c"></script>
   <script src="/static/lesson_quiz.js?v=20260708b"></script>
   <script>
@@ -158,6 +170,7 @@
       video: {{ lesson.video|tojson }},
       videoSrc: {{ video_src|tojson }},
       emotion: {{ emotion_quiz|tojson }},
+      reading: {{ reading_practice|tojson }},
       comprehension: {{ comprehension_quiz|tojson }},
       meaning: {{ meaning_quiz|tojson }},
       retelling: {{ retelling_quiz|tojson }},
@@ -174,6 +187,7 @@
       videoUnlocked: !!(CFG.progress && CFG.progress.video_unlocked),
       videoDone: !!(CFG.progress && CFG.progress.video_done),
       emotionDone: !!(CFG.progress && CFG.progress.emotion_done),
+      readingDone: !!(CFG.progress && CFG.progress.reading_done),
       comprehensionDone: !!(CFG.progress && CFG.progress.comprehension_done),
       meaningDone: !!(CFG.progress && CFG.progress.meaning_done),
       retellingDone: !!(CFG.progress && CFG.progress.retelling_done),
@@ -190,6 +204,7 @@
       var key = ChitSlovik.nextStepKey(
         {
           hasEmotion: !!CFG.emotion,
+          hasReading: !!CFG.reading,
           hasComprehension: !!CFG.comprehension,
           hasMeaning: !!CFG.meaning,
           hasRetelling: !!CFG.retelling,
@@ -203,6 +218,7 @@
       var labels = CFG.stepLabels || {};
       var map = {
         reads: 'video',
+        reading: 'reading_practice',
         emotion: 'emotion_quiz',
         writes: 'comprehension_quiz',
         dreams: 'tasks',
@@ -661,6 +677,8 @@
       const videoOk = lessonState.videoUnlocked || !!CFG.testKey;
       if (!videoOk) return false;
       if (CFG.emotion && !lessonState.emotionDone) return false;
+      if (step === 'reading' && CFG.emotion && !lessonState.emotionDone) return false;
+      if (step === 'comprehension' && CFG.reading && !lessonState.readingDone) return false;
       if (step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone) return false;
       if (step === 'retelling' && CFG.meaning && !lessonState.meaningDone) return false;
       return true;
@@ -677,19 +695,25 @@
       } else {
         btn.disabled = true;
         btn.setAttribute('disabled', 'disabled');
-        btn.title = step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone
+        btn.title = step === 'comprehension' && CFG.reading && !lessonState.readingDone
+          ? 'Сначала прочитайте сказку по предложениям выше'
+          : step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone
           ? 'Сначала отправьте мини-тест выше'
           : step === 'retelling' && CFG.meaning && !lessonState.meaningDone
           ? 'Сначала отправьте задания по сказке выше'
+          : step === 'reading' && CFG.emotion && !lessonState.emotionDone
+          ? 'Сначала выполните задание про эмоции выше'
           : 'Сначала выполните шаги урока выше';
       }
       btn.classList.toggle('is-ready', prereq && complete);
     }
 
     function syncQuizButtons() {
+      const btnRead = document.getElementById('btn-reading');
       const btnComp = document.getElementById('btn-comprehension');
       const btnMean = document.getElementById('btn-meaning');
       const btnRet = document.getElementById('btn-retelling');
+      updateReadingSubmitButton(btnRead, lessonState.readingDone);
       updateQuizSubmitButton(btnComp, 'comprehension', 'form-comprehension', lessonState.comprehensionDone);
       updateQuizSubmitButton(btnMean, 'meaning', 'form-meaning', lessonState.meaningDone);
       updateQuizSubmitButton(btnRet, 'retelling', 'form-retelling', lessonState.retellingDone);
@@ -1173,6 +1197,10 @@
     }
 
     async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {
+      if (quizType === 'comprehension' && CFG.reading && !lessonState.readingDone) {
+        showQuizVerdict(formId, 'err', 'Сначала прочитайте сказку по предложениям в блоке «' + (CFG.stepLabels.reading_practice || 'Практика чтения') + '» выше.');
+        return;
+      }
       if (quizType === 'meaning_analysis' && CFG.comprehension && !lessonState.comprehensionDone) {
         showQuizVerdict(formId, 'err', 'Сначала отправьте ответы в блоке «' + (CFG.stepLabels.comprehension_quiz || 'Мини-тест по сказке') + '» выше.');
         return;
@@ -1263,6 +1291,161 @@
       lessonState.retellingDone = true;
       syncQuizButtons();
       onReward('retelling', data.status);
+    }
+
+    const readingChecked = new Set();
+
+    function readingCardsComplete() {
+      if (!CFG.reading || !CFG.reading.cards) return false;
+      return CFG.reading.cards.every(function (card) {
+        return readingChecked.has(card.id);
+      });
+    }
+
+    function updateReadingProgress() {
+      const el = document.getElementById('reading-progress');
+      if (!el || !CFG.reading || !CFG.reading.cards) return;
+      const total = CFG.reading.cards.length;
+      const done = readingChecked.size;
+      el.textContent = done ? ('Прочитано: ' + done + ' из ' + total) : '';
+    }
+
+    function updateReadingSubmitButton(btn, done) {
+      if (!btn || done) return;
+      const prereq = quizPrerequisitesMet('reading');
+      const complete = readingCardsComplete();
+      if (prereq) {
+        btn.disabled = !complete;
+        if (complete) {
+          btn.removeAttribute('disabled');
+        } else {
+          btn.setAttribute('disabled', 'disabled');
+        }
+        btn.title = complete ? '' : 'Отметь «Я прочитал!» у каждого предложения';
+      } else {
+        btn.disabled = true;
+        btn.setAttribute('disabled', 'disabled');
+        btn.title = CFG.emotion && !lessonState.emotionDone
+          ? 'Сначала выполните задание про эмоции выше'
+          : 'Сначала посмотрите видео-урок выше';
+      }
+      btn.classList.toggle('is-ready', prereq && complete);
+    }
+
+    function showReadingMsg(text, kind) {
+      const el = document.getElementById('reading-msg');
+      if (!el) return;
+      el.textContent = text || '';
+      el.className = 'chit-msg' + (kind ? ' ' + kind : '');
+      el.style.display = text ? 'block' : 'none';
+    }
+
+    function initReadingPractice() {
+      if (!CFG.reading) return;
+      const intro = document.getElementById('reading-intro');
+      const root = document.getElementById('reading-cards');
+      const btn = document.getElementById('btn-reading');
+      if (intro) intro.textContent = CFG.reading.intro || '';
+      if (!root) return;
+      root.innerHTML = '';
+      (CFG.reading.cards || []).forEach(function (card, index) {
+        const article = document.createElement('article');
+        article.className = 'chit-reading-card';
+        article.dataset.cardId = card.id;
+
+        const num = document.createElement('span');
+        num.className = 'chit-reading-card__num';
+        num.textContent = String(index + 1);
+        article.appendChild(num);
+
+        if (card.image) {
+          const img = document.createElement('img');
+          img.className = 'chit-reading-card__img';
+          img.src = card.image;
+          img.alt = card.alt || card.text || '';
+          img.loading = index < 2 ? 'eager' : 'lazy';
+          article.appendChild(img);
+        }
+
+        const text = document.createElement('p');
+        text.className = 'chit-reading-card__text';
+        text.textContent = card.text || '';
+        article.appendChild(text);
+
+        const label = document.createElement('label');
+        label.className = 'chit-reading-card__check';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.className = 'chit-reading-card__input';
+        input.value = card.id;
+        input.addEventListener('change', function () {
+          if (lessonState.readingDone) return;
+          if (input.checked) {
+            readingChecked.add(card.id);
+            article.classList.add('is-read');
+          } else {
+            readingChecked.delete(card.id);
+            article.classList.remove('is-read');
+          }
+          updateReadingProgress();
+          updateReadingSubmitButton(btn, lessonState.readingDone);
+        });
+        const mark = document.createElement('span');
+        mark.className = 'chit-reading-card__mark';
+        mark.setAttribute('aria-hidden', 'true');
+        const caption = document.createElement('span');
+        caption.className = 'chit-reading-card__caption';
+        caption.textContent = 'Я прочитал!';
+        label.appendChild(input);
+        label.appendChild(mark);
+        label.appendChild(caption);
+        article.appendChild(label);
+        root.appendChild(article);
+      });
+      updateReadingProgress();
+      updateReadingSubmitButton(btn, lessonState.readingDone);
+    }
+
+    function lockReadingPractice() {
+      document.querySelectorAll('#reading-cards .chit-reading-card__input').forEach(function (input) {
+        input.disabled = true;
+      });
+      const btn = document.getElementById('btn-reading');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Уже выполнено';
+      }
+    }
+
+    async function submitReadingPractice() {
+      if (!quizPrerequisitesMet('reading')) {
+        showReadingMsg('Сначала выполните шаги урока выше.', 'err');
+        return;
+      }
+      if (!readingCardsComplete()) {
+        showReadingMsg('Отметь «Я прочитал!» у каждого предложения.', 'err');
+        document.querySelectorAll('#reading-cards .chit-reading-card:not(.is-read)').forEach(function (card) {
+          card.classList.add('is-incomplete');
+        });
+        updateReadingSubmitButton(document.getElementById('btn-reading'), lessonState.readingDone);
+        return;
+      }
+      const btn = document.getElementById('btn-reading');
+      if (btn) btn.disabled = true;
+      const cardsRead = CFG.reading.cards.map(function (card) { return card.id; });
+      const data = await postJson('/api/lesson/' + CFG.slug + '/reading-practice', authBody({ cards_read: cardsRead }));
+      if (!data || (data.status !== 'accepted' && data.status !== 'duplicate')) {
+        const errDetail = data && (data.message || data.detail);
+        showReadingMsg(typeof errDetail === 'string' ? errDetail : 'Не удалось отправить. Попробуйте ещё раз.', 'err');
+        updateReadingSubmitButton(btn, lessonState.readingDone);
+        return;
+      }
+      lessonState.readingDone = true;
+      markDone('step-reading');
+      lockReadingPractice();
+      showReadingMsg(data.message || 'Отлично! Бейдж «Читатель» твой.', 'ok');
+      syncQuizButtons();
+      onReward('reading_practice', data.status);
     }
 
     function updateRatingValue() {
@@ -1422,6 +1605,18 @@
     function initLessonProgress() {
       if (lessonState.videoUnlocked || lessonState.videoDone) markDone('step-video');
       if (lessonState.emotionDone) markDone('step-emotion');
+      if (lessonState.readingDone) {
+        markDone('step-reading');
+        if (CFG.reading && CFG.reading.cards) {
+          CFG.reading.cards.forEach(function (card) { readingChecked.add(card.id); });
+        }
+        document.querySelectorAll('#reading-cards .chit-reading-card').forEach(function (card) {
+          card.classList.add('is-read');
+          const input = card.querySelector('.chit-reading-card__input');
+          if (input) input.checked = true;
+        });
+        lockReadingPractice();
+      }
       if (lessonState.comprehensionDone) markDone('step-comprehension');
       if (lessonState.meaningDone) markDone('step-meaning');
       if (lessonState.retellingDone) markDone('step-retelling');
@@ -1442,6 +1637,11 @@
           submitEmotionQuiz();
         });
         initEmotionWheel();
+      }
+
+      if (CFG.reading) {
+        initReadingPractice();
+        bindClick('btn-reading', submitReadingPractice);
       }
 
       if (CFG.comprehension) {

@@ -2,6 +2,7 @@
   var STEP_HINTS = {
     reads: 'Смотрим видео-урок',
     emotion: 'Изучаем эмоциональный интеллект',
+    reading: 'Практика чтения',
     writes: 'Мини-тест по сказке',
     dreams: 'Выполняем задания',
     retelling: 'Пробуем пересказать сказку',
@@ -13,6 +14,7 @@
   var EVENT_POINTS = {
     lesson_complete: 2,
     emotion_quiz: 1,
+    reading_practice: 2,
     comprehension: 2,
     meaning_analysis: 2,
     retelling: 2,
@@ -23,6 +25,7 @@
   var EVENT_SLOVIK = {
     lesson_complete: 'reads',
     emotion_quiz: 'emotion',
+    reading_practice: 'reading',
     comprehension: 'writes',
     meaning_analysis: 'dreams',
     retelling: 'retelling',
@@ -71,6 +74,7 @@
         var map = {
           reads: 'video',
           emotion: 'emotion_quiz',
+          reading: 'reading_practice',
           writes: 'comprehension_quiz',
           dreams: 'tasks',
           retelling: 'retelling',
@@ -111,9 +115,14 @@
     if (state.meaningDone && cfg.hasRetelling) return 'retelling';
     if (state.comprehensionDone && !cfg.hasMeaning) return 'grows';
     if (state.comprehensionDone) return 'dreams';
-    if (state.emotionDone && cfg.hasComprehension) return 'writes';
+    if (state.readingDone && cfg.hasComprehension) return 'writes';
+    if (state.readingDone) return 'grows';
+    if (state.emotionDone && (cfg.hasReading || cfg.hasComprehension)) {
+      return cfg.hasReading ? 'reading' : 'writes';
+    }
     if (state.emotionDone) return 'grows';
     if (state.videoUnlocked && cfg.hasEmotion) return 'emotion';
+    if (state.videoUnlocked && cfg.hasReading) return 'reading';
     if (state.videoUnlocked && cfg.hasComprehension) return 'writes';
     if (state.videoUnlocked) return 'grows';
     return 'reads';

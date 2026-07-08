@@ -5,6 +5,7 @@ from __future__ import annotations
 LESSON_STEP_LABELS: dict[str, str] = {
     "video": "Смотрим видео-урок",
     "emotion_quiz": "Изучаем эмоциональный интеллект",
+    "reading_practice": "Практика чтения",
     "comprehension_quiz": "Мини-тест по сказке",
     "tasks": "Выполняем задания",
     "retelling": "Пробуем пересказать сказку",
@@ -14,16 +15,29 @@ LESSON_STEP_LABELS: dict[str, str] = {
 LESSON_STEP_NUMBERS: dict[str, int] = {
     "video": 1,
     "emotion_quiz": 2,
-    "comprehension_quiz": 3,
-    "tasks": 4,
-    "retelling": 5,
-    "creative": 6,
+    "reading_practice": 3,
+    "comprehension_quiz": 4,
+    "tasks": 5,
+    "retelling": 6,
+    "creative": 7,
 }
+
+# Порядок блоков на странице урока (block_key → step_key)
+LESSON_BLOCKS_IN_ORDER: list[tuple[str, str]] = [
+    ("video", "video"),
+    ("emotion_quiz", "emotion_quiz"),
+    ("reading_practice", "reading_practice"),
+    ("comprehension_quiz", "comprehension_quiz"),
+    ("meaning_quiz", "tasks"),
+    ("retelling_quiz", "retelling"),
+    ("creative_tasks", "creative"),
+]
 
 # Ключ блока в JSON урока → ключ шага в LESSON_STEP_LABELS
 LESSON_BLOCK_TO_STEP: dict[str, str] = {
     "video": "video",
     "emotion_quiz": "emotion_quiz",
+    "reading_practice": "reading_practice",
     "comprehension_quiz": "comprehension_quiz",
     "meaning_quiz": "tasks",
     "retelling_quiz": "retelling",
@@ -40,6 +54,23 @@ def lesson_step_badge(step_key: str) -> str:
     return f"Шаг {number}"
 
 
+def lesson_has_block(lesson: dict, block_key: str) -> bool:
+    if block_key == "video":
+        return bool(lesson.get("video"))
+    return bool(lesson.get(block_key))
+
+
+def lesson_step_badges_for_lesson(lesson: dict) -> dict[str, str]:
+    """Нумерация шагов только для блоков, присутствующих в уроке."""
+    badges: dict[str, str] = {}
+    n = 0
+    for block_key, step_key in LESSON_BLOCKS_IN_ORDER:
+        if lesson_has_block(lesson, block_key):
+            n += 1
+            badges[step_key] = f"Шаг {n}"
+    return badges
+
+
 def lesson_step_badges_payload() -> dict[str, str]:
     return {key: lesson_step_badge(key) for key in LESSON_STEP_LABELS}
 
@@ -53,6 +84,7 @@ def lesson_step_label(block_key: str) -> str:
 EVENT_TYPE_TO_STEP: dict[str, str] = {
     "lesson_complete": "video",
     "emotion_quiz": "emotion_quiz",
+    "reading_practice": "reading_practice",
     "comprehension": "comprehension_quiz",
     "meaning_analysis": "tasks",
     "retelling": "retelling",
