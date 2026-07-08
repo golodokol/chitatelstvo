@@ -184,6 +184,15 @@
       syncUI(false);
     }
 
+    /** Снять выбор и подсветку после неудачной проверки — чистое колесо для повтора. */
+    function resetSelection() {
+      selected.clear();
+      container.querySelectorAll('.chit-emotion-wheel__sector, .chit-emotion-chip').forEach(function (node) {
+        node.classList.remove('is-correct', 'is-wrong');
+      });
+      syncUI(true);
+    }
+
     syncUI(false);
 
     return {
@@ -192,6 +201,7 @@
       markResult: markResult,
       markWrongOnly: markWrongOnly,
       clearResult: clearResult,
+      resetSelection: resetSelection,
       isComplete: selectionComplete,
     };
   }

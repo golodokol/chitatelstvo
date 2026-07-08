@@ -157,7 +157,7 @@
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
-  <script src="/static/emotion_wheel.js?v=20260708c"></script>
+  <script src="/static/emotion_wheel.js?v=20260709c"></script>
   <script src="/static/lesson_quiz.js?v=20260708b"></script>
   <script>
     const CFG = {
@@ -1134,16 +1134,15 @@
           emotionWrongAttempts += 1;
           saveEmotionWrongAttempts(emotionWrongAttempts);
           if (emotionWrongAttempts >= 2) {
-            if (data.correct && emotionWheel && emotionWheel.markResult) {
-              emotionWheel.markResult(data.correct, false);
-            }
             showEmotionVerdict('err', formatEmotionFail(data));
           } else {
-            if (emotionWheel && emotionWheel.markWrongOnly) {
-              emotionWheel.markWrongOnly();
-            }
             showEmotionVerdict('err', formatEmotionFailHint());
           }
+          if (emotionWheel && emotionWheel.resetSelection) {
+            emotionWheel.resetSelection();
+          }
+          emotionSelectedIds = [];
+          updateEmotionButton();
           return;
         }
         emotionWrongAttempts = 0;
