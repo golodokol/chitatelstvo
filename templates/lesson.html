@@ -88,9 +88,13 @@
       </ul>
       {% endif %}
       <div class="chit-creative-upload" id="creative-upload-block">
-        <p class="chit-creative-upload__label">Загрузить выполненные творческие задания из сундука</p>
+        <p class="chit-creative-upload__label">Здесь можно загрузить выполненные задания из сундука, чтобы получить бейдж «Сказочник»</p>
         <p class="chit-creative-upload__hint">Фото или PDF, до 5 файлов, каждый до 12 МБ</p>
-        <input type="file" id="creative-files" class="chit-creative-upload__input" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" multiple>
+        <div class="chit-creative-upload__picker">
+          <input type="file" id="creative-files" class="chit-creative-upload__input" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" multiple>
+          <label class="chit-btn chit-btn--outline chit-creative-upload__pick" for="creative-files">Выбрать файлы</label>
+          <span class="chit-creative-upload__files" id="creative-files-label">Файлы не выбраны</span>
+        </div>
         <button type="button" class="chit-btn" id="btn-creative-upload">Отправить работы</button>
         <div id="creative-upload-msg" class="chit-msg" style="display:none"></div>
       </div>
@@ -1257,8 +1261,25 @@
       const block = document.getElementById('creative-upload-block');
       const input = document.getElementById('creative-files');
       const btn = document.getElementById('btn-creative-upload');
+      const filesLabel = document.getElementById('creative-files-label');
       const msg = document.getElementById('creative-upload-msg');
       if (!block || !input || !btn) return;
+
+      function updateCreativeFilesLabel() {
+        if (!filesLabel) return;
+        const files = input.files;
+        if (!files || !files.length) {
+          filesLabel.textContent = 'Файлы не выбраны';
+          return;
+        }
+        if (files.length === 1) {
+          filesLabel.textContent = files[0].name;
+          return;
+        }
+        filesLabel.textContent = 'Выбрано файлов: ' + files.length;
+      }
+
+      input.addEventListener('change', updateCreativeFilesLabel);
 
       function showCreativeMsg(text, type) {
         if (!msg) return;

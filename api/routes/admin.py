@@ -27,6 +27,7 @@ from db import repository as repo
 from db.session import get_db
 from lessons.enrollment_access import get_active_enrollments, normalize_stage
 from services.quiz_leads import build_quiz_lead_rows, load_quiz_leads
+from services.meeting_attendance import mark_meeting_attendance, meeting_tale_options
 from services.registration import grant_enrollment_to_child, process_registration
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -107,7 +108,7 @@ def _fmt_dt(value: datetime | None) -> str:
     return value.strftime("%d.%m.%Y %H:%M")
 
 
-def _build_rows(families) -> list[dict]:
+def _build_rows(families, db: Session) -> list[dict]:
     rows: list[dict] = []
     seen_families: set[str] = set()
     for family in families:
@@ -139,6 +140,7 @@ def _build_rows(families) -> list[dict]:
                     "level": "—",
                     "points": "—",
                     "progress_url": progress_url,
+                    "meeting_tales": [],
                 }
             )
             continue
@@ -169,6 +171,7 @@ def _build_rows(families) -> list[dict]:
                         "level": child.current_level,
                         "points": str(child.total_points),
                         "progress_url": progress_url,
+                        "meeting_tales": [],
                     }
                 )
                 show_delete = False
@@ -200,6 +203,12 @@ def _build_rows(families) -> list[dict]:
                         "level": child.current_level,
                         "points": str(child.total_points),
                         "progress_url": progress_url,
+                        "meeting_tales": meeting_tale_options(
+                            db,
+                            child.id,
+                            module=module,
+                            enrollment=enrollment,
+                        ),
                     }
                 )
                 if idx == 0:
@@ -235,6 +244,12 @@ def _flash_from_query(request: Request) -> dict | None:
             "message": params.get("msg") or "Запись удалена.",
             "progress_url": "",
         }
+    if params.get("meeting") == "1":
+        return {
+            "type": "ok",
+            "message": params.get("msg") or "Присутствие отмечено.",
+            "progress_url": params.get("progress_url") or "",
+        }
     if params.get("error"):
         return {
             "type": "error",
@@ -267,6 +282,31 @@ def _redirect_admin_deleted(parent_name: str) -> RedirectResponse:
     )
 
 
+def _redirect_admin_meeting(
+    *,
+    child_name: str,
+    tale_title: str,
+    status: str,
+    progress_url: str,
+) -> RedirectResponse:
+    if status == "duplicate":
+        msg = (
+            f"Присутствие уже отмечено сегодня: {child_name} — «{tale_title}»."
+        )
+    else:
+        msg = (
+            f"Отмечено присутствие на встрече: {child_name} — «{tale_title}». "
+            "Бейдж «Слушатель» начисляется при первой встрече."
+        )
+    url = (
+        "/admin?meeting=1"
+        f"&msg={quote(msg)}"
+        f"&progress_url={quote(progress_url)}"
+        "#meetings"
+    )
+    return RedirectResponse(url, status_code=303)
+
+
 def _parse_child_age(raw: str | None) -> int | None:
     if raw is None or str(raw).strip() == "":
         return None
@@ -295,7 +335,7 @@ def admin_page(
         )
 
     families = repo.list_all_families(db)
-    rows = _build_rows(families)
+    rows = _build_rows(families, db)
     quiz_leads = load_quiz_leads()
     quiz_rows = build_quiz_lead_rows(quiz_leads)
     return templates.TemplateResponse(
@@ -418,6 +458,36 @@ def admin_enroll_grant(
     return _redirect_admin_ok(result.progress_url, result.module_title)
 
 
+@router.post("/children/{child_id}/meeting-attendance")
+def admin_mark_meeting_attendance(
+    request: Request,
+    child_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    tale_title: str = Form(...),
+):
+    require_admin(request)
+    try:
+        result = mark_meeting_attendance(
+            db,
+            child_id=child_id,
+            tale_title=tale_title.strip(),
+        )
+    except HTTPException as exc:
+        return _redirect_admin_error(str(exc.detail), anchor="meetings")
+
+    child = repo.get_child_with_family(db, child_id)
+    progress_url = ""
+    if child and child.family:
+        progress_url = f"{PUBLIC_BASE_URL}/progress/{child.family.progress_token}"
+
+    return _redirect_admin_meeting(
+        child_name=result["child_name"],
+        tale_title=result["tale_title"],
+        status=result["status"],
+        progress_url=progress_url,
+    )
+
+
 @router.post("/families/{family_id}/delete")
 def admin_delete_family(
     request: Request,
@@ -447,7 +517,7 @@ def admin_export_csv(
     require_admin(request)
 
     families = repo.list_all_families(db)
-    rows = _build_rows(families)
+    rows = _build_rows(families, db)
 
     buffer = io.StringIO()
     writer = csv.writer(buffer)

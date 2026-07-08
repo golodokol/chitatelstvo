@@ -199,6 +199,36 @@
     .table-wrap--registrations {
       padding-right: 4px;
     }
+    .meeting-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      align-items: flex-end;
+    }
+    .meeting-form select {
+      min-width: 220px;
+      max-width: 360px;
+      padding: 8px 10px;
+      border: 1px solid #ddd4c8;
+      border-radius: 8px;
+      font: inherit;
+      font-size: .88rem;
+      background: #fffcf8;
+    }
+    .meeting-form .btn {
+      white-space: nowrap;
+    }
+    .meeting-status {
+      font-size: .85rem;
+      color: #6b5d4d;
+    }
+    .meeting-status--done {
+      color: #2e5a32;
+      font-weight: 700;
+    }
+    .table-meetings td:nth-child(3) {
+      max-width: 280px;
+    }
   </style>
 </head>
 {% macro tariff_name(code) -%}
@@ -236,6 +266,7 @@
 
     <nav class="nav-links">
       <a href="#enroll">Выдать доступ</a>
+      <a href="#meetings">Присутствие на встрече</a>
       <a href="#registrations">Регистрации</a>
       <a href="#quiz-leads">Заявки квиза{% if quiz_count %} ({{ quiz_count }}){% endif %}</a>
     </nav>
@@ -320,6 +351,68 @@
           </div>
         </form>
       </div>
+    </section>
+
+    <section class="section" id="meetings">
+      <h2>Присутствие на встрече</h2>
+      <div class="hint">
+        После живого урока отметьте ребёнка — начисляются +2 словика, а при первой встрече выдаётся бейдж <strong>«Слушатель»</strong>.
+        Повторная отметка по той же сказке в тот же день не дублируется.
+      </div>
+
+      {% set meeting_rows = rows | selectattr('child_id') | selectattr('meeting_tales') | list %}
+      {% if meeting_rows %}
+      <div class="table-wrap">
+        <table class="table-meetings">
+          <thead>
+            <tr>
+              <th>Ребёнок</th>
+              <th>Родитель</th>
+              <th>Формат / этап</th>
+              <th>Сказка встречи</th>
+              <th>Прогресс</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in meeting_rows %}
+            {% if row.meeting_tales %}
+            <tr>
+              <td>{{ row.child_name }}{% if row.child_age != '—' %} ({{ row.child_age }}){% endif %}</td>
+              <td>{{ row.parent_name }}</td>
+              <td>{{ row.tariff }}{% if row.stage != '—' %} · {{ row.stage }}{% endif %}</td>
+              <td>
+                {% set all_marked = row.meeting_tales | rejectattr('marked') | list | length == 0 %}
+                {% if all_marked %}
+                <span class="meeting-status meeting-status--done">Все встречи по доступу отмечены</span>
+                {% else %}
+                <form
+                  method="post"
+                  action="/admin/children/{{ row.child_id }}/meeting-attendance"
+                  class="meeting-form"
+                  data-child="{{ row.child_name }}"
+                >
+                  <select name="tale_title" required>
+                    {% for tale in row.meeting_tales if not tale.marked %}
+                    <option value="{{ tale.title }}"{% if loop.first %} selected{% endif %}>{{ tale.title }}</option>
+                    {% endfor %}
+                    {% for tale in row.meeting_tales if tale.marked %}
+                    <option value="{{ tale.title }}" disabled>{{ tale.title }} — уже отмечено</option>
+                    {% endfor %}
+                  </select>
+                  <button class="btn btn-primary" type="submit">Отметить присутствие на встрече</button>
+                </form>
+                {% endif %}
+              </td>
+              <td><a class="link" href="{{ row.progress_url }}" target="_blank" rel="noopener">прогресс</a></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="panel empty">Пока нет активных записей для отметки встреч.</div>
+      {% endif %}
     </section>
 
     <section class="section" id="registrations">
@@ -496,6 +589,19 @@
           (email ? ' (' + email + ')' : '') +
           ' и всех детей?\n\nПрогресс и доступ будут удалены без возможности восстановления.';
         if (!window.confirm(message)) {
+          event.preventDefault();
+        }
+      });
+    });
+
+    document.querySelectorAll('.meeting-form').forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        var child = form.getAttribute('data-child') || 'ребёнок';
+        var select = form.querySelector('select[name="tale_title"]');
+        var tale = select && select.selectedOptions.length
+          ? select.selectedOptions[0].textContent.replace(' — уже отмечено', '')
+          : '';
+        if (!window.confirm('Отметить присутствие на встрече?\n\n' + child + '\n«' + tale + '»')) {
           event.preventDefault();
         }
       });
