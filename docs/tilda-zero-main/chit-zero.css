@@ -1476,7 +1476,7 @@
     }
     .chit-meadow-bg .founder,
     .chit-meadow-bg .footer {
-      background-image: none;
+      background-image: none !important;
       background-color: transparent;
       position: relative;
       z-index: 1;

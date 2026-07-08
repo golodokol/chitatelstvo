@@ -26,6 +26,7 @@ function chitPatchTildaStyleBlock() {
     var next = txt
       .replace(/left:\s*calc\([^)]+\)/gi, 'left:0')
       .replace(/width:\s*(?:1200|960|640|480|320)px/gi, 'width:100%')
+      .replace(/height:\s*37000px/gi, 'height:auto')
       .replace(/height:\s*35000px/gi, 'height:auto')
       .replace(/height:\s*100vh/gi, 'height:auto')
       .replace(/display:\s*table/gi, 'display:block')
