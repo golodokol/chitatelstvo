@@ -58,9 +58,9 @@ def _short_grade_label(label: str | None) -> str:
 def _format_stage_label(chosen_stage: str | None) -> str:
     stage = normalize_stage(chosen_stage)
     if stage == "stage-1":
-        return "29 июня"
+        return "6 июля"
     if stage == "stage-2":
-        return "20 июля"
+        return "27 июля"
     if not chosen_stage:
         return "—"
     return str(chosen_stage)

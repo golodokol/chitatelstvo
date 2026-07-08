@@ -123,13 +123,24 @@ class RegisterWebhook(BaseModel):
         if value is None or value == "":
             return None
         raw = str(value).strip().lower()
-        if raw in ("1", "stage-1", "stage_1", "june", "22", "22.06", "22 июня", "29", "29.06", "29 июня"):
+        if raw in (
+            "1", "stage-1", "stage_1", "june",
+            "22", "22.06", "22 июня",
+            "29", "29.06", "29 июня",
+            "6", "6.07", "6 июля",
+        ):
             return "1"
-        if raw in ("2", "stage-2", "stage_2", "july", "20", "20.07", "20 июля"):
+        if raw in (
+            "2", "stage-2", "stage_2", "july",
+            "20", "20.07", "20 июля",
+            "27", "27.07", "27 июля",
+        ):
             return "2"
         if ("22" in raw or "29" in raw) and "июн" in raw:
             return "1"
-        if "20" in raw and "июл" in raw:
+        if ("6" in raw or "29" in raw) and "июл" in raw and "27" not in raw:
+            return "1"
+        if ("20" in raw or "27" in raw) and "июл" in raw:
             return "2"
         return str(value).strip()
 

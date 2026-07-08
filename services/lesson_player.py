@@ -31,6 +31,7 @@ from lessons.loader import (
     get_lesson,
     quiz_answer_results,
     quiz_for_client,
+    reading_practice_for_client,
     retelling_quiz_for_client,
     score_emotion_quiz,
     score_quiz,
@@ -135,11 +136,13 @@ def build_lesson_nav_urls(db: Session, child: Child, lesson: dict[str, Any]) -> 
 
 def build_slovik_payload(lesson: dict[str, Any]) -> dict[str, Any]:
     emotion = lesson.get("emotion_quiz")
+    reading = lesson.get("reading_practice")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
     retelling = lesson.get("retelling_quiz")
     initial_step = lesson_step_key(
         has_emotion=bool(emotion),
+        has_reading=bool(reading),
         has_comprehension=bool(comprehension),
         has_meaning=bool(meaning),
         has_retelling=bool(retelling),
@@ -227,7 +230,7 @@ def build_live_lesson_block(
     default_price = int(config.get("price_rub", MEETING_ADDON_PRICE_RUB))
     return {
         "mode": "upsell",
-        "date": config.get("next_meeting_label", "20 июля 2026"),
+        "date": config.get("next_meeting_label", "27 июля 2026"),
         "purchase_url": purchase_url,
         "price": default_price,
     }
@@ -259,7 +262,7 @@ def child_has_video_unlock(
         return True
     if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type="video_unlock"):
         return True
-    for event_type in ("emotion_quiz", "comprehension", "meaning_analysis", "retelling"):
+    for event_type in ("emotion_quiz", "reading_practice", "comprehension", "meaning_analysis", "retelling"):
         if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type=event_type):
             return True
     return False
@@ -277,6 +280,7 @@ def build_lesson_json(
     enrollment = find_enrollment_for_lesson(child, raw) if raw else None
 
     emotion = lesson.get("emotion_quiz")
+    reading = lesson.get("reading_practice")
     comprehension = lesson.get("comprehension_quiz")
     meaning = lesson.get("meaning_quiz")
     retelling = lesson.get("retelling_quiz")
@@ -292,6 +296,11 @@ def build_lesson_json(
         "emotion_done": (
             repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="emotion_quiz")
             if emotion
+            else False
+        ),
+        "reading_done": (
+            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="reading_practice")
+            if reading
             else False
         ),
         "comprehension_done": (
@@ -331,6 +340,7 @@ def build_lesson_json(
         "video_threshold": VIDEO_BADGE_THRESHOLD,
         "video": build_video_payload(lesson),
         "emotion_quiz": emotion_quiz_for_client(emotion) if emotion else None,
+        "reading_practice": reading_practice_for_client(reading) if reading else None,
         "comprehension_quiz": quiz_for_client(comprehension, block_key="comprehension_quiz") if comprehension else None,
         "meaning_quiz": quiz_for_client(meaning, block_key="meaning_quiz") if meaning else None,
         "retelling_quiz": retelling_quiz_for_client(retelling, group_code=group_code) if retelling else None,
@@ -513,6 +523,14 @@ def handle_quiz_submit(
     quiz = lesson.get(quiz_key)
     if not quiz:
         raise HTTPException(404, "Квиз для этого урока ещё не настроен")
+
+    tale_title = lesson["title"]
+    if quiz_type == "comprehension" and lesson.get("reading_practice"):
+        if not repo.child_has_learning_event(
+            db, child_id, tale_title=tale_title, event_type="reading_practice"
+        ):
+            raise HTTPException(400, "Сначала прочитайте сказку по предложениям выше.")
+
     correct, total = score_quiz(quiz, answers)
     pass_score = int(quiz.get("pass_score", total))
     results = quiz_answer_results(quiz, answers)
@@ -604,6 +622,60 @@ def handle_retelling_submit(
         "total": total,
         "pass_score": pass_score,
         "results": results,
+        "message": "Задание засчитано!" if status == "accepted" else "Уже было засчитано ранее",
+    }
+
+
+def handle_reading_practice_submit(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    slug: str,
+    cards_read: list[str],
+    test_key: str | None = None,
+) -> dict[str, Any]:
+    _, lesson = prepare_lesson_for_child(
+        db,
+        child_id,
+        slug,
+        bypass=verify_test_lesson_key(test_key),
+    )
+
+    block = lesson.get("reading_practice")
+    if not block:
+        raise HTTPException(404, "Практика чтения для этого урока ещё не настроена")
+
+    tale_title = lesson["title"]
+    if not child_has_video_unlock(db, child_id, tale_title=tale_title) and not verify_test_lesson_key(test_key):
+        raise HTTPException(400, "Сначала посмотрите начало видео-урока.")
+
+    if lesson.get("emotion_quiz") and not repo.child_has_learning_event(
+        db, child_id, tale_title=tale_title, event_type="emotion_quiz"
+    ):
+        raise HTTPException(400, "Сначала выполните задание про эмоции выше.")
+
+    expected_ids = {str(card.get("id")) for card in (block.get("cards") or []) if card.get("id")}
+    read_ids = {str(cid) for cid in cards_read if cid}
+    if not expected_ids or read_ids != expected_ids:
+        missing = expected_ids - read_ids
+        return {
+            "status": "failed",
+            "message": "Отметь «Я прочитал!» у каждого предложения, прежде чем отправить.",
+            "missing": sorted(missing),
+        }
+
+    status, event_id = submit_learning_event(
+        db,
+        child_id=child_id,
+        event_type="reading_practice",
+        tale_title=tale_title,
+        lesson_date=date.today(),
+        notes=f"auto: reading_practice {len(read_ids)}/{len(expected_ids)}",
+        payload={"source": "lesson_player", "cards_read": sorted(read_ids)},
+    )
+    return {
+        "status": status,
+        "event_id": str(event_id) if event_id else None,
         "message": "Задание засчитано!" if status == "accepted" else "Уже было засчитано ранее",
     }
 
