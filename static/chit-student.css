@@ -2268,6 +2268,9 @@ body.chit-cabinet--parent {
 }
 
 .chit-badge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border: 2px solid var(--border);
   border-radius: 16px;
   padding: 16px 10px 14px;
@@ -2302,9 +2305,9 @@ body.chit-cabinet--parent {
   opacity: 0.72;
   filter: grayscale(0.25);
 }
-.chit-badge-card__img { font-size: 2rem; margin-bottom: 8px; line-height: 1; }
+.chit-badge-card__img { font-size: 2rem; margin-bottom: 8px; line-height: 1; width: 100%; display: flex; justify-content: center; }
 .chit-badge-card__img img { width: 62px; height: 62px; object-fit: contain; }
-.chit-badge-card__name { display: block; font-size: 0.74rem; font-weight: 800; line-height: 1.25; }
+.chit-badge-card__name { display: block; width: 100%; text-align: center; font-size: 0.74rem; font-weight: 800; line-height: 1.25; }
 
 .chit-collection { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
 .chit-collection__item { text-align: center; padding: 12px 8px; background: var(--cream-warm); border-radius: 12px; }
