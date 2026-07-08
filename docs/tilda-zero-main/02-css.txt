@@ -1387,6 +1387,7 @@
       color: #6b5d4d;
       text-align: center;
     }
+    .st100-warning[hidden] { display: none !important; }
     .st100-warning strong { color: #5a4a38; }
 
     /* FAQ — письма */
@@ -1499,7 +1500,6 @@
       background-repeat: repeat;
       background-position: center top;
       background-size: 420px;
-      background-attachment: fixed;
       padding: 48px 24px 56px;
       text-align: center; font-size: 14px; color: var(--muted);
     }
@@ -1568,7 +1568,6 @@
       background-repeat: repeat;
       background-position: center top;
       background-size: 420px;
-      background-attachment: fixed;
     }
     .founder::before {
       content: '';
@@ -1629,7 +1628,11 @@
       transform-origin: center 32%;
       object-position: center 42%;
     }
-    .founder__photo--anastasia { object-position: center 12%; }
+    .founder__photo--anastasia {
+      transform: scale(1.14) translateY(-5%);
+      transform-origin: center 32%;
+      object-position: center 38%;
+    }
     .founder__body { flex: 1; min-width: 0; width: 100%; }
     .founder__name {
       font-size: 26px; font-weight: 800; color: var(--blue);

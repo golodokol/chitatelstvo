@@ -1241,7 +1241,7 @@ if (faqList) {
   function checkSt100Block() {
     var warn = document.getElementById('chit-st100-warning');
     if (!warn) return;
-    warn.hidden = !!findSt100Root() || usesPayPageRedirect();
+    warn.hidden = isOnPayPage() || !!findSt100Root() || !!PAY_PAGE_URL;
   }
 
   function bindContactSync() {
@@ -1543,6 +1543,7 @@ if (faqList) {
   hideCatalogBlocks();
   watchLazyBlocks();
   checkSt100Block();
+  orderConfigReady.finally(checkSt100Block);
   checkCatalogBlock();
   watchCartModal();
   [500, 1500, 3500].forEach(function(ms) {

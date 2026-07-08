@@ -48,7 +48,7 @@ function Invoke-Remote {
     param(
         [hashtable]$Cfg,
         [string]$Command,
-        [int]$TimeoutSec = 180,
+        [int]$TimeoutSec = 600,
         [switch]$UsePassword
     )
 
