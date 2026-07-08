@@ -456,7 +456,7 @@
           </div>
           <div class="form-field">
             <label for="chit_child_birth_date">День рождения ребёнка</label>
-            <input type="date" id="chit_child_birth_date" name="child_birth_date" autocomplete="bday">
+            <input type="date" id="chit_child_birth_date" name="child_birth_date" autocomplete="bday" required>
           </div>
           <div class="form-field">
             <label for="chit_promo_code">Промокод</label>

@@ -1,10 +1,38 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты:
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=7"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=8"></script>
  */
 (function () {
   var STORAGE_KEY = 'chit_checkout';
   var ST100_RECID = '2379461281';
+
+  function ageFromBirthDate(isoDate) {
+    if (!isoDate) return '';
+    var parts = String(isoDate).split('-');
+    if (parts.length !== 3) return '';
+    var birth = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    if (isNaN(birth.getTime())) return '';
+    var today = new Date();
+    var age = today.getFullYear() - birth.getFullYear();
+    var monthDelta = today.getMonth() - birth.getMonth();
+    if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < birth.getDate())) age -= 1;
+    return age >= 0 ? String(age) : '';
+  }
+
+  function birthDateToDmy(isoDate) {
+    if (!isoDate) return '';
+    var parts = String(isoDate).split('-');
+    if (parts.length !== 3) return String(isoDate);
+    return parts[2] + '.' + parts[1] + '.' + parts[0];
+  }
+
+  function normalizeCheckout(data) {
+    if (!data) return data;
+    if (data.child_birth_date && !data.child_age) {
+      data.child_age = ageFromBirthDate(data.child_birth_date);
+    }
+    return data;
+  }
 
   function resolveSt100Recid() {
     var rec = document.querySelector('#allrecords .t-rec[data-record-type="706"], .t-rec[data-record-type="706"]');
@@ -162,10 +190,11 @@
   function readCheckout() {
     try {
       var raw = sessionStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) return normalizeCheckout(JSON.parse(raw));
     } catch (e) {}
     var fromUrl = readCheckoutFromUrl();
     if (fromUrl) {
+      fromUrl = normalizeCheckout(fromUrl);
       try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fromUrl)); } catch (e2) {}
     }
     return fromUrl;
@@ -179,8 +208,8 @@
       parent_email: ['parent_email', 'Email', 'email'],
       parent_telegram: ['parent_telegram', 'Phone', 'phone', 'tel'],
       child_name: ['child_name'],
-      child_birth_date: ['child_birth_date', 'birth_date'],
-      child_age: ['child_age'],
+      child_birth_date: ['child_birth_date', 'birth_date', 'childbirthdate'],
+      child_age: ['child_age', 'childage'],
       promo_code: ['promo_code', 'promocode', 'promo'],
       notification_channel: ['notification_channel'],
       module_id: ['module_id'],
@@ -190,14 +219,59 @@
       group_code: ['group_code', 'group']
     };
     var names = aliases[name] || [name];
+    var values = [v];
+    if (name === 'child_birth_date') values.push(birthDateToDmy(v));
     names.forEach(function (fieldName) {
-      document.querySelectorAll(
-        '.t706 input[name="' + fieldName + '"], .t706 textarea[name="' + fieldName + '"], .t706 select[name="' + fieldName + '"], form[data-formcart="y"] [name="' + fieldName + '"]'
-      ).forEach(function (el) {
-        el.value = v;
-        try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (err) {}
-        try { el.dispatchEvent(new Event('change', { bubbles: true })); } catch (err) {}
+      values.forEach(function (fieldValue) {
+        document.querySelectorAll(
+          '.t706 input[name="' + fieldName + '"], .t706 textarea[name="' + fieldName + '"], .t706 select[name="' + fieldName + '"], form[data-formcart="y"] [name="' + fieldName + '"]'
+        ).forEach(function (el) {
+          el.value = fieldValue;
+          try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (err) {}
+          try { el.dispatchEvent(new Event('change', { bubbles: true })); } catch (err) {}
+        });
       });
+    });
+  }
+
+  function applyCheckoutFields(data) {
+    if (!data) return;
+    normalizeCheckout(data);
+    if (!data.notification_channel) data.notification_channel = 'email';
+    [
+      'module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code',
+      'parent_name', 'parent_email', 'parent_telegram', 'child_name',
+      'child_birth_date', 'child_age', 'promo_code', 'notification_channel'
+    ].forEach(function (name) {
+      setField(name, data[name]);
+    });
+    fillVisibleCartFields(data);
+  }
+
+  function fillVisibleCartFields(data) {
+    var form = document.querySelector('.t706__orderform form, .t706 form[data-formcart="y"], form[data-formcart="y"]');
+    if (!form) return;
+    normalizeCheckout(data);
+
+    var textInputs = [];
+    form.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input:not([type]), textarea').forEach(function (el) {
+      if (el.type === 'hidden' || el.closest('.t-input-phonemask')) return;
+      if (el.name && /promo/i.test(el.name)) return;
+      textInputs.push(el);
+    });
+
+    if (data.parent_name && textInputs[0] && !textInputs[0].value) textInputs[0].value = data.parent_name;
+    if (data.child_name && textInputs[1] && !textInputs[1].value) textInputs[1].value = data.child_name;
+    if (data.child_birth_date && textInputs[2] && !textInputs[2].value) {
+      textInputs[2].value = textInputs[2].type === 'date' ? data.child_birth_date : birthDateToDmy(data.child_birth_date);
+    } else if (data.child_age && textInputs[2] && !textInputs[2].value) {
+      textInputs[2].value = data.child_age;
+    }
+
+    [textInputs[0], textInputs[1], textInputs[2]].forEach(function (el) {
+      if (!el) return;
+      try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
+      try { el.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
     });
   }
 
@@ -359,10 +433,7 @@
     waitFor(function () {
       return typeof window.tcart__addProduct === 'function' && document.querySelector('.t706');
     }, function () {
-      if (!data.notification_channel) data.notification_channel = 'email';
-      ['module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code', 'parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_birth_date', 'child_age', 'promo_code', 'notification_channel'].forEach(function (name) {
-        setField(name, data[name]);
-      });
+      applyCheckoutFields(data);
 
       var uid = ORDER_PRODUCTS[data.tariff].uid;
       var tries = 0;
@@ -376,7 +447,11 @@
         }
         applyPromoCode(data.promo_code, function (ok) {
           refreshTcartTotals();
+          applyCheckoutFields(data);
           openCart();
+          [300, 900, 1800].forEach(function (ms) {
+            setTimeout(function () { applyCheckoutFields(data); }, ms);
+          });
           if (data.promo_code && !ok && promoControlsAvailable()) {
             showPayShell('Промокод', 'Код не принят — проверьте написание или срок действия в Tilda.');
             setTimeout(hidePayShell, 3500);

@@ -666,7 +666,7 @@ if (faqList) {
     var age = today.getFullYear() - birth.getFullYear();
     var monthDelta = today.getMonth() - birth.getMonth();
     if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < birth.getDate())) age -= 1;
-    return age > 0 ? String(age) : '';
+    return age >= 0 ? String(age) : '';
   }
 
   function setInputValue(dst, v) {
@@ -1315,10 +1315,19 @@ if (faqList) {
       showPaymentNotReadyAlert();
       return;
     }
+    var payload = collectCheckoutPayload(tariff);
     try {
-      sessionStorage.setItem('chit_checkout', JSON.stringify(collectCheckoutPayload(tariff)));
+      sessionStorage.setItem('chit_checkout', JSON.stringify(payload));
     } catch (e) {}
-    window.location.href = PAY_PAGE_URL;
+    var qs = new URLSearchParams();
+    Object.keys(payload).forEach(function(key) {
+      var v = payload[key];
+      if (v !== undefined && v !== null && String(v).trim() !== '') qs.set(key, String(v));
+    });
+    var url = PAY_PAGE_URL;
+    var query = qs.toString();
+    if (query) url += (url.indexOf('?') >= 0 ? '&' : '?') + query;
+    window.location.href = url;
   }
 
   function openCart(tariff) {
@@ -1541,9 +1550,11 @@ if (faqList) {
     var parentName = document.querySelector('#chit-main [name="parent_name"]');
     var parentEmail = document.querySelector('#chit-main [name="parent_email"]');
     var childName = document.querySelector('#chit-main [name="child_name"]');
+    var childBirth = document.querySelector('#chit-main [name="child_birth_date"]');
     if (parentName && !parentName.value.trim()) { alert('Укажите имя родителя.'); parentName.focus(); return false; }
     if (parentEmail && !parentEmail.value.trim()) { alert('Укажите email.'); parentEmail.focus(); return false; }
     if (childName && !childName.value.trim()) { alert('Укажите имя ребёнка.'); childName.focus(); return false; }
+    if (childBirth && !childBirth.value.trim()) { alert('Укажите день рождения ребёнка.'); childBirth.focus(); return false; }
     if (!findSt100Root()) {
       if (usesPayPageRedirect()) {
         syncToTildaForm();
