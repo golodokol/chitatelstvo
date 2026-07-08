@@ -15,6 +15,7 @@
       <a href="#how-it-works">Как устроено</a>
       <a href="#programs">Программы</a>
       <a href="#tariffs">Тарифы</a>
+      <a href="#quiz">Подарок</a>
       <a href="#faq">Вопросы</a>
     </nav>
     <div class="site-header__right">
