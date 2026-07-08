@@ -231,8 +231,11 @@ def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
         cards.append(
             {
                 "title": lesson.get("title", "Урок"),
-                "goal": "За 10 минут узнаешь, как найти главную мысль сказки.",
-                "duration": "≈ 10 мин",
+                "goal": (
+                    "За 30 минут пройдёшь видео-сказку, практику чтения, "
+                    "тесты, пересказ и задания из волшебного сундука."
+                ),
+                "duration": "≈ 30 мин",
                 "reward_pts": reward_pts,
                 "url": lesson.get("url"),
                 "unlocked": bool(lesson.get("url")),
