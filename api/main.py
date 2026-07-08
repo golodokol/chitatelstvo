@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from config.settings import PUBLIC_BASE_URL, ROOT
@@ -38,6 +39,11 @@ app.include_router(chest.router)
 app.include_router(quiz.router)
 app.include_router(telegram.router)
 app.include_router(test_lesson.router)
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon() -> FileResponse:
+    return FileResponse(ROOT / "static" / "favicon.png", media_type="image/png")
 
 
 @app.get("/health")

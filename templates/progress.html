@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include "_favicon.html" %}
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -478,7 +479,7 @@
             <li>📚 {{ tale }}</li>
             {% endfor %}
           </ul>
-          {% endif %}
+      {% endif %}
         </section>
 
       </article>
@@ -501,21 +502,21 @@
         {% endif %}
       </section>
 
-      {% if telegram_enabled %}
+    {% if telegram_enabled %}
       <section class="chit-panel chit-panel--parent">
         <h2 class="chit-section-title chit-section-title--calm">Telegram</h2>
-        {% if telegram_linked %}
+      {% if telegram_linked %}
         <p class="chit-tg-ok">✓ Telegram привязан — уведомления приходят в бот.</p>
-        {% elif telegram_link %}
+      {% elif telegram_link %}
         <p>Хотите дублировать уведомления в Telegram?</p>
-        <a class="chit-tg-btn" href="{{ link_page }}">Привязать Telegram</a>
-        {% else %}
+      <a class="chit-tg-btn" href="{{ link_page }}">Привязать Telegram</a>
+      {% else %}
         <p>Уведомления доступны на этой странице и по email.</p>
-        {% endif %}
-      </section>
       {% endif %}
+      </section>
+    {% endif %}
 
-      {% for child in children %}
+    {% for child in children %}
       {% set cab = child.cabinet %}
       <section class="chit-panel chit-panel--parent">
         <h2 class="chit-section-title chit-section-title--calm">{{ child.name }}</h2>
@@ -531,10 +532,10 @@
           <li><strong>До следующего уровня:</strong> {{ cab.points_to_next }} Словиков ({{ cab.next_level_name }})</li>
           {% endif %}
         </ul>
-        {% if child.badges %}
+      {% if child.badges %}
         <p class="chit-parent-badges"><strong>Бейджи:</strong> {{ child.badges | join(', ') }}</p>
-        {% endif %}
-        {% if child.module_title %}
+      {% endif %}
+      {% if child.module_title %}
         <p class="chit-parent-module"><strong>Модуль:</strong> {{ child.module_title }}</p>
         {% endif %}
         <p class="chit-parent-tip">{{ cab.parent.support_tip }}</p>
@@ -546,9 +547,9 @@
           <li>{{ e.date }} — {{ e.type_label }}{% if e.tale != '—' %} («{{ e.tale }}»){% endif %}</li>
           {% endfor %}
         </ul>
-        {% endif %}
+      {% endif %}
 
-        {% if child.lessons %}
+      {% if child.lessons %}
         <h3 class="chit-parent-subhead">Расписание сказок</h3>
         <p class="chit-schedule-intro">
           {% if module_start_date %}
@@ -592,9 +593,9 @@
           </ul>
         </div>
         {% endfor %}
-        {% else %}
+      {% else %}
         <p class="chit-guide-sub">Первая сказка скоро откроется.</p>
-        {% endif %}
+      {% endif %}
       </section>
       {% endfor %}
 
@@ -605,30 +606,30 @@
           {% for step in parent_guide.steps %}
           <li><strong>{{ step.label }}</strong> — {{ step.note }}</li>
           {% endfor %}
-        </ol>
+      </ol>
         <p class="chit-guide-sub">Сравнений с другими детьми нет — только личный прогресс.</p>
       </section>
 
       <section class="chit-panel chit-panel--parent">
         <h2 class="chit-section-title chit-section-title--calm">За что начисляются Словики</h2>
-        <table class="chit-points-table">
+      <table class="chit-points-table">
           {% for row in parent_guide.points %}
           <tr><th>{{ row.label }}</th><td>{{ row.value }}</td></tr>
           {% endfor %}
-        </table>
+      </table>
       </section>
 
       <section class="chit-panel chit-panel--parent chit-panel--feed">
         <h2 class="chit-section-title chit-section-title--calm">Лента уведомлений</h2>
-        <div class="chit-feed">
-          {% for n in notifications %}
-          <div class="chit-feed-item">
+      <div class="chit-feed">
+        {% for n in notifications %}
+        <div class="chit-feed-item">
             <div class="chit-feed-date">{{ n.date }} · {{ n.channel }}</div>
-            {{ n.message }}
-          </div>
-          {% else %}
+          {{ n.message }}
+        </div>
+        {% else %}
           <p class="chit-guide-sub">Пока нет сообщений.</p>
-          {% endfor %}
+        {% endfor %}
         </div>
       </section>
 
