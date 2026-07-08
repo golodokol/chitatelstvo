@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260708h">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260708i">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -87,6 +87,13 @@
         {% endfor %}
       </ul>
       {% endif %}
+      <div class="chit-creative-upload" id="creative-upload-block">
+        <p class="chit-creative-upload__label">Загрузить выполненные творческие задания из сундука</p>
+        <p class="chit-creative-upload__hint">Фото или PDF, до 5 файлов, каждый до 12 МБ</p>
+        <input type="file" id="creative-files" class="chit-creative-upload__input" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" multiple>
+        <button type="button" class="chit-btn" id="btn-creative-upload">Отправить работы</button>
+        <div id="creative-upload-msg" class="chit-msg" style="display:none"></div>
+      </div>
       <p><a class="chit-btn chit-btn--chest chit-btn--chest-lesson" href="{{ chest_url }}">В волшебный сундук</a></p>
     </div>
     {% endif %}
@@ -154,6 +161,7 @@
       emotionDone: !!(CFG.progress && CFG.progress.emotion_done),
       comprehensionDone: !!(CFG.progress && CFG.progress.comprehension_done),
       meaningDone: !!(CFG.progress && CFG.progress.meaning_done),
+      creativeDone: !!(CFG.progress && CFG.progress.creative_done),
     };
     let emotionWheel = null;
     let emotionSelectedIds = [];
@@ -1245,11 +1253,78 @@
       refreshCompanion();
     }
 
+    function initCreativeUpload() {
+      const block = document.getElementById('creative-upload-block');
+      const input = document.getElementById('creative-files');
+      const btn = document.getElementById('btn-creative-upload');
+      const msg = document.getElementById('creative-upload-msg');
+      if (!block || !input || !btn) return;
+
+      function showCreativeMsg(text, type) {
+        if (!msg) return;
+        msg.className = 'chit-msg ' + (type === 'ok' ? 'ok' : 'err');
+        msg.textContent = text;
+        msg.style.display = 'block';
+      }
+
+      if (lessonState.creativeDone) {
+        block.classList.add('is-done');
+        input.disabled = true;
+        btn.disabled = true;
+        showCreativeMsg('Работы отправлены — бейдж «Сказочник» получен!', 'ok');
+        return;
+      }
+
+      bindClick('btn-creative-upload', async function () {
+        const files = input.files;
+        if (!files || !files.length) {
+          showCreativeMsg('Выберите один или несколько файлов (фото или PDF).', 'err');
+          return;
+        }
+        btn.disabled = true;
+        const form = new FormData();
+        form.append('child_id', CFG.childId);
+        form.append('exp', String(CFG.exp));
+        form.append('sig', CFG.sig);
+        if (CFG.testKey) form.append('test_key', CFG.testKey);
+        for (let i = 0; i < files.length; i += 1) {
+          form.append('files', files[i]);
+        }
+        try {
+          const res = await fetch('/api/lesson/' + CFG.slug + '/creative-upload', {
+            method: 'POST',
+            body: form,
+          });
+          const data = await res.json().catch(function () { return {}; });
+          if (!res.ok) {
+            const err = data.detail || data.message || 'Не удалось загрузить файлы';
+            showCreativeMsg(typeof err === 'string' ? err : 'Не удалось загрузить файлы', 'err');
+            btn.disabled = false;
+            return;
+          }
+          if (data.status === 'accepted' || data.status === 'duplicate') {
+            lessonState.creativeDone = true;
+            markDone('step-creative');
+            onReward('creative_task', data.status);
+            input.disabled = true;
+            showCreativeMsg(data.message || 'Готово!', 'ok');
+          } else {
+            showCreativeMsg(data.message || 'Не удалось отправить', 'err');
+            btn.disabled = false;
+          }
+        } catch (e) {
+          showCreativeMsg('Ошибка сети. Попробуйте ещё раз.', 'err');
+          btn.disabled = false;
+        }
+      });
+    }
+
     function initLessonProgress() {
       if (lessonState.videoUnlocked || lessonState.videoDone) markDone('step-video');
       if (lessonState.emotionDone) markDone('step-emotion');
       if (lessonState.comprehensionDone) markDone('step-comprehension');
       if (lessonState.meaningDone) markDone('step-meaning');
+      if (lessonState.creativeDone) markDone('step-creative');
       syncQuizButtons();
       updateEmotionButton();
     }
@@ -1308,6 +1383,7 @@
       }
 
       initLessonProgress();
+      initCreativeUpload();
       refreshCompanion();
     }
 

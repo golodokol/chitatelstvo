@@ -122,7 +122,18 @@ BADGE_CATALOG: list[dict[str, str]] = [
 
 BADGES_TOTAL = len(BADGE_CATALOG)
 
-CHEST_STEPS = ("lesson_complete", "comprehension")
+CHEST_STEPS = ("video_unlock", "comprehension", "meaning_analysis")
+
+
+def is_chest_step_done(step: str, done: set[str]) -> bool:
+    """Шаг «видео»: засчитывается и 3 мин (video_unlock), и досмотр (lesson_complete)."""
+    if step == "video_unlock":
+        return "video_unlock" in done or "lesson_complete" in done
+    return step in done
+
+
+def chest_ready_from_done(done: set[str]) -> bool:
+    return all(is_chest_step_done(step, done) for step in CHEST_STEPS)
 
 
 def _level_index(level_name: str) -> int:
@@ -243,7 +254,11 @@ def _chest_title(tale_title: str) -> str:
 def _chest_subtitle(tale_title: str) -> str:
     tale = (tale_title or "").strip()
     if tale:
-        return f"Откроется после завершения урока по сказке «{tale}» и мини-задания."
+        return (
+            f"Откроется после начала видео (3 мин), "
+            f"«{LESSON_STEP_LABELS['comprehension_quiz']}» и "
+            f"«{LESSON_STEP_LABELS['tasks']}» по сказке «{tale}»."
+        )
     return "Когда откроется первая сказка — здесь появится награда."
 
 
@@ -265,9 +280,9 @@ def _chest_state(
             "reward": reward_text,
             "tale_title": "",
             "tale_slug": "",
-            "steps_total": 2,
+            "steps_total": 3,
             "steps_done": 0,
-            "steps_remaining": 2,
+            "steps_remaining": 3,
             "pct": 0,
             "ready": False,
             "claimed": False,
@@ -276,14 +291,14 @@ def _chest_state(
             "image_closed": CHEST_IMAGES["closed"],
             "image_opening": CHEST_IMAGES["opening"],
             "image_open": CHEST_IMAGES["open"],
-            "hint": "До открытия 2 шага",
+            "hint": "До открытия 3 шага",
             "items": [],
         }
 
     tale = lesson.get("title", "")
     tale_title = tale.strip()
     done = _events_for_tale(events, tale)
-    steps_done = sum(1 for s in CHEST_STEPS if s in done)
+    steps_done = sum(1 for s in CHEST_STEPS if is_chest_step_done(s, done))
     steps_total = len(CHEST_STEPS)
     steps_remaining = max(0, steps_total - steps_done)
     pct = int(steps_done / steps_total * 100) if steps_total else 0

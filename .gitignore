@@ -12,6 +12,7 @@ __pycache__/
 *.log
 backups/
 data/quiz_leads.jsonl
+data/creative_uploads/
 .DS_Store
 Thumbs.db
 mobile/node_modules/

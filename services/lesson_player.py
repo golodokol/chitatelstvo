@@ -299,6 +299,9 @@ def build_lesson_json(
             if meaning
             else False
         ),
+        "creative_done": repo.child_has_learning_event(
+            db, child.id, tale_title=tale_title, event_type="creative_task"
+        ),
     }
 
     nav_urls = build_lesson_nav_urls(db, child, lesson)

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from db import repository as repo
 from db.session import get_db
-from gamification.cabinet_ui import CHEST_STEPS, _events_for_tale
+from gamification.cabinet_ui import CHEST_STEPS, _events_for_tale, chest_ready_from_done
 from gamification.chest_rewards import items_for_treasury, rewards_for_tale
 from lessons.enrollment_access import list_lessons_for_child
 
@@ -41,7 +41,7 @@ def _lesson_for_slug(child, tale_slug: str) -> dict | None:
 def _chest_ready_for_tale(db: Session, child_id: uuid.UUID, lesson: dict) -> bool:
     events = repo.get_child_events(db, child_id, limit=50)
     done = _events_for_tale(events, lesson.get("title", ""))
-    return all(step in done for step in CHEST_STEPS)
+    return chest_ready_from_done(done)
 
 
 @router.post("/api/progress/{token}/chest/claim")
@@ -66,7 +66,10 @@ def claim_chest(
         raise HTTPException(404, "Сказка не найдена")
 
     if not _chest_ready_for_tale(db, child.id, lesson):
-        raise HTTPException(400, "Сундук ещё не готов — завершите урок и мини-задание")
+        raise HTTPException(
+            400,
+            "Сундук ещё не готов — посмотрите начало видео, пройдите мини-тест и блок заданий",
+        )
 
     all_items = rewards_for_tale(tale_slug, lesson.get("title", ""))
     treasury_items = items_for_treasury(all_items)

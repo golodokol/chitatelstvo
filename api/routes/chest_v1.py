@@ -47,7 +47,10 @@ def claim_chest_jwt(
         raise HTTPException(404, "Сказка не найдена")
 
     if not _chest_ready_for_tale(db, child.id, lesson):
-        raise HTTPException(400, "Сундук ещё не готов — завершите урок и мини-задание")
+        raise HTTPException(
+            400,
+            "Сундук ещё не готов — посмотрите начало видео, пройдите мини-тест и блок заданий",
+        )
 
     all_items = rewards_for_tale(tale_slug, lesson.get("title", ""))
     treasury_items = items_for_treasury(all_items)

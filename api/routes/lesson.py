@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import Any, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, model_validator
@@ -15,6 +15,7 @@ from api.test_lesson_auth import verify_test_lesson_key
 from config.settings import ROOT, VIDEO_BADGE_THRESHOLD, VIDEO_UNLOCK_SECONDS
 from db.session import get_db
 from lessons.step_labels import lesson_step_badges_payload, lesson_step_labels_payload
+from services.creative_upload import handle_creative_upload
 from services.lesson_player import (
     build_lesson_json,
     get_child_or_404,
@@ -73,12 +74,22 @@ class TaleRatingBody(LessonAuth):
     rating: int = Field(ge=1, le=10)
 
 
-def _verify_access(body: LessonAuth, slug: str) -> uuid.UUID:
-    if verify_test_lesson_key(body.test_key):
-        return body.child_id
-    if not verify_lesson_access(body.child_id, slug, body.exp, body.sig):
+def _verify_access_fields(
+    child_id: uuid.UUID,
+    slug: str,
+    exp: int,
+    sig: str,
+    test_key: str | None,
+) -> uuid.UUID:
+    if verify_test_lesson_key(test_key):
+        return child_id
+    if not verify_lesson_access(child_id, slug, exp, sig):
         raise HTTPException(403, "Ссылка урока недействительна или устарела")
-    return body.child_id
+    return child_id
+
+
+def _verify_access(body: LessonAuth, slug: str) -> uuid.UUID:
+    return _verify_access_fields(body.child_id, slug, body.exp, body.sig, body.test_key)
 
 
 @router.get("/lesson/{slug}", response_class=HTMLResponse)
@@ -249,4 +260,27 @@ def tale_rating(
         slug=slug,
         rating=body.rating,
         test_key=body.test_key,
+    )
+
+
+@router.post("/api/lesson/{slug}/creative-upload")
+async def creative_upload(
+    slug: str,
+    request: Request,
+    child_id: uuid.UUID = Form(...),
+    exp: int = Form(...),
+    sig: str = Form(""),
+    test_key: str | None = Form(None),
+    files: list[UploadFile] = File(...),
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    verified_id = _verify_access_fields(child_id, slug, exp, sig, test_key)
+    get_child_or_404(db, verified_id)
+    return await handle_creative_upload(
+        db,
+        child_id=verified_id,
+        slug=slug,
+        files=files,
+        test_key=test_key,
     )
