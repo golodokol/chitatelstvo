@@ -2268,14 +2268,15 @@ body.chit-cabinet--parent {
 }
 
 .chit-badge-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   width: 100%;
   min-width: 0;
+  margin: 0;
   border: 2px solid var(--border);
   border-radius: 16px;
-  padding: 16px 8px 14px;
+  padding: 16px 6px 14px;
   background: var(--cream-warm);
   cursor: pointer;
   text-align: center;
@@ -2309,26 +2310,41 @@ body.chit-cabinet--parent {
   opacity: 0.72;
   filter: grayscale(0.25);
 }
-.chit-badge-card__img { font-size: 2rem; margin-bottom: 8px; line-height: 1; width: 100%; display: flex; justify-content: center; }
+.chit-badge-card__img {
+  align-self: center;
+  font-size: 2rem;
+  margin-bottom: 8px;
+  line-height: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 .chit-badge-card__img img { width: 62px; height: 62px; object-fit: contain; }
 .chit-badge-card__name {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: block;
   width: 100%;
   min-width: 0;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .chit-badge-card__name-line {
   display: block;
   width: 100%;
+  margin: 0;
+  padding: 0;
   text-align: center;
   font-size: 0.74rem;
   font-weight: 800;
   line-height: 1.25;
+  hyphens: none;
+}
+
+.chit-badge-card--wide-label .chit-badge-card__name-line:first-child {
+  font-size: 0.68rem;
+  letter-spacing: -0.01em;
 }
 
 .chit-collection { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }

@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260709a">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260709b">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -125,7 +125,7 @@
           </div>
           <div class="chit-badge-grid">
             {% for b in cab.badges %}
-            <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}"{% if b.image %} data-badge-image="{{ b.image }}"{% endif %}>
+            <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}{% if b.name_lines[0]|length > 12 %} chit-badge-card--wide-label{% endif %}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}"{% if b.image %} data-badge-image="{{ b.image }}"{% endif %}>
               <div class="chit-badge-card__img">
                 {% if b.image %}<img src="{{ b.image }}" alt="" width="64" height="64">{% else %}🏅{% endif %}
               </div>
