@@ -17,7 +17,7 @@ def test_lesson_step_labels_payload():
     assert payload["emotion_quiz"] == "Изучаем эмоциональный интеллект"
     assert payload["comprehension_quiz"] == "Мини-тест по сказке"
     assert payload["tasks"] == "Выполняем задания"
-    assert payload["retelling"] == "Пробуем пересказать"
+    assert payload["retelling"] == "Пробуем пересказать сказку"
     assert payload["creative"] == "Творчество"
 
 
@@ -51,7 +51,7 @@ def test_event_type_labels_for_parent_view():
     assert event_type_label("emotion_quiz") == "Изучаем эмоциональный интеллект"
     assert event_type_label("comprehension") == "Мини-тест по сказке"
     assert event_type_label("meaning_analysis") == "Выполняем задания"
-    assert event_type_label("retelling") == "Пробуем пересказать"
+    assert event_type_label("retelling") == "Пробуем пересказать сказку"
     assert event_type_label("creative_task") == "Творческое задание"
     assert event_type_label("live_meeting") == "Живая встреча"
     assert event_type_label("unknown_slug") == "unknown_slug"

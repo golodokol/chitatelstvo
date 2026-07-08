@@ -274,11 +274,14 @@
     div.dataset.qid = q.id;
     div.dataset.qtype = 'ordering';
     let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
-    if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
-    const instruction = withImages
-      ? 'Перетащи картинки в ячейки 1–5 по порядку сказки'
-      : 'Перетащи события в ячейки по порядку сказки';
-    html += '<p class="chit-order-instruction">' + instruction + '</p>';
+    if (q.hint) {
+      html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
+    } else {
+      const instruction = withImages
+        ? 'Перетащи картинки в ячейки 1–5 по порядку сказки. На телефоне: нажми на картинку, затем на ячейку.'
+        : 'Перетащи события в ячейки по порядку сказки. На телефоне: нажми на событие, затем на ячейку.';
+      html += '<p class="chit-order-instruction">' + instruction + '</p>';
+    }
     div.innerHTML = html;
 
     const board = document.createElement('div');

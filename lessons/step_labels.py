@@ -7,7 +7,7 @@ LESSON_STEP_LABELS: dict[str, str] = {
     "emotion_quiz": "Изучаем эмоциональный интеллект",
     "comprehension_quiz": "Мини-тест по сказке",
     "tasks": "Выполняем задания",
-    "retelling": "Пробуем пересказать",
+    "retelling": "Пробуем пересказать сказку",
     "creative": "Творчество",
 }
 
