@@ -9,6 +9,7 @@ from gamification.chest_rewards import (
     CHEST_IMAGES,
     CHEST_REWARD_SUMMARY,
     LETTER_KIND,
+    canonical_tale_slug,
     chest_image_for_state,
     chest_visual_state,
     items_for_treasury,
@@ -275,7 +276,7 @@ def _chest_state(
 ) -> dict[str, Any]:
     reward_items = reward_items or []
     reward_text = reward_summary_text(reward_items) if reward_items else CHEST_REWARD_SUMMARY
-    tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
+    tale_slug = canonical_tale_slug((lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or "")
 
     if not lesson:
         return {
@@ -540,7 +541,11 @@ def _treasury_items_for_claim(claim: Any) -> list[dict[str, Any]]:
 def _treasury_for_tale(chest_claims: list[Any], tale_slug: str) -> list[dict[str, Any]]:
     if not tale_slug:
         return []
-    claim = next((c for c in chest_claims if c.tale_slug == tale_slug), None)
+    needle = canonical_tale_slug(tale_slug)
+    claim = next(
+        (c for c in chest_claims if canonical_tale_slug(c.tale_slug) == needle),
+        None,
+    )
     if not claim:
         return []
     return _treasury_items_for_claim(claim)
@@ -549,9 +554,10 @@ def _treasury_for_tale(chest_claims: list[Any], tale_slug: str) -> list[dict[str
 def _track_tale_slugs(lesson_links: list[dict]) -> set[str]:
     slugs: set[str] = set()
     for les in lesson_links or []:
-        slug = (les.get("tale_slug") or les.get("slug") or "").strip()
-        if slug:
-            slugs.add(slug)
+        for raw in (les.get("tale_slug"), les.get("slug")):
+            slug = (raw or "").strip()
+            if slug:
+                slugs.add(canonical_tale_slug(slug))
     return slugs
 
 
@@ -562,7 +568,7 @@ def _treasury_for_track(chest_claims: list[Any], lesson_links: list[dict]) -> li
         return []
     rows: list[dict[str, Any]] = []
     for claim in chest_claims:
-        if claim.tale_slug not in tale_slugs:
+        if canonical_tale_slug(claim.tale_slug) not in tale_slugs:
             continue
         rows.extend(_treasury_items_for_claim(claim))
     return rows
@@ -587,8 +593,15 @@ def _build_track_section(
     lesson_links = track.get("lesson_links") or []
     lesson = _current_lesson(lesson_links)
     weekly_source, weekly_label = _weekly_lessons(lesson_links)
-    tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
-    current_claim = next((c for c in claims if c.tale_slug == tale_slug), None) if tale_slug else None
+    tale_slug = canonical_tale_slug((lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or "")
+    current_claim = (
+        next(
+            (c for c in claims if canonical_tale_slug(c.tale_slug) == tale_slug),
+            None,
+        )
+        if tale_slug
+        else None
+    )
     reward_items = (
         rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
     )
@@ -672,8 +685,15 @@ def build_child_cabinet(
         )
     else:
         lesson = _current_lesson(lesson_links)
-        tale_slug = (lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or ""
-        current_claim = next((c for c in claims if c.tale_slug == tale_slug), None) if tale_slug else None
+        tale_slug = canonical_tale_slug((lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or "")
+        current_claim = (
+            next(
+                (c for c in claims if canonical_tale_slug(c.tale_slug) == tale_slug),
+                None,
+            )
+            if tale_slug
+            else None
+        )
         reward_items = (
             rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
         )

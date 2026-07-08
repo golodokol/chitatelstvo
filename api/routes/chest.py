@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from db import repository as repo
 from db.session import get_db
 from gamification.cabinet_ui import CHEST_STEPS, _events_for_tale, chest_ready_from_done
-from gamification.chest_rewards import items_for_treasury, rewards_for_tale
+from gamification.chest_rewards import canonical_tale_slug, items_for_treasury, rewards_for_tale
 from lessons.enrollment_access import list_lessons_for_child
 
 router = APIRouter(tags=["chest"])
@@ -31,9 +31,11 @@ def _child_in_family(db: Session, token: str, child_id: uuid.UUID):
 
 
 def _lesson_for_slug(child, tale_slug: str) -> dict | None:
+    needle = canonical_tale_slug(tale_slug.strip())
     for les in list_lessons_for_child(child):
-        slug = les.get("tale_slug") or les.get("slug")
-        if slug == tale_slug:
+        lesson_slug = les.get("slug") or ""
+        lesson_tale = canonical_tale_slug(les.get("tale_slug") or lesson_slug)
+        if lesson_slug == tale_slug.strip() or lesson_tale == needle:
             return les
     return None
 
@@ -53,7 +55,14 @@ def claim_chest(
     _, child = _child_in_family(db, token, body.child_id)
     tale_slug = body.tale_slug.strip()
 
-    existing = repo.get_chest_claim(db, child.id, tale_slug)
+    lesson = _lesson_for_slug(child, tale_slug)
+    if not lesson:
+        raise HTTPException(404, "Сказка не найдена")
+
+    reward_slug = canonical_tale_slug(lesson.get("tale_slug") or lesson.get("slug") or tale_slug)
+    existing = repo.get_chest_claim(db, child.id, reward_slug)
+    if not existing:
+        existing = repo.get_chest_claim(db, child.id, tale_slug)
     if existing:
         return {
             "status": "already_claimed",
@@ -61,22 +70,18 @@ def claim_chest(
             "items": existing.items,
         }
 
-    lesson = _lesson_for_slug(child, tale_slug)
-    if not lesson:
-        raise HTTPException(404, "Сказка не найдена")
-
     if not _chest_ready_for_tale(db, child.id, lesson):
         raise HTTPException(
             400,
             "Сундук ещё не готов — посмотрите начало видео, пройдите мини-тест и блок заданий",
         )
 
-    all_items = rewards_for_tale(tale_slug, lesson.get("title", ""))
+    all_items = rewards_for_tale(reward_slug, lesson.get("title", ""))
     treasury_items = items_for_treasury(all_items)
     row = repo.save_chest_claim(
         db,
         child_id=child.id,
-        tale_slug=tale_slug,
+        tale_slug=reward_slug,
         tale_title=lesson.get("title", ""),
         module_week=lesson.get("module_week"),
         items=treasury_items,

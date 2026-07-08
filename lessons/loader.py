@@ -80,6 +80,10 @@ def _lesson_list_item(data: dict[str, Any], *, full: bool = False) -> dict[str, 
         "stage_label": data.get("stage_label"),
         "stage": data.get("stage"),
     }
+    if data.get("tale_slug"):
+        item["tale_slug"] = data["tale_slug"]
+    if data.get("tale_title"):
+        item["tale_title"] = data["tale_title"]
     if full:
         item["video"] = data.get("video")
     return item

@@ -128,6 +128,24 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
 CHEST_REWARD_SUMMARY = "бонусная страница с заданием и ещё сюрпризы"
 
 
+def canonical_tale_slug(tale_slug: str) -> str:
+    """Приводит slug урока или сказки к ключу папки наград сундука."""
+    slug = (tale_slug or "").strip()
+    if not slug:
+        return ""
+    if slug in TALE_CHEST_ITEMS:
+        return slug
+
+    from lessons.loader import get_lesson
+
+    lesson = get_lesson(slug)
+    if lesson:
+        canonical = (lesson.get("tale_slug") or "").strip()
+        if canonical:
+            return canonical
+    return slug
+
+
 def _rewards_dir(tale_slug: str) -> Path:
     return ROOT / "static" / "chest" / "rewards" / tale_slug
 
@@ -172,7 +190,7 @@ def _build_item(entry: dict[str, Any], tale_slug: str, tale_title: str) -> dict[
 
 def rewards_for_tale(tale_slug: str, tale_title: str) -> list[dict[str, Any]]:
     """Все предметы сундука для показа при открытии (включая письмо)."""
-    slug = (tale_slug or "").strip()
+    slug = canonical_tale_slug((tale_slug or "").strip())
     title = (tale_title or "").strip() or "Сказка недели"
     entries = TALE_CHEST_ITEMS.get(slug) or CHEST_CONTENTS
     return [_build_item(entry, slug, title) for entry in entries]
