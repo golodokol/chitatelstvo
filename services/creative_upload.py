@@ -71,13 +71,11 @@ async def handle_creative_upload(
     if not lesson.get("creative_tasks"):
         raise HTTPException(404, "Творческие задания для этого урока не настроены.")
 
-    if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type="creative_task"):
-        return {
-            "status": "duplicate",
-            "message": "Творческие задания уже отправлены — бейдж «Сказочник» получен.",
-        }
+    already_done = repo.child_has_learning_event(
+        db, child_id, tale_title=tale_title, event_type="creative_task"
+    )
 
-    if not _lesson_prerequisite_met(db, child_id, tale_title, lesson):
+    if not already_done and not _lesson_prerequisite_met(db, child_id, tale_title, lesson):
         raise HTTPException(
             400,
             "Сначала завершите задания урока выше, затем загрузите выполненные творческие работы.",
@@ -114,6 +112,16 @@ async def handle_creative_upload(
             }
         )
 
+    if already_done:
+        return {
+            "status": "duplicate",
+            "files_saved": len(saved),
+            "message": (
+                f"Файлы сохранены ({len(saved)}). "
+                "Творческие задания уже были отправлены ранее — бейдж «Сказочник» получен."
+            ),
+        }
+
     status, event_id = submit_learning_event(
         db,
         child_id=child_id,
@@ -134,6 +142,9 @@ async def handle_creative_upload(
         "message": (
             "Загружено! Бейдж «Сказочник» и +3 Словика начисляются."
             if status == "accepted"
-            else "Творческие задания уже были отправлены ранее."
+            else (
+                f"Файлы сохранены ({len(saved)}). "
+                "Творческие задания уже были отправлены ранее — бейдж «Сказочник» получен."
+            )
         ),
     }

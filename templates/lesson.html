@@ -1353,7 +1353,8 @@
 
       function showCreativeMsg(text, type) {
         if (!msg) return;
-        msg.className = 'chit-msg ' + (type === 'ok' ? 'ok' : 'err');
+        const cls = type === 'ok' ? 'ok' : type === 'info' ? 'info' : 'err';
+        msg.className = 'chit-msg ' + cls;
         msg.textContent = text;
         msg.style.display = 'block';
       }
@@ -1393,12 +1394,20 @@
             btn.disabled = false;
             return;
           }
-          if (data.status === 'accepted' || data.status === 'duplicate') {
+          if (data.status === 'accepted') {
             lessonState.creativeDone = true;
             markDone('step-creative');
             onReward('creative_task', data.status);
             input.disabled = true;
             showCreativeMsg(data.message || 'Готово!', 'ok');
+          } else if (data.status === 'duplicate') {
+            lessonState.creativeDone = true;
+            markDone('step-creative');
+            input.disabled = true;
+            showCreativeMsg(
+              data.message || 'Творческие задания уже были отправлены ранее.',
+              data.files_saved ? 'ok' : 'info'
+            );
           } else {
             showCreativeMsg(data.message || 'Не удалось отправить', 'err');
             btn.disabled = false;
