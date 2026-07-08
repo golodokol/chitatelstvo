@@ -308,10 +308,10 @@ def _redirect_admin_meeting(
     return RedirectResponse(url, status_code=303)
 
 
-def _parse_child_age(raw: str | None) -> int | None:
+def _parse_child_birth_date(raw: str | None):
     if raw is None or str(raw).strip() == "":
         return None
-    return int(raw)
+    return str(raw).strip()
 
 
 def _parse_tale_number(raw: str | None) -> int | None:
@@ -397,7 +397,7 @@ def admin_enroll_new(
     parent_email: str = Form(...),
     parent_telegram: str = Form(default=""),
     child_name: str = Form(...),
-    child_age: str = Form(default=""),
+    child_birth_date: str = Form(default=""),
     notification_channel: str = Form(default="email"),
     module_id: int = Form(...),
     chosen_stage: str = Form(...),
@@ -411,7 +411,7 @@ def admin_enroll_new(
             parent_email=parent_email.strip(),
             parent_telegram=parent_telegram.strip() or None,
             child_name=child_name.strip(),
-            child_age=_parse_child_age(child_age),
+            child_birth_date=_parse_child_birth_date(child_birth_date),
             notification_channel=notification_channel.strip() or "email",
             module_id=module_id,
             chosen_stage=chosen_stage.strip(),
