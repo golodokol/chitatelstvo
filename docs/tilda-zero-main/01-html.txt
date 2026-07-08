@@ -24,37 +24,42 @@
 </header>
 
 <!-- HERO -->
-<section class="hero paper-bg" id="top">
-  <div class="hero__inner">
-    <div class="hero__copy">
-      <div class="hero__badge"><em>ЧИТАТЕЛЬСТВО</em> · онлайн-школа литературного чтения для детей</div>
+<section class="hero hero--premium paper-bg" id="top">
+  <div class="hero__grid">
+    <div class="hero__badge hero__badge--hero-top">
+      <span class="hero__badge-line hero__badge-line--sub">онлайн-школа литературного чтения</span>
+      <span class="hero__badge-line hero__badge-line--title"><em>ЧИТАТЕЛЬСТВО</em></span>
+    </div>
+
+    <div class="hero__content">
       <h1>Понимать книги — с удовольствием</h1>
-    </div>
-
-    <div class="hero__showcase is-active" id="hero-books">
-      <p class="hero__showcase-label">Выберите формат — нажмите на книгу</p>
-      <div class="book-stack" role="group" aria-label="Три формата курса">
-        <button type="button" class="book" data-idx="0" aria-label="Разовое — одна сказка">
-          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
-        </button>
-        <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа — 8 сказок">
-          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
-        </button>
-        <button type="button" class="book" data-idx="2" aria-label="Блок — 4 сказки">
-          <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
-        </button>
-      </div>
-      <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>6 июля</strong> и <strong>27 июля</strong></p>
-      <p class="hero__visual-hint">нажмите на книгу — текст изменится</p>
-    </div>
-
-    <div class="hero__copy">
-      <p class="hero__subtitle">Видеоуроки по сказкам и задания на понимание текста — ребёнок читает с удовольствием, а вы видите результат на личной странице</p>
+      <p class="hero__lead">Видеоуроки по сказкам и задания на понимание текста — ребёнок читает с удовольствием, а вы видите результат на личной странице</p>
       <p class="hero__price">от <strong>1 490 ₽</strong> · одна сказка или блок из 4</p>
-      <div class="hero__actions">
-        <a class="btn" href="#program">Записаться на курс</a>
-        <a class="btn btn--outline" href="#programs">Смотреть программы</a>
+      <div class="hero__cta">
+        <div class="hero__actions">
+          <a class="btn btn--hero" href="#program">Записаться на курс</a>
+          <a class="btn btn--outline" href="#programs">Смотреть программы</a>
+        </div>
       </div>
+    </div>
+
+    <div class="hero__visual">
+      <div class="hero__showcase is-active" id="hero-books">
+        <p class="hero__showcase-label">Выберите формат — нажмите на книгу</p>
+        <div class="book-stack" role="group" aria-label="Три формата курса">
+          <button type="button" class="book" data-idx="0" aria-label="Разовое — одна сказка">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
+          </button>
+          <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа — 8 сказок">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
+          </button>
+          <button type="button" class="book" data-idx="2" aria-label="Блок — 4 сказки">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
+          </button>
+        </div>
+        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>6 июля</strong> и <strong>27 июля</strong></p>
+      </div>
+      <a href="#quiz" class="hero__visual-gift">Получите в подарок один урок-сказку</a>
     </div>
   </div>
   <p class="hero__scroll"><a href="#quote-hero">↓ листайте вниз — там программы и запись</a></p>
@@ -533,14 +538,29 @@
 <!-- FOUNDER -->
 <section class="section founder reveal">
   <div class="section__inner">
-    <span class="section__chapter"><em>глава 9</em> · основатель</span>
+    <span class="section__chapter"><em>глава 9</em> · команда</span>
     <h2 class="section__title">Кто стоит за школой</h2>
-    <div class="founder__card">
-      <img class="founder__photo" src="https://api.chitatelstvo.ru/assets/founder-olga.jpg" alt="Рощина Ольга Владимировна" width="220" height="260">
-      <div class="founder__body">
-        <h3 class="founder__name">Рощина Ольга Владимировна</h3>
-        <p class="founder__bio">Основатель онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. Мама четырёх детей, основатель книжного в Москве <a href="https://blog.dobrolavka.ru/" target="_blank" rel="noopener"><strong>ДоброЛавка</strong></a></p>
-      </div>
+    <div class="founder__grid">
+      <article class="founder__card">
+        <div class="founder__photo-wrap">
+          <img class="founder__photo founder__photo--olga" src="https://api.chitatelstvo.ru/assets/founder-olga.jpg" alt="Рощина Ольга" width="200" height="240" loading="lazy">
+        </div>
+        <div class="founder__body">
+          <h3 class="founder__name">Рощина Ольга</h3>
+          <p class="founder__role">Основатель</p>
+          <p class="founder__bio">Основательница онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. В проекте отвечаю за идею и организацию, реализацию курсов, создание сайта и программу геймификации — чтобы ребёнку было интересно читать, а родителю видеть прогресс. Мама четырёх детей, основатель книжного в Москве <a href="https://blog.dobrolavka.ru/" target="_blank" rel="noopener"><strong>ДоброЛавка</strong></a></p>
+        </div>
+      </article>
+      <article class="founder__card">
+        <div class="founder__photo-wrap">
+          <img class="founder__photo founder__photo--anastasia" src="https://api.chitatelstvo.ru/assets/founder-anastasia.jpg" alt="Чирва Анастасия" width="200" height="240" loading="lazy">
+        </div>
+        <div class="founder__body">
+          <h3 class="founder__name">Чирва Анастасия</h3>
+          <p class="founder__role">Преподаватель и методист курсов</p>
+          <p class="founder__bio">Методист онлайн-курсов, преподаватель в FoxFord. Отвечаю за качество курса и разработку образовательных продуктов. Моя задача — чтобы ученики пришли к результату и остались довольны обучением, а родители видели мотивацию детей и желание развиваться дальше. В этом — суперсила методистов.</p>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -562,6 +582,82 @@
     <p class="footer__copy">© Читательство · chitatelstvo.ru</p>
   </div>
 </footer>
+
+<div class="qz-modal" id="qz-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="qz-modal-title">
+  <div class="qz-modal__backdrop" data-qz-close tabindex="-1"></div>
+  <div class="qz-modal__dialog">
+    <button type="button" class="qz-modal__close" data-qz-close aria-label="Закрыть квиз"><span class="qz-modal__close-icon" aria-hidden="true"></span></button>
+    <div id="chit-quiz">
+      <div class="qz-shell">
+        <div class="qz-card">
+          <img class="qz-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo-quiz.png?v=20260616a" alt="Читательство" width="220" height="220" loading="lazy">
+          <div class="qz-intro-gift">
+            <p class="qz-intro-gift__badge">Демо-доступ к платформе и урок в подарок!</p>
+            <p class="qz-intro-gift__sub">Ответьте на 5 вопросов и получите чек-лист «10 признаков, что ребёнок не понимает прочитанное» сразу на email. Демо-доступ и бесплатный урок-сказку с рекомендациями от основателя отправим чуть позже.</p>
+          </div>
+          <h2 id="qz-modal-title" class="qz-visually-hidden">Подборка программы чтения</h2>
+          <div class="qz-progress" aria-hidden="true">
+            <div class="qz-progress__meta">
+              <span class="qz-progress__label">Вопрос 1 из 5</span>
+              <span class="qz-progress__pct">0%</span>
+            </div>
+            <div class="qz-progress__bar"><div class="qz-progress__fill"></div></div>
+          </div>
+          <div id="qz-questions"></div>
+          <section class="qz-step" data-step="form">
+            <h2 class="qz-title">Почти готово</h2>
+            <p class="qz-sub">Оставьте контакты — пришлём PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email.</p>
+            <div class="qz-gift">
+              <p class="qz-gift__label">🎁 Что вы получите</p>
+              <p><strong>Сейчас:</strong> PDF-чек-лист на email — проверить понимание текста вместе с ребёнком.</p>
+              <p><strong>Чуть позже:</strong> личное письмо от основателя с рекомендациями и подарком — 1 урок по вашему запросу.</p>
+            </div>
+            <form id="qz-form" novalidate>
+              <div class="qz-fields">
+                <div class="qz-field">
+                  <label for="qz-parent-name">Имя родителя</label>
+                  <input id="qz-parent-name" name="parent_name" type="text" autocomplete="name" required>
+                </div>
+                <div class="qz-field">
+                  <label for="qz-parent-email">Email</label>
+                  <input id="qz-parent-email" name="parent_email" type="email" autocomplete="email" required>
+                </div>
+                <div class="qz-field">
+                  <label for="qz-child-name">Имя ребёнка</label>
+                  <input id="qz-child-name" name="child_name" type="text" autocomplete="off" required>
+                </div>
+                <div class="qz-field">
+                  <label for="qz-child-age">Возраст ребёнка</label>
+                  <input id="qz-child-age" name="child_age" type="number" inputmode="numeric" min="1" max="99" autocomplete="off" required>
+                  <p class="qz-age-note">Наши программы пока рассчитаны на возраст 6–11 лет</p>
+                </div>
+              </div>
+              <button type="submit" class="qz-btn qz-btn--submit" style="width:100%">Получить PDF-чек-лист</button>
+              <p class="qz-consent">У нас нет отдела продаж, поэтому доставать рекламой и спамом мы не будем 🙌 Нажимая кнопку, вы соглашаетесь на обработку персональных данных. <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a></p>
+              <p class="qz-error" role="alert"></p>
+            </form>
+          </section>
+          <section class="qz-step" data-step="success">
+            <div class="qz-success-icon" aria-hidden="true">✓</div>
+            <h2 class="qz-title" style="text-align:center">Спасибо!</h2>
+            <p class="qz-sub" style="text-align:center">Мы получили ваши ответы.</p>
+            <p style="text-align:center;margin:0 0 12px"><strong>PDF-чек-лист уже на вашем email.</strong></p>
+            <p style="text-align:center;margin:0 0 12px">Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
+            <div class="qz-success-links">
+              <a class="qz-link-btn" href="https://api.chitatelstvo.ru/quiz/checklist.pdf?v=20260615b" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
+              <a class="qz-link-btn" href="#program" data-qz-close style="background:var(--qz-blue);color:#fff;border-color:transparent">Записаться на программу</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="#quiz" class="qz-launcher" id="qz-launcher" aria-haspopup="dialog" aria-controls="qz-modal">
+  <span class="qz-launcher__icon" aria-hidden="true">🎁</span>
+  <span class="qz-launcher__text">Подборка + подарок</span>
+</a>
 
 <div class="feedback-tab" id="feedback-tab">
   <div class="feedback-tab__panel" id="feedback-tab-panel" role="dialog" aria-label="Обратная связь" aria-hidden="true">
