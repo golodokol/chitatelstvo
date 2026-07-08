@@ -19,6 +19,7 @@ from gamification.rules import EVENT_RULES, LEVELS, LEVEL_SLOVIK_THRESHOLDS, lev
 from lessons.step_labels import LESSON_STEP_LABELS, event_type_label
 from gamification.sloviki import (
     COMPANION_HINTS,
+    POINTS_COUNTER_SLOVIK,
     chest_slovik_key,
     companion_key,
     mission_slovik_key,
@@ -772,5 +773,5 @@ def build_child_cabinet(
         "recent_toast": recent_toast,
         "continue_url": continue_url,
         "slovik_main_url": slovik_url("main"),
-        "slovik_preparing_url": slovik_url("dreams"),
+        "slovik_preparing_url": slovik_url(POINTS_COUNTER_SLOVIK),
     }

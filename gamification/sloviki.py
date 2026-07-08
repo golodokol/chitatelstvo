@@ -27,6 +27,7 @@ EVENT_SLOVIK: dict[str, str] = {
     "first_task": "walks",
     "lesson_complete": "reads",
     "emotion_quiz": "dreams",
+    "reading_practice": "reads",
     "comprehension": "writes",
     "meaning_analysis": "dreams",
     "creative_task": "writes",
@@ -40,6 +41,9 @@ EVENT_SLOVIK: dict[str, str] = {
 
 BIG_EVENT_SLOVIK: frozenset[str] = frozenset({"module_complete", "streak_3"})
 
+# Иконка счётчика «Словики» в кабинете (монетка), не персонаж шага урока.
+POINTS_COUNTER_SLOVIK = "reward"
+
 MISSION_SLOVIK: dict[str, str] = {
     "read": "reads",
     "quiz": "writes",
@@ -51,6 +55,7 @@ MISSION_SLOVIK: dict[str, str] = {
 LESSON_STEP_SLOVIK: dict[str, str] = {
     "video": "reads",
     "emotion": "dreams",
+    "reading": "reads",
     "comprehension": "writes",
     "meaning": "dreams",
     "retelling": "reads",
@@ -64,6 +69,7 @@ COMPANION_HINTS: dict[str, str] = {
     "preparing": "Скоро начнётся новое приключение!",
     "walks": "Пора в путь — урок ждёт!",
     "reads": LESSON_STEP_LABELS["video"],
+    "reading": LESSON_STEP_LABELS["reading_practice"],
     "emotion": LESSON_STEP_LABELS["emotion_quiz"],
     "writes": LESSON_STEP_LABELS["comprehension_quiz"],
     "dreams": LESSON_STEP_LABELS["tasks"],
@@ -161,11 +167,13 @@ def event_toast_message(event_type: str) -> str:
 def lesson_step_key(
     *,
     has_emotion: bool = False,
+    has_reading: bool = False,
     has_comprehension: bool,
     has_meaning: bool,
     has_retelling: bool = False,
     video_done: bool = False,
     emotion_done: bool = False,
+    reading_done: bool = False,
     comprehension_done: bool = False,
     meaning_done: bool = False,
     retelling_done: bool = False,
@@ -176,6 +184,7 @@ def lesson_step_key(
         or (
             video_done
             and not has_emotion
+            and not has_reading
             and not has_comprehension
             and not has_meaning
             and not has_retelling
@@ -188,8 +197,12 @@ def lesson_step_key(
         return "grows"
     if comprehension_done:
         return "dreams"
-    if emotion_done and has_comprehension:
+    if reading_done and has_comprehension:
         return "writes"
+    if reading_done:
+        return "grows"
+    if emotion_done and (has_reading or has_comprehension):
+        return "reading" if has_reading else "writes"
     if emotion_done and not has_comprehension:
         return "grows"
     if video_done and has_emotion:
