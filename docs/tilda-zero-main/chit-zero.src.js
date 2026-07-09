@@ -271,11 +271,40 @@ var CHIT_SCHEDULE = {
   }
 };
 
+var CHIT_SINGLE_MEETINGS_ISO = {
+  '1': ['2026-07-09', '2026-07-16', '2026-07-23', '2026-07-30'],
+  '2': ['2026-08-06', '2026-08-13', '2026-08-20', '2026-08-27']
+};
+
+var MEETING_ADDON_PRICE = 799;
+
+function todayIsoLocal() {
+  var d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+    String(d.getDate()).padStart(2, '0');
+}
+
+function singleMeetingStatus(stage, taleNum) {
+  var dates = CHIT_SINGLE_MEETINGS_ISO[String(stage)];
+  if (!dates || !taleNum) return 'online_only';
+  var meet = dates[Number(taleNum) - 1];
+  return meet && meet > todayIsoLocal() ? 'with_meeting' : 'online_only';
+}
+
 function taleScheduleHtml(stage, index, tariff) {
   var s = CHIT_SCHEDULE[stage];
   if (!s || index < 0 || index > 3) return '';
+  var taleNum = index + 1;
   var html = '<div class="tale-schedule">';
-  if (tariff === 'single' || tariff === 'with_teacher') {
+  if (tariff === 'single') {
+    html += '<span class="tale-schedule__line">Урок на платформе: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
+    if (singleMeetingStatus(stage, taleNum) === 'with_meeting') {
+      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Встречу можно добавить: <strong>четверг, ' + s.meetings[index] + '</strong> (+' + MEETING_ADDON_PRICE + ' ₽)</span>';
+    } else {
+      html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн · встреча по этой сказке недоступна</span>';
+    }
+  } else if (tariff === 'with_teacher') {
     html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>четверг, ' + s.meetings[index] + '</strong></span>';
     html += '<span class="tale-schedule__line">Урок откроется: понедельник, ' + s.lessons[index] + '</span>';
   } else {
@@ -1419,7 +1448,12 @@ if (faqList) {
     if (state.tariff === 'single') {
       if (state.stage && state.taleNum) {
         html += '<br>' + STAGE_LABEL[state.stage] + ' · ' + TALES[state.group][state.stage][state.taleNum - 1];
-        html += '<br>встреча с преподавателем';
+        html += '<br>' + formatPrice(TARIFF_PRICE.single) + ' · урок на платформе';
+        if (singleMeetingStatus(state.stage, state.taleNum) === 'with_meeting') {
+          html += '<br>встречу можно добавить при оплате (+' + MEETING_ADDON_PRICE + ' ₽)';
+        } else {
+          html += '<br>только онлайн';
+        }
       } else if (state.stage) {
         html += '<br><span class="summary-empty">Выберите сказку</span>';
       } else {
@@ -1475,7 +1509,11 @@ if (faqList) {
     }
   }
 
-  function showDateBox() { elDateBox.classList.toggle('is-visible', !!state.tariff); }
+  function showDateBox() {
+    elDateBox.classList.toggle('is-visible', !!state.tariff);
+    var hint = document.getElementById('chit-step3-hint');
+    if (hint) hint.hidden = state.tariff !== 'single';
+  }
 
   function onGroupClick(btn) {
     state.group = btn.getAttribute('data-group');

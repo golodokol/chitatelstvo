@@ -288,10 +288,10 @@ window.CHIT_COURSE = (function () {
     if (singleMeetingStatus(stage, taleNum) === 'with_meeting') {
       var sched = SCHEDULE[String(stage)];
       var idx = Number(taleNum) - 1;
-      return 'Встреча с преподавателем · чт ' + (sched && sched.meetings[idx] ? sched.meetings[idx] : '') +
+  return 'Встречу можно добавить · чт ' + (sched && sched.meetings[idx] ? sched.meetings[idx] : '') +
         ' (+' + MEETING_ADDON_PRICE + ' ₽)';
     }
-    return 'Только онлайн · сразу после оплаты';
+    return 'Только онлайн · встреча по этой сказке недоступна';
   }
 
   function singleTaleBadgeHtml(stage, taleNum) {

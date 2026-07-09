@@ -470,6 +470,7 @@
 
             '<div class="cc-step-block" id="cc-date-box" style="display:none">' +
               '<div class="cc-step-label">шаг 2 · когда начать</div>' +
+              '<p class="cc-step-hint" id="cc-step-hint" hidden>990 ₽ — урок на платформе. Живую встречу можно добавить (+799 ₽), если дата по сказке ещё доступна.</p>' +
               '<div class="cc-pills" id="cc-stages">' +
                 '<button type="button" class="cc-pill" data-stage="1">Старт курса 6 июля</button>' +
                 '<button type="button" class="cc-pill" data-stage="2">Старт 3 августа</button>' +
@@ -660,6 +661,12 @@
         if (state.stage && state.taleNum) {
           html += '<br>' + esc(D.STAGE_LABEL[state.stage]) + ' · ' +
             esc(D.TALES[group][state.stage][state.taleNum - 1]);
+          html += '<br>' + esc(D.formatPrice(D.TARIFF_PRICE.single)) + ' · урок на платформе';
+          if (D.singleMeetingStatus(state.stage, state.taleNum) === 'with_meeting') {
+            html += '<br>встречу можно добавить при оплате (+' + D.MEETING_ADDON_PRICE + ' ₽)';
+          } else {
+            html += '<br>только онлайн';
+          }
         } else {
           html += '<br><em>Выберите дату и сказку</em>';
         }
@@ -678,11 +685,15 @@
       if (!s) return '';
       var html = '<span style="font-size:13px;color:var(--muted)">';
       if (tariff === 'single') {
-        html += esc(D.singleMeetingLabel(stage, index + 1)) + '<br>';
+        html += 'Урок на платформе: пн ' + s.lessons[index] + '<br>';
+        html += esc(D.singleMeetingLabel(stage, index + 1));
       } else if (tariff === 'with_teacher') {
         html += 'Встреча: чт ' + s.meetings[index] + '<br>';
+        html += 'Урок: пн ' + s.lessons[index];
+      } else {
+        html += 'Урок: пн ' + s.lessons[index];
       }
-      html += 'Урок: пн ' + s.lessons[index] + '</span>';
+      html += '</span>';
       return html;
     }
 
@@ -731,6 +742,8 @@
         c.classList.toggle('is-active', c === card);
       });
       elDateBox.style.display = 'block';
+      var hint = document.getElementById('cc-step-hint');
+      if (hint) hint.hidden = state.tariff !== 'single';
       renderTales();
       syncHidden();
     };

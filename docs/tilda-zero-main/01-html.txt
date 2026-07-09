@@ -430,6 +430,7 @@
 
       <div class="step-block date-box" id="chit-date-box">
         <div class="step-label"><em>шаг 3</em> · когда начать</div>
+        <p class="step-hint" id="chit-step3-hint" hidden>990 ₽ — урок на платформе. Живую встречу можно добавить (+799 ₽), если дата по сказке ещё доступна.</p>
         <div class="stage-row" id="chit-stages">
           <button type="button" class="pill" data-stage="1">Старт курса 6 июля</button>
           <button type="button" class="pill" data-stage="2">Старт 3 августа</button>

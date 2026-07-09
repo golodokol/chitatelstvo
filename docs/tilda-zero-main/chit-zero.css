@@ -1286,6 +1286,12 @@
     .step-block { margin-bottom: 32px; }
     .step-block--choice { margin-bottom: 24px; }
     .step-block--choice .step-label { margin-bottom: 10px; }
+    .step-hint {
+      margin: -6px 0 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
     .group-title { font-size: 17px; font-weight: 800; color: var(--blue); margin: 0 0 12px; }
     .group-block { margin-bottom: 20px; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1345,6 +1351,8 @@
     .tale-schedule__meet,
     .tale-schedule__line { display: block; }
     .tale-schedule__line { margin-top: 3px; }
+    .tale-schedule__meet--optional { color: #5a4d8c; }
+    .tale-schedule__meet--online { color: var(--blue-deep); }
     .block-preview { font-size: 14px; color: var(--muted); line-height: 1.6; margin-top: 12px; }
     .block-preview__title { margin-bottom: 12px; }
     .block-preview__cards { display: grid; gap: 10px; }

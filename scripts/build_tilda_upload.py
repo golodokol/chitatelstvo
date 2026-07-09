@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260709i"
+VERSION = "20260709j"
 API = "https://api.chitatelstvo.ru/assets"
 OUT = DIR / "00-tilda-zero-upload.html"
 LITE = DIR / "00-tilda-lite.html"

@@ -1833,6 +1833,12 @@ a.cc-book__link:hover .cc-book__frame {
   text-transform: uppercase;
   margin-bottom: 12px;
 }
+.cc-step-hint {
+  margin: -4px 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
 .cc-step-block { margin-bottom: 28px; }
 .cc-pills { display: flex; flex-wrap: wrap; gap: 10px; }
 .cc-pill {
