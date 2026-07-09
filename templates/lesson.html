@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% include "_favicon.html" %}
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260709b">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260709d">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -26,10 +26,10 @@
 <body class="chit-student chit-lesson-page">
   <div class="chit-wrap">
     <p class="chit-back"><a class="chit-back__link" href="{{ progress_url }}">← К странице уроков</a></p>
-    <div class="chit-lesson-companion" aria-label="Словик рядом">
+    <a class="chit-lesson-companion chit-lesson-companion--link" href="#step-video" data-lesson-companion aria-label="Перейти к заданию">
       <img class="chit-lesson-companion__img" src="{{ slovik.initial_url }}" alt="Словик" width="72" height="72" data-lesson-companion-img>
-      <p class="chit-lesson-companion__hint" data-lesson-companion-hint>{{ step_labels.video }}</p>
-    </div>
+      <span class="chit-lesson-companion__hint" data-lesson-companion-hint>{{ step_labels.video }}</span>
+    </a>
     <h1>Читательство · {{ lesson.title }}</h1>
     {% if test_key %}
     <p class="chit-msg info" style="display:block;margin-bottom:12px">Тестовый режим — без ограничений по дате и модулю. Квизы доступны сразу, видео можно не досматривать.</p>
@@ -156,7 +156,7 @@
   </div>
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
-  <script src="/static/lesson_slovik.js?v=20260708e"></script>
+  <script src="/static/lesson_slovik.js?v=20260709d"></script>
   <script src="/static/emotion_wheel.js?v=20260709c"></script>
   <script src="/static/lesson_quiz.js?v=20260708b"></script>
   <script>

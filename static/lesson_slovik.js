@@ -194,25 +194,76 @@
     });
   }
 
+  var STEP_TARGETS = {
+    reads: 'step-video',
+    emotion: 'step-emotion',
+    reading: 'step-reading',
+    writes: 'step-comprehension',
+    dreams: 'step-meaning',
+    retelling: 'step-retelling',
+    grows: 'step-creative',
+    victory: 'step-rating',
+  };
+
+  var companionLinkBound = false;
+
+  function resolveStepTarget(key) {
+    var id = STEP_TARGETS[key];
+    if (!id) return null;
+    if (id === 'step-creative' && !document.getElementById('step-creative')) {
+      if (document.getElementById('step-live-lesson')) return 'step-live-lesson';
+      if (document.getElementById('step-rating')) return 'step-rating';
+    }
+    return document.getElementById(id) ? id : null;
+  }
+
+  function bindCompanionLink() {
+    if (companionLinkBound) return;
+    companionLinkBound = true;
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest('[data-lesson-companion]');
+      if (!link) return;
+      var href = link.getAttribute('href') || '';
+      if (href.charAt(0) !== '#') return;
+      var el = document.getElementById(href.slice(1));
+      if (!el) return;
+      e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
   function updateCompanion(urls, key, hint, stepLabels) {
+    bindCompanionLink();
     var img = document.querySelector('[data-lesson-companion-img]');
     var hintEl = document.querySelector('[data-lesson-companion-hint]');
+    var companion = document.querySelector('[data-lesson-companion]');
     if (img && urls && urls[key]) img.src = urls[key];
-    if (hintEl) {
-      var resolved = hint;
-      if (!resolved && stepLabels) {
-        var map = {
-          reads: 'video',
-          emotion: 'emotion_quiz',
-          reading: 'reading_practice',
-          writes: 'comprehension_quiz',
-          dreams: 'tasks',
-          retelling: 'retelling',
-          grows: 'creative',
-        };
-        resolved = stepLabels[map[key]] || '';
+    var resolved = hint;
+    if (!resolved && stepLabels) {
+      var map = {
+        reads: 'video',
+        emotion: 'emotion_quiz',
+        reading: 'reading_practice',
+        writes: 'comprehension_quiz',
+        dreams: 'tasks',
+        retelling: 'retelling',
+        grows: 'creative',
+      };
+      resolved = stepLabels[map[key]] || '';
+    }
+    resolved = resolved || STEP_HINTS[key] || '';
+    if (hintEl) hintEl.textContent = resolved;
+    var targetId = resolveStepTarget(key);
+    if (companion) {
+      if (targetId) {
+        companion.href = '#' + targetId;
+        companion.setAttribute('aria-label', 'Перейти к заданию: ' + resolved);
+        companion.classList.remove('is-disabled');
+      } else {
+        companion.removeAttribute('href');
+        companion.setAttribute('aria-label', resolved);
+        companion.classList.add('is-disabled');
       }
-      hintEl.textContent = resolved || STEP_HINTS[key] || '';
     }
   }
 

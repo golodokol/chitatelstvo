@@ -2500,6 +2500,38 @@ a.chit-room__helper:focus-visible {
   border-radius: 16px;
 }
 
+a.chit-lesson-companion--link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+a.chit-lesson-companion--link:hover,
+a.chit-lesson-companion--link:focus-visible {
+  border-color: var(--blue-light);
+  box-shadow: 0 4px 16px rgba(91, 127, 166, 0.14);
+}
+
+a.chit-lesson-companion--link:active {
+  transform: scale(0.98);
+}
+
+a.chit-lesson-companion--link:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+a.chit-lesson-companion--link:hover .chit-lesson-companion__hint,
+a.chit-lesson-companion--link:focus-visible .chit-lesson-companion__hint {
+  color: var(--blue-deep);
+}
+
+a.chit-lesson-companion--link.is-disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
 .chit-lesson-companion__img {
   width: 72px;
   height: auto;
