@@ -1496,11 +1496,31 @@ a.cc-book__link:hover .cc-book__frame {
 .cc-tale-row__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 14px;
-  font-size: 12px;
-  font-weight: 700;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
   color: var(--muted);
 }
+
+.cc-tale-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.cc-tale-badge--online {
+  background: #eef4fb;
+  color: var(--blue-deep);
+}
+
+.cc-tale-badge--meet {
+  background: #f3f0fa;
+  color: #5a4d8c;
+}
+
 .cc-tale-list--compact { gap: 8px; }
 
 /* Team */

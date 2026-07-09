@@ -101,7 +101,8 @@
           bookCoverHtml(row[1], stageNum, i + 1) +
           '<div class="cc-tale-row__body">' +
             '<div class="cc-tale-row__title">' + esc(row[1]) + '</div>' +
-            '<div class="cc-tale-row__meta"><span>Сказка ' + esc(row[0]) + '</span>' + dateHtml + '</div>' +
+            '<div class="cc-tale-row__meta"><span>Сказка ' + esc(row[0]) + '</span>' + dateHtml +
+            (D.singleTaleBadgeHtml ? D.singleTaleBadgeHtml(String(stageNum), i + 1) : '') + '</div>' +
           '</div></article>';
       }
       var quoteHtml = info.quote ? '<p class="cc-tale-row__quote">«' + esc(info.quote) + '»</p>' : '';
@@ -165,7 +166,7 @@
             '<a class="cc-btn cc-btn--banner" href="#tariffs">Выбрать формат</a>' +
             '<div class="cc-banner__chips">' +
               '<span class="cc-banner__chip">8 сказок · 6 июля / 3 августа</span>' +
-              '<span class="cc-banner__chip cc-banner__chip--price">от ' + D.formatPrice(1490) + '</span>' +
+              '<span class="cc-banner__chip cc-banner__chip--price">от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</span>' +
             '</div>' +
           '</div>' +
           '<div class="cc-banner__visual">' + heroCoversHtml() + '</div>' +
@@ -194,7 +195,7 @@
       '<strong>Задания на смысл</strong> — чтение по карточкам, вопросы к тексту, творчество',
       '<strong>Личная страница</strong> — баллы, уровни и бейджи, прогресс виден родителю',
       '<strong>Эмоциометр и игровые задания</strong> — ребёнок думает о героях и их переживаниях',
-      '<strong>Живые встречи</strong> — на тарифах «Разовое» и «С преподавателем»'
+      '<strong>Живые встречи</strong> — на тарифе «С преподавателем»; для разового — по желанию, если дата ещё открыта'
     ];
     var how = [
       '<strong>Формат:</strong> онлайн — видео и задания на платформе',
@@ -203,7 +204,7 @@
       '<strong>После оплаты</strong> на email приходит ссылка на личную страницу ребёнка'
     ];
     var formats = [
-      '<strong>Разовое</strong> — 1 сказка на выбор и встреча с преподавателем',
+      '<strong>Разовое</strong> — 1 сказка онлайн на платформе (990 ₽); встреча с преподавателем — по желанию (+799 ₽), если дата ещё доступна',
       '<strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч',
       '<strong>С преподавателем</strong> — 4 сказки и 4 встречи в мини-группе'
     ];
@@ -264,7 +265,7 @@
       '<thead><tr><th></th><th>Разовое</th><th>Индивидуальное</th><th>С преподавателем</th></tr></thead>' +
       '<tbody>' +
       '<tr><td>Сказок</td><td>1</td><td>4</td><td>4</td></tr>' +
-      '<tr><td>Живые встречи</td><td>1</td><td>—</td><td>4</td></tr>' +
+      '<tr><td>Живые встречи</td><td>по желанию</td><td>—</td><td>4</td></tr>' +
       '<tr><td>Свой темп</td><td>✓</td><td>✓</td><td>между встречами</td></tr>' +
       '<tr><td>Личная страница</td><td>✓</td><td>✓</td><td>✓</td></tr>' +
       '<tr><td>Цена</td><td>1 490 ₽</td><td>1 990 ₽</td><td>4 990 ₽</td></tr>' +
@@ -421,7 +422,7 @@
             '<h3 class="cc-program-block__title">Старт 3 августа · 4 сказки</h3>' +
             '<div class="cc-tale-list cc-tale-list--compact">' + taleRowsHtml(program.july, '2', 2, true) + '</div>' +
           '</div>' +
-          '<p class="cc-program-note">Можно начать с одной сказки на тарифе «Разовое» — от ' + D.formatPrice(1490) + '</p>' +
+          '<p class="cc-program-note">Можно начать с одной сказки на тарифе «Разовое» — от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</p>' +
         '</div>' +
       '</section>' +
 
@@ -434,9 +435,9 @@
           '<span class="cc-chapter"><em>тарифы</em></span>' +
           '<h2>Выберите формат</h2>' +
           '<div class="cc-tariffs">' +
-            tariffCard('single', 'Разовое', 'Одна сказка и встреча с преподавателем',
-              ['1 сказка на выбор', 'Видео и интерактивные задания', 'Личная страница прогресса', '1 живая встреча'],
-              true) +
+            tariffCard('single', D.TARIFF_COPY.single.name, D.TARIFF_COPY.single.mood,
+              D.TARIFF_COPY.single.list,
+              D.TARIFF_COPY.single.meetNote, false) +
             tariffCard('self_paced', 'Индивидуальное', '4 сказки — целое летнее путешествие',
               ['4 сказки — один период', 'Свой темп, без расписания', 'Видео и задания на каждую сказку', 'Личная страница прогресса', 'Без живых встреч'],
               false, true) +
@@ -461,7 +462,7 @@
             '<div class="cc-step-block">' +
               '<div class="cc-step-label">шаг 1 · формат</div>' +
               '<div class="cc-pick-cards" id="cc-tariffs">' +
-                pickCard('single', 'Попробовать', 'Разовое', 1490, '1 сказка + встреча') +
+                pickCard('single', D.TARIFF_COPY.single.pickTag, D.TARIFF_COPY.single.name, D.TARIFF_PRICE.single, D.TARIFF_COPY.single.pickHint) +
                 pickCard('self_paced', 'Основной', 'Индивидуальное', 1990, '4 сказки в своём темпе') +
                 pickCard('with_teacher', 'С поддержкой', 'С преподавателем', 4990, '4 сказки + встречи') +
               '</div>' +
@@ -510,14 +511,14 @@
           '<div class="cc-faq" id="cc-faq">' +
             faqItem('Когда начинается курс?', 'Два старта: <strong>6 июля</strong> и <strong>3 августа</strong>. Каждый — блок из 4 сказок (4 недели).') +
             faqItem('Что будет после оплаты?', 'На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс.') +
-            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — 1 490 ₽: одна сказка на выбор и встреча с преподавателем.') +
-            faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка (1 490 ₽). Индивидуальное — 4 сказки без встреч (1 990 ₽). С преподавателем — 4 сказки + 4 встречи (4 990 ₽).') +
+            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, урок открывается после оплаты. Живую встречу можно докупить (+799 ₽), если по выбранной сказке дата встречи ещё не прошла.') +
+            faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').') +
           '</div>' +
         '</div>' +
       '</section>' +
 
       '<div class="cc-mobile-cta" id="cc-mobile-cta" hidden>' +
-        '<a class="cc-btn" href="#enroll">Записаться · от ' + D.formatPrice(1490) + '</a>' +
+        '<a class="cc-btn" href="#enroll">Записаться · от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</a>' +
       '</div>' +
 
       footerHtml();
@@ -529,7 +530,7 @@
 
   function tariffCard(key, name, mood, items, meet, featured) {
     var meetHtml = meet
-      ? '<div class="cc-tariff__meet">Встречи по четвергам<br>Мини-группы до 6 детей</div>'
+      ? '<div class="cc-tariff__meet">' + esc(typeof meet === 'string' ? meet : 'Встречи по четвергам') + '</div>'
       : '<div class="cc-tariff__meet cc-tariff__meet--empty" aria-hidden="true"></div>';
     return '<article class="cc-tariff' + (featured ? ' cc-tariff--featured' : '') + '">' +
       '<h3 class="cc-tariff__name">' + esc(name) + '</h3>' +
@@ -537,7 +538,7 @@
       '<ul class="cc-tariff__list">' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>' +
       meetHtml +
       '<div class="cc-tariff__price">' + D.formatPrice(D.TARIFF_PRICE[key]) + '</div>' +
-      '<div class="cc-tariff__note">' + (key === 'single' ? 'за 1 занятие' : 'за блок из 4 сказок') + '</div>' +
+      '<div class="cc-tariff__note">' + (key === 'single' ? (D.TARIFF_COPY.single.priceNote || 'за 1 занятие') : 'за блок из 4 сказок') + '</div>' +
       '<a class="cc-btn cc-btn--block" href="#enroll" data-tariff-jump="' + key + '">Выбрать</a>' +
       '</article>';
   }
@@ -676,7 +677,9 @@
       var s = D.SCHEDULE[stage];
       if (!s) return '';
       var html = '<span style="font-size:13px;color:var(--muted)">';
-      if (tariff === 'single' || tariff === 'with_teacher') {
+      if (tariff === 'single') {
+        html += esc(D.singleMeetingLabel(stage, index + 1)) + '<br>';
+      } else if (tariff === 'with_teacher') {
         html += 'Встреча: чт ' + s.meetings[index] + '<br>';
       }
       html += 'Урок: пн ' + s.lessons[index] + '</span>';

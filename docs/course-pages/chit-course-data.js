@@ -13,12 +13,42 @@ window.CHIT_COURSE = (function () {
   };
 
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_PRICE = { single: 990, self_paced: 1990, with_teacher: 4990 };
+  var MEETING_ADDON_PRICE = 799;
   var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 3 августа' };
   var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
 
+  var SINGLE_MEETINGS_ISO = {
+    '1': ['2026-07-09', '2026-07-16', '2026-07-23', '2026-07-30'],
+    '2': ['2026-08-06', '2026-08-13', '2026-08-20', '2026-08-27']
+  };
+
+  function todayIsoLocal() {
+    var d = new Date();
+    return d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+
+  var TARIFF_COPY = {
+    single: {
+      name: 'Разовое',
+      mood: 'Одна сказка на платформе — начать можно сразу',
+      list: [
+        '1 сказка на выбор',
+        'Видео и интерактивные задания',
+        'Личная страница прогресса',
+        'Урок открывается после оплаты'
+      ],
+      meetNote: 'Живая встреча — по желанию, если дата ещё доступна (+' + MEETING_ADDON_PRICE + ' ₽)',
+      priceNote: 'за одну сказку онлайн',
+      pickTag: 'Попробовать',
+      pickHint: '1 сказка онлайн · встреча по желанию'
+    }
+  };
+
   var ORDER_PRODUCTS = {
-    single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522' },
+    single: { title: 'Читательство · Разовое', price: 990, uid: '797131986522' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642' },
     with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022' }
   };
@@ -247,6 +277,30 @@ window.CHIT_COURSE = (function () {
     return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
   }
 
+  function singleMeetingStatus(stage, taleNum) {
+    var dates = SINGLE_MEETINGS_ISO[String(stage)];
+    if (!dates || !taleNum) return 'online_only';
+    var meet = dates[Number(taleNum) - 1];
+    return meet && meet > todayIsoLocal() ? 'with_meeting' : 'online_only';
+  }
+
+  function singleMeetingLabel(stage, taleNum) {
+    if (singleMeetingStatus(stage, taleNum) === 'with_meeting') {
+      var sched = SCHEDULE[String(stage)];
+      var idx = Number(taleNum) - 1;
+      return 'Встреча с преподавателем · чт ' + (sched && sched.meetings[idx] ? sched.meetings[idx] : '') +
+        ' (+' + MEETING_ADDON_PRICE + ' ₽)';
+    }
+    return 'Только онлайн · сразу после оплаты';
+  }
+
+  function singleTaleBadgeHtml(stage, taleNum) {
+    var online = singleMeetingStatus(stage, taleNum) === 'online_only';
+    var cls = online ? 'cc-tale-badge cc-tale-badge--online' : 'cc-tale-badge cc-tale-badge--meet';
+    var text = online ? 'Только онлайн' : 'Встреча ещё доступна';
+    return '<span class="' + cls + '">' + text + '</span>';
+  }
+
   var SKILLS = [
     'понимать, о чём книга — на уровне смысла и замысла автора',
     'замечать поступки героев и их мотивы',
@@ -390,6 +444,9 @@ window.CHIT_COURSE = (function () {
     TALE_INFO: TALE_INFO,
     TARIFF_LABEL: TARIFF_LABEL,
     TARIFF_PRICE: TARIFF_PRICE,
+    TARIFF_COPY: TARIFF_COPY,
+    MEETING_ADDON_PRICE: MEETING_ADDON_PRICE,
+    todayIsoLocal: todayIsoLocal,
     STAGE_LABEL: STAGE_LABEL,
     SCHEDULE: SCHEDULE,
     PAY_PAGE_URL: PAY_PAGE_URL,
@@ -405,6 +462,9 @@ window.CHIT_COURSE = (function () {
     taleInfo: taleInfo,
     coverUrl: coverUrl,
     coverSlug: coverSlug,
-    formatPrice: formatPrice
+    formatPrice: formatPrice,
+    singleMeetingStatus: singleMeetingStatus,
+    singleMeetingLabel: singleMeetingLabel,
+    singleTaleBadgeHtml: singleTaleBadgeHtml
   };
 })();

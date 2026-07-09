@@ -1134,6 +1134,28 @@
       max-width: 680px; margin: 0 0 20px;
       font-size: 16px; line-height: 1.55; color: var(--text);
     }
+    .prog-course-link {
+      margin: 0 0 20px;
+    }
+    .prog-course-link a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--white);
+      border: 2px solid var(--border);
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .prog-course-link a:hover {
+      border-color: var(--blue-light);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
     .acc { display: flex; flex-direction: column; gap: 8px; }
     .acc-item {
       background: var(--white); border: 1px solid var(--border);

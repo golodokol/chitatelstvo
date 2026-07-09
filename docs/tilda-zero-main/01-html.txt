@@ -39,7 +39,7 @@
       <div class="hero__cta">
         <div class="hero__actions">
           <a class="btn btn--hero" href="#program">Записаться на курс</a>
-          <a class="btn btn--outline" href="#programs">Смотреть программы</a>
+          <a class="btn btn--outline" href="https://chitatelstvo.ru/programmy">Смотреть программы</a>
         </div>
       </div>
     </div>
@@ -295,22 +295,22 @@
     <div class="tariffs-grid">
       <div class="tariff-card">
         <h3 class="tariff-card__name">Разовое</h3>
-        <p class="tariff-card__mood">Одна сказка и встреча с преподавателем</p>
+        <p class="tariff-card__mood">Одна сказка на платформе — начать можно сразу</p>
         <ul class="tariff-card__list">
           <li>1 сказка на выбор</li>
           <li>Видео и интерактивные задания</li>
           <li>Личная страница прогресса</li>
-          <li>1 живая встреча с преподавателем</li>
+          <li>Урок открывается после оплаты</li>
         </ul>
         <div class="tariff-card__meet-slot">
           <div class="tariff-card__meet">
-            <span class="tariff-card__meet-line">Встреча по четвергам</span>
-            <span class="tariff-card__meet-line">Мини-группы до 6 детей</span>
-            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Точное время — после формирования групп</span>
+            <span class="tariff-card__meet-line">Живая встреча — по желанию</span>
+            <span class="tariff-card__meet-line">Если дата по сказке ещё доступна (+799 ₽)</span>
+            <span class="tariff-card__meet-line tariff-card__meet-line--muted">При выборе сказки подскажем в форме</span>
           </div>
         </div>
-        <div class="tariff-card__price">1 490 ₽</div>
-        <div class="tariff-card__note">за 1 занятие</div>
+        <div class="tariff-card__price">990 ₽</div>
+        <div class="tariff-card__note">за одну сказку онлайн</div>
         <a class="btn btn--block" href="#program">Оплатить</a>
       </div>
       <div class="tariff-card tariff-card--featured">
@@ -410,8 +410,8 @@
           <div class="pick-card" data-tariff="single">
             <div class="pick-card__tag">Попробовать</div>
             <div class="pick-card__name">Разовое</div>
-            <div class="pick-card__price">1 490 ₽</div>
-            <div class="pick-card__hint">1 сказка + встреча по четвергам</div>
+            <div class="pick-card__price">990 ₽</div>
+            <div class="pick-card__hint">1 сказка онлайн · встреча по желанию</div>
           </div>
           <div class="pick-card" data-tariff="self_paced">
             <div class="pick-card__tag">Основной</div>
@@ -521,14 +521,14 @@
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Можно ли начать с одной сказки?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 1 490 ₽: одна сказка на выбор и встреча с преподавателем. Удобный способ познакомиться с форматом.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 990 ₽: одна сказка на платформе, урок открывается после оплаты. Живую встречу можно докупить (+799 ₽), если по выбранной сказке дата встречи ещё не прошла.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Чем отличаются тарифы?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Разовое — 1 сказка и встреча с преподавателем (1 490 ₽). Индивидуальное — 4 сказки в своём темпе, без живых встреч (1 990 ₽). С преподавателем — 4 сказки плюс 4 живые встречи (4 990 ₽).</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Разовое — 1 сказка онлайн (990 ₽). Индивидуальное — 4 сказки в своём темпе, без живых встреч (1 990 ₽). С преподавателем — 4 сказки плюс 4 живые встречи (4 990 ₽).</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">

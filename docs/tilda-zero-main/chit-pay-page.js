@@ -53,7 +53,7 @@
   var HOME_URL = 'https://chitatelstvo.ru/#program';
   var STORE_REC_TYPES = ['762', '205', '200', '210', '215', '405'];
   var ORDER_PRODUCTS = {
-    single: { uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2', title: 'Читательство · Разовое', price: 1490 },
+    single: { uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2', title: 'Читательство · Разовое', price: 990 },
     self_paced: { uid: '206548598642', lid: '205285061796', sku: 'SKU0002', title: 'Читательство · Индивидуальное', price: 1990 },
     with_teacher: { uid: '956231952022', lid: '776534181255', sku: 'SKU0003', title: 'Читательство · С преподавателем', price: 4990 },
     meeting_addon: { uid: '168614126213', lid: '168614126213', sku: 'SKU0004', title: 'Читательство · Занятие с преподавателем', price: 799 }

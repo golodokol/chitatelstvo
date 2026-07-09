@@ -169,26 +169,36 @@ function chitStartLayoutPin() {
 chitReady(function() {
   chitStartLayoutPin();
 
+var COURSE_PAGES = {
+  'grade-1': 'https://chitatelstvo.ru/1-klass',
+  'grade-2': 'https://chitatelstvo.ru/2-klass',
+  'grade-3': 'https://chitatelstvo.ru/3-klass',
+  'grade-4': 'https://chitatelstvo.ru/4-klass',
+  'extra-6-8': 'https://chitatelstvo.ru/6-8-let',
+  'extra-9-11': 'https://chitatelstvo.ru/9-11-let'
+};
+var COURSE_HUB = 'https://chitatelstvo.ru/programmy';
+
 var PROGRAMS = {
   basic: [
-    { title: '1 класс', intro: 'Для учеников 1 класса (примерно 7–8 лет).',
+    { group: 'grade-1', title: '1 класс', intro: 'Для учеников 1 класса (примерно 7–8 лет).',
       june: [['1','Царевна лягушка'],['2','Рассказы из Азбуки Л.Н. Толстой'],['3','Рассказы Н. Носова (Ступеньки, Заплатка, Затейники, Шляпа)'],['4','Кот в сапогах, Мальчик с пальчик Ш. Перро']],
       july: [['5','По щучьему велению'],['6','Сказка о мёртвой царевне и о семи богатырях А.С. Пушкин'],['7','Принцесса на горошине, Дюймовочка Г. Андерсен'],['8','Аля, Кляксич и буква А И.П. Токмакова']] },
-    { title: '2 класс',
+    { group: 'grade-2', title: '2 класс',
       june: [['1','Сказка о рыбаке и рыбке А.С. Пушкин'],['2','Цветик-семицветик В.П. Катаев'],['3','Как муравьишка домой добирался, Где раки зимуют В.В. Бианки'],['4','Гадкий утёнок Г. Андерсен']],
       july: [['5','Филипок + Азбука Л.Н. Толстой'],['6','Незнайка на Луне Н. Носов'],['7','Рикки-Тикки-Тави Р. Киплинг'],['8','Маленькая Баба-Яга, Маленький водяной О. Пройслер']] },
-    { title: '3 класс',
+    { group: 'grade-3', title: '3 класс',
       june: [['1','Сказка о царе Салтане, о сыне его славном и могучем богатыре А.С. Пушкин'],['2','Сказка про храброго зайца, Серая Шейка Д.Н. Мамин-Сибиряк'],['3','Черная курица или Подземные жители А. Погорельский'],['4','Чудесный доктор А. Куприн']],
       july: [['5','Сказка о молодильных яблоках и живой воде, Волшебное кольцо'],['6','Серебряный рубль В. Одоевский'],['7','Аленький цветочек С.Т. Аксаков'],['8','Королевство кривых зеркал В. Губарев']] },
-    { title: '4 класс',
+    { group: 'grade-4', title: '4 класс',
       june: [['1','Уральские сказы П. Бажов'],['2','Сказка о потерянном времени Е. Шварц'],['3','Три толстяка Ю. Олеша'],['4','Остров Сокровищ Р. Стивенсон']],
       july: [['5','Приключения Тома Сойера М. Твен'],['6','Белый Бим, Черное ухо Г. Троепольский'],['7','Пеппи Длинный чулок А. Линдгрен'],['8','Путешествия Гулливера Дж. Свифт']] }
   ],
   extra: [
-    { title: '6–8 лет',
+    { group: 'extra-6-8', title: '6–8 лет',
       june: [['1','Плюшевый заяц, или как игрушки становятся настоящими У. Марджери'],['2','Муми-тролль и комета Т. Янссон'],['3','Шляпа волшебника Т. Янссон'],['4','Приключения медвежонка Паддингтона М. Бонд']],
       july: [['5','Невероятные приключения кролика Эдварда К. ДиКамилло'],['6','Тутта Карлссон Первая и единственная, Людвиг Четырнадцатый и др. Я. Экхольм'],['7','Карлик Нос В. Гауф'],['8','Чарли и шоколадная фабрика Р. Даль']] },
-    { title: '9–11 лет',
+    { group: 'extra-9-11', title: '9–11 лет',
       june: [['1','Опасное лето Т. Янссон'],['2','Рони, дочь разбойника А. Линдгрен'],['3','Собака Пес Д. Пеннак'],['4','Вафельное сердце М. Парр']],
       july: [['5','Чудесное путешествие Нильса с дикими гусями С. Лагерлеф'],['6','Чудесное путешествие Нильса с дикими гусями С. Лагерлеф, 2 часть'],['7','Полианна Э. Портер'],['8','Калиф-аист, Маленький Мук В. Гауф']] }
   ]
@@ -275,8 +285,9 @@ function taleScheduleHtml(stage, index, tariff) {
   return html;
 }
 
-function renderPeriod(title, rows, stageKey) {
+function renderPeriod(title, rows, stageKey, groupKey) {
   var sched = CHIT_SCHEDULE[stageKey];
+  var enrollBase = groupKey && COURSE_PAGES[groupKey] ? COURSE_PAGES[groupKey] + '#enroll' : '#program';
   var cards = rows.map(function(r, i) {
     var info = getTaleInfo(r[1]);
     var quoteHtml = info.quote ? '<p class="tale-card__quote">' + info.quote + '</p>' : '';
@@ -291,7 +302,7 @@ function renderPeriod(title, rows, stageKey) {
       datesHtml +
       '<p class="tale-card__desc">' + info.desc + '</p>' +
       quoteHtml +
-      '<p class="tale-card__action"><a href="#program">→ записаться на эту сказку</a></p>' +
+      '<p class="tale-card__action"><a href="' + enrollBase + '">→ записаться на эту сказку</a></p>' +
       '</div>';
   }).join('');
   return '<div class="prog-period"><div class="prog-period__title">' + title + '</div><div class="tale-cards">' + cards + '</div></div>';
@@ -301,14 +312,19 @@ function buildAccordion(containerId, items) {
   var el = document.getElementById(containerId);
   if (!el) return;
   items.forEach(function(item) {
+    var courseUrl = item.group && COURSE_PAGES[item.group] ? COURSE_PAGES[item.group] : '';
+    var courseLink = courseUrl
+      ? '<p class="prog-course-link"><a href="' + courseUrl + '">Подробнее о курсе →</a></p>'
+      : '';
     var div = document.createElement('div');
     div.className = 'acc-item';
     div.innerHTML =
       '<button type="button" class="acc-head">' + item.title + '</button>' +
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
-        renderPeriod('Старт курса 6 июля', item.june, '1') +
-        renderPeriod('Старт 3 августа', item.july, '2') +
+        courseLink +
+        renderPeriod('Старт курса 6 июля', item.june, '1', item.group) +
+        renderPeriod('Старт 3 августа', item.july, '2', item.group) +
       '</div>';
     el.appendChild(div);
   });
@@ -326,6 +342,11 @@ function buildAccordion(containerId, items) {
 
 buildAccordion('acc-basic', PROGRAMS.basic);
 buildAccordion('acc-extra', PROGRAMS.extra);
+
+(function wireCourseHubLinks() {
+  var hub = document.querySelector('.hero__actions a.btn--outline[href="#programs"]');
+  if (hub) hub.setAttribute('href', COURSE_HUB);
+})();
 
 var faqList = document.getElementById('faq-list');
 if (faqList) {
@@ -351,10 +372,10 @@ if (faqList) {
     'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' }
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_PRICE = { single: 990, self_paced: 1990, with_teacher: 4990 };
   var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 3 августа' };
   var ORDER_PRODUCTS = {
-    single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
+    single: { title: 'Читательство · Разовое', price: 990, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
     with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022', lid: '776534181255', sku: 'SKU0003' }
   };
@@ -1617,7 +1638,7 @@ if (faqList) {
   }
 
   var BOOK_TEXTS = [
-    '<strong style="color:var(--blue)">Разовое</strong> — одна сказка и встреча с преподавателем',
+    '<strong style="color:var(--blue)">Разовое</strong> — одна сказка онлайн (990 ₽), встреча по желанию',
     '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса.',
     '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
   ];
