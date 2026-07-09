@@ -4,7 +4,8 @@ import secrets
 import uuid
 from datetime import date, datetime, timezone
 
-from sqlalchemy import delete as sa_delete, select
+from sqlalchemy import delete as sa_delete, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from db.models import ChestClaim, Child, ChildBadge, Enrollment, Event, Family, ParentNotification, Reward, TaleRating
@@ -353,11 +354,11 @@ def create_event(
     lesson_date: date | None,
     notes: str | None,
     payload: dict,
-) -> Event:
+) -> tuple[Event, bool]:
     key = make_idempotency_key(child_id, event_type, tale_title, lesson_date)
     existing = get_event_by_idempotency(db, key)
     if existing:
-        return existing
+        return existing, False
 
     event = Event(
         idempotency_key=key,
@@ -370,21 +371,31 @@ def create_event(
         status="pending",
     )
     db.add(event)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raced = get_event_by_idempotency(db, key)
+        if raced:
+            return raced, False
+        raise
     db.refresh(event)
-    return event
+    return event, True
 
 
 def mark_event_processing(db: Session, event_id: uuid.UUID) -> Event | None:
-    event = db.get(Event, event_id)
-    if not event:
+    stmt = (
+        update(Event)
+        .where(Event.id == event_id, Event.status == "pending")
+        .values(status="processing")
+        .returning(Event.id)
+    )
+    row = db.execute(stmt).first()
+    if not row:
+        db.rollback()
         return None
-    if event.status in ("done", "processing"):
-        return None
-    event.status = "processing"
     db.commit()
-    db.refresh(event)
-    return event
+    return db.get(Event, event_id)
 
 
 def save_reward_and_update_child(
@@ -496,11 +507,46 @@ def store_notification(
     return note
 
 
+def has_notification_for_event(
+    db: Session,
+    *,
+    event_id: uuid.UUID,
+    channel: str,
+) -> bool:
+    stmt = (
+        select(ParentNotification.id)
+        .where(
+            ParentNotification.event_id == event_id,
+            ParentNotification.channel == channel,
+        )
+        .limit(1)
+    )
+    return db.scalars(stmt).first() is not None
+
+
+def claim_notification_send(db: Session, note_id: uuid.UUID) -> ParentNotification | None:
+    """Атомарно забирает pending-уведомление в отправку (защита от двух worker)."""
+    note = db.scalars(
+        select(ParentNotification)
+        .where(ParentNotification.id == note_id)
+        .with_for_update(skip_locked=True)
+    ).first()
+    if not note or note.status != "pending":
+        db.rollback()
+        return None
+    note.status = "failed"
+    note.error_message = "__sending__"
+    db.commit()
+    db.refresh(note)
+    return note
+
+
 def mark_notification_sent(db: Session, note_id: uuid.UUID) -> None:
     note = db.get(ParentNotification, note_id)
     if note:
         note.status = "sent"
         note.sent_at = _utcnow()
+        note.error_message = None
         db.commit()
 
 

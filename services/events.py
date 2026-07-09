@@ -25,7 +25,7 @@ def submit_learning_event(
     Создаёт событие и ставит в очередь.
     Возвращает (status, event_id): accepted | duplicate.
     """
-    event = repo.create_event(
+    event, created = repo.create_event(
         db,
         child_id=child_id,
         event_type=event_type,
@@ -34,7 +34,7 @@ def submit_learning_event(
         notes=notes,
         payload=payload or {},
     )
-    if event.status == "done":
+    if not created:
         return "duplicate", event.id
 
     enqueue("process_event", {"event_id": str(event.id)})

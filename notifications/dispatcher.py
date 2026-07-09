@@ -46,51 +46,54 @@ def dispatch_parent_notifications(
     notification_ids: list[uuid.UUID] = []
 
     # 1. Web — всегда (альтернатива без Telegram и без спама в почту)
-    web_note = repo.store_notification(
-        db,
-        family_id=family.id,
-        child_id=child.id,
-        event_id=event_id,
-        channel="web",
-        message=full_text,
-        status="stored",
-    )
-    notification_ids.append(web_note.id)
+    if not repo.has_notification_for_event(db, event_id=event_id, channel="web"):
+        web_note = repo.store_notification(
+            db,
+            family_id=family.id,
+            child_id=child.id,
+            event_id=event_id,
+            channel="web",
+            message=full_text,
+            status="stored",
+        )
+        notification_ids.append(web_note.id)
 
     channel = family.notification_channel
 
     # 2. Email
     if channel in ("email", "both"):
-        email_note = repo.store_notification(
-            db,
-            family_id=family.id,
-            child_id=child.id,
-            event_id=event_id,
-            channel="email",
-            message=full_text,
-            status="pending",
-        )
-        notification_ids.append(email_note.id)
+        if not repo.has_notification_for_event(db, event_id=event_id, channel="email"):
+            email_note = repo.store_notification(
+                db,
+                family_id=family.id,
+                child_id=child.id,
+                event_id=event_id,
+                channel="email",
+                message=full_text,
+                status="pending",
+            )
+            notification_ids.append(email_note.id)
 
     # 3. Telegram
     if TELEGRAM_ENABLED and channel in ("telegram", "both") and family.telegram_chat_id:
-        tg_note = repo.store_notification(
-            db,
-            family_id=family.id,
-            child_id=child.id,
-            event_id=event_id,
-            channel="telegram",
-            message=full_text,
-            status="pending",
-        )
-        notification_ids.append(tg_note.id)
+        if not repo.has_notification_for_event(db, event_id=event_id, channel="telegram"):
+            tg_note = repo.store_notification(
+                db,
+                family_id=family.id,
+                child_id=child.id,
+                event_id=event_id,
+                channel="telegram",
+                message=full_text,
+                status="pending",
+            )
+            notification_ids.append(tg_note.id)
 
     return notification_ids
 
 
 def send_pending_notification(db: Session, notification_id: uuid.UUID) -> None:
-    note = db.get(ParentNotification, notification_id)
-    if not note or note.status != "pending":
+    note = repo.claim_notification_send(db, notification_id)
+    if not note:
         return
 
     family = db.get(Family, note.family_id)
