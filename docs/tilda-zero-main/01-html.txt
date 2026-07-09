@@ -35,7 +35,7 @@
     <div class="hero__content">
       <h1>Понимать книги — с удовольствием</h1>
       <p class="hero__lead">Видеоуроки по сказкам и задания на понимание текста — ребёнок читает с удовольствием, а вы видите результат на личной странице</p>
-      <p class="hero__price">от <strong>1 490 ₽</strong> · одна сказка или блок из 4</p>
+      <p class="hero__price">от <strong>990 ₽</strong> · одна сказка или блок из 4</p>
       <div class="hero__cta">
         <div class="hero__actions">
           <a class="btn btn--hero" href="#program">Записаться на курс</a>
