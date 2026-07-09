@@ -781,6 +781,7 @@ def build_child_cabinet(
         "key": companion_k,
         "url": slovik_url(companion_k),
         "hint": COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"]),
+        "lesson_url": continue_url,
     }
     recent_toast = recent_event_slovik(events)
 

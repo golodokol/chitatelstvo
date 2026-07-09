@@ -201,9 +201,26 @@ export default function CabinetScreen() {
                   </Text>
                 </View>
                 {cab?.companion?.url ? (
-                  <View style={styles.companionWrap}>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.companionWrap,
+                      (cab?.companion?.lesson_url ?? cab?.continue_url) &&
+                        pressed &&
+                        styles.companionWrapPressed,
+                    ]}
+                    onPress={() =>
+                      openLesson(cab?.companion?.lesson_url ?? cab?.continue_url)
+                    }
+                    disabled={!(cab?.companion?.lesson_url ?? cab?.continue_url)}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      cab.companion.hint
+                        ? `Перейти к уроку: ${cab.companion.hint}`
+                        : "Словик"
+                    }
+                  >
                     <RemoteImage uri={cab.companion.url} width={80} height={80} />
-                  </View>
+                  </Pressable>
                 ) : null}
               </View>
 
@@ -634,6 +651,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgSoft,
     borderRadius: 16,
     padding: 4,
+  },
+  companionWrapPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.97 }],
   },
   statsRow: {
     flexDirection: "row",

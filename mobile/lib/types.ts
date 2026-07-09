@@ -142,7 +142,7 @@ export type CabinetChild = {
     continue_url?: string | null;
     slovik_main_url?: string;
     slovik_preparing_url?: string;
-    companion?: { url?: string; hint?: string; key?: string };
+    companion?: { url?: string; hint?: string; key?: string; lesson_url?: string | null };
     chest?: CabinetChest;
     tracks?: CabinetTrack[];
     weekly_lessons?: CabinetWeeklyLesson[];

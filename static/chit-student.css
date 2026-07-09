@@ -1505,6 +1505,29 @@ body.chit-cabinet--parent {
   color: var(--blue-deep);
 }
 
+a.chit-room__helper,
+.chit-room__helper--link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: 16px;
+  transition: transform 0.15s ease;
+}
+
+a.chit-room__helper:hover .chit-room__helper-img,
+a.chit-room__helper:focus-visible .chit-room__helper-img {
+  box-shadow: 0 6px 20px rgba(91, 127, 166, 0.32);
+}
+
+a.chit-room__helper:active {
+  transform: scale(0.97);
+}
+
+a.chit-room__helper:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
 .chit-room__companion-hint {
   margin: 10px 0 0;
   font-size: 0.88rem;

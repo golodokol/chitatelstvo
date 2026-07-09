@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260709b">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260709c">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -53,10 +53,17 @@
               <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
             </div>
           </div>
+          {% if cab.companion.lesson_url %}
+          <a class="chit-room__helper chit-room__helper--link" href="{{ cab.companion.lesson_url }}" aria-label="Перейти к уроку: {{ cab.companion.hint }}">
+            <img src="{{ cab.companion.url }}" alt="" width="96" height="96" class="chit-room__helper-img" data-companion-img>
+            <span class="chit-room__helper-hint">{{ cab.companion.hint }}</span>
+          </a>
+          {% else %}
           <figure class="chit-room__helper" aria-label="Словик подсказывает">
             <img src="{{ cab.companion.url }}" alt="" width="96" height="96" class="chit-room__helper-img" data-companion-img>
             <figcaption class="chit-room__helper-hint">{{ cab.companion.hint }}</figcaption>
           </figure>
+          {% endif %}
         </header>
 
         <section class="chit-panel chit-panel--stats">
