@@ -663,7 +663,7 @@
             esc(D.TALES[group][state.stage][state.taleNum - 1]);
           html += '<br>' + esc(D.formatPrice(D.TARIFF_PRICE.single)) + ' · урок на платформе';
           if (D.singleMeetingStatus(state.stage, state.taleNum) === 'with_meeting') {
-            html += '<br>присоединиться к занятиям с преподавателем в группе';
+            html += '<br>' + esc(D.singleMeetingLabel(state.stage, state.taleNum).toLowerCase());
           } else {
             html += '<br>только онлайн';
           }

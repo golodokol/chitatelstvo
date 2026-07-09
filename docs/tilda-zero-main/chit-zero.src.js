@@ -292,6 +292,18 @@ function singleMeetingStatus(stage, taleNum) {
   return meet && meet > todayIsoLocal() ? 'with_meeting' : 'online_only';
 }
 
+function singleMeetingLine(stage, taleNum) {
+  var s = CHIT_SCHEDULE[String(stage)];
+  var idx = Number(taleNum) - 1;
+  if (singleMeetingStatus(stage, taleNum) === 'with_meeting' && s && s.meetings[idx]) {
+    return {
+      available: true,
+      date: 'четверг, ' + s.meetings[idx]
+    };
+  }
+  return { available: false };
+}
+
 function taleScheduleHtml(stage, index, tariff) {
   var s = CHIT_SCHEDULE[stage];
   if (!s || index < 0 || index > 3) return '';
@@ -299,8 +311,9 @@ function taleScheduleHtml(stage, index, tariff) {
   var html = '<div class="tale-schedule">';
   if (tariff === 'single') {
     html += '<span class="tale-schedule__line">Урок на платформе: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
-    if (singleMeetingStatus(stage, taleNum) === 'with_meeting') {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Присоединиться к занятиям с преподавателем в группе</span>';
+    var meet = singleMeetingLine(stage, taleNum);
+    if (meet.available) {
+      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Присоединиться к занятиям с преподавателем в группе · <strong>' + meet.date + '</strong></span>';
     } else {
       html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн · встреча по этой сказке недоступна</span>';
     }
@@ -1450,7 +1463,8 @@ if (faqList) {
         html += '<br>' + STAGE_LABEL[state.stage] + ' · ' + TALES[state.group][state.stage][state.taleNum - 1];
         html += '<br>' + formatPrice(TARIFF_PRICE.single) + ' · урок на платформе';
         if (singleMeetingStatus(state.stage, state.taleNum) === 'with_meeting') {
-          html += '<br>присоединиться к занятиям с преподавателем в группе';
+          var meetLine = singleMeetingLine(state.stage, state.taleNum);
+          html += '<br>присоединиться к занятиям с преподавателем в группе · ' + meetLine.date;
         } else {
           html += '<br>только онлайн';
         }
