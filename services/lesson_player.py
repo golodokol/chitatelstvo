@@ -690,11 +690,6 @@ def handle_reading_practice_submit(
     if not child_has_video_unlock(db, child_id, tale_title=tale_title) and not verify_test_lesson_key(test_key):
         raise HTTPException(400, "Сначала посмотрите начало видео-урока.")
 
-    if lesson.get("emotion_quiz") and not repo.child_has_learning_event(
-        db, child_id, tale_title=tale_title, event_type="emotion_quiz"
-    ):
-        raise HTTPException(400, "Сначала выполните задание про эмоции выше.")
-
     expected_ids = {str(card.get("id")) for card in (block.get("cards") or []) if card.get("id")}
     read_ids = {str(cid) for cid in cards_read if cid}
     if not expected_ids or read_ids != expected_ids:

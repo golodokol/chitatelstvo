@@ -681,8 +681,6 @@
     function quizPrerequisitesMet(step) {
       const videoOk = lessonState.videoUnlocked || !!CFG.testKey;
       if (!videoOk) return false;
-      if (CFG.emotion && !lessonState.emotionDone) return false;
-      if (step === 'reading' && CFG.emotion && !lessonState.emotionDone) return false;
       if (step === 'comprehension' && CFG.reading && !lessonState.readingDone) return false;
       if (step === 'meaning' && CFG.comprehension && !lessonState.comprehensionDone) return false;
       if (step === 'retelling' && CFG.meaning && !lessonState.meaningDone) return false;
@@ -706,8 +704,6 @@
           ? 'Сначала отправьте мини-тест выше'
           : step === 'retelling' && CFG.meaning && !lessonState.meaningDone
           ? 'Сначала отправьте задания по сказке выше'
-          : step === 'reading' && CFG.emotion && !lessonState.emotionDone
-          ? 'Сначала выполните задание про эмоции выше'
           : 'Сначала выполните шаги урока выше';
       }
       btn.classList.toggle('is-ready', prereq && complete);
@@ -1338,9 +1334,7 @@
       } else {
         btn.disabled = true;
         btn.setAttribute('disabled', 'disabled');
-        btn.title = CFG.emotion && !lessonState.emotionDone
-          ? 'Сначала выполните задание про эмоции выше'
-          : 'Сначала посмотрите видео-урок выше';
+        btn.title = 'Сначала посмотрите видео-урок выше';
       }
       btn.classList.toggle('is-ready', prereq && complete);
     }
