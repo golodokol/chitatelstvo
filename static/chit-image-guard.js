@@ -3,7 +3,10 @@
  * Не мешает drag-and-drop в заданиях ordering — там тащится .chit-order-card, не img.
  */
 (function () {
-  if (!document.body || !document.body.classList.contains('chit-student')) return;
+  if (!document.body) return;
+  var protectedPage = document.body.classList.contains('chit-student')
+    || document.body.classList.contains('chit-course-page');
+  if (!protectedPage) return;
 
   function protectImg(img) {
     if (!img || img.tagName !== 'IMG') return;
