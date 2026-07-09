@@ -15,9 +15,65 @@ from db.models import Child
 from job_queue.redis_queue import enqueue
 from notifications.email_templates import build_welcome_message
 from notifications.telegram_bot import build_link_url
-from services.enrollment import create_enrollment_from_registration
+from services.enrollment import create_enrollment_from_registration, validate_registration_module
 
 logger = logging.getLogger(__name__)
+
+
+def _registration_response(
+    *,
+    family,
+    child: Child,
+    module_id: int | None,
+    module_title: str | None,
+    is_returning: bool,
+) -> RegisterResponse:
+    progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
+    link_telegram_page = f"{PUBLIC_BASE_URL}/link-telegram/{family.progress_token}/page"
+    telegram_deep_link = build_link_url(family.progress_token)
+    return RegisterResponse(
+        family_id=family.id,
+        child_id=child.id,
+        progress_url=progress_url,
+        link_telegram_page=link_telegram_page,
+        telegram_deep_link=telegram_deep_link,
+        notification_channel=family.notification_channel,
+        module_id=module_id,
+        module_title=module_title,
+        is_returning=is_returning,
+    )
+
+
+def _webhook_registration_already_processed(
+    db: Session,
+    child: Child,
+    body: RegisterWebhook,
+) -> tuple[bool, int | None, str | None]:
+    """Повторный webhook после недавней успешной регистрации — не дублировать запись и письма."""
+    if body.module_id is None:
+        if repo.has_recent_welcome_notification(
+            db,
+            family_id=child.family_id,
+            child_id=child.id,
+        ):
+            return True, None, None
+        return False, None, None
+
+    enrollment_data = validate_registration_module(body)
+    if not enrollment_data:
+        return False, None, None
+
+    module = enrollment_data["module"]
+    existing = repo.find_recent_duplicate_enrollment(
+        db,
+        child_id=child.id,
+        module_id=module["id"],
+        chosen_stage=enrollment_data["chosen_stage"],
+        chosen_tale_number=enrollment_data["chosen_tale_number"],
+    )
+    if existing:
+        return True, module["id"], module["title"]
+    return False, None, None
 
 
 def _dispatch_welcome(
@@ -80,13 +136,9 @@ def _dispatch_welcome(
         )
         enqueue("send_notification", {"notification_id": str(note.id)})
 
-    return RegisterResponse(
-        family_id=family.id,
-        child_id=child.id,
-        progress_url=progress_url,
-        link_telegram_page=link_telegram_page,
-        telegram_deep_link=telegram_deep_link,
-        notification_channel=family.notification_channel,
+    return _registration_response(
+        family=family,
+        child=child,
         module_id=None,
         module_title=module_title,
         is_returning=is_returning,
@@ -114,6 +166,25 @@ def process_registration(
         child_birth_date=body.child_birth_date,
         telegram_chat_id=telegram_chat_id,
     )
+
+    if log_source == "webhook":
+        duplicate, dup_module_id, dup_module_title = _webhook_registration_already_processed(
+            db, child, body
+        )
+        if duplicate:
+            logger.info(
+                "Повтор webhook register %s → child=%s module=%s (пропуск welcome)",
+                body.parent_email,
+                child.id,
+                dup_module_id,
+            )
+            return _registration_response(
+                family=family,
+                child=child,
+                module_id=dup_module_id,
+                module_title=dup_module_title,
+                is_returning=is_returning,
+            )
 
     module_id, module_title = create_enrollment_from_registration(db, child, body)
 

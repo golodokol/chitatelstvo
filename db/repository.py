@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import secrets
 import uuid
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import delete as sa_delete, select, update
 from sqlalchemy.exc import IntegrityError
@@ -276,6 +276,54 @@ def create_enrollment(
     db.commit()
     db.refresh(enrollment)
     return enrollment
+
+
+def find_recent_duplicate_enrollment(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    module_id: int,
+    chosen_stage: str | None,
+    chosen_tale_number: int | None,
+    within_minutes: int = 30,
+) -> Enrollment | None:
+    """Тот же модуль/период/сказка — повторный webhook Tilda после оплаты."""
+    cutoff = _utcnow() - timedelta(minutes=within_minutes)
+    stmt = (
+        select(Enrollment)
+        .where(
+            Enrollment.child_id == child_id,
+            Enrollment.module_id == module_id,
+            Enrollment.created_at >= cutoff,
+        )
+        .order_by(Enrollment.created_at.desc())
+    )
+    for enrollment in db.scalars(stmt):
+        if enrollment.chosen_stage == chosen_stage and enrollment.chosen_tale_number == chosen_tale_number:
+            return enrollment
+    return None
+
+
+def has_recent_welcome_notification(
+    db: Session,
+    *,
+    family_id: uuid.UUID,
+    child_id: uuid.UUID,
+    within_minutes: int = 30,
+) -> bool:
+    cutoff = _utcnow() - timedelta(minutes=within_minutes)
+    stmt = (
+        select(ParentNotification.id)
+        .where(
+            ParentNotification.family_id == family_id,
+            ParentNotification.child_id == child_id,
+            ParentNotification.event_id.is_(None),
+            ParentNotification.channel.in_(("email", "web")),
+            ParentNotification.created_at >= cutoff,
+        )
+        .limit(1)
+    )
+    return db.scalars(stmt).first() is not None
 
 
 def get_active_enrollment(db: Session, child_id: uuid.UUID) -> Enrollment | None:
