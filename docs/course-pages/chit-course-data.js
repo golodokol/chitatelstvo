@@ -289,7 +289,7 @@ window.CHIT_COURSE = (function () {
       var sched = SCHEDULE[String(stage)];
       var idx = Number(taleNum) - 1;
       var date = sched && sched.meetings[idx] ? 'четверг, ' + sched.meetings[idx] : '';
-      return 'Присоединиться к занятиям с преподавателем в группе' + (date ? ' · ' + date : '');
+      return 'Ближайшее занятие с преподавателем: ' + date + ' за ' + MEETING_ADDON_PRICE + ' ₽';
     }
     return 'Только онлайн · встреча по этой сказке недоступна';
   }

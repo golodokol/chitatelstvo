@@ -56,7 +56,7 @@ function taleScheduleHtml(stage, index, tariff) {
     html += '<span class="tale-schedule__line">Урок на платформе: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
     var meet = singleMeetingLine(stage, taleNum);
     if (meet.available) {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Присоединиться к занятиям с преподавателем в группе · <strong>' + meet.date + '</strong></span>';
+      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Ближайшее занятие с преподавателем: <strong>' + meet.date + '</strong> за ' + MEETING_ADDON_PRICE + ' ₽</span>';
     } else {
       html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн · встреча по этой сказке недоступна</span>';
     }
