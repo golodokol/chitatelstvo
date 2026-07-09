@@ -286,10 +286,7 @@ window.CHIT_COURSE = (function () {
 
   function singleMeetingLabel(stage, taleNum) {
     if (singleMeetingStatus(stage, taleNum) === 'with_meeting') {
-      var sched = SCHEDULE[String(stage)];
-      var idx = Number(taleNum) - 1;
-  return 'Встречу можно добавить · чт ' + (sched && sched.meetings[idx] ? sched.meetings[idx] : '') +
-        ' (+' + MEETING_ADDON_PRICE + ' ₽)';
+      return 'Присоединиться к занятиям с преподавателем в группе';
     }
     return 'Только онлайн · встреча по этой сказке недоступна';
   }
