@@ -1,4 +1,4 @@
-"""Обложки читательского дневника: «Обложки книг для рейтинга (N).PNG»."""
+"""Обложки читательского дневника: «Обложки книг для рейтинга (N).PNG» (1–24 этап 1, 25–48 этап 2)."""
 
 from __future__ import annotations
 
@@ -114,8 +114,12 @@ def diary_cover_url_for_tale(
             return entry.url
 
     if title:
+        title_n = _normalize(title)
         for entry in _load_registry():
-            if _title_matches(entry.title_keys, title):
-                return entry.url
+            if not _title_matches(entry.title_keys, title):
+                continue
+            if entry.slug == "extra-9-11-stage2-tale-01" and "2 часть" in title_n:
+                continue
+            return entry.url
 
     return cover_url_for_lesson(module_week, title)

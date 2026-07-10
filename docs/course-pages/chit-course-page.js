@@ -32,6 +32,11 @@
       .replace(/"/g, '&quot;');
   }
 
+  function guillemets(text) {
+    var t = String(text || '').replace(/[.!?…]+\s*$/u, '').trim();
+    return '«' + esc(t) + '»';
+  }
+
   function renderHub() {
     var root = document.getElementById('chit-course');
     var cards = Object.keys(D.META).map(function (g) {
@@ -39,7 +44,7 @@
       return '<a class="cc-hub-card" href="' + esc(m.file) + '">' +
         '<span class="cc-badge">' + esc(m.badge) + '</span>' +
         '<h3>' + esc(m.h1) + '</h3>' +
-        '<p>' + esc(m.age) + ' · 8 сказок · от 1 490 ₽</p>' +
+        '<p>' + esc(m.age) + ' · 8 сказок · от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</p>' +
         '</a>';
     }).join('');
     root.innerHTML =
@@ -88,6 +93,16 @@
     return '<div class="cc-hero__shelf">' + tiles.join('') + '</div>';
   }
 
+  function formatProgramDate(sched, index) {
+    if (!sched || !sched.lessons[index]) return '';
+    var raw = sched.lessons[index];
+    var parts = raw.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return parts[0] + ' ' + parts.slice(1).join(' ').toUpperCase();
+    }
+    return raw.toUpperCase();
+  }
+
   function taleRowsHtml(rows, stageKey, stageNum, compact) {
     var sched = D.SCHEDULE[stageKey];
     return rows.map(function (row, i) {
@@ -97,15 +112,16 @@
         : '';
       var anchorId = taleAnchorId(stageNum, i + 1);
       if (compact) {
-        return '<article class="cc-tale-row cc-tale-row--compact" id="' + esc(anchorId) + '">' +
-          bookCoverHtml(row[1], stageNum, i + 1) +
-          '<div class="cc-tale-row__body">' +
-            '<div class="cc-tale-row__title">' + esc(row[1]) + '</div>' +
-            '<div class="cc-tale-row__meta"><span>Сказка ' + esc(row[0]) + '</span>' + dateHtml +
-            (D.singleTaleBadgeHtml ? D.singleTaleBadgeHtml(String(stageNum), i + 1) : '') + '</div>' +
+        var dateLabel = formatProgramDate(sched, i);
+        return '<article class="cc-tale-program" id="' + esc(anchorId) + '">' +
+          '<div class="cc-tale-program__cover">' + bookCoverHtml(row[1], stageNum, i + 1) + '</div>' +
+          '<div class="cc-tale-program__body">' +
+            (dateLabel ? '<div class="cc-tale-program__date">' + esc(dateLabel) + '</div>' : '') +
+            '<div class="cc-tale-program__title">' + esc(row[1]) + '</div>' +
+            '<p class="cc-tale-program__desc">' + esc(D.programTaleDesc(row[1])) + '</p>' +
           '</div></article>';
       }
-      var quoteHtml = info.quote ? '<p class="cc-tale-row__quote">«' + esc(info.quote) + '»</p>' : '';
+      var quoteHtml = info.quote ? '<p class="cc-tale-row__quote">' + guillemets(info.quote) + '</p>' : '';
       var dateBlock = sched
         ? '<div class="cc-tale-row__date">Урок откроется: пн ' + esc(sched.lessons[i]) + '</div>'
         : '';
@@ -123,7 +139,7 @@
   function reviewsHtml() {
     return '<div class="cc-reviews cc-reviews--strip">' + D.REVIEWS.map(function (r) {
       return '<blockquote class="cc-review">' +
-        '<p class="cc-review__text">«' + esc(r.text) + '»</p>' +
+        '<p class="cc-review__text">' + guillemets(r.text) + '</p>' +
         '<cite class="cc-review__author">' + esc(r.author) + '</cite></blockquote>';
     }).join('') + '</div>';
   }
@@ -161,7 +177,7 @@
               '<span class="cc-banner__tag">' + esc(meta.badge) + '</span>' +
               '<span class="cc-banner__tag cc-banner__tag--ghost">' + esc(meta.age) + '</span>' +
             '</div>' +
-            '<h1>' + esc(heroTitleShort()) + '</h1>' +
+            '<h1>' + heroTitleHtml() + '</h1>' +
             '<p class="cc-banner__lead">' + esc(meta.lead) + '</p>' +
             '<a class="cc-btn cc-btn--banner" href="#tariffs">Выбрать формат</a>' +
             '<div class="cc-banner__chips">' +
@@ -175,6 +191,19 @@
     '</section>';
   }
 
+  function heroTitleHtml() {
+    var h1 = meta.h1;
+    var gradeMatch = h1.match(/^(Летний курс по школьной программе)\s+(\d+\s+класса)$/);
+    if (gradeMatch) {
+      return esc(gradeMatch[1]) + '<br>' + esc(gradeMatch[2]);
+    }
+    var extraMatch = h1.match(/^(Курс по внеклассному чтению)\s+(.+)$/);
+    if (extraMatch) {
+      return esc(extraMatch[1]) + '<br>' + esc(extraMatch[2]);
+    }
+    return esc(h1);
+  }
+
   function heroTitleShort() {
     return meta.h1;
   }
@@ -184,7 +213,7 @@
       '<div class="cc-section__inner cc-intro__inner">' +
         '<p class="cc-intro__pitch">' + esc(D.SCHOOL_PITCH) + '</p>' +
         '<p class="cc-intro__program"><strong>' + esc(D.MODULES[group].label) + '.</strong> ' + esc(meta.intro) + '</p>' +
-        '<p class="cc-intro__quote">«' + esc(D.PULL_QUOTE.text) + '» <cite>— ' + esc(D.PULL_QUOTE.cite) + '</cite></p>' +
+        '<p class="cc-intro__quote">' + guillemets(D.PULL_QUOTE.text) + ' <cite>— ' + esc(D.PULL_QUOTE.cite) + '</cite></p>' +
       '</div>' +
     '</section>';
   }
@@ -268,7 +297,7 @@
       '<tr><td>Живые встречи</td><td>по желанию</td><td>—</td><td>4</td></tr>' +
       '<tr><td>Свой темп</td><td>✓</td><td>✓</td><td>между встречами</td></tr>' +
       '<tr><td>Личная страница</td><td>✓</td><td>✓</td><td>✓</td></tr>' +
-      '<tr><td>Цена</td><td>1 490 ₽</td><td>1 990 ₽</td><td>4 990 ₽</td></tr>' +
+      '<tr><td>Цена</td><td>' + D.formatPrice(D.TARIFF_PRICE.single) + '</td><td>' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '</td><td>' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + '</td></tr>' +
       '</tbody></table></div>';
   }
 
@@ -333,7 +362,7 @@
                 '<h4 class="cc-demo-block__title">Чтение по карточкам</h4>' +
                 '<div class="cc-demo-reading cc-demo-reading--preview">' +
                   '<div class="cc-demo-reading__img"><img src="' + esc(L.reading.image) + '" alt="" loading="lazy"></div>' +
-                  '<p class="cc-demo-reading__text">«' + esc(L.reading.text) + '»</p>' +
+                  '<p class="cc-demo-reading__text">' + guillemets(L.reading.text) + '</p>' +
                 '</div>' +
               '</div>' +
               '<div class="cc-demo-preview__card">' +
@@ -415,12 +444,12 @@
           '<h2>8 сказок — что читаем</h2>' +
           '<p class="cc-section__lead">Два старта на выбор. Каждую неделю открывается новая сказка.</p>' +
           '<div class="cc-program-block">' +
-            '<h3 class="cc-program-block__title">Старт 6 июля · 4 сказки</h3>' +
-            '<div class="cc-tale-list cc-tale-list--compact">' + taleRowsHtml(program.june, '1', 1, true) + '</div>' +
+            '<h3 class="cc-program-block__title">Старт 6 июля</h3>' +
+            '<div class="cc-tale-list cc-tale-list--program">' + taleRowsHtml(program.june, '1', 1, true) + '</div>' +
           '</div>' +
           '<div class="cc-program-block">' +
-            '<h3 class="cc-program-block__title">Старт 3 августа · 4 сказки</h3>' +
-            '<div class="cc-tale-list cc-tale-list--compact">' + taleRowsHtml(program.july, '2', 2, true) + '</div>' +
+            '<h3 class="cc-program-block__title">Старт 3 августа</h3>' +
+            '<div class="cc-tale-list cc-tale-list--program">' + taleRowsHtml(program.july, '2', 2, true) + '</div>' +
           '</div>' +
           '<p class="cc-program-note">Можно начать с одной сказки на тарифе «Разовое» — от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</p>' +
         '</div>' +

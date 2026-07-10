@@ -1,7 +1,9 @@
 /* eslint-disable */
 window.CHIT_COURSE = (function () {
   var ASSETS = 'https://api.chitatelstvo.ru/assets';
-  var COVERS = 'https://api.chitatelstvo.ru/static/diary-covers';
+  var COVERS = 'https://api.chitatelstvo.ru/assets/diary-covers';
+  var COVERS_VERSION = '20260710c';
+  var PAGES_VERSION = '20260710d';
 
   var MODULES = {
     'grade-1': { single: 1, self_paced: 2, with_teacher: 3, label: '1 класс' },
@@ -64,7 +66,14 @@ window.CHIT_COURSE = (function () {
     'grade-3-stage1-tale-02': 9, 'extra-9-11-stage1-tale-02': 10, 'extra-6-8-stage1-tale-02': 11, 'grade-1-stage1-tale-02': 12,
     'grade-1-stage1-tale-03': 13, 'grade-2-stage1-tale-03': 14, 'grade-3-stage1-tale-03': 15, 'grade-4-stage1-tale-03': 16,
     'extra-9-11-stage1-tale-03': 17, 'grade-1-stage1-tale-04': 18, 'grade-2-stage1-tale-04': 19, 'grade-3-stage1-tale-04': 20,
-    'grade-4-stage1-tale-04': 21, 'extra-6-8-stage1-tale-04': 22, 'extra-9-11-stage1-tale-04': 23, 'extra-6-8-stage1-tale-03': 24
+    'grade-4-stage1-tale-04': 21, 'extra-6-8-stage1-tale-04': 22, 'extra-9-11-stage1-tale-04': 23, 'extra-6-8-stage1-tale-03': 24,
+    'grade-1-stage2-tale-01': 25, 'grade-2-stage2-tale-01': 26, 'grade-3-stage2-tale-01': 27, 'grade-4-stage2-tale-01': 28,
+    'extra-6-8-stage2-tale-01': 29, 'extra-9-11-stage2-tale-01': 30, 'grade-1-stage2-tale-02': 31, 'grade-2-stage2-tale-02': 32,
+    'grade-3-stage2-tale-02': 33, 'grade-4-stage2-tale-02': 34, 'extra-6-8-stage2-tale-02': 35,
+    'extra-9-11-stage2-tale-02': 36, 'grade-1-stage2-tale-03': 37,
+    'grade-2-stage2-tale-03': 38, 'grade-3-stage2-tale-03': 39, 'grade-4-stage2-tale-03': 40, 'extra-6-8-stage2-tale-03': 41,
+    'extra-9-11-stage2-tale-03': 42, 'grade-1-stage2-tale-04': 43, 'grade-2-stage2-tale-04': 44, 'grade-3-stage2-tale-04': 45,
+    'grade-4-stage2-tale-04': 46, 'extra-6-8-stage2-tale-04': 47, 'extra-9-11-stage2-tale-04': 48
   };
 
   var TALE_INFO = {
@@ -263,6 +272,17 @@ window.CHIT_COURSE = (function () {
     return TALE_INFO[title] || { desc: 'Сказка из программы Читательства.', quote: null };
   }
 
+  function programTaleDesc(title) {
+    var desc = taleInfo(title).desc || '';
+    var first = desc.split(/\.\s+/)[0];
+    if (!first || first.length >= desc.length) first = desc;
+    first = first.replace(/[.!?…]+\s*$/u, '').trim();
+    if (first.length > 150) {
+      first = first.slice(0, 147).replace(/\s+\S*$/, '') + '…';
+    }
+    return first;
+  }
+
   function coverSlug(group, stage, taleIndex) {
     return group + '-stage' + stage + '-tale-' + String(taleIndex).padStart(2, '0');
   }
@@ -270,7 +290,7 @@ window.CHIT_COURSE = (function () {
   function coverUrl(group, stage, taleIndex) {
     var slug = coverSlug(group, stage, taleIndex);
     if (!DIARY_SLUGS[slug]) return null;
-    return COVERS + '/' + slug + '.png';
+    return COVERS + '/' + slug + '.png?v=' + COVERS_VERSION;
   }
 
   function formatPrice(n) {
@@ -328,23 +348,27 @@ window.CHIT_COURSE = (function () {
   var REVIEWS = [
     {
       text: 'Наконец-то ребёнок не просто «прочитал для галочки» — он рассказывает, что понял, и сам просит следующую сказку.',
-      author: 'мама ученика 2 класса'
+      author: 'Мария, мама ученика 2 класса'
     },
     {
       text: 'Удобно, что всё на личной странице: видно баллы, открытые уроки — не нужно ничего отмечать вручную.',
-      author: 'родитель, тариф «Индивидуальное»'
+      author: 'Ольга, тариф «Индивидуальное»'
     },
     {
       text: 'Живые встречи — отдельная ценность. Дочь ждёт четверг, чтобы обсудить героев с преподавателем и другими детьми.',
-      author: 'мама ученицы 3 класса'
+      author: 'Анастасия, мама ученицы 3 класса'
     },
     {
       text: 'Сын читает медленно, но задания по картинкам не пугают — делает по одному, без слёз. За месяц дочитал две сказки и не бросил.',
-      author: 'папа ученика 1 класса'
+      author: 'Александр, папа ученика 1 класса'
     },
     {
       text: 'Начали с одной сказки на «Разовом» — понравилось, взяли блок на август. Удобно попробовать без риска заплатить сразу за всё.',
-      author: 'мама, тариф «Разовое»'
+      author: 'Светлана, тариф «Разовое»'
+    },
+    {
+      text: 'Ребёнку было интересно в «Читательстве» — настоящее книжное королевство: живые иллюстрации, музыка и задания на память, внимание и любопытство. Каждый раз ждёт «открытие сундука» и просит задания. Спасибо за возможность быть ближе и провести время с пользой!',
+      author: 'Николай, старший брат'
     }
   ];
 
@@ -460,6 +484,7 @@ window.CHIT_COURSE = (function () {
     STATIC: STATIC,
     LESSON_DEMO: LESSON_DEMO,
     taleInfo: taleInfo,
+    programTaleDesc: programTaleDesc,
     coverUrl: coverUrl,
     coverSlug: coverSlug,
     formatPrice: formatPrice,

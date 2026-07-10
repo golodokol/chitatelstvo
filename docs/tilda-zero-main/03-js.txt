@@ -155,6 +155,11 @@ var CHIT_SCHEDULE = {
   }
 };
 
+var CHIT_SINGLE_MEETINGS_ISO = {
+  '1': ['2026-07-09', '2026-07-16', '2026-07-23', '2026-07-30'],
+  '2': ['2026-08-06', '2026-08-13', '2026-08-20', '2026-08-27']
+};
+
 function taleScheduleHtml(stage, index, tariff) {
   var s = CHIT_SCHEDULE[stage];
   if (!s || index < 0 || index > 3) return '';
