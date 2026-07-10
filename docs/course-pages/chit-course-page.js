@@ -108,7 +108,7 @@
     return rows.map(function (row, i) {
       var info = D.taleInfo(row[1]);
       var dateHtml = sched
-        ? '<span class="cc-tale-row__date">пн ' + esc(sched.lessons[i]) + '</span>'
+        ? '<span class="cc-tale-row__date">' + esc(sched.lessons[i]) + '</span>'
         : '';
       var anchorId = taleAnchorId(stageNum, i + 1);
       if (compact) {
@@ -181,7 +181,7 @@
             '<p class="cc-banner__lead">' + esc(meta.lead) + '</p>' +
             '<a class="cc-btn cc-btn--banner" href="#tariffs">Выбрать формат</a>' +
             '<div class="cc-banner__chips">' +
-              '<span class="cc-banner__chip">8 сказок · 6 июля / 3 августа</span>' +
+              '<span class="cc-banner__chip">8 сказок · 15 июля / 10 августа</span>' +
               '<span class="cc-banner__chip cc-banner__chip--price">от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</span>' +
             '</div>' +
           '</div>' +
@@ -228,7 +228,7 @@
     ];
     var how = [
       '<strong>Формат:</strong> онлайн — видео и задания на платформе',
-      '<strong>Даты:</strong> старт 6 июля или 3 августа, блок из 4 сказок (4 недели)',
+      '<strong>Даты:</strong> старт 15 июля или 10 августа, блок из 4 сказок (4 недели)',
       '<strong>Темп:</strong> одна сказка открывается каждую неделю, внутри недели — свой ритм',
       '<strong>После оплаты</strong> на email приходит ссылка на личную страницу ребёнка'
     ];
@@ -444,11 +444,11 @@
           '<h2>8 сказок — что читаем</h2>' +
           '<p class="cc-section__lead">Два старта на выбор. Каждую неделю открывается новая сказка.</p>' +
           '<div class="cc-program-block">' +
-            '<h3 class="cc-program-block__title">Старт 6 июля</h3>' +
+            '<h3 class="cc-program-block__title">Старт 15 июля</h3>' +
             '<div class="cc-tale-list cc-tale-list--program">' + taleRowsHtml(program.june, '1', 1, true) + '</div>' +
           '</div>' +
           '<div class="cc-program-block">' +
-            '<h3 class="cc-program-block__title">Старт 3 августа</h3>' +
+            '<h3 class="cc-program-block__title">Старт 10 августа</h3>' +
             '<div class="cc-tale-list cc-tale-list--program">' + taleRowsHtml(program.july, '2', 2, true) + '</div>' +
           '</div>' +
           '<p class="cc-program-note">Можно начать с одной сказки на тарифе «Разовое» — от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</p>' +
@@ -501,8 +501,8 @@
               '<div class="cc-step-label">шаг 2 · когда начать</div>' +
               '<p class="cc-step-hint" id="cc-step-hint" hidden>990 ₽ — урок на платформе. Живую встречу можно добавить (+799 ₽), если дата по сказке ещё доступна.</p>' +
               '<div class="cc-pills" id="cc-stages">' +
-                '<button type="button" class="cc-pill" data-stage="1">Старт курса 6 июля</button>' +
-                '<button type="button" class="cc-pill" data-stage="2">Старт 3 августа</button>' +
+                '<button type="button" class="cc-pill" data-stage="1">Старт курса 15 июля</button>' +
+                '<button type="button" class="cc-pill" data-stage="2">Старт 10 августа</button>' +
               '</div>' +
               '<div class="cc-tales" id="cc-tales"></div>' +
               '<div id="cc-block-preview" style="display:none"></div>' +
@@ -539,7 +539,7 @@
           '<span class="cc-chapter"><em>вопросы</em></span>' +
           '<h2>Частые вопросы</h2>' +
           '<div class="cc-faq" id="cc-faq">' +
-            faqItem('Когда начинается курс?', 'Два старта: <strong>6 июля</strong> и <strong>3 августа</strong>. Каждый — блок из 4 сказок (4 недели).') +
+            faqItem('Когда начинается курс?', 'Два старта: <strong>15 июля</strong> и <strong>10 августа</strong>. Каждый — блок из 4 сказок (4 недели).') +
             faqItem('Что будет после оплаты?', 'На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс.') +
             faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, урок открывается после оплаты. Живую встречу можно докупить (+799 ₽), если по выбранной сказке дата встречи ещё не прошла.') +
             faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').') +

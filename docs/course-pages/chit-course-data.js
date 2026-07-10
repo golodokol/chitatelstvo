@@ -2,8 +2,8 @@
 window.CHIT_COURSE = (function () {
   var ASSETS = 'https://api.chitatelstvo.ru/assets';
   var COVERS = 'https://api.chitatelstvo.ru/assets/diary-covers';
-  var COVERS_VERSION = '20260710c';
-  var PAGES_VERSION = '20260710d';
+  var COVERS_VERSION = '20260710f';
+  var PAGES_VERSION = '20260710f';
 
   var MODULES = {
     'grade-1': { single: 1, self_paced: 2, with_teacher: 3, label: '1 класс' },
@@ -17,12 +17,12 @@ window.CHIT_COURSE = (function () {
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 990, self_paced: 1990, with_teacher: 4990 };
   var MEETING_ADDON_PRICE = 799;
-  var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 3 августа' };
+  var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
   var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
 
   var SINGLE_MEETINGS_ISO = {
-    '1': ['2026-07-09', '2026-07-16', '2026-07-23', '2026-07-30'],
-    '2': ['2026-08-06', '2026-08-13', '2026-08-20', '2026-08-27']
+    '1': ['2026-07-16', '2026-07-23', '2026-07-30', '2026-08-06'],
+    '2': ['2026-08-13', '2026-08-20', '2026-08-27', '2026-09-03']
   };
 
   function todayIsoLocal() {
@@ -56,8 +56,8 @@ window.CHIT_COURSE = (function () {
   };
 
   var SCHEDULE = {
-    '1': { lessons: ['6 июля', '13 июля', '20 июля', '27 июля'], meetings: ['9 июля', '16 июля', '23 июля', '30 июля'] },
-    '2': { lessons: ['3 августа', '10 августа', '17 августа', '24 августа'], meetings: ['6 августа', '13 августа', '20 августа', '27 августа'] }
+    '1': { lessons: ['15 июля', '22 июля', '29 июля', '5 августа'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'] },
+    '2': { lessons: ['10 августа', '17 августа', '24 августа', '31 августа'], meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'] }
   };
 
   var DIARY_SLUGS = {

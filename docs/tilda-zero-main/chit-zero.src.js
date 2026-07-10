@@ -262,18 +262,18 @@ function getTaleInfo(title) {
 
 var CHIT_SCHEDULE = {
   '1': {
-    lessons: ['6 июля', '13 июля', '20 июля', '27 июля'],
-    meetings: ['9 июля', '16 июля', '23 июля', '30 июля']
+    lessons: ['15 июля', '22 июля', '29 июля', '5 августа'],
+    meetings: ['16 июля', '23 июля', '30 июля', '6 августа']
   },
   '2': {
-    lessons: ['3 августа', '10 августа', '17 августа', '24 августа'],
-    meetings: ['6 августа', '13 августа', '20 августа', '27 августа']
+    lessons: ['10 августа', '17 августа', '24 августа', '31 августа'],
+    meetings: ['13 августа', '20 августа', '27 августа', '3 сентября']
   }
 };
 
 var CHIT_SINGLE_MEETINGS_ISO = {
-  '1': ['2026-07-09', '2026-07-16', '2026-07-23', '2026-07-30'],
-  '2': ['2026-08-06', '2026-08-13', '2026-08-20', '2026-08-27']
+  '1': ['2026-07-16', '2026-07-23', '2026-07-30', '2026-08-06'],
+  '2': ['2026-08-13', '2026-08-20', '2026-08-27', '2026-09-03']
 };
 
 var MEETING_ADDON_PRICE = 799;
@@ -365,8 +365,8 @@ function buildAccordion(containerId, items) {
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
         courseLink +
-        renderPeriod('Старт курса 6 июля', item.june, '1', item.group) +
-        renderPeriod('Старт 3 августа', item.july, '2', item.group) +
+        renderPeriod('Старт курса 15 июля', item.june, '1', item.group) +
+        renderPeriod('Старт 10 августа', item.july, '2', item.group) +
       '</div>';
     el.appendChild(div);
   });
@@ -415,7 +415,7 @@ if (faqList) {
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 990, self_paced: 1990, with_teacher: 4990 };
-  var STAGE_LABEL = { '1': 'Старт курса 6 июля', '2': 'Старт 3 августа' };
+  var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
   var ORDER_PRODUCTS = {
     single: { title: 'Читательство · Разовое', price: 990, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },

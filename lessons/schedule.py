@@ -22,38 +22,52 @@ _MONTHS_RU = (
     "декабря",
 )
 
-STAGE_1_START = date(2026, 7, 6)
-STAGE_2_START = date(2026, 8, 3)
+STAGE_1_START = date(2026, 7, 15)
+STAGE_2_START = date(2026, 8, 10)
 
 STAGE_1_LESSON_OPENS = (
-    date(2026, 7, 6),
-    date(2026, 7, 13),
-    date(2026, 7, 20),
-    date(2026, 7, 27),
+    date(2026, 7, 15),
+    date(2026, 7, 22),
+    date(2026, 7, 29),
+    date(2026, 8, 5),
 )
 STAGE_1_MEETINGS = (
-    date(2026, 7, 9),
     date(2026, 7, 16),
     date(2026, 7, 23),
     date(2026, 7, 30),
+    date(2026, 8, 6),
 )
 STAGE_2_LESSON_OPENS = (
-    date(2026, 8, 3),
     date(2026, 8, 10),
     date(2026, 8, 17),
     date(2026, 8, 24),
+    date(2026, 8, 31),
 )
 STAGE_2_MEETINGS = (
-    date(2026, 8, 6),
     date(2026, 8, 13),
     date(2026, 8, 20),
     date(2026, 8, 27),
+    date(2026, 9, 3),
 )
 
 STAGE_LABELS = {
-    "stage-1": "Этап 1 · старт 6 июля",
-    "stage-2": "Этап 2 · старт 3 августа",
+    "stage-1": "Этап 1 · старт 15 июля",
+    "stage-2": "Этап 2 · старт 10 августа",
 }
+
+_WEEKDAYS_RU = (
+    "понедельник",
+    "вторник",
+    "среда",
+    "четверг",
+    "пятница",
+    "суббота",
+    "воскресенье",
+)
+
+
+def weekday_ru(d: date) -> str:
+    return _WEEKDAYS_RU[d.weekday()]
 
 
 def format_date_ru(d: date, *, weekday: str | None = None) -> str:

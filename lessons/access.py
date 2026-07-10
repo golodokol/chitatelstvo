@@ -14,6 +14,7 @@ from lessons.schedule import (
     meeting_on,
     stage_for_week,
     tariff_has_meetings,
+    weekday_ru,
     week_in_stage,
 )
 
@@ -73,6 +74,17 @@ def unlocked_week_number(
     return unlocked + bonus if bonus > 0 else unlocked
 
 
+def _admin_unlocked_weeks(child: Child) -> int:
+    """Досрочный доступ из админки (module_week / bonus_unlock_weeks)."""
+    manual_week = child.module_week or 1
+    bonus = child.bonus_unlock_weeks or 0
+    if manual_week <= 1 and bonus <= 0:
+        return 0
+    if bonus > 0:
+        return manual_week + bonus
+    return manual_week
+
+
 def is_lesson_unlocked(
     child: Child,
     lesson: dict[str, Any],
@@ -83,9 +95,16 @@ def is_lesson_unlocked(
     module: dict[str, Any] | None = None,
 ) -> bool:
     lesson_week = effective_module_week(lesson, enrollment, module)
-    return lesson_week <= unlocked_week_number(
-        child, week_days=week_days, cohort_start=cohort_start
-    )
+    today = date.today()
+
+    if today >= lesson_opens_on(lesson_week):
+        return True
+
+    admin_weeks = _admin_unlocked_weeks(child)
+    if admin_weeks > 0 and lesson_week <= admin_weeks:
+        return True
+
+    return False
 
 
 def unlock_date_for_week(
@@ -95,9 +114,8 @@ def unlock_date_for_week(
     week_days: int = 7,
     cohort_start: date | None = None,
 ) -> date:
-    """Календарная дата открытия недели (week=1 → понедельник старта)."""
-    start = module_start_date(child, cohort_start=cohort_start)
-    return start + timedelta(days=(week - 1) * week_days)
+    """Календарная дата открытия недели из lessons/schedule.py."""
+    return lesson_opens_on(week)
 
 
 def lesson_access_info(
@@ -126,7 +144,7 @@ def lesson_access_info(
         "stage": stage_for_week(week),
         "unlocked": unlocked,
         "opens_on": opens.strftime("%d.%m.%Y"),
-        "opens_on_label": format_date_ru(opens, weekday="понедельник"),
+        "opens_on_label": format_date_ru(opens, weekday=weekday_ru(opens)),
         "opens_on_iso": opens.isoformat(),
     }
     if tariff_has_meetings(module):
