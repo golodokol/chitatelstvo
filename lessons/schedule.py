@@ -24,6 +24,8 @@ _MONTHS_RU = (
 
 STAGE_1_START = date(2026, 7, 15)
 STAGE_2_START = date(2026, 8, 10)
+# Старт до переноса (+1 неделя); для сохранения доступа ранним ученикам.
+LEGACY_MODULE_START = date(2026, 7, 6)
 
 STAGE_1_LESSON_OPENS = (
     date(2026, 7, 15),

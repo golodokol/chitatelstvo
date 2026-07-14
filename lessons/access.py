@@ -8,6 +8,7 @@ from typing import Any
 from config.settings import MODULE_START_DATE
 from db.models import Child, Enrollment
 from lessons.schedule import (
+    LEGACY_MODULE_START,
     effective_module_week,
     format_date_ru,
     lesson_opens_on,
@@ -17,6 +18,9 @@ from lessons.schedule import (
     weekday_ru,
     week_in_stage,
 )
+
+# Дата выката нового календаря; записи до неё сохраняют доступ по старому старту.
+SCHEDULE_SHIFT_DATE = date(2026, 7, 10)
 
 
 def _registration_date(child: Child) -> date:
@@ -85,6 +89,44 @@ def _admin_unlocked_weeks(child: Child) -> int:
     return manual_week
 
 
+def _as_date(value: date | datetime | None) -> date | None:
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.date()
+    return value
+
+
+def _grandfather_schedule_unlock(child: Child, enrollment: Enrollment | None) -> bool:
+    """
+    Сохранить доступ по старому старту (6 июля) для ранних записей и досрочного доступа.
+    Новые записи после переноса дат идут только по новому календарю.
+    """
+    if (child.module_week or 1) > 1 or (child.bonus_unlock_weeks or 0) > 0:
+        return True
+    child_created = _as_date(child.created_at)
+    if child_created and child_created <= SCHEDULE_SHIFT_DATE:
+        return True
+    if enrollment:
+        enrolled = _as_date(enrollment.created_at)
+        if enrolled and enrolled <= SCHEDULE_SHIFT_DATE:
+            return True
+    return False
+
+
+def _legacy_unlocked_weeks(
+    child: Child,
+    *,
+    week_days: int = 7,
+    cohort_start: date | None = None,
+) -> int:
+    return unlocked_week_number(
+        child,
+        week_days=week_days,
+        cohort_start=LEGACY_MODULE_START if cohort_start is None else cohort_start,
+    )
+
+
 def is_lesson_unlocked(
     child: Child,
     lesson: dict[str, Any],
@@ -103,6 +145,13 @@ def is_lesson_unlocked(
     admin_weeks = _admin_unlocked_weeks(child)
     if admin_weeks > 0 and lesson_week <= admin_weeks:
         return True
+
+    if _grandfather_schedule_unlock(child, enrollment):
+        legacy_weeks = _legacy_unlocked_weeks(
+            child, week_days=week_days, cohort_start=cohort_start
+        )
+        if lesson_week <= legacy_weeks:
+            return True
 
     return False
 
