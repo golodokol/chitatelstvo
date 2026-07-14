@@ -3,7 +3,7 @@ window.CHIT_COURSE = (function () {
   var ASSETS = 'https://api.chitatelstvo.ru/assets';
   var COVERS = 'https://api.chitatelstvo.ru/assets/diary-covers';
   var COVERS_VERSION = '20260710f';
-  var PAGES_VERSION = '20260710f';
+  var PAGES_VERSION = '20260710g';
 
   var MODULES = {
     'grade-1': { single: 1, self_paced: 2, with_teacher: 3, label: '1 класс' },
@@ -56,8 +56,8 @@ window.CHIT_COURSE = (function () {
   };
 
   var SCHEDULE = {
-    '1': { lessons: ['15 июля', '22 июля', '29 июля', '5 августа'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'] },
-    '2': { lessons: ['10 августа', '17 августа', '24 августа', '31 августа'], meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'] }
+    '1': { lessons: ['15 июля', '22 июля', '29 июля', '5 августа'], weekdays: ['среда', 'среда', 'среда', 'среда'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] },
+    '2': { lessons: ['10 августа', '17 августа', '24 августа', '31 августа'], weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'], meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] }
   };
 
   var DIARY_SLUGS = {

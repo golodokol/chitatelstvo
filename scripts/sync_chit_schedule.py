@@ -12,6 +12,7 @@ from lessons.schedule import (
     STAGE_2_LESSON_OPENS,
     STAGE_2_MEETINGS,
     format_date_ru,
+    weekday_ru,
 )
 
 
@@ -47,13 +48,25 @@ function singleMeetingLine(stage, taleNum) {
   return { available: false };
 }
 
+function lessonWeekday(stage, index) {
+  var s = CHIT_SCHEDULE[stage];
+  return s && s.weekdays && s.weekdays[index] ? s.weekdays[index] : '';
+}
+
+function meetingWeekday(stage, index) {
+  var s = CHIT_SCHEDULE[stage];
+  return s && s.meetingWeekdays && s.meetingWeekdays[index] ? s.meetingWeekdays[index] : 'четверг';
+}
+
 function taleScheduleHtml(stage, index, tariff) {
   var s = CHIT_SCHEDULE[stage];
   if (!s || index < 0 || index > 3) return '';
   var taleNum = index + 1;
+  var lessonDay = lessonWeekday(stage, index);
+  var lessonPrefix = lessonDay ? lessonDay + ', ' : '';
   var html = '<div class="tale-schedule">';
   if (tariff === 'single') {
-    html += '<span class="tale-schedule__line">Урок на платформе: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок на платформе: <strong>' + lessonPrefix + s.lessons[index] + '</strong></span>';
     var meet = singleMeetingLine(stage, taleNum);
     if (meet.available) {
       html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Ближайшее занятие с преподавателем: <strong>' + meet.date + '</strong> (приобретается отдельно)</span>';
@@ -61,10 +74,10 @@ function taleScheduleHtml(stage, index, tariff) {
       html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн · встреча по этой сказке недоступна</span>';
     }
   } else if (tariff === 'with_teacher') {
-    html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>четверг, ' + s.meetings[index] + '</strong></span>';
-    html += '<span class="tale-schedule__line">Урок откроется: понедельник, ' + s.lessons[index] + '</span>';
+    html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>' + meetingWeekday(stage, index) + ', ' + s.meetings[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок откроется: ' + lessonPrefix + s.lessons[index] + '</span>';
   } else {
-    html += '<span class="tale-schedule__line">Урок откроется: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок откроется: <strong>' + lessonPrefix + s.lessons[index] + '</strong></span>';
   }
   html += '</div>';
   return html;
@@ -76,21 +89,33 @@ def _labels(dates: tuple) -> list[str]:
     return [format_date_ru(d) for d in dates]
 
 
+def _weekdays(dates: tuple) -> list[str]:
+    return [weekday_ru(d) for d in dates]
+
+
 def chit_schedule_block() -> str:
     l1 = _labels(STAGE_1_LESSON_OPENS)
+    w1 = _weekdays(STAGE_1_LESSON_OPENS)
     m1 = _labels(STAGE_1_MEETINGS)
+    mw1 = _weekdays(STAGE_1_MEETINGS)
     l2 = _labels(STAGE_2_LESSON_OPENS)
+    w2 = _weekdays(STAGE_2_LESSON_OPENS)
     m2 = _labels(STAGE_2_MEETINGS)
+    mw2 = _weekdays(STAGE_2_MEETINGS)
     iso1 = [d.isoformat() for d in STAGE_1_MEETINGS]
     iso2 = [d.isoformat() for d in STAGE_2_MEETINGS]
     return f"""var CHIT_SCHEDULE = {{
   '1': {{
     lessons: {l1!r},
-    meetings: {m1!r}
+    weekdays: {w1!r},
+    meetings: {m1!r},
+    meetingWeekdays: {mw1!r}
   }},
   '2': {{
     lessons: {l2!r},
-    meetings: {m2!r}
+    weekdays: {w2!r},
+    meetings: {m2!r},
+    meetingWeekdays: {mw2!r}
   }}
 }};
 

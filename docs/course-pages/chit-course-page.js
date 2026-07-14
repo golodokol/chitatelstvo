@@ -712,15 +712,17 @@
     function scheduleHtml(stage, index, tariff) {
       var s = D.SCHEDULE[stage];
       if (!s) return '';
+      var wd = s.weekdays && s.weekdays[index] ? s.weekdays[index] + ' ' : '';
+      var mwd = s.meetingWeekdays && s.meetingWeekdays[index] ? s.meetingWeekdays[index] + ' ' : 'чт ';
       var html = '<span style="font-size:13px;color:var(--muted)">';
       if (tariff === 'single') {
-        html += 'Урок на платформе: пн ' + s.lessons[index] + '<br>';
+        html += 'Урок на платформе: ' + wd + s.lessons[index] + '<br>';
         html += esc(D.singleMeetingLabel(stage, index + 1));
       } else if (tariff === 'with_teacher') {
-        html += 'Встреча: чт ' + s.meetings[index] + '<br>';
-        html += 'Урок: пн ' + s.lessons[index];
+        html += 'Встреча: ' + mwd + s.meetings[index] + '<br>';
+        html += 'Урок: ' + wd + s.lessons[index];
       } else {
-        html += 'Урок: пн ' + s.lessons[index];
+        html += 'Урок: ' + wd + s.lessons[index];
       }
       html += '</span>';
       return html;

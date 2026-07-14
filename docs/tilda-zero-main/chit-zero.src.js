@@ -263,11 +263,15 @@ function getTaleInfo(title) {
 var CHIT_SCHEDULE = {
   '1': {
     lessons: ['15 июля', '22 июля', '29 июля', '5 августа'],
-    meetings: ['16 июля', '23 июля', '30 июля', '6 августа']
+    weekdays: ['среда', 'среда', 'среда', 'среда'],
+    meetings: ['16 июля', '23 июля', '30 июля', '6 августа'],
+    meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
   },
   '2': {
     lessons: ['10 августа', '17 августа', '24 августа', '31 августа'],
-    meetings: ['13 августа', '20 августа', '27 августа', '3 сентября']
+    weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'],
+    meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'],
+    meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
   }
 };
 
@@ -304,13 +308,25 @@ function singleMeetingLine(stage, taleNum) {
   return { available: false };
 }
 
+function lessonWeekday(stage, index) {
+  var s = CHIT_SCHEDULE[stage];
+  return s && s.weekdays && s.weekdays[index] ? s.weekdays[index] : '';
+}
+
+function meetingWeekday(stage, index) {
+  var s = CHIT_SCHEDULE[stage];
+  return s && s.meetingWeekdays && s.meetingWeekdays[index] ? s.meetingWeekdays[index] : 'четверг';
+}
+
 function taleScheduleHtml(stage, index, tariff) {
   var s = CHIT_SCHEDULE[stage];
   if (!s || index < 0 || index > 3) return '';
   var taleNum = index + 1;
+  var lessonDay = lessonWeekday(stage, index);
+  var lessonPrefix = lessonDay ? lessonDay + ', ' : '';
   var html = '<div class="tale-schedule">';
   if (tariff === 'single') {
-    html += '<span class="tale-schedule__line">Урок на платформе: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок на платформе: <strong>' + lessonPrefix + s.lessons[index] + '</strong></span>';
     var meet = singleMeetingLine(stage, taleNum);
     if (meet.available) {
       html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Ближайшее занятие с преподавателем: <strong>' + meet.date + '</strong> (приобретается отдельно)</span>';
@@ -318,10 +334,10 @@ function taleScheduleHtml(stage, index, tariff) {
       html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн · встреча по этой сказке недоступна</span>';
     }
   } else if (tariff === 'with_teacher') {
-    html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>четверг, ' + s.meetings[index] + '</strong></span>';
-    html += '<span class="tale-schedule__line">Урок откроется: понедельник, ' + s.lessons[index] + '</span>';
+    html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>' + meetingWeekday(stage, index) + ', ' + s.meetings[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок откроется: ' + lessonPrefix + s.lessons[index] + '</span>';
   } else {
-    html += '<span class="tale-schedule__line">Урок откроется: <strong>понедельник, ' + s.lessons[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line">Урок откроется: <strong>' + lessonPrefix + s.lessons[index] + '</strong></span>';
   }
   html += '</div>';
   return html;
