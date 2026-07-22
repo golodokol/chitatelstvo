@@ -15,6 +15,7 @@ from notifications.russian_morph import (
 
 SUBJECT_WELCOME = "Добро пожаловать в Читательство"
 SUBJECT_PROGRESS = "Читательство — прогресс ребёнка"
+SUBJECT_PROGRESS_DIGEST = "Читательство — итоги дня"
 SUBJECT_QUIZ_AUTO = "PDF-чек-лист от Читательства"
 SUBJECT_OTP = "Код для входа в Читательство"
 
@@ -132,6 +133,53 @@ def build_progress_message(
         f"{parent_message}\n\n"
         f"Следующий шаг: {next_action}\n\n"
         f"Все обновления также на личной странице:\n{progress_url}\n\n"
+        f"—\n"
+        f"Читательство · lessons@chitatelstvo.ru"
+    )
+
+
+def build_progress_digest_item(*, child_name: str, parent_message: str, next_action: str) -> str:
+    """Короткая запись для дневной сводки (хранится в pending email)."""
+    child = child_name.strip() or "ребёнок"
+    update = (parent_message or "").strip()
+    nxt = (next_action or "").strip()
+    lines = [f"Ребёнок: {child}", update]
+    if nxt:
+        lines.append(f"Следующий шаг: {nxt}")
+    return "\n".join(lines)
+
+
+def build_progress_digest_message(
+    *,
+    parent_name: str,
+    progress_url: str,
+    items: list[str],
+) -> str:
+    """Одно письмо за день: все изменения ребёнка."""
+    parent = parent_name.strip() or "родитель"
+    bullets: list[str] = []
+    for raw in items:
+        text = (raw or "").strip()
+        if not text:
+            continue
+        # Уже оформленный пункт или многострочная запись
+        if text.startswith("• ") or text.startswith("- "):
+            bullets.append(text)
+            continue
+        chunk_lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+        if not chunk_lines:
+            continue
+        bullets.append("• " + chunk_lines[0])
+        for ln in chunk_lines[1:]:
+            bullets.append(f"  {ln}")
+
+    body_items = "\n".join(bullets) if bullets else "• Сегодня были обновления на личной странице."
+
+    return (
+        f"Здравствуйте, {parent}!\n\n"
+        f"Краткая сводка за день — что прошёл ребёнок:\n\n"
+        f"{body_items}\n\n"
+        f"Подробности на личной странице:\n{progress_url}\n\n"
         f"—\n"
         f"Читательство · lessons@chitatelstvo.ru"
     )

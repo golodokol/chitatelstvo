@@ -185,12 +185,13 @@
     }
 
     /** Снять выбор и подсветку после неудачной проверки — чистое колесо для повтора. */
-    function resetSelection() {
+    function resetSelection(notifyChange) {
+      if (notifyChange === undefined) notifyChange = true;
       selected.clear();
       container.querySelectorAll('.chit-emotion-wheel__sector, .chit-emotion-chip').forEach(function (node) {
         node.classList.remove('is-correct', 'is-wrong');
       });
-      syncUI(true);
+      syncUI(notifyChange);
     }
 
     syncUI(false);

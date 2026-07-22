@@ -38,7 +38,7 @@ from lessons.loader import (
     score_quiz,
 )
 from lessons.step_labels import lesson_step_labels_payload
-from lessons.schedule import effective_module_week
+from lessons.schedule import effective_module_week, meeting_date_label
 from lessons.single_content import merge_single_lesson_content
 from services.cabinet import build_child_payload
 from services.events import submit_learning_event
@@ -223,15 +223,25 @@ def build_live_lesson_block(
 
     group_code = lesson.get("group_code") or "grade-1"
     stage = lesson.get("stage") or "stage-1"
-    tale_number = lesson.get("tale_number") or lesson.get("lesson_number") or 1
+    tale_number = int(lesson.get("tale_number") or 1)
     slug = lesson.get("slug", "")
     purchase_url = (
         f"/order/meeting?group={group_code}&stage={stage}&tale={tale_number}&slug={slug}"
     )
     default_price = int(config.get("price_rub", MEETING_ADDON_PRICE_RUB))
+    # Явный null в JSON даёт None — .get(key, default) тогда не срабатывает.
+    label = config.get("next_meeting_label")
+    if not label:
+        week = int(lesson.get("module_week") or 0)
+        if week:
+            label = meeting_date_label(week, weekday="четверг")
+        else:
+            label = meeting_date_label(
+                stage=stage, tale_number=tale_number, weekday="четверг"
+            )
     return {
         "mode": "upsell",
-        "date": config.get("next_meeting_label", "10 августа 2026"),
+        "date": label,
         "purchase_url": purchase_url,
         "price": default_price,
     }
@@ -252,19 +262,77 @@ def prepare_lesson_for_child(
     return child, merge_single_lesson_content(lesson, enrollment)
 
 
+def lesson_has_playable_video(lesson: dict[str, Any]) -> bool:
+    """Есть ли реальное видео (не заглушка «ещё не добавлено»)."""
+    video = lesson.get("video") or {}
+    video_id = str(video.get("id") or "").strip()
+    placeholders = {"", "KINESCOPE_VIDEO_ID", "YOUTUBE_VIDEO_ID"}
+    if video_id and video_id not in placeholders:
+        return True
+    if video.get("src"):
+        return True
+    # URL без id у kinescope — всё ещё заглушка; для yandex/html5 src важнее.
+    if video.get("type") in ("yandex", "html5") and video.get("url"):
+        return True
+    return False
+
+
+def lesson_tale_titles(lesson: dict[str, Any]) -> list[str]:
+    """Возможные названия сказки в событиях (title мог меняться при правках)."""
+    titles: list[str] = []
+    for key in ("title", "tale_title"):
+        value = (lesson.get(key) or "").strip()
+        if value and value not in titles:
+            titles.append(value)
+    return titles
+
+
+def _child_has_event_any_title(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    titles: list[str],
+    event_type: str,
+) -> bool:
+    for title in titles:
+        if repo.child_has_learning_event(db, child_id, tale_title=title, event_type=event_type):
+            return True
+    return False
+
+
+def _child_has_lesson_complete_any_title(
+    db: Session,
+    child_id: uuid.UUID,
+    *,
+    titles: list[str],
+) -> bool:
+    for title in titles:
+        if repo.child_has_lesson_complete(db, child_id, tale_title=title):
+            return True
+    return False
+
+
 def child_has_video_unlock(
     db: Session,
     child_id: uuid.UUID,
     *,
     tale_title: str,
+    lesson: dict[str, Any] | None = None,
 ) -> bool:
     """Достаточно просмотра для шагов после видео (3 мин или любой следующий шаг)."""
-    if repo.child_has_lesson_complete(db, child_id, tale_title=tale_title):
+    if lesson is not None and not lesson_has_playable_video(lesson):
         return True
-    if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type="video_unlock"):
+    titles = lesson_tale_titles(lesson) if lesson else []
+    if tale_title.strip() and tale_title.strip() not in titles:
+        titles = [tale_title.strip(), *titles]
+    if not titles:
+        return False
+    if _child_has_lesson_complete_any_title(db, child_id, titles=titles):
+        return True
+    if _child_has_event_any_title(db, child_id, titles=titles, event_type="video_unlock"):
         return True
     for event_type in ("emotion_quiz", "reading_practice", "comprehension", "meaning_analysis", "retelling"):
-        if repo.child_has_learning_event(db, child_id, tale_title=tale_title, event_type=event_type):
+        if _child_has_event_any_title(db, child_id, titles=titles, event_type=event_type):
             return True
     return False
 
@@ -287,22 +355,24 @@ def child_can_rate_tale(
     tale_title: str,
 ) -> bool:
     """Оценка сказки — после просмотра видео или финального блока заданий."""
-    title = tale_title.strip()
-    if not title:
+    titles = lesson_tale_titles(lesson)
+    if tale_title.strip() and tale_title.strip() not in titles:
+        titles = [tale_title.strip(), *titles]
+    if not titles:
         return False
-    if repo.child_has_lesson_complete(db, child_id, tale_title=title):
+    if _child_has_lesson_complete_any_title(db, child_id, titles=titles):
         return True
     if lesson.get("retelling_quiz"):
-        return repo.child_has_learning_event(
-            db, child_id, tale_title=title, event_type="retelling"
+        return _child_has_event_any_title(
+            db, child_id, titles=titles, event_type="retelling"
         )
     if lesson.get("meaning_quiz"):
-        return repo.child_has_learning_event(
-            db, child_id, tale_title=title, event_type="meaning_analysis"
+        return _child_has_event_any_title(
+            db, child_id, titles=titles, event_type="meaning_analysis"
         )
     if lesson.get("comprehension_quiz"):
-        return repo.child_has_learning_event(
-            db, child_id, tale_title=title, event_type="comprehension"
+        return _child_has_event_any_title(
+            db, child_id, titles=titles, event_type="comprehension"
         )
     return False
 
@@ -326,41 +396,54 @@ def build_lesson_json(
     group_code = lesson.get("group_code")
     tale_slug = canonical_tale_slug(lesson.get("tale_slug") or slug)
     tale_title = lesson["title"]
+    event_titles = lesson_tale_titles(lesson)
     existing_rating = _resolve_tale_rating(db, child.id, tale_slug)
     can_rate = child_can_rate_tale(
         db, child.id, lesson=lesson, tale_title=lesson["title"]
     )
-    video_unlocked = child_has_video_unlock(db, child.id, tale_title=tale_title)
+    video_unlocked = child_has_video_unlock(
+        db, child.id, tale_title=tale_title, lesson=lesson
+    )
     progress = {
         "video_unlocked": video_unlocked,
         "video_done": can_rate,
         "emotion_done": (
-            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="emotion_quiz")
+            _child_has_event_any_title(
+                db, child.id, titles=event_titles, event_type="emotion_quiz"
+            )
             if emotion
             else False
         ),
         "reading_done": (
-            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="reading_practice")
+            _child_has_event_any_title(
+                db, child.id, titles=event_titles, event_type="reading_practice"
+            )
             if reading
             else False
         ),
         "comprehension_done": (
-            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="comprehension")
+            _child_has_event_any_title(
+                db, child.id, titles=event_titles, event_type="comprehension"
+            )
             if comprehension
             else False
         ),
         "meaning_done": (
-            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="meaning_analysis")
+            _child_has_event_any_title(
+                db, child.id, titles=event_titles, event_type="meaning_analysis"
+            )
             if meaning
             else False
         ),
         "retelling_done": (
-            repo.child_has_learning_event(db, child.id, tale_title=tale_title, event_type="retelling")
+            _child_has_event_any_title(
+                db, child.id, titles=event_titles, event_type="retelling"
+            )
             if retelling
             else False
         ),
-        "creative_done": repo.child_has_learning_event(
-            db, child.id, tale_title=tale_title, event_type="creative_task"
+        "creative_done": _child_has_event_any_title(
+            db, child.id, titles=event_titles, event_type="creative_task"
         ),
     }
 
@@ -420,13 +503,16 @@ def handle_video_unlock(
         bypass=verify_test_lesson_key(test_key),
     )
     tale_title = lesson["title"]
-    if child_has_video_unlock(db, child_id, tale_title=tale_title):
+    if child_has_video_unlock(db, child_id, tale_title=tale_title, lesson=lesson):
         return {
             "status": "duplicate",
             "message": "Можно переходить к заданиям ниже.",
         }
 
-    if not verify_test_lesson_key(test_key):
+    # Нет ролика — засчитываем «просмотр», чтобы открылись шаги и оценка книги.
+    if not lesson_has_playable_video(lesson) or verify_test_lesson_key(test_key):
+        pass
+    else:
         required = _required_video_unlock_seconds(duration_seconds)
         if watched_seconds < required:
             minutes = max(1, int(round(required / 60)))
@@ -466,7 +552,11 @@ def handle_video_complete(
         slug,
         bypass=verify_test_lesson_key(test_key),
     )
-    if not verify_test_lesson_key(test_key) and percent < VIDEO_BADGE_THRESHOLD:
+    if (
+        not verify_test_lesson_key(test_key)
+        and lesson_has_playable_video(lesson)
+        and percent < VIDEO_BADGE_THRESHOLD
+    ):
         raise HTTPException(
             400,
             f"Для бейджа «Читатель» нужно досмотреть минимум {int(VIDEO_BADGE_THRESHOLD * 100)}% видео.",
@@ -566,9 +656,10 @@ def handle_quiz_submit(
         raise HTTPException(404, "Квиз для этого урока ещё не настроен")
 
     tale_title = lesson["title"]
+    titles = lesson_tale_titles(lesson)
     if quiz_type == "comprehension" and lesson.get("reading_practice"):
-        if not repo.child_has_learning_event(
-            db, child_id, tale_title=tale_title, event_type="reading_practice"
+        if not _child_has_event_any_title(
+            db, child_id, titles=titles, event_type="reading_practice"
         ):
             raise HTTPException(400, "Сначала прочитайте сказку по предложениям выше.")
 
@@ -627,8 +718,9 @@ def handle_retelling_submit(
         raise HTTPException(404, "Задание на пересказ для этого урока ещё не настроено")
 
     tale_title = lesson["title"]
-    if lesson.get("meaning_quiz") and not repo.child_has_learning_event(
-        db, child_id, tale_title=tale_title, event_type="meaning_analysis"
+    titles = lesson_tale_titles(lesson)
+    if lesson.get("meaning_quiz") and not _child_has_event_any_title(
+        db, child_id, titles=titles, event_type="meaning_analysis"
     ):
         raise HTTPException(400, "Сначала выполните задания по сказке выше.")
 
@@ -687,7 +779,10 @@ def handle_reading_practice_submit(
         raise HTTPException(404, "Практика чтения для этого урока ещё не настроена")
 
     tale_title = lesson["title"]
-    if not child_has_video_unlock(db, child_id, tale_title=tale_title) and not verify_test_lesson_key(test_key):
+    if (
+        not child_has_video_unlock(db, child_id, tale_title=tale_title, lesson=lesson)
+        and not verify_test_lesson_key(test_key)
+    ):
         raise HTTPException(400, "Сначала посмотрите начало видео-урока.")
 
     expected_ids = {str(card.get("id")) for card in (block.get("cards") or []) if card.get("id")}

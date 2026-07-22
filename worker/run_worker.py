@@ -12,7 +12,11 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from job_queue.redis_queue import dequeue  # noqa: E402
-from worker.processor import process_event, process_send_notification  # noqa: E402
+from worker.processor import (  # noqa: E402
+    process_event,
+    process_flush_progress_digests,
+    process_send_notification,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("worker")
@@ -20,6 +24,9 @@ logger = logging.getLogger("worker")
 HANDLERS = {
     "process_event": lambda p: process_event(p["event_id"]),
     "send_notification": lambda p: process_send_notification(p["notification_id"]),
+    "flush_progress_digests": lambda p: process_flush_progress_digests(
+        force=bool((p or {}).get("force"))
+    ),
 }
 
 

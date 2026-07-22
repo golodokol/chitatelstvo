@@ -44,10 +44,9 @@ def single_lesson_playable(
 ) -> bool:
     if lesson.get("tariff_code") != "single":
         return bool(lesson.get("active", True) and lesson.get("video"))
-    if not lesson.get("active", True):
-        return False
+    # Оболочка single может оставаться черновиком: важна готовность контента сказки
     if lesson.get("video"):
-        return True
+        return bool(lesson.get("active", True))
     if enrollment is None:
         return False
     return _content_lesson_for_enrollment(lesson, enrollment) is not None
@@ -82,7 +81,8 @@ def merge_single_lesson_content(
             "lesson_number": lesson.get("lesson_number"),
             "badge": lesson.get("badge") or content.get("badge"),
             "points": lesson.get("points") or content.get("points"),
-            "active": bool(lesson.get("active", True) and content.get("active", True)),
+            # Готовность = контент сказки (оболочка single — только маршрутизация)
+            "active": bool(content.get("active", True)),
         }
     )
     return _apply_single_labels(merged, enrollment)

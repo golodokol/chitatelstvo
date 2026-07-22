@@ -6,6 +6,21 @@
     if (href.indexOf('api.chitatelstvo.ru/assets/chit-') === -1) continue;
     if (nodes[i].parentNode !== head) head.appendChild(nodes[i]);
   }
+  // Служебная плашка ST100 не для родителей (оплата на /oplata)
+  if (!document.getElementById('chit-hide-st100-warning')) {
+    var style = document.createElement('style');
+    style.id = 'chit-hide-st100-warning';
+    style.textContent = '#chit-st100-warning,.st100-warning{display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important}';
+    head.appendChild(style);
+  }
+  function killSt100Warning() {
+    var warn = document.getElementById('chit-st100-warning');
+    if (warn && warn.parentNode) warn.parentNode.removeChild(warn);
+  }
+  killSt100Warning();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', killSt100Warning);
+  }
 })();
 
 function chitReady(fn) {
@@ -32,6 +47,60 @@ function chitPatchTildaStyleBlock() {
       .replace(/display:\s*table/gi, 'display:block')
       .replace(/top:\s*-\d+px/gi, 'top:0');
     if (next !== txt) styles[i].textContent = next;
+  }
+}
+
+function fixForWhomCopy() {
+  var replacements = [
+    ['семей, которым важно системное чтение, а не случайные тексты', 'семей, понимающих ценность чтения'],
+    ['тех, кому нужен свой темп — занятия без расписания и давления', 'тех, кто привык читать в своём удобном темпе'],
+    ['тех, кому нужен свой темп — без давления и оценок', 'тех, кто привык читать в своём удобном темпе']
+  ];
+  var items = document.querySelectorAll('.for-whom__item');
+  for (var i = 0; i < items.length; i++) {
+    var html = items[i].innerHTML;
+    for (var r = 0; r < replacements.length; r++) {
+      if (html.indexOf(replacements[r][0]) !== -1) {
+        html = html.split(replacements[r][0]).join(replacements[r][1]);
+      }
+    }
+    items[i].innerHTML = html;
+  }
+  var leads = document.querySelectorAll('.section__lead');
+  for (var j = 0; j < leads.length; j++) {
+    var t = leads[j].innerHTML;
+    if (t.indexOf(' — без оценок и сравнений') !== -1) {
+      leads[j].innerHTML = t.split(' — без оценок и сравнений').join('');
+    }
+    if (t.indexOf(', без оценок и сравнений с другими') !== -1) {
+      leads[j].innerHTML = leads[j].innerHTML.split(', без оценок и сравнений с другими').join('');
+    }
+  }
+  var ctaBtn = document.querySelector('#final-cta .btn');
+  if (ctaBtn) {
+    ctaBtn.setAttribute('href', '#quiz');
+    ctaBtn.textContent = 'Получить урок бесплатно';
+  }
+  var aboutPs = document.querySelectorAll('#chit-main p');
+  for (var k = 0; k < aboutPs.length; k++) {
+    var ph = aboutPs[k].innerHTML;
+    if (ph.indexOf('родителю ничего отмечать не нужно') !== -1) {
+      aboutPs[k].innerHTML = ph.split('родителю ничего отмечать не нужно').join(
+        'словики и уровни начисляются сразу после заданий'
+      );
+    }
+  }
+  var ctaFix = document.getElementById('chit-cta-fix');
+  if (!ctaFix) {
+    ctaFix = document.createElement('style');
+    ctaFix.id = 'chit-cta-fix';
+    document.head.appendChild(ctaFix);
+  }
+  if ((ctaFix.textContent || '').indexOf('100vw') === -1) {
+    ctaFix.textContent = (ctaFix.textContent || '') +
+      '#chit-main .final-cta-scroller{width:100vw!important;max-width:100vw!important;margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;box-sizing:border-box!important}' +
+      '#chit-main .final-cta{width:100%!important;overflow:hidden!important}' +
+      '#chit-main .final-cta__bg{inset:0!important;background-size:cover!important;background-position:center bottom!important}';
   }
 }
 
@@ -151,11 +220,13 @@ function chitStartLayoutPin() {
   chitHookTildaInit();
   chitPatchTildaStyleBlock();
   fixTildaLayout();
+  fixForWhomCopy();
   var n = 0;
   var pin = setInterval(function() {
     chitInjectTildaKillStyle();
     chitPatchTildaStyleBlock();
     fixTildaLayout();
+    fixForWhomCopy();
     chitHookTildaInit();
     if (++n > 4) clearInterval(pin);
   }, 500);
@@ -163,6 +234,7 @@ function chitStartLayoutPin() {
   window.addEventListener('load', function() {
     chitPatchTildaStyleBlock();
     fixTildaLayout();
+    fixForWhomCopy();
   });
 }
 
@@ -329,7 +401,7 @@ function taleScheduleHtml(stage, index, tariff) {
     html += '<span class="tale-schedule__line">Урок на платформе: <strong>' + lessonPrefix + s.lessons[index] + '</strong></span>';
     var meet = singleMeetingLine(stage, taleNum);
     if (meet.available) {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Ближайшее занятие с преподавателем: <strong>' + meet.date + '</strong> (приобретается отдельно)</span>';
+      html += '<span class="tale-schedule__meet tale-schedule__meet--included">Встреча с преподавателем: <strong>' + meet.date + '</strong></span>';
     } else {
       html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн · встреча по этой сказке недоступна</span>';
     }
@@ -430,10 +502,10 @@ if (faqList) {
     'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' }
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 990, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
   var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
   var ORDER_PRODUCTS = {
-    single: { title: 'Читательство · Разовое', price: 990, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
+    single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
     with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022', lid: '776534181255', sku: 'SKU0003' }
   };
@@ -1341,7 +1413,11 @@ if (faqList) {
   function checkSt100Block() {
     var warn = document.getElementById('chit-st100-warning');
     if (!warn) return;
-    warn.hidden = isOnPayPage() || !!findSt100Root() || !!PAY_PAGE_URL;
+    // Оплата на /oplata — служебную плашку родителям не показываем
+    warn.hidden = true;
+    warn.setAttribute('hidden', '');
+    warn.style.setProperty('display', 'none', 'important');
+    if (warn.parentNode) warn.parentNode.removeChild(warn);
   }
 
   function bindContactSync() {
@@ -1477,12 +1553,12 @@ if (faqList) {
     if (state.tariff === 'single') {
       if (state.stage && state.taleNum) {
         html += '<br>' + STAGE_LABEL[state.stage] + ' · ' + TALES[state.group][state.stage][state.taleNum - 1];
-        html += '<br>' + formatPrice(TARIFF_PRICE.single) + ' · урок на платформе';
+        html += '<br>' + formatPrice(TARIFF_PRICE.single);
         if (singleMeetingStatus(state.stage, state.taleNum) === 'with_meeting') {
           var meetLine = singleMeetingLine(state.stage, state.taleNum);
-          html += '<br>ближайшее занятие с преподавателем: ' + meetLine.date + ' (приобретается отдельно)';
+          html += '<br>урок на платформе + встреча с преподавателем: ' + meetLine.date;
         } else {
-          html += '<br>только онлайн';
+          html += '<br>только онлайн · встреча по этой сказке недоступна';
         }
       } else if (state.stage) {
         html += '<br><span class="summary-empty">Выберите сказку</span>';
@@ -1706,8 +1782,8 @@ if (faqList) {
   }
 
   var BOOK_TEXTS = [
-    '<strong style="color:var(--blue)">Разовое</strong> — одна сказка онлайн (990 ₽), встреча по желанию',
-    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса.',
+    '<strong style="color:var(--blue)">Разовое</strong> — одна сказка и встреча с преподавателем (<span class="hero-book-text__nb">1&nbsp;490&nbsp;₽</span>)',
+    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <span class="hero-book-text__nb"><strong>15&nbsp;июля</strong> и <strong>10&nbsp;августа</strong></span>, но присоединиться можно в любой момент',
     '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
   ];
   var bookStack = document.querySelector('.book-stack');

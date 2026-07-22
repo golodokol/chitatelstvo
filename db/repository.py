@@ -606,6 +606,75 @@ def mark_notification_failed(db: Session, note_id: uuid.UUID, error: str) -> Non
         db.commit()
 
 
+def list_family_ids_with_pending_progress_emails(db: Session) -> list[uuid.UUID]:
+    """Семьи с неотправленными письмами о прогрессе (не welcome)."""
+    stmt = (
+        select(ParentNotification.family_id)
+        .where(
+            ParentNotification.channel == "email",
+            ParentNotification.status == "pending",
+            ParentNotification.event_id.isnot(None),
+        )
+        .distinct()
+    )
+    return list(db.scalars(stmt).all())
+
+
+def list_pending_progress_emails(
+    db: Session,
+    *,
+    family_id: uuid.UUID,
+) -> list[ParentNotification]:
+    stmt = (
+        select(ParentNotification)
+        .where(
+            ParentNotification.family_id == family_id,
+            ParentNotification.channel == "email",
+            ParentNotification.status == "pending",
+            ParentNotification.event_id.isnot(None),
+        )
+        .order_by(ParentNotification.created_at.asc())
+    )
+    return list(db.scalars(stmt).all())
+
+
+def family_has_progress_email_sent_on_day(
+    db: Session,
+    *,
+    family_id: uuid.UUID,
+    day_start_utc: datetime,
+    day_end_utc: datetime,
+) -> bool:
+    """Было ли уже отправлено письмо о прогрессе в указанный календарный день (UTC-границы дня)."""
+    stmt = (
+        select(ParentNotification.id)
+        .where(
+            ParentNotification.family_id == family_id,
+            ParentNotification.channel == "email",
+            ParentNotification.status == "sent",
+            ParentNotification.event_id.isnot(None),
+            ParentNotification.sent_at.isnot(None),
+            ParentNotification.sent_at >= day_start_utc,
+            ParentNotification.sent_at < day_end_utc,
+        )
+        .limit(1)
+    )
+    return db.scalars(stmt).first() is not None
+
+
+def mark_notifications_sent(db: Session, note_ids: list[uuid.UUID]) -> None:
+    if not note_ids:
+        return
+    now = _utcnow()
+    stmt = (
+        update(ParentNotification)
+        .where(ParentNotification.id.in_(note_ids))
+        .values(status="sent", sent_at=now, error_message=None)
+    )
+    db.execute(stmt)
+    db.commit()
+
+
 def link_telegram_chat(
     db: Session,
     *,

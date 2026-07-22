@@ -15,7 +15,7 @@ window.CHIT_COURSE = (function () {
   };
 
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 990, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
   var MEETING_ADDON_PRICE = 799;
   var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
   var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
@@ -35,22 +35,22 @@ window.CHIT_COURSE = (function () {
   var TARIFF_COPY = {
     single: {
       name: 'Разовое',
-      mood: 'Одна сказка на платформе — начать можно сразу',
+      mood: 'Одна сказка и встреча с преподавателем',
       list: [
         '1 сказка на выбор',
         'Видео и интерактивные задания',
         'Личная страница прогресса',
-        'Урок открывается после оплаты'
+        '1 живая встреча с преподавателем'
       ],
-      meetNote: 'Живая встреча — по желанию, если дата ещё доступна (+' + MEETING_ADDON_PRICE + ' ₽)',
-      priceNote: 'за одну сказку онлайн',
+      meetNote: 'Встреча по четвергам · мини-группы до 6 детей',
+      priceNote: 'за 1 занятие',
       pickTag: 'Попробовать',
-      pickHint: '1 сказка онлайн · встреча по желанию'
+      pickHint: '1 сказка + встреча по четвергам'
     }
   };
 
   var ORDER_PRODUCTS = {
-    single: { title: 'Читательство · Разовое', price: 990, uid: '797131986522' },
+    single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642' },
     with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022' }
   };
@@ -191,7 +191,7 @@ window.CHIT_COURSE = (function () {
       intro: 'Эти сказки чаще всего встречаются в летних списках обязательного чтения — мы поможем ребёнку разобрать и понять каждую.',
       forWhom: [
         'Ребёнок учится в 1 классе (примерно 7–8 лет)',
-        'Семье важно системное летнее чтение, а не случайные тексты',
+        'Семья понимает ценность чтения',
         'Нужен свой темп — спокойно, в удобном ритме',
         'Родителю важно видеть прогресс на личной странице'
       ]
@@ -309,7 +309,7 @@ window.CHIT_COURSE = (function () {
       var sched = SCHEDULE[String(stage)];
       var idx = Number(taleNum) - 1;
       var date = sched && sched.meetings[idx] ? 'четверг, ' + sched.meetings[idx] : '';
-      return 'Ближайшее занятие с преподавателем: ' + date + ' (приобретается отдельно)';
+      return 'Встреча с преподавателем: ' + date;
     }
     return 'Только онлайн · встреча по этой сказке недоступна';
   }

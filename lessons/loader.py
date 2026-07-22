@@ -364,7 +364,12 @@ def emotion_quiz_for_client(quiz: dict[str, Any]) -> dict[str, Any]:
 
 
 def score_emotion_quiz(quiz: dict[str, Any], answers: dict[str, list[str]]) -> bool:
-    """Точное совпадение набора эмоций с правильным ответом."""
+    """Проверка эмоциометра.
+
+    По умолчанию — точное совпадение набора.
+    Если задано ``min_correct``: нужно выбрать ровно ``pick`` эмоций,
+    все из правильных, и среди них не меньше ``min_correct``.
+    """
     q = quiz.get("question") or {}
     qid = q.get("id")
     if not qid:
@@ -372,4 +377,11 @@ def score_emotion_quiz(quiz: dict[str, Any], answers: dict[str, list[str]]) -> b
     picked = set(answers.get(qid) or [])
     correct = set(q.get("correct") or [])
     expected_pick = int(q.get("pick", len(correct)))
-    return picked == correct and len(picked) == expected_pick
+    min_correct = q.get("min_correct")
+    if min_correct is None:
+        return picked == correct and len(picked) == expected_pick
+    if len(picked) != expected_pick:
+        return False
+    if not picked <= correct:
+        return False
+    return len(picked & correct) >= int(min_correct)

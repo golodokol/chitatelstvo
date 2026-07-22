@@ -244,10 +244,10 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
     'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' }
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 990, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
   var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
   var ORDER_LINKS = {
-    single: '#order:Читательство · Разовое =990',
+    single: '#order:Читательство · Разовое =1490',
     self_paced: '#order:Читательство · Индивидуальное =1990',
     with_teacher: '#order:Читательство · С преподавателем =4990'
   };

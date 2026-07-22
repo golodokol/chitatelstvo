@@ -223,16 +223,16 @@ def _current_lesson(lesson_links: list[dict]) -> dict | None:
 def _weekly_lessons(lesson_links: list[dict]) -> tuple[list[dict], str]:
     if not lesson_links:
         return [], "Урок этой недели"
-    unlocked = [les for les in lesson_links if les.get("unlocked")]
-    if unlocked:
-        current_week = max(int(les.get("module_week") or 1) for les in unlocked)
-    else:
-        current_week = int(lesson_links[0].get("module_week") or 1)
+    # Как в миссиях и сундуке: «урок недели» = текущий доступный урок (с url),
+    # а не максимальная неделя с unlocked без ссылки (grandfather / «скоро»).
+    current = _current_lesson(lesson_links)
+    anchor = current or lesson_links[0]
+    current_week = int(anchor.get("module_week") or 1)
     week_lessons = [
         les for les in lesson_links if int(les.get("module_week") or 1) == current_week
     ]
     if not week_lessons:
-        week_lessons = [_current_lesson(lesson_links) or lesson_links[0]]
+        week_lessons = [anchor]
     label = "Уроки этой недели" if len(week_lessons) > 1 else "Урок этой недели"
     return week_lessons, label
 

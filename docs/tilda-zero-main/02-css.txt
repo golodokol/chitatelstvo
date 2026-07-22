@@ -169,17 +169,18 @@
     .btn--outline {
       background: transparent; color: var(--blue);
       border: 2px solid var(--blue-light);
+      -webkit-text-fill-color: var(--blue);
     }
     .btn--outline:hover { background: var(--blue-pale); }
     .btn--pay {
       font-size: 18px; padding: 18px 32px;
     }
     .btn--hero {
-      font-size: 18px; padding: 18px 36px;
+      font-size: 17px; padding: 16px 28px;
       box-shadow: 0 8px 24px rgba(91,127,166,0.28);
     }
     .btn--hero:hover { box-shadow: 0 12px 32px rgba(91,127,166,0.35); }
-    .hero--premium .btn--hero { width: 100%; }
+    .hero--premium .btn--hero { width: auto; }
     .btn:disabled {
       background: #B8C9DB; cursor: not-allowed; transform: none;
     }
@@ -361,6 +362,7 @@
       transition: opacity .25s;
     }
     #hero-book-text.is-fading { opacity: 0; }
+    .hero-book-text__nb { white-space: nowrap; }
     .hero__visual-hint {
       font-size: 13px; color: var(--accent); margin-top: 14px; font-weight: 700;
       animation: hint-pulse 2s ease-in-out infinite;
@@ -405,7 +407,10 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      justify-content: center;
       align-self: stretch;
+      gap: 0;
+      min-height: 0;
     }
     .hero--premium .hero__visual {
       grid-column: 2;
@@ -413,7 +418,9 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      justify-content: center;
       align-self: stretch;
+      min-height: 0;
     }
   #chit-main .hero--premium .hero__badge,
     #chit-main .hero--premium .hero__badge--hero-top {
@@ -444,44 +451,62 @@
     }
     .hero--premium h1 {
       text-align: left;
-      font-size: clamp(30px, 3.6vw, 42px);
+      font-size: clamp(28px, 3.3vw, 40px);
       line-height: 1.14;
-      margin: 0 0 16px;
-      max-width: min(13.5em, 100%);
+      margin: 0 0 14px;
+      max-width: min(14em, 100%);
       letter-spacing: -0.025em;
       overflow-wrap: break-word;
       word-break: break-word;
     }
     .hero--premium .hero__lead {
-      font-size: clamp(16px, 1.75vw, 18px);
-      line-height: 1.62;
+      font-size: clamp(15px, 1.6vw, 17px);
+      line-height: 1.55;
       color: var(--text-warm);
-      margin: 0 0 22px;
-      max-width: min(34em, 100%);
+      margin: 0 0 16px;
+      max-width: min(36em, 100%);
       overflow-wrap: break-word;
       word-break: break-word;
     }
     .hero--premium .hero__price {
-      margin: 0 0 18px;
+      margin: 0 0 20px;
       text-align: left;
     }
     .hero__cta {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 0;
+      gap: 10px;
       width: 100%;
-      max-width: 320px;
+      max-width: none;
       margin-bottom: 0;
     }
-    .hero--premium .hero__actions { justify-content: flex-start; }
+    .hero--premium .hero__actions {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .hero--premium .hero__actions .btn {
+      width: auto;
+      flex: 0 1 auto;
+      white-space: nowrap;
+    }
+    .hero--premium .hero__actions .btn--outline {
+      padding: 14px 22px;
+      font-size: 16px;
+      border-radius: 999px;
+    }
     .hero--premium .hero__cta-note {
-      margin-top: auto;
-      padding-top: 10px;
+      margin-top: 0;
+      padding-top: 0;
     }
     .hero--premium .hero__visual-gift {
-      margin-top: auto;
-      padding-top: 10px;
+      margin-top: 14px;
+      padding-top: 0;
       align-self: center;
     }
     .hero__cta-note {
@@ -550,11 +575,16 @@
         grid-column: 1;
         grid-row: 2;
         align-items: center;
+        justify-content: flex-start;
         text-align: center;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
       .hero--premium .hero__visual {
         grid-column: 1;
         grid-row: 3;
+        justify-content: flex-start;
       }
       #chit-main .hero--premium .hero__badge,
       #chit-main .hero--premium .hero__badge--hero-top {
@@ -562,16 +592,20 @@
         text-align: center;
       }
       .hero--premium h1 { max-width: 100%; text-align: center; font-size: clamp(24px, 7vw, 30px); }
-      .hero__cta { align-items: center; max-width: 100%; }
+      .hero__cta { align-items: stretch; max-width: 100%; width: 100%; }
       .hero--premium .hero__lead { text-align: center; max-width: 100%; }
       .hero--premium .hero__price { text-align: center; }
-      .hero--premium .hero__actions { justify-content: center; }
+      .hero--premium .hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+      }
+      .hero--premium .hero__actions .btn { width: 100%; }
       .hero--premium .hero__grid { width: 100%; max-width: 100%; }
-      .hero--premium .hero__content { width: 100%; max-width: 100%; min-width: 0; }
       .hero--premium .hero__cta-note,
       .hero--premium .hero__visual-gift {
-        margin-top: 0;
-        padding-top: 8px;
+        margin-top: 12px;
+        padding-top: 0;
       }
     }
 
@@ -851,12 +885,19 @@
 
     .final-cta-scroller {
       height: max(135vh, 1020px);
+      width: 100vw;
+      max-width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      position: relative;
+      box-sizing: border-box;
     }
     .final-cta {
       position: sticky;
       top: 0;
       height: 100vh;
       min-height: 840px;
+      width: 100%;
       text-align: center;
       padding: 48px 8% 64px 24px;
       display: flex; align-items: center; justify-content: flex-end;
@@ -1428,18 +1469,16 @@
       max-width: 480px; margin-left: auto; margin-right: auto;
     }
     .form-consent a { color: var(--blue); }
-    .st100-warning {
-      background: #fff8e8;
-      border: 1px solid #f0d9a8;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin: 0 0 20px;
-      font-size: 14px;
-      line-height: 1.55;
-      color: #6b5d4d;
-      text-align: center;
+    .st100-warning,
+    #chit-st100-warning {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      border: 0 !important;
     }
-    .st100-warning[hidden] { display: none !important; }
     .st100-warning strong { color: #5a4a38; }
 
     /* FAQ — письма */
@@ -1837,10 +1876,13 @@
       color: #fff !important;
       -webkit-text-fill-color: #fff !important;
     }
-    #allrecords #chit-main a.btn--outline {
+    #allrecords #chit-main a.btn--outline,
+    #allrecords #chit-main .btn--outline,
+    #allrecords #chit-main a.btn.btn--outline {
       color: var(--blue) !important;
       -webkit-text-fill-color: var(--blue) !important;
       background: transparent !important;
+      border: 2px solid var(--blue-light) !important;
     }
     #allrecords #chit-main .pill.is-active {
       color: #fff !important;
@@ -1852,7 +1894,13 @@
     #allrecords #chit-main .btn,
     #allrecords #chit-main a.btn,
     #allrecords #chit-main .btn--pay { color: #fff !important; }
-    #allrecords #chit-main .btn--outline { color: var(--blue) !important; }
+    #allrecords #chit-main .btn--outline,
+    #allrecords #chit-main a.btn.btn--outline {
+      color: var(--blue) !important;
+      -webkit-text-fill-color: var(--blue) !important;
+      background: transparent !important;
+      border: 2px solid var(--blue-light) !important;
+    }
     #allrecords #chit-main .pill.is-active { color: #fff !important; }
     #allrecords #chit-main .faq-a { display: none; }
     #allrecords #chit-main .faq-a.is-open { display: block; }
@@ -1880,8 +1928,8 @@
       .btn { padding: 14px 22px; font-size: 16px; }
       .hero__subtitle { font-size: 18px; }
       .hero__price strong { font-size: 24px; }
-      .hero__actions { flex-direction: column; align-items: stretch; }
-      .hero__actions .btn { width: 100%; }
+      .hero--premium .hero__actions { flex-direction: column; align-items: stretch; }
+      .hero--premium .hero__actions .btn { width: 100%; }
 
       .footer { padding: 36px 16px 48px; }
       .footer__logo { width: 200px; }

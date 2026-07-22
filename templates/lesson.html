@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% include "_favicon.html" %}
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260709d">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260716a">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -102,7 +102,7 @@
     <div class="chit-card chit-step chit-step-creative" id="step-creative">
       <div class="chit-badge-step">{{ step_badges.creative }}</div>
       <h2>{{ step_labels.creative }}</h2>
-      <p class="chit-creative-intro">Ты уже выполнил все задания урока? Тогда скорее переходи в волшебный сундук, там появились творческие задания для выполнения дома!</p>
+      <p class="chit-creative-intro">Ты уже выполнил все задания урока? Тогда скорее переходи в волшебный сундук, там появились творческие задания!</p>
       {% if creative_tasks['items'] %}
       <ul class="chit-creative-list">
         {% for item in creative_tasks['items'] %}
@@ -157,8 +157,8 @@
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
   <script src="/static/lesson_slovik.js?v=20260709d"></script>
-  <script src="/static/emotion_wheel.js?v=20260709c"></script>
-  <script src="/static/lesson_quiz.js?v=20260708b"></script>
+  <script src="/static/emotion_wheel.js?v=20260717a"></script>
+  <script src="/static/lesson_quiz.js?v=20260717b"></script>
   <script>
     const CFG = {
       slug: {{ slug|tojson }},
@@ -1134,8 +1134,9 @@
           } else {
             showEmotionVerdict('err', formatEmotionFailHint());
           }
+          // Сброс без onChange — иначе текст ошибки сразу стирается.
           if (emotionWheel && emotionWheel.resetSelection) {
-            emotionWheel.resetSelection();
+            emotionWheel.resetSelection(false);
           }
           emotionSelectedIds = [];
           updateEmotionButton();
@@ -1143,8 +1144,9 @@
         }
         emotionWrongAttempts = 0;
         saveEmotionWrongAttempts(0);
-        if (emotionWheel && emotionWheel.markResult && data.correct) {
-          emotionWheel.markResult(data.correct, true);
+        if (emotionWheel && emotionWheel.markResult) {
+          // Подсвечиваем только то, что выбрали (не весь список верных).
+          emotionWheel.markResult(selected, true);
         }
         showEmotionVerdict('ok', data.message || 'Верно!');
         markDone('step-emotion');
@@ -1187,6 +1189,7 @@
               msg.textContent = '';
               msg.style.display = 'none';
               document.getElementById('step-emotion').classList.remove('is-wrong', 'is-ok');
+              if (emotionWheel && emotionWheel.clearResult) emotionWheel.clearResult();
             }
           }
           updateEmotionButton();
@@ -1690,6 +1693,24 @@
         document.getElementById('player-container').innerHTML =
           '<p style="padding:20px;color:#fff">Видео для этого урока ещё не добавлено.</p>';
         enableAllVideoProgress();
+        // Без ролика всё равно засчитываем просмотр — иначе не открывается «Оценка сказки».
+        (async function autoCompleteMissingVideo() {
+          try {
+            await postJson('/api/lesson/' + CFG.slug + '/video-unlock', authBody({
+              watched_seconds: 999,
+              duration_seconds: 60
+            }));
+            const data = await postJson('/api/lesson/' + CFG.slug + '/video-complete', authBody({ percent: 1 }));
+            if (data && (data.status === 'accepted' || data.status === 'duplicate')) {
+              CFG.canRate = true;
+              showRatingStep();
+              if (data.status === 'accepted') onReward('lesson_complete', data.status);
+              refreshCompanion();
+            }
+          } catch (err) {
+            console.warn('auto video complete failed', err);
+          }
+        })();
       }
 
       if (CFG.testKey) {

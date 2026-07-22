@@ -12,7 +12,11 @@ from db.session import SessionLocal
 from gamification.bonus_badges import bonus_badges_for_event
 from gamification.streak_badges import STREAK_META_EVENTS, maybe_award_streak_3
 from gamification.engine import GamificationRequest, LearnerState, generate_reward
-from notifications.dispatcher import dispatch_parent_notifications, send_pending_notification
+from notifications.dispatcher import (
+    dispatch_parent_notifications,
+    flush_progress_email_digests,
+    send_pending_notification,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -118,5 +122,16 @@ def process_send_notification(notification_id: str) -> None:
         send_pending_notification(db, uuid.UUID(notification_id))
     except Exception as exc:
         logger.exception("Ошибка отправки уведомления %s: %s", notification_id, exc)
+    finally:
+        db.close()
+
+
+def process_flush_progress_digests(*, force: bool = False) -> int:
+    db: Session = SessionLocal()
+    try:
+        return flush_progress_email_digests(db, force=force)
+    except Exception:
+        logger.exception("Ошибка дневной сводки писем родителям")
+        return 0
     finally:
         db.close()

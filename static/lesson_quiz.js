@@ -115,7 +115,24 @@
       select.className = 'chit-q-select chit-match-select';
       select.name = formId + '-' + q.id + '-' + left.id;
       select.dataset.leftId = left.id;
-      select.innerHTML = '<option value="">— выбери место —</option>';
+      const matchPrompt = (function () {
+        if (q.select_prompt) return q.select_prompt;
+        const t = String(q.text || '') + ' ' + String(q.hint || '');
+        const low = t.toLowerCase();
+        if (low.indexOf('желани') !== -1 || low.indexOf('просил') !== -1) return '— выбери желание —';
+        if (low.indexOf('действие') !== -1 || low.indexOf('делает') !== -1 || low.indexOf('героя') !== -1) {
+          return '— выбери действие —';
+        }
+        if (low.indexOf('черт') !== -1) return '— выбери главную черту —';
+        if (low.indexOf('поступ') !== -1 || low.indexOf('привёл') !== -1 || low.indexOf('привел') !== -1) {
+          return '— выбери последствие —';
+        }
+        if (low.indexOf('конец') !== -1 || low.indexOf('начала') !== -1 || low.indexOf('начало') !== -1) {
+          return '— выбери конец —';
+        }
+        return '— выбери уместное —';
+      })();
+      select.innerHTML = '<option value="">' + escapeHtml(matchPrompt) + '</option>';
       (q.right || []).forEach(function (right) {
         const opt = document.createElement('option');
         opt.value = right.id;
@@ -273,12 +290,13 @@
     div.className = withImages ? 'chit-q chit-q-ordering chit-q-ordering-images' : 'chit-q chit-q-ordering';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'ordering';
+    const slotCount = items.length;
     let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
     if (q.hint) {
       html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
     } else {
       const instruction = withImages
-        ? 'Перетащи картинки в ячейки 1–5 по порядку сказки. На телефоне: нажми на картинку, затем на ячейку.'
+        ? ('Перетащи картинки в ячейки 1–' + slotCount + ' по порядку сказки. На телефоне: нажми на картинку, затем на ячейку.')
         : 'Перетащи события в ячейки по порядку сказки. На телефоне: нажми на событие, затем на ячейку.';
       html += '<p class="chit-order-instruction">' + instruction + '</p>';
     }
@@ -290,6 +308,9 @@
 
     const slotsWrap = document.createElement('div');
     slotsWrap.className = 'chit-order-slots';
+    // Два ряда: для 6 → 3+3, для 5 → 3+2, для 4 → 2+2
+    const cols = slotCount <= 3 ? slotCount : Math.ceil(slotCount / 2);
+    slotsWrap.dataset.cols = String(cols);
     slotsWrap.setAttribute('role', 'list');
     items.forEach(function (_item, slotIdx) {
       const slot = document.createElement('div');
@@ -336,6 +357,13 @@
     return div;
   }
 
+  function pictureMatchPlaceholder(q) {
+    if (q.select_prompt) return q.select_prompt;
+    const text = String(q.text || '').toLowerCase();
+    if (text.indexOf('что') !== -1) return '— что это? —';
+    return '— кто это? —';
+  }
+
   function renderPictureMatch(formId, q, idx) {
     const div = document.createElement('div');
     div.className = 'chit-q chit-q-pictures';
@@ -346,6 +374,7 @@
     div.innerHTML = html;
     const grid = document.createElement('div');
     grid.className = 'chit-picture-grid';
+    const placeholder = pictureMatchPlaceholder(q);
     (q.pictures || []).forEach(function (pic, picIdx) {
       const card = document.createElement('div');
       card.className = 'chit-picture-card';
@@ -362,7 +391,7 @@
       select.className = 'chit-q-select chit-picture-select';
       select.name = formId + '-' + q.id + '-' + pic.id;
       select.dataset.pictureId = pic.id;
-      select.innerHTML = '<option value="">— кто это? —</option>';
+      select.innerHTML = '<option value="">' + escapeHtml(placeholder) + '</option>';
       (q.labels || []).forEach(function (label) {
         const opt = document.createElement('option');
         opt.value = label.id;

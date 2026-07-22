@@ -34,8 +34,8 @@
 
     <div class="hero__content">
       <h1>Понимать книги — с удовольствием</h1>
-      <p class="hero__lead">Видеоуроки по сказкам и задания на понимание текста — ребёнок читает с удовольствием, а вы видите результат на личной странице</p>
-      <p class="hero__price"><strong>990 ₽</strong> за одну сказку и доступ к платформе</p>
+      <p class="hero__lead">Онлайн-школа литературного чтения: видео, вопросы на понимание и задания на смысл — ребёнок погружается в сказку, а вы видите прогресс на личной странице</p>
+      <p class="hero__price"><strong>1 490 ₽</strong> за одну сказку и встречу с преподавателем</p>
       <div class="hero__cta">
         <div class="hero__actions">
           <a class="btn btn--hero" href="#program">Записаться на курс</a>
@@ -58,9 +58,9 @@
             <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
           </button>
         </div>
-        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>15 июля</strong> и <strong>10 августа</strong></p>
+        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <span class="hero-book-text__nb"><strong>15&nbsp;июля</strong> и <strong>10&nbsp;августа</strong></span>, но присоединиться можно в любой момент</p>
       </div>
-      <a href="#quiz" class="hero__visual-gift">Получите в подарок один урок-сказку</a>
+      <a href="#quiz" class="hero__visual-gift">Бесплатный доступ к платформе и один урок-сказка</a>
     </div>
   </div>
   <p class="hero__scroll"><a href="#quote-hero">↓ листайте вниз — там программы и запись</a></p>
@@ -96,19 +96,19 @@
     <div class="benefits__grid">
       <article class="benefit">
         <span class="benefit__tag">закладка 1</span>
-        <p class="benefit__text">Видео и задания — прогресс засчитывается сам</p>
+        <p class="benefit__text">Видео, вопросы и задания на смысл — в удобном темпе</p>
       </article>
       <article class="benefit">
         <span class="benefit__tag">закладка 2</span>
-        <p class="benefit__text">Баллы, бейджи и личная страница прогресса</p>
+        <p class="benefit__text">Баллы-словики, волшебный сундук после урока и бейджи</p>
       </article>
       <article class="benefit">
         <span class="benefit__tag">закладка 3</span>
-        <p class="benefit__text">Программы для 1–4 класса и детей 6–11 лет</p>
+        <p class="benefit__text">Самостоятельно или с преподавателем — квест в группе 4–6 детей</p>
       </article>
       <article class="benefit">
         <span class="benefit__tag">закладка 4</span>
-        <p class="benefit__text">Можно начать с одной сказки</p>
+        <p class="benefit__text">Попробуйте бесплатно — один полноценный урок со сказкой</p>
       </article>
     </div>
   </div>
@@ -120,7 +120,8 @@
     <span class="section__chapter"><em>глава 1</em> · о школе</span>
     <h2 class="section__title">ЧИТАТЕЛЬСТВО — это не просто «прочитать текст»</h2>
     <div class="about-text">
-      <p><strong>ЧИТАТЕЛЬСТВО</strong> — онлайн-школа литературного чтения для детей. Мы помогаем понимать книги глубже — через видео, вопросы на понимание и задания на смысл. Родитель получает личную страницу: там виден прогресс и открытые сказки — можно начать занятие в один клик.</p>
+      <p><strong>ЧИТАТЕЛЬСТВО</strong> — онлайн-школа литературного чтения для детей. Мы помогаем понимать книги глубже — через видео, вопросы на понимание и задания на смысл. В основе всех занятий — геймификация: за выполнение заданий по книгам начисляются баллы (внутри школы мы называем их «словиками»), а после каждого занятия открывается волшебный сундук с заданием для творческой самостоятельной работы дома.</p>
+      <p>Все занятия можно проходить <strong>самостоятельно</strong> в удобном темпе — прогресс виден на личной странице, словики и уровни начисляются сразу после заданий. А если хочется живого общения, программу можно <strong>дополнить занятиями с преподавателем</strong>: там расширенная программа по каждой сказке и квест в мини-группе из 4–6 детей.</p>
       <p><strong>Базовый курс</strong> — для 1–4 класса, <strong>внеклассное чтение</strong> — для детей 6–11 лет. <strong>12 сказок за лето</strong> — три блока по 4: старт <strong>15 июля</strong>, продолжение <strong>10 августа</strong> и <strong>внеклассная программа</strong>. Оплата — за блок из 4 сказок или за одну, если хотите попробовать.</p>
     </div>
     <div class="summer-timeline" id="timeline">
@@ -168,19 +169,19 @@
         <div class="for-whom__icon-wrap for-whom__icon-wrap--family">
           <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-family.png" alt="" width="80" height="80" loading="lazy">
         </div>
-        семей, которым важно системное чтение, а не случайные тексты
+        семей, понимающих ценность чтения
       </div>
       <div class="for-whom__item">
         <div class="for-whom__icon-wrap for-whom__icon-wrap--pace">
           <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-pace.png" alt="" width="80" height="80" loading="lazy">
         </div>
-        тех, кому нужен свой темп — без давления и оценок
+        тех, кто привык читать в своём удобном темпе
       </div>
       <div class="for-whom__item">
         <div class="for-whom__icon-wrap for-whom__icon-wrap--parents">
           <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-parents.png" alt="" width="80" height="80" loading="lazy">
         </div>
-        родителей, которым интересны живые обсуждения с преподавателем
+        тех, кто хочет квест по сказке в группе с преподавателем
       </div>
     </div>
   </div>
@@ -191,7 +192,7 @@
   <div class="section__inner">
     <span class="section__chapter"><em>глава 3</em> · урок</span>
     <h2 class="section__title">Как проходит урок</h2>
-    <p class="section__lead">Одна сказка — один мини-курс: видео, вопросы и творчество в своём темпе</p>
+    <p class="section__lead">Одна сказка — один мини-курс: видео, вопросы на понимание и волшебный сундук с творческим заданием дома</p>
     <div class="lesson-steps">
       <article class="lesson-step">
         <div class="lesson-step__icon">
@@ -219,7 +220,7 @@
         </div>
       </article>
     </div>
-    <p class="lesson-steps-note">Видео и квизы засчитываются сами — вам ничего отмечать не нужно</p>
+    <p class="lesson-steps-note">Видео и квизы засчитываются сами — после урока открывается сундук с творческим заданием для работы дома</p>
   </div>
 </section>
 
@@ -228,7 +229,7 @@
   <div class="section__inner">
     <span class="section__chapter"><em>глава 4</em> · награды</span>
     <h2 class="section__title">Баллы, уровни и бейджи</h2>
-    <p class="section__lead">Баллы и бейджи на личной странице — прогресс виден сразу, без оценок и сравнений с другими</p>
+    <p class="section__lead">За задания начисляются баллы-словики. После каждого урока — волшебный сундук. На личной странице видны уровни и бейджи</p>
 
     <h3 class="gamify__subtitle">Пять уровней</h3>
     <div class="gamify-levels" aria-label="Уровни прогресса">
@@ -282,7 +283,7 @@
         </div>
       </figure>
     </div>
-    <p class="gamify-badges-note">В коллекции — <strong>9 бейджей</strong>. Собирайте их по мере уроков — так чтение становится увлекательнее.</p>
+    <p class="gamify-badges-note">В коллекции — <strong>9 бейджей</strong>. Собирайте их по мере уроков — так чтение соперничает с гаджетами не хуже :)</p>
   </div>
 </section>
 
@@ -291,35 +292,35 @@
   <div class="section__inner">
     <span class="section__chapter"><em>глава 5</em> · формат</span>
     <h2 class="section__title">Выберите свой путь</h2>
-    <p class="section__lead">Все форматы — с выбором даты старта: 15 июля или 10 августа</p>
+    <p class="section__lead">Самостоятельно в своём темпе или с преподавателем в мини-группе — выберите, как удобнее семье</p>
     <div class="tariffs-grid">
       <div class="tariff-card">
         <h3 class="tariff-card__name">Разовое</h3>
-        <p class="tariff-card__mood">Одна сказка на платформе — начать можно сразу</p>
+        <p class="tariff-card__mood">Одна сказка и встреча с преподавателем</p>
         <ul class="tariff-card__list">
           <li>1 сказка на выбор</li>
           <li>Видео и интерактивные задания</li>
           <li>Личная страница прогресса</li>
-          <li>Урок открывается после оплаты</li>
+          <li>1 живая встреча с преподавателем</li>
         </ul>
         <div class="tariff-card__meet-slot">
           <div class="tariff-card__meet">
-            <span class="tariff-card__meet-line">Живая встреча — по желанию</span>
-            <span class="tariff-card__meet-line">Если дата по сказке ещё доступна (+799 ₽)</span>
-            <span class="tariff-card__meet-line tariff-card__meet-line--muted">При выборе сказки подскажем в форме</span>
+            <span class="tariff-card__meet-line">Встреча по четвергам</span>
+            <span class="tariff-card__meet-line">Мини-группы до 6 детей</span>
+            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Точное время — после формирования групп</span>
           </div>
         </div>
-        <div class="tariff-card__price">990 ₽</div>
-        <div class="tariff-card__note">за одну сказку онлайн</div>
+        <div class="tariff-card__price">1 490 ₽</div>
+        <div class="tariff-card__note">за 1 занятие</div>
         <a class="btn btn--block" href="#program">Оплатить</a>
       </div>
       <div class="tariff-card tariff-card--featured">
         <h3 class="tariff-card__name">Индивидуальное</h3>
-        <p class="tariff-card__mood">4 сказки — целое летнее путешествие</p>
+        <p class="tariff-card__mood">4 сказки — проходите сами, когда удобно</p>
         <ul class="tariff-card__list">
           <li>4 сказки — один период</li>
           <li>Свой темп, без расписания</li>
-          <li>Видео и задания на каждую сказку</li>
+          <li>Видео, квизы и сундук после каждого урока</li>
           <li>Личная страница прогресса</li>
           <li>Без живых встреч</li>
         </ul>
@@ -330,10 +331,11 @@
       </div>
       <div class="tariff-card">
         <h3 class="tariff-card__name">С преподавателем</h3>
-        <p class="tariff-card__mood">4 сказки и живые разговоры о книге</p>
+        <p class="tariff-card__mood">Расширенная программа по каждой сказке и квест в группе</p>
         <ul class="tariff-card__list">
           <li>4 сказки + 4 живые встречи</li>
-          <li>Обсуждение и игра в группе</li>
+          <li>Квест по сказке вместе с другими детьми</li>
+          <li>Расширенная программа с преподавателем</li>
           <li>Видео и задания между встречами</li>
           <li>Личная страница прогресса</li>
         </ul>
@@ -410,8 +412,8 @@
           <div class="pick-card" data-tariff="single">
             <div class="pick-card__tag">Попробовать</div>
             <div class="pick-card__name">Разовое</div>
-            <div class="pick-card__price">990 ₽</div>
-            <div class="pick-card__hint">1 сказка онлайн · встреча по желанию</div>
+            <div class="pick-card__price">1 490 ₽</div>
+            <div class="pick-card__hint">1 сказка + встреча по четвергам</div>
           </div>
           <div class="pick-card" data-tariff="self_paced">
             <div class="pick-card__tag">Основной</div>
@@ -430,7 +432,7 @@
 
       <div class="step-block date-box" id="chit-date-box">
         <div class="step-label"><em>шаг 3</em> · когда начать</div>
-        <p class="step-hint" id="chit-step3-hint" hidden>990 ₽ — урок на платформе. Живую встречу можно добавить (+799 ₽), если дата по сказке ещё доступна.</p>
+        <p class="step-hint" id="chit-step3-hint" hidden>1 490 ₽ — урок на платформе и встреча с преподавателем, если дата по сказке ещё доступна.</p>
         <div class="stage-row" id="chit-stages">
           <button type="button" class="pill" data-stage="1">Старт курса 15 июля</button>
           <button type="button" class="pill" data-stage="2">Старт 10 августа</button>
@@ -484,12 +486,6 @@
         </div>
         <input type="hidden" name="notification_channel" id="chit_notification_channel" value="email">
 
-        <div class="st100-warning" id="chit-st100-warning" hidden>
-          <strong>Оплата пока не подключена.</strong>
-          В редакторе Tilda добавьте блок <em>ST100 «Корзина с формой»</em> под Zero Block
-          (см. docs/tilda-zero-main/ST100_SETUP.md). Без него кнопка «Записаться» не откроет оплату.
-        </div>
-
         <button type="button" class="btn btn--block btn--pay" id="chit-pay-btn" disabled>Записаться</button>
         <p class="form-consent">Нажимая «Записаться», вы соглашаетесь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">политикой конфиденциальности</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">офертой</a>.</p>
       </div>
@@ -522,14 +518,14 @@
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Можно ли начать с одной сказки?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 990 ₽: одна сказка на платформе, урок открывается после оплаты. Живую встречу можно докупить (+799 ₽), если по выбранной сказке дата встречи ещё не прошла.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 1 490 ₽: одна сказка на выбор и встреча с преподавателем. А если хотите сначала просто попробовать — пройдите <a href="#quiz">бесплатный урок-сказку</a>: мы открываем доступ к платформе и одному полноценному занятию.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Чем отличаются тарифы?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Разовое — 1 сказка онлайн (990 ₽). Индивидуальное — 4 сказки в своём темпе, без живых встреч (1 990 ₽). С преподавателем — 4 сказки плюс 4 живые встречи (4 990 ₽).</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span><strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч (1 990 ₽): видео, квизы и сундук после каждого урока. <strong>С преподавателем</strong> — та же основа плюс расширенная программа и квест по сказке в мини-группе 4–6 детей, 4 живые встречи (4 990 ₽). <strong>Разовое</strong> — 1 сказка и одна встреча (1 490 ₽).</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
@@ -548,8 +544,8 @@
     <div class="final-cta__bg" aria-hidden="true"></div>
     <div class="final-cta__frame">
       <h2>Почему бы не открыть первую сказку?</h2>
-      <p>Запись займёт пару минут. После оплаты на email придёт ссылка на личную страницу ребёнка.</p>
-      <a class="btn" href="#program">Записаться на курс</a>
+      <p>Школа только начинает путь — поэтому даём бесплатный доступ к платформе и одному полноценному уроку. Пройдите одно книжное приключение вместе с ребёнком, а если понравится — запись займёт пару минут.</p>
+      <a class="btn" href="#quiz">Получить урок бесплатно</a>
     </div>
   </section>
 </div>
@@ -568,7 +564,7 @@
         <div class="founder__body">
           <h3 class="founder__name">Рощина Ольга</h3>
           <p class="founder__role">Основатель</p>
-          <p class="founder__bio">Основательница онлайн-школы <strong>ЧИТАТЕЛЬСТВО</strong>. В проекте отвечаю за идею и организацию, реализацию курсов, создание сайта и программу геймификации — чтобы ребёнку было интересно читать, а родителю видеть прогресс. Мама четырёх детей, основатель книжного в Москве <a href="https://blog.dobrolavka.ru/" target="_blank" rel="noopener"><strong>ДоброЛавка</strong></a></p>
+          <p class="founder__bio">Школу придумала и сделала Ольга Рощина — основатель и руководитель московского книжного магазина <a href="https://blog.dobrolavka.ru/" target="_blank" rel="noopener"><strong>ДоброЛавка</strong></a>, мама четырёх детей. Видит, как чтение благотворно влияет на собственных детей, и обязательно проверяет все занятия на них :) В проекте отвечает за идею, курсы, сайт и геймификацию. Конкурировать с миром гаджетов книгам всё сложнее — мы стараемся увлечь чтением не хуже!</p>
         </div>
       </article>
       <article class="founder__card">
@@ -613,8 +609,8 @@
         <div class="qz-card">
           <img class="qz-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo-quiz.png?v=20260616a" alt="Читательство" width="220" height="220" loading="lazy">
           <div class="qz-intro-gift">
-            <p class="qz-intro-gift__badge">Демо-доступ к платформе и урок в подарок!</p>
-            <p class="qz-intro-gift__sub">Ответьте на 5 вопросов и получите чек-лист «10 признаков, что ребёнок не понимает прочитанное» сразу на email. Демо-доступ и бесплатный урок-сказку с рекомендациями от основателя отправим чуть позже.</p>
+            <p class="qz-intro-gift__badge">Бесплатный доступ к платформе и один урок-сказка!</p>
+            <p class="qz-intro-gift__sub">Ответьте на 5 вопросов — получите чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email. А чуть позже откроем доступ к платформе и бесплатному полноценному уроку, чтобы вы прошли одно книжное приключение вместе с ребёнком.</p>
           </div>
           <h2 id="qz-modal-title" class="qz-visually-hidden">Подборка программы чтения</h2>
           <div class="qz-progress" aria-hidden="true">
@@ -631,7 +627,7 @@
             <div class="qz-gift">
               <p class="qz-gift__label">🎁 Что вы получите</p>
               <p><strong>Сейчас:</strong> PDF-чек-лист на email — проверить понимание текста вместе с ребёнком.</p>
-              <p><strong>Чуть позже:</strong> личное письмо от основателя с рекомендациями и подарком — 1 урок по вашему запросу.</p>
+              <p><strong>Чуть позже:</strong> бесплатный доступ к платформе, один полноценный урок-сказка и личное письмо от основателя с рекомендациями.</p>
             </div>
             <form id="qz-form" novalidate>
               <div class="qz-fields">
