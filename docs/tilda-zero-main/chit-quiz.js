@@ -119,16 +119,27 @@
     if (!dialog || !modal || !modal.classList.contains('is-open')) return;
     dialog.style.height = 'auto';
     dialog.style.maxHeight = '';
-    dialog.classList.remove('qz-modal--tight');
+    dialog.classList.remove('qz-modal--tight', 'qz-modal--form-compact');
     var card = dialog.querySelector('.qz-card');
     if (!card) return;
     var pad = window.innerWidth <= 720 ? 24 : 32;
     var max = Math.max(280, window.innerHeight - pad);
+    var isForm = root.classList.contains('qz-form-step');
     var h = card.offsetHeight;
     if (h > max) {
       dialog.classList.add('qz-modal--tight');
+      if (isForm) dialog.classList.add('qz-modal--form-compact');
       h = card.offsetHeight;
     }
+    // На форме контактов не даём появляться полосе прокрутки справа
+    if (isForm) {
+      dialog.style.overflow = 'hidden';
+      var fit = Math.min(Math.max(h, 280), max);
+      dialog.style.height = fit + 'px';
+      dialog.style.maxHeight = fit + 'px';
+      return;
+    }
+    dialog.style.overflow = '';
     var fit = Math.min(h, max);
     dialog.style.height = fit + 'px';
     dialog.style.maxHeight = fit + 'px';
@@ -247,12 +258,56 @@
     }, AUTO_DELAY_MS);
   }
 
+  function applyTrialAgeHint() {
+    if (!form || !form.child_age) return;
+    try {
+      var hint = sessionStorage.getItem('chit_trial_age_hint');
+      if (hint && !form.child_age.value) form.child_age.value = hint;
+    } catch (err) {}
+  }
+
+  function rememberTrialFromEl(el) {
+    if (!el || !el.getAttribute) return;
+    var slug = el.getAttribute('data-trial-slug');
+    if (!slug) return;
+    try {
+      var age = el.getAttribute('data-trial-age') || '';
+      sessionStorage.setItem('chit_trial', JSON.stringify({
+        age: age,
+        slug: slug,
+        title: el.getAttribute('data-trial-title') || ''
+      }));
+      var hintAge = age === '6-8' ? '7' : (age === '9-11' ? '10' : '');
+      if (hintAge) sessionStorage.setItem('chit_trial_age_hint', hintAge);
+    } catch (err) {}
+  }
+
+  function updateSuccessForTrial() {
+    var success = root.querySelector('[data-step="success"]');
+    if (!success) return;
+    var giftLine = success.querySelector('[data-qz-gift-line]');
+    if (!giftLine) return;
+    var title = '';
+    try {
+      var raw = sessionStorage.getItem('chit_trial');
+      if (raw) {
+        var trial = JSON.parse(raw);
+        if (trial && trial.title) title = String(trial.title);
+      }
+    } catch (err) {}
+    giftLine.textContent = title
+      ? ('Бесплатный урок «' + title + '» откроем чуть позже — ссылка придёт отдельным письмом.')
+      : 'Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.';
+  }
+
   function openQuizModal(source) {
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
     cancelAutoOpen();
     markQuizPopup(source || 'open');
     resetQuiz();
+    applyTrialAgeHint();
+    updateSuccessForTrial();
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('qz-modal-open');
@@ -285,6 +340,7 @@
     document.querySelectorAll('[href="#quiz"], [data-qz-open]').forEach(function (el) {
       el.addEventListener('click', function (e) {
         e.preventDefault();
+        rememberTrialFromEl(el);
         openQuizModal('manual');
       });
     });
@@ -362,6 +418,17 @@
       child_age: parseInt(form.child_age.value.trim(), 10),
       answers: buildAnswersPayload()
     };
+    try {
+      var trialRaw = sessionStorage.getItem('chit_trial');
+      if (trialRaw) {
+        var trial = JSON.parse(trialRaw);
+        if (trial && typeof trial === 'object') {
+          if (trial.age) payload.trial_age = String(trial.age);
+          if (trial.slug) payload.trial_slug = String(trial.slug);
+          if (trial.title) payload.trial_title = String(trial.title);
+        }
+      }
+    } catch (err) {}
     fetch(API_BASE + '/api/quiz/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -382,6 +449,7 @@
       })
       .then(function () {
         markQuizPopup('done');
+        updateSuccessForTrial();
         showStep(QUESTIONS.length + 1);
       })
       .catch(function (err) {

@@ -136,4 +136,69 @@
       if (e.target === modal) closeModal();
     });
   }
+
+  var feedbackForm = document.getElementById('chit-parent-feedback');
+  if (feedbackForm) {
+    var statusEl = document.getElementById('chit-feedback-status');
+    var submitBtn = document.getElementById('chit-feedback-submit');
+    var messageEl = document.getElementById('chit-feedback-message');
+    var childEl = document.getElementById('chit-feedback-child');
+    var token = feedbackForm.getAttribute('data-token') || '';
+
+    function setStatus(text, ok) {
+      if (!statusEl) return;
+      statusEl.hidden = !text;
+      statusEl.textContent = text || '';
+      statusEl.classList.toggle('is-ok', !!ok);
+      statusEl.classList.toggle('is-err', !!text && !ok);
+    }
+
+    feedbackForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var message = (messageEl && messageEl.value || '').trim();
+      if (message.length < 5) {
+        setStatus('Напишите вопрос чуть подробнее (хотя бы несколько слов).', false);
+        if (messageEl) messageEl.focus();
+        return;
+      }
+      if (!token) {
+        setStatus('Не удалось отправить: обновите страницу.', false);
+        return;
+      }
+      if (submitBtn) submitBtn.disabled = true;
+      setStatus('Отправляем…', true);
+
+      fetch('/progress/' + encodeURIComponent(token) + '/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          message: message,
+          child_name: childEl ? (childEl.value || '') : '',
+        }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, status: res.status, data: data };
+          }).catch(function () {
+            return { ok: res.ok, status: res.status, data: {} };
+          });
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            var detail = (result.data && (result.data.detail || result.data.message)) || '';
+            if (Array.isArray(detail)) detail = detail.map(function (d) { return d.msg || d; }).join(' ');
+            setStatus(detail || 'Не удалось отправить. Попробуйте позже или напишите на info@chitatelstvo.ru', false);
+            return;
+          }
+          setStatus('Отправлено. Мы ответим на почту, которую указывали при записи.', true);
+          if (messageEl) messageEl.value = '';
+        })
+        .catch(function () {
+          setStatus('Сеть недоступна. Попробуйте позже или напишите на info@chitatelstvo.ru', false);
+        })
+        .finally(function () {
+          if (submitBtn) submitBtn.disabled = false;
+        });
+    });
+  }
 })();

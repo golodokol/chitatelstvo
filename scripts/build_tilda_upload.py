@@ -10,7 +10,49 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260717d"
+VERSION = "20260727p"
+
+CHIT_QZ_CLOSE = (
+    '<style id="chit-qz-close">'
+    '#qz-modal .qz-modal__close{position:absolute!important;top:16px!important;right:36px!important;left:auto!important;'
+    'display:flex!important;align-items:center!important;justify-content:center!important;'
+    'width:36px!important;height:36px!important;padding:0!important;border:none!important;'
+    'border-radius:50%!important;background:#fff!important;color:#4A6D94!important;'
+    'box-shadow:0 2px 10px rgba(61,82,102,.15)!important;font-size:0!important;line-height:0!important;'
+    'transform:none!important;margin:0!important;z-index:3!important}'
+    '#qz-modal .qz-modal__close:hover{background:#EDF2F9!important;transform:none!important}'
+    '#qz-modal .qz-modal__close-icon{position:relative!important;display:block!important;width:14px!important;height:14px!important}'
+    '#qz-modal .qz-modal__close-icon::before,#qz-modal .qz-modal__close-icon::after{content:\'\'!important;'
+    'position:absolute!important;top:50%!important;left:50%!important;width:14px!important;height:2px!important;'
+    'background:currentColor!important;border-radius:1px!important}'
+    '#qz-modal .qz-modal__close-icon::before{transform:translate(-50%,-50%) rotate(45deg)!important}'
+    '#qz-modal .qz-modal__close-icon::after{transform:translate(-50%,-50%) rotate(-45deg)!important}'
+    '#qz-modal .qz-progress__meta{padding-right:56px!important}'
+    '#qz-modal .qz-modal__dialog .qz-card{padding-right:68px!important}'
+    '@media(max-width:720px){#qz-modal .qz-modal__close{top:14px!important;right:28px!important}}'
+    '</style>'
+)
+
+CHIT_QZ_LAUNCHER = (
+    '<style id="chit-qz-launcher-critical">'
+    '#chit-main .qz-launcher{position:fixed;bottom:0;left:24px;z-index:199;'
+    'display:inline-flex;align-items:center;gap:8px;padding:12px 20px 14px;'
+    'border-radius:14px 14px 0 0;background:var(--accent);color:#fff!important;-webkit-text-fill-color:#fff;'
+    'text-decoration:none;font-family:Nunito,system-ui,sans-serif;font-size:14px;font-weight:800;'
+    'box-shadow:0 -4px 24px rgba(143,125,163,.35);transition:background .2s,transform .15s}'
+    '#chit-main a.qz-launcher,#chit-main a.qz-launcher:visited,#chit-main a.qz-launcher:hover,#chit-main a.qz-launcher:active'
+    '{color:#fff!important;-webkit-text-fill-color:#fff;text-decoration:none}'
+    '#chit-main .qz-launcher:hover{background:#7a6a8f;transform:translateY(-2px)}'
+    '#chit-main .qz-launcher__icon,#chit-main .qz-launcher__text{color:#fff!important;-webkit-text-fill-color:#fff}'
+    '#chit-main .qz-launcher__icon{font-size:18px;line-height:1}'
+    '@media(max-width:720px){#chit-main{padding-bottom:calc(54px + env(safe-area-inset-bottom))!important}'
+    '#chit-main .qz-launcher{left:0;right:50%;justify-content:center;border-radius:0;'
+    'padding:12px 10px max(14px,env(safe-area-inset-bottom));font-size:13px;line-height:1.2;'
+    'white-space:nowrap;box-shadow:none;border-right:1px solid rgba(255,255,255,.28)}'
+    'body.qz-modal-open #chit-main .qz-launcher{display:none!important}}'
+    '@media(max-width:380px){#chit-main .qz-launcher{font-size:12px}}'
+    '</style>'
+)
 API = "https://api.chitatelstvo.ru/assets"
 OUT = DIR / "00-tilda-zero-upload.html"
 LITE = DIR / "00-tilda-lite.html"
@@ -30,6 +72,11 @@ CHIT_BTN_FIX = (
     '#allrecords #chit-main a.btn--outline,#allrecords #chit-main .btn--outline,#allrecords #chit-main a.btn.btn--outline'
     '{color:var(--blue)!important;-webkit-text-fill-color:var(--blue)!important;background:transparent!important;border:2px solid #C5D9ED!important}'
     '#allrecords #chit-main .pill.is-active{color:#fff!important;-webkit-text-fill-color:#fff!important}'
+    '#chit-main.is-with-teacher-stage1-closed #chit-stages [data-stage="1"],'
+    '#chit-main:has(#chit-tariffs .pick-card[data-tariff="with_teacher"].is-active) #chit-stages [data-stage="1"]'
+    '{display:none!important;visibility:hidden!important;pointer-events:none!important;'
+    'position:absolute!important;width:0!important;height:0!important;overflow:hidden!important;'
+    'margin:0!important;padding:0!important;border:0!important}'
     '</style>'
 )
 
@@ -71,9 +118,26 @@ CHIT_HERO_PREMIUM = (
 )
 
 
+CHIT_QZ_CRITICAL = (
+    '<style id="chit-qz-critical">'
+    '#qz-modal{display:none!important;position:fixed!important;inset:0!important;z-index:10050!important;'
+    'align-items:center!important;justify-content:center!important;padding:16px!important;box-sizing:border-box!important}'
+    '#qz-modal.is-open{display:flex!important}'
+    '#qz-modal .qz-modal__backdrop{position:absolute!important;inset:0!important;background:rgba(26,38,58,.55)!important}'
+    '#qz-modal .qz-modal__dialog{position:relative!important;z-index:1!important;width:100%!important;'
+    'max-width:600px!important;max-height:calc(100vh - 32px)!important;overflow:hidden!important}'
+    '#chit-quiz .qz-step{display:none!important}#chit-quiz .qz-step.is-active{display:block!important}'
+    'body.qz-modal-open{overflow:hidden!important}'
+    '</style>'
+)
+
+
 def patch_head_styles(head: str) -> str:
     head = re.sub(r'<style id="chit-btn-fix">[^<]+</style>', CHIT_BTN_FIX, head)
     head = re.sub(r'<style id="chit-hero-premium">[\s\S]*?</style>', CHIT_HERO_PREMIUM, head)
+    head = re.sub(r'<style id="chit-qz-launcher-critical">[\s\S]*?</style>', CHIT_QZ_LAUNCHER, head)
+    head = re.sub(r'<style id="chit-qz-critical">[\s\S]*?</style>', CHIT_QZ_CRITICAL, head)
+    head = re.sub(r'<style id="chit-qz-close">[\s\S]*?</style>', CHIT_QZ_CLOSE, head)
     head = head.replace(
         '#chit-main .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;text-decoration:none;border:none;cursor:pointer}',
         '#chit-main .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:12px;font-weight:700;text-decoration:none;cursor:pointer}'

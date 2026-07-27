@@ -21,6 +21,7 @@ TILDA_DIR = ROOT / "docs" / "tilda-zero-main"
 
 TALE_SCHEDULE_FN = """
 var MEETING_ADDON_PRICE = 799;
+var WITH_TEACHER_STAGE1_CLOSED = true;
 
 function todayIsoLocal() {
   var d = new Date();
@@ -29,17 +30,36 @@ function todayIsoLocal() {
     String(d.getDate()).padStart(2, '0');
 }
 
-function singleMeetingStatus(stage, taleNum) {
-  var dates = CHIT_SINGLE_MEETINGS_ISO[String(stage)];
-  if (!dates || !taleNum) return 'online_only';
-  var meet = dates[Number(taleNum) - 1];
-  return meet && meet > todayIsoLocal() ? 'with_meeting' : 'online_only';
+function lessonIsOpen(stage, taleNum) {
+  var dates = CHIT_LESSON_OPENS_ISO[String(stage)];
+  if (!dates || !taleNum) return false;
+  var open = dates[Number(taleNum) - 1];
+  return !!(open && open <= todayIsoLocal());
 }
 
-function singleMeetingLine(stage, taleNum) {
+function lessonOpenLabel(stage, index) {
+  var s = CHIT_SCHEDULE[String(stage)];
+  if (!s || index < 0) return '';
+  if (lessonIsOpen(stage, index + 1)) {
+    return 'Уже доступен для прохождения';
+  }
+  var lessonDay = lessonWeekday(stage, index);
+  var lessonPrefix = lessonDay ? lessonDay + ', ' : '';
+  return 'Урок откроется: ' + lessonPrefix + s.lessons[index];
+}
+
+/** Можно ли ещё докупить встречу (дата строго в будущем). Разовое встречу не включает. */
+function singleMeetingAddonAvailable(stage, taleNum) {
+  var dates = CHIT_SINGLE_MEETINGS_ISO[String(stage)];
+  if (!dates || !taleNum) return false;
+  var meet = dates[Number(taleNum) - 1];
+  return !!(meet && meet > todayIsoLocal());
+}
+
+function singleMeetingAddonLine(stage, taleNum) {
   var s = CHIT_SCHEDULE[String(stage)];
   var idx = Number(taleNum) - 1;
-  if (singleMeetingStatus(stage, taleNum) === 'with_meeting' && s && s.meetings[idx]) {
+  if (singleMeetingAddonAvailable(stage, taleNum) && s && s.meetings[idx]) {
     return {
       available: true,
       date: 'четверг, ' + s.meetings[idx]
@@ -62,22 +82,21 @@ function taleScheduleHtml(stage, index, tariff) {
   var s = CHIT_SCHEDULE[stage];
   if (!s || index < 0 || index > 3) return '';
   var taleNum = index + 1;
-  var lessonDay = lessonWeekday(stage, index);
-  var lessonPrefix = lessonDay ? lessonDay + ', ' : '';
   var html = '<div class="tale-schedule">';
   if (tariff === 'single') {
-    html += '<span class="tale-schedule__line">Урок на платформе: <strong>' + lessonPrefix + s.lessons[index] + '</strong></span>';
-    var meet = singleMeetingLine(stage, taleNum);
+    html += '<span class="tale-schedule__line"><strong>' + lessonOpenLabel(stage, index) + '</strong></span>';
+    var meet = singleMeetingAddonLine(stage, taleNum);
     if (meet.available) {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--included">Встреча с преподавателем: <strong>' + meet.date + '</strong></span>';
+      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Встречу можно докупить отдельно: <strong>' +
+        meet.date + '</strong> · ' + MEETING_ADDON_PRICE + ' ₽</span>';
     } else {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн · встреча по этой сказке недоступна</span>';
+      html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн. Занятие-квест по этой сказке уже нельзя докупить</span>';
     }
   } else if (tariff === 'with_teacher') {
     html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>' + meetingWeekday(stage, index) + ', ' + s.meetings[index] + '</strong></span>';
-    html += '<span class="tale-schedule__line">Урок откроется: ' + lessonPrefix + s.lessons[index] + '</span>';
+    html += '<span class="tale-schedule__line">' + lessonOpenLabel(stage, index) + '</span>';
   } else {
-    html += '<span class="tale-schedule__line">Урок откроется: <strong>' + lessonPrefix + s.lessons[index] + '</strong></span>';
+    html += '<span class="tale-schedule__line"><strong>' + lessonOpenLabel(stage, index) + '</strong></span>';
   }
   html += '</div>';
   return html;
@@ -104,6 +123,8 @@ def chit_schedule_block() -> str:
     mw2 = _weekdays(STAGE_2_MEETINGS)
     iso1 = [d.isoformat() for d in STAGE_1_MEETINGS]
     iso2 = [d.isoformat() for d in STAGE_2_MEETINGS]
+    open1 = [d.isoformat() for d in STAGE_1_LESSON_OPENS]
+    open2 = [d.isoformat() for d in STAGE_2_LESSON_OPENS]
     return f"""var CHIT_SCHEDULE = {{
   '1': {{
     lessons: {l1!r},
@@ -122,13 +143,18 @@ def chit_schedule_block() -> str:
 var CHIT_SINGLE_MEETINGS_ISO = {{
   '1': {iso1!r},
   '2': {iso2!r}
+}};
+
+var CHIT_LESSON_OPENS_ISO = {{
+  '1': {open1!r},
+  '2': {open2!r}
 }};"""
 
 
 def replace_schedule_block(text: str) -> str:
     block = chit_schedule_block()
     return re.sub(
-        r"var CHIT_SCHEDULE = \{[\s\S]*?\n\};(?:\n\nvar CHIT_SINGLE_MEETINGS_ISO = \{[\s\S]*?\n\};)?",
+        r"var CHIT_SCHEDULE = \{[\s\S]*?\n\};(?:\n\nvar CHIT_SINGLE_MEETINGS_ISO = \{[\s\S]*?\n\};)?(?:\n\nvar CHIT_LESSON_OPENS_ISO = \{[\s\S]*?\n\};)?",
         block,
         text,
         count=1,

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from config.settings import MEETING_ADDON_MODULE_ID, MEETING_ADDON_PRICE_RUB, PUBLIC_BASE_URL, ROOT
-from lessons.schedule import meeting_date_label, module_week_for_tale
+from lessons.schedule import meeting_date_label, meeting_still_bookable, module_week_for_tale
 from lessons.single_content import content_slug_for_single
 from services.checkout_urls import build_meeting_addon_pay_url
 
@@ -51,13 +51,18 @@ def page_order_meeting(
     tale: int = 1,
     slug: str = "",
 ) -> HTMLResponse:
-    """Страница покупки разового урока с преподавателем для выбранной сказки."""
+    """Страница докупки встречи с преподавателем для выбранной сказки."""
     from catalog.loader import get_tale
 
     tale_info = get_tale(group, stage, tale) or {}
     tale_title = tale_info.get("tale_title") or tale_info.get("title") or "Царевна лягушка"
     stage_num = "1" if stage in ("stage-1", "1") else "2" if stage in ("stage-2", "2") else "1"
     module_week = module_week_for_tale(stage, tale)
+    if not meeting_still_bookable(stage=stage, tale_number=tale, module_week=module_week):
+        raise HTTPException(
+            status_code=410,
+            detail="Встреча по этой сказке уже прошла — докупить нельзя.",
+        )
     lesson_slug = slug or content_slug_for_single(
         group_code=group,
         stage=stage,

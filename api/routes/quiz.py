@@ -58,6 +58,9 @@ class QuizLeadRequest(BaseModel):
     child_name: str = Field(min_length=1, max_length=100)
     child_age: int | None = Field(default=None, ge=1, le=99)
     answers: list[QuizAnswer] = Field(min_length=1, max_length=10)
+    trial_age: str | None = Field(default=None, max_length=20)
+    trial_slug: str | None = Field(default=None, max_length=120)
+    trial_title: str | None = Field(default=None, max_length=200)
 
 
 def _answers_by_id(answers: list[QuizAnswer]) -> dict[str, str]:
@@ -77,6 +80,7 @@ def _send_quiz_auto_email(body: QuizLeadRequest) -> bool:
         answers_by_id=_answers_by_id(body.answers),
         checklist_url=checklist_url,
         site_url=SITE_URL,
+        trial_title=body.trial_title,
     )
     html_message = build_quiz_auto_email_html(
         parent_name=body.parent_name,
@@ -86,6 +90,7 @@ def _send_quiz_auto_email(body: QuizLeadRequest) -> bool:
         checklist_url=checklist_url,
         site_url=SITE_URL,
         assets_url=PUBLIC_BASE_URL,
+        trial_title=body.trial_title,
     )
     attachments = []
     if CHECKLIST_PDF.is_file():
@@ -135,6 +140,9 @@ def quiz_lead(body: QuizLeadRequest, request: Request, _: None = Depends(rate_li
         "child_name": body.child_name,
         "child_age": body.child_age,
         "answers": [a.model_dump() for a in body.answers],
+        "trial_age": body.trial_age,
+        "trial_slug": body.trial_slug,
+        "trial_title": body.trial_title,
     }
     with LEADS_FILE.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(record, ensure_ascii=False) + "\n")

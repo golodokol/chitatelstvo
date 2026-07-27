@@ -35,7 +35,7 @@
     <div class="hero__content">
       <h1>Понимать книги — с удовольствием</h1>
       <p class="hero__lead">Онлайн-школа литературного чтения: видео, вопросы на понимание и задания на смысл — ребёнок погружается в сказку, а вы видите прогресс на личной странице</p>
-      <p class="hero__price"><strong>1 490 ₽</strong> за одну сказку и встречу с преподавателем</p>
+      <p class="hero__price"><strong>от 799 ₽</strong> за одну сказку на платформе</p>
       <div class="hero__cta">
         <div class="hero__actions">
           <a class="btn btn--hero" href="#program">Записаться на курс</a>
@@ -296,21 +296,20 @@
     <div class="tariffs-grid">
       <div class="tariff-card">
         <h3 class="tariff-card__name">Разовое</h3>
-        <p class="tariff-card__mood">Одна сказка и встреча с преподавателем</p>
+        <p class="tariff-card__mood">Одна сказка на платформе — без встречи</p>
         <ul class="tariff-card__list">
           <li>1 сказка на выбор</li>
           <li>Видео и интерактивные задания</li>
           <li>Личная страница прогресса</li>
-          <li>1 живая встреча с преподавателем</li>
+          <li>Без живой встречи в цене</li>
         </ul>
         <div class="tariff-card__meet-slot">
           <div class="tariff-card__meet">
-            <span class="tariff-card__meet-line">Встреча по четвергам</span>
-            <span class="tariff-card__meet-line">Мини-группы до 6 детей</span>
-            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Точное время — после формирования групп</span>
+            <span class="tariff-card__meet-line">Только онлайн</span>
+            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Дополнительно можно докупить групповое занятие-квест с преподавателем, пока дата не прошла</span>
           </div>
         </div>
-        <div class="tariff-card__price">1 490 ₽</div>
+        <div class="tariff-card__price">799 ₽</div>
         <div class="tariff-card__note">за 1 занятие</div>
         <a class="btn btn--block" href="#program">Оплатить</a>
       </div>
@@ -326,7 +325,7 @@
         </ul>
         <div class="tariff-card__meet-slot" aria-hidden="true"></div>
         <div class="tariff-card__price">1 990 ₽</div>
-        <div class="tariff-card__note">за блок из 4 сказок</div>
+        <div class="tariff-card__note">за блок из 4 сказок · 499 ₽ за сказку</div>
         <a class="btn btn--block" href="#program">Оплатить</a>
       </div>
       <div class="tariff-card">
@@ -383,15 +382,47 @@
   <div class="section__inner">
     <span class="section__chapter"><em>глава 7</em> · запись</span>
     <div class="enroll-panel" id="chit-program">
-      <h2 class="enroll-panel__title">Выберите свой путь</h2>
-      <p class="enroll-panel__lead">Подберите программу, укажите контакты — и откройте первую сказку</p>
+      <h2 class="enroll-panel__title">Запись в Читательство</h2>
+      <p class="enroll-panel__lead">Сначала можно пройти урок бесплатно — или сразу выбрать программу и оплатить</p>
+
+      <!-- FREE TRIALS: отдельно от оплаты, чтобы не путать с тарифом «Разовое» -->
+      <div class="enroll-trial" id="chit-trial">
+        <div class="enroll-trial__head">
+          <span class="enroll-trial__badge">0 ₽ · без карты</span>
+          <h3 class="enroll-trial__title">Попробуйте один урок</h3>
+          <p class="enroll-trial__sub">Выберите возраст ребёнка — откроем доступ к полноценной сказке на платформе</p>
+        </div>
+        <div class="enroll-trial__cards">
+          <a class="enroll-trial__card" href="#quiz" data-qz-open
+             data-trial-age="6-8"
+             data-trial-slug="grade-2-self_paced-stage-1-lesson-01"
+             data-trial-title="Сказка о рыбаке и рыбке">
+            <span class="enroll-trial__age">6–8 лет</span>
+            <span class="enroll-trial__name">Сказка о рыбаке и рыбке</span>
+            <span class="enroll-trial__author">А. С. Пушкин</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+          <a class="enroll-trial__card" href="#quiz" data-qz-open
+             data-trial-age="9-11"
+             data-trial-slug="grade-3-self_paced-stage-1-lesson-01"
+             data-trial-title="Сказка о царе Салтане">
+            <span class="enroll-trial__age">9–11 лет</span>
+            <span class="enroll-trial__name">Сказка о царе Салтане</span>
+            <span class="enroll-trial__author">А. С. Пушкин</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="enroll-or" role="presentation"><span>или запишитесь на курс</span></div>
 
       <div class="step-block">
-        <div class="step-label"><em>шаг 1</em> · класс</div>
+        <div class="step-label"><em>шаг 1</em> · класс или возраст</div>
+        <p class="step-hint step-hint--always">Один выбор: школьный класс или внеклассное чтение по возрасту</p>
         <div class="group-block">
-          <h4 class="group-title">Базовый курс</h4>
+          <h4 class="group-title">Базовый курс · 1–4 класс</h4>
           <div class="pills" id="chit-groups-basic">
-            <button type="button" class="pill" data-group="grade-1">1 класс</button>
+            <button type="button" class="pill is-active" data-group="grade-1">1 класс</button>
             <button type="button" class="pill" data-group="grade-2">2 класс</button>
             <button type="button" class="pill" data-group="grade-3">3 класс</button>
             <button type="button" class="pill" data-group="grade-4">4 класс</button>
@@ -408,18 +439,19 @@
 
       <div class="step-block">
         <div class="step-label"><em>шаг 2</em> · формат</div>
+        <p class="step-hint step-hint--always">Платный формат на 4 недели. Бесплатный урок — выше, это не то же самое, что «Разовое»</p>
         <div class="tariff-pick" id="chit-tariffs">
           <div class="pick-card" data-tariff="single">
             <div class="pick-card__tag">Попробовать</div>
             <div class="pick-card__name">Разовое</div>
-            <div class="pick-card__price">1 490 ₽</div>
-            <div class="pick-card__hint">1 сказка + встреча по четвергам</div>
+            <div class="pick-card__price">799 ₽</div>
+            <div class="pick-card__hint">1 сказка онлайн, без встречи</div>
           </div>
-          <div class="pick-card" data-tariff="self_paced">
+          <div class="pick-card is-active" data-tariff="self_paced">
             <div class="pick-card__tag">Основной</div>
             <div class="pick-card__name">Индивидуальное</div>
             <div class="pick-card__price">1 990 ₽</div>
-            <div class="pick-card__hint">4 сказки в своём темпе, без встреч</div>
+            <div class="pick-card__hint">4 сказки · 499 ₽ за сказку, без встреч</div>
           </div>
           <div class="pick-card" data-tariff="with_teacher">
             <div class="pick-card__tag">С поддержкой</div>
@@ -430,19 +462,21 @@
         </div>
       </div>
 
-      <div class="step-block date-box" id="chit-date-box">
-        <div class="step-label"><em>шаг 3</em> · когда начать</div>
-        <p class="step-hint" id="chit-step3-hint" hidden>1 490 ₽ — урок на платформе и встреча с преподавателем, если дата по сказке ещё доступна.</p>
+      <div class="step-block date-box is-visible" id="chit-date-box">
+        <div class="step-label"><em>шаг 3</em> · дата старта</div>
+        <p class="step-hint" id="chit-step3-hint" hidden>Для «Разового» после даты нажмите на одну сказку в списке ниже.</p>
+        <p class="step-hint" id="chit-stage1-closed-note" hidden>Набор на этап 1 с преподавателем закрыт — доступна запись на старт 10 августа.</p>
+        <p class="step-hint step-hint--always" id="chit-step3-guide">Список сказок ниже — программа блока; выбирать их не нужно (кроме «Разового»).</p>
         <div class="stage-row" id="chit-stages">
           <button type="button" class="pill" data-stage="1">Старт курса 15 июля</button>
-          <button type="button" class="pill" data-stage="2">Старт 10 августа</button>
+          <button type="button" class="pill is-active" data-stage="2">Старт 10 августа</button>
         </div>
         <div class="tales" id="chit-tales"></div>
         <div class="block-preview" id="chit-block-preview" style="display:none"></div>
       </div>
 
       <div class="step-block step-block--choice">
-        <div class="step-label"><em>ваш выбор</em> · записка на полях</div>
+        <div class="step-label"><em>готово к оплате</em></div>
         <div class="summary is-empty" id="chit-summary">
           <span class="summary-empty">Выберите класс и формат</span>
         </div>
@@ -455,8 +489,8 @@
       </div>
 
       <div class="enroll-checkout">
-        <h3>Запись в Читательство</h3>
-        <p class="form-intro">Заполните контакты и нажмите «Записаться».</p>
+        <h3>Контакты для записи</h3>
+        <p class="form-intro">Заполните поля и нажмите «Записаться» — откроется оплата.</p>
 
         <div class="form-grid" id="chit-contact-form">
           <div class="form-field">
@@ -468,8 +502,8 @@
             <input type="email" id="chit_parent_email" name="parent_email" autocomplete="email" required>
           </div>
           <div class="form-field">
-            <label for="chit_parent_telegram">Telegram</label>
-            <input type="text" id="chit_parent_telegram" name="parent_telegram" placeholder="@username">
+            <label for="chit_parent_telegram">Телефон</label>
+            <input type="tel" id="chit_parent_telegram" name="parent_telegram" autocomplete="tel">
           </div>
           <div class="form-field">
             <label for="chit_child_name">Имя ребёнка</label>
@@ -518,21 +552,21 @@
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Можно ли начать с одной сказки?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Тариф «Разовое» — 1 490 ₽: одна сказка на выбор и встреча с преподавателем. А если хотите сначала просто попробовать — пройдите <a href="#quiz">бесплатный урок-сказку</a>: мы открываем доступ к платформе и одному полноценному занятию.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Можно <a href="#program">пройти урок бесплатно</a>: для 6–8 лет — «Сказка о рыбаке и рыбке», для 9–11 лет — «Сказка о царе Салтане». Или тариф «Разовое» — 799 ₽ за одну сказку онлайн; дополнительно можно докупить групповое занятие-квест с преподавателем.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Чем отличаются тарифы?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span><strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч (1 990 ₽): видео, квизы и сундук после каждого урока. <strong>С преподавателем</strong> — та же основа плюс расширенная программа и квест по сказке в мини-группе 4–6 детей, 4 живые встречи (4 990 ₽). <strong>Разовое</strong> — 1 сказка и одна встреча (1 490 ₽).</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span><strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч (1 990 ₽): видео, квизы и сундук после каждого урока. <strong>С преподавателем</strong> — та же основа плюс расширенная программа и квест по сказке в мини-группе 4–6 детей, 4 живые встречи (4 990 ₽). <strong>Разовое</strong> — 1 сказка онлайн (799 ₽); дополнительно можно докупить групповое занятие-квест с преподавателем.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Когда проходят занятия с преподавателем?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>По четвергам, в мини-группах до 6 детей. Точное время сообщим после формирования групп.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>По четвергам, в мини-группах до 6 детей. Занятие проходит в формате квеста: по сказке нужно пройти задания. Точное время сообщим после формирования групп.</p>
       </div>
     </div>
   </div>
@@ -659,7 +693,7 @@
             <h2 class="qz-title" style="text-align:center">Спасибо!</h2>
             <p class="qz-sub" style="text-align:center">Мы получили ваши ответы.</p>
             <p style="text-align:center;margin:0 0 12px"><strong>PDF-чек-лист уже на вашем email.</strong></p>
-            <p style="text-align:center;margin:0 0 12px">Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
+            <p data-qz-gift-line style="text-align:center;margin:0 0 12px">Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
             <div class="qz-success-links">
               <a class="qz-link-btn" href="https://api.chitatelstvo.ru/quiz/checklist.pdf?v=20260615b" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
               <a class="qz-link-btn" href="#program" data-qz-close style="background:var(--qz-blue);color:#fff;border-color:transparent">Записаться на программу</a>

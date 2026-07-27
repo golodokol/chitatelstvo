@@ -1294,6 +1294,13 @@
       font-size: 16px; font-weight: 800; color: var(--blue);
       margin: 0 0 8px; line-height: 1.3;
     }
+    .tale-card__dates { margin: 0 0 8px; }
+    .tale-card__date {
+      font-size: 13px; color: var(--muted); font-weight: 600;
+    }
+    .tale-card__date--open {
+      color: var(--blue-deep);
+    }
     .tale-card__desc {
       font-size: 14px; color: var(--muted); line-height: 1.5; margin: 0 0 8px;
     }
@@ -1316,7 +1323,75 @@
       margin: 0 0 8px; text-align: center;
     }
     .enroll-panel__lead {
-      text-align: center; color: var(--muted); margin: 0 0 36px; font-size: 16px;
+      text-align: center; color: var(--muted); margin: 0 0 28px; font-size: 16px;
+    }
+
+    /* Бесплатные пробные уроки — отдельный вход, не путать с тарифом «Разовое» */
+    .enroll-trial {
+      background: linear-gradient(165deg, #F3EEF7 0%, #EEF4FA 100%);
+      border: 1px solid #D9CFE6;
+      border-radius: 16px;
+      padding: 22px 20px 20px;
+      margin: 0 0 28px;
+    }
+    .enroll-trial__head { text-align: center; margin-bottom: 16px; }
+    .enroll-trial__badge {
+      display: inline-block;
+      font-size: 12px; font-weight: 800; letter-spacing: 0.04em;
+      text-transform: uppercase; color: #6B5A82;
+      background: rgba(255,255,255,0.75); border-radius: 999px;
+      padding: 5px 12px; margin-bottom: 10px;
+    }
+    .enroll-trial__title {
+      margin: 0 0 6px; font-size: 22px; font-weight: 800; color: var(--blue);
+    }
+    .enroll-trial__sub {
+      margin: 0; font-size: 15px; line-height: 1.45; color: var(--muted);
+    }
+    .enroll-trial__cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    @media (max-width: 640px) {
+      .enroll-trial__cards { grid-template-columns: 1fr; }
+    }
+    .enroll-trial__card {
+      display: flex; flex-direction: column; gap: 4px;
+      text-decoration: none; color: inherit;
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 16px 16px 14px;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+    }
+    .enroll-trial__card:hover {
+      border-color: var(--blue-light);
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+    .enroll-trial__age {
+      font-size: 12px; font-weight: 800; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .enroll-trial__name {
+      font-size: 17px; font-weight: 800; color: var(--blue); line-height: 1.3;
+    }
+    .enroll-trial__author {
+      font-size: 13px; color: var(--muted); margin-bottom: 6px;
+    }
+    .enroll-trial__cta {
+      margin-top: auto; padding-top: 8px;
+      font-size: 14px; font-weight: 800; color: var(--blue);
+    }
+    .enroll-or {
+      display: flex; align-items: center; gap: 14px;
+      margin: 0 0 28px; color: var(--muted); font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .enroll-or::before,
+    .enroll-or::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .step-hint--always { display: block; }
+    .block-preview__note {
+      font-size: 13px; color: var(--muted); margin: -4px 0 10px;
     }
     .step-label {
       font-size: 14px; letter-spacing: 0.02em;
@@ -1345,6 +1420,26 @@
     }
     .pill:hover { border-color: var(--blue-light); background: var(--blue-pale); }
     .pill.is-active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .pill.is-disabled,
+    .pill:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    /* Старт 15 июля скрыт для тарифа «С преподавателем» (и через класс, и через :has — без JS) */
+    #chit-main.is-with-teacher-stage1-closed #chit-stages [data-stage="1"],
+    #chit-main:has(#chit-tariffs .pick-card[data-tariff="with_teacher"].is-active) #chit-stages [data-stage="1"] {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+    }
     .tariff-pick {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
     }
@@ -1369,6 +1464,30 @@
     .date-box.is-visible { display: block; }
     .stage-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
     .tales { display: grid; gap: 8px; }
+    .tales-prompt {
+      grid-column: 1 / -1;
+      margin: 8px 0 4px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .block-preview__banner {
+      background: #E8F2EA;
+      color: #2F5D3A;
+      border: 1px solid #C5DFC9;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .block-preview__next {
+      margin: 14px 0 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+    }
     .tale-btn {
       text-align: left; border: 1.5px solid var(--border); background: var(--white);
       border-radius: 10px; padding: 12px 14px; cursor: pointer;
@@ -1395,12 +1514,21 @@
     .tale-schedule__line { margin-top: 3px; }
     .tale-schedule__meet--optional { color: #5a4d8c; }
     .tale-schedule__meet--online { color: var(--blue-deep); }
-    .block-preview { font-size: 14px; color: var(--muted); line-height: 1.6; margin-top: 12px; }
-    .block-preview__title { margin-bottom: 12px; }
+    .block-preview { font-size: 14px; color: var(--blue); line-height: 1.6; margin-top: 14px; }
+    .block-preview__title {
+      margin-bottom: 12px; font-size: 15px; font-weight: 700; color: var(--blue);
+    }
     .block-preview__cards { display: grid; gap: 10px; }
     .block-preview__card {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: 10px; padding: 12px 14px;
+      background: #fff;
+      border: 1.5px solid #C5D9ED;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--blue);
+    }
+    .block-preview__card .tale-schedule,
+    .block-preview__card .tale-schedule__line {
+      color: var(--muted);
     }
     .block-preview__num { font-size: 12px; font-weight: 800; color: var(--accent); }
     .block-preview__name { font-size: 15px; font-weight: 700; color: var(--blue); margin: 2px 0 4px; }

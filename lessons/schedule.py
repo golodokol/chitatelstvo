@@ -29,8 +29,8 @@ LEGACY_MODULE_START = date(2026, 7, 6)
 
 STAGE_1_LESSON_OPENS = (
     date(2026, 7, 15),
-    date(2026, 7, 22),
-    date(2026, 7, 29),
+    date(2026, 7, 29),  # было 22 июля
+    date(2026, 8, 3),   # было 29 июля
     date(2026, 8, 5),
 )
 STAGE_1_MEETINGS = (
@@ -148,4 +148,22 @@ def effective_module_week(
 def tariff_has_meetings(module: dict[str, Any] | None) -> bool:
     if not module:
         return False
-    return module.get("tariff_code") in ("single", "with_teacher")
+    # Разовое — только онлайн; живые встречи входят в тариф with_teacher
+    # или докупаются отдельно (meeting_addon), пока дата встречи не прошла.
+    return module.get("tariff_code") == "with_teacher"
+
+
+def meeting_still_bookable(
+    *,
+    stage: str | None = None,
+    tale_number: int | None = None,
+    module_week: int | None = None,
+    today: date | None = None,
+) -> bool:
+    """Можно ли ещё докупить встречу (дата встречи строго в будущем)."""
+    if module_week is None:
+        if stage is None or tale_number is None:
+            return False
+        module_week = module_week_for_tale(stage, tale_number)
+    meet = meeting_on(int(module_week))
+    return meet > (today or date.today())

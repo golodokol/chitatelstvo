@@ -2397,6 +2397,21 @@ a.chit-room__helper:focus-visible {
 .chit-parent-facts li { margin-bottom: 6px; }
 .chit-parent-tip { margin: 0; font-size: 0.88rem; color: var(--muted); line-height: 1.5; padding: 12px; background: var(--white); border-radius: 10px; }
 
+.chit-feedback-form { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; max-width: 520px; }
+.chit-feedback-form__label { font-size: 0.88rem; font-weight: 700; color: var(--ink, #2a3a4a); }
+.chit-feedback-form__input {
+  width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid #d5e0eb;
+  border-radius: 12px; background: var(--white, #fff); font: inherit; color: inherit;
+}
+.chit-feedback-form__textarea { min-height: 110px; resize: vertical; line-height: 1.45; }
+.chit-feedback-form__input:focus {
+  outline: none; border-color: var(--blue, #4a6d94); box-shadow: 0 0 0 3px rgba(74, 109, 148, 0.15);
+}
+.chit-feedback-form__status { margin: 0; font-size: 0.9rem; line-height: 1.4; }
+.chit-feedback-form__status.is-ok { color: #2f6b4f; }
+.chit-feedback-form__status.is-err { color: #a33b3b; }
+.chit-feedback-form .chit-btn { align-self: flex-start; }
+
 .chit-reward-toast {
   position: fixed;
   inset: 0;

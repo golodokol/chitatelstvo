@@ -38,7 +38,7 @@ from lessons.loader import (
     score_quiz,
 )
 from lessons.step_labels import lesson_step_labels_payload
-from lessons.schedule import effective_module_week, meeting_date_label
+from lessons.schedule import effective_module_week, meeting_date_label, meeting_still_bookable
 from lessons.single_content import merge_single_lesson_content
 from services.cabinet import build_child_payload
 from services.events import submit_learning_event
@@ -212,7 +212,9 @@ def build_live_lesson_block(
         has_live_access = True
     if enrollment and enrollment.status == "active":
         module = get_module(enrollment.module_id)
-        if module and module.get("tariff_code") in ("with_teacher", "single"):
+        # Только тариф с преподавателем даёт встречи «в комплекте».
+        # Разовое — онлайн; встречу можно докупить отдельно, пока дата не прошла.
+        if module and module.get("tariff_code") == "with_teacher":
             has_live_access = True
 
     if has_live_access:
@@ -224,6 +226,10 @@ def build_live_lesson_block(
     group_code = lesson.get("group_code") or "grade-1"
     stage = lesson.get("stage") or "stage-1"
     tale_number = int(lesson.get("tale_number") or 1)
+    week = int(lesson.get("module_week") or 0) or None
+    if not meeting_still_bookable(stage=stage, tale_number=tale_number, module_week=week):
+        return None
+
     slug = lesson.get("slug", "")
     purchase_url = (
         f"/order/meeting?group={group_code}&stage={stage}&tale={tale_number}&slug={slug}"
@@ -232,7 +238,6 @@ def build_live_lesson_block(
     # Явный null в JSON даёт None — .get(key, default) тогда не срабатывает.
     label = config.get("next_meeting_label")
     if not label:
-        week = int(lesson.get("module_week") or 0)
         if week:
             label = meeting_date_label(week, weekday="четверг")
         else:

@@ -284,11 +284,13 @@ def _quiz_email_parts(
     answers_by_id: dict[str, str],
     checklist_url: str,
     site_url: str,
+    trial_title: str | None = None,
 ) -> dict[str, str]:
     parent = parent_name.strip() or "родитель"
     child_gen = name_genitive(child_name)
     problem = _quiz_problem_paragraph(child_name, answers_by_id)
     age_intro = _quiz_age_intro(child_age)
+    trial = (trial_title or "").strip()
 
     if _age_in_quiz_range(child_age):
         thanks = (
@@ -298,6 +300,18 @@ def _quiz_email_parts(
     else:
         thanks = f"Спасибо, что прошли короткий опрос для {child_gen}."
 
+    if trial:
+        gift_line = (
+            f"Вы выбрали бесплатный урок «{trial}». "
+            "Мы откроем доступ к платформе и этой сказке — "
+            "ссылка придёт отдельным письмом чуть позже."
+        )
+    else:
+        gift_line = (
+            "Личное письмо от основателя школы с персональной сказкой и рекомендациями "
+            "придёт чуть позже — отдельно, чтобы мы успели учесть ваши ответы."
+        )
+
     return {
         "parent": parent,
         "thanks": thanks,
@@ -305,6 +319,7 @@ def _quiz_email_parts(
         "problem": problem,
         "checklist_url": checklist_url,
         "program_url": f"{site_url}/#program",
+        "gift_line": gift_line,
     }
 
 
@@ -316,8 +331,9 @@ def build_quiz_auto_email(
     answers_by_id: dict[str, str],
     checklist_url: str,
     site_url: str = "https://chitatelstvo.ru",
+    trial_title: str | None = None,
 ) -> str:
-    """Автоматическое письмо после квиза: только PDF-чек-лист, без персональной сказки."""
+    """Автоматическое письмо после квиза: PDF-чек-лист + напоминание про пробный урок."""
     parts = _quiz_email_parts(
         parent_name=parent_name,
         child_name=child_name,
@@ -325,6 +341,7 @@ def build_quiz_auto_email(
         answers_by_id=answers_by_id,
         checklist_url=checklist_url,
         site_url=site_url,
+        trial_title=trial_title,
     )
 
     lines = [
@@ -340,8 +357,7 @@ def build_quiz_auto_email(
         "",
         "Отметьте пункты вместе с ребёнком — так проще увидеть, где нужна поддержка.",
         "",
-        "Личное письмо от основателя школы с персональной сказкой и рекомендациями "
-        "придёт чуть позже — отдельно, чтобы мы успели учесть ваши ответы.",
+        parts["gift_line"],
         "",
         "с теплом, команда Читательства",
         "",
@@ -360,6 +376,7 @@ def build_quiz_auto_email_html(
     checklist_url: str,
     site_url: str = "https://chitatelstvo.ru",
     assets_url: str = "https://api.chitatelstvo.ru",
+    trial_title: str | None = None,
 ) -> str:
     parts = _quiz_email_parts(
         parent_name=parent_name,
@@ -368,6 +385,7 @@ def build_quiz_auto_email_html(
         answers_by_id=answers_by_id,
         checklist_url=checklist_url,
         site_url=site_url,
+        trial_title=trial_title,
     )
     logo_url = quiz_logo_url(assets_url)
     home_url = html.escape(site_url, quote=True)
@@ -390,7 +408,7 @@ def build_quiz_auto_email_html(
     <p style="margin:0 0 8px;line-height:1.6;">Ваш PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» <strong>прикреплён к письму</strong>.</p>
     <p style="margin:0 0 16px;line-height:1.6;">Если вложение не открылось — <a href="{html.escape(parts["checklist_url"], quote=True)}" style="color:#5B7FA6;">скачайте PDF по ссылке</a>.</p>
     <p style="margin:0 0 16px;line-height:1.6;">Отметьте пункты вместе с ребёнком — так проще увидеть, где нужна поддержка.</p>
-    <p style="margin:0 0 16px;line-height:1.6;">Личное письмо от основателя школы с персональной сказкой и рекомендациями придёт чуть позже — отдельно, чтобы мы успели учесть ваши ответы.</p>
+    <p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["gift_line"])}</p>
     <p style="margin:0;line-height:1.6;">с теплом, команда Читательства</p>
     <p style="margin:24px 0 0;font-size:13px;color:#7A8FA3;line-height:1.5;"><a href="mailto:info@chitatelstvo.ru" style="color:#7A8FA3;">info@chitatelstvo.ru</a></p>
   </div>

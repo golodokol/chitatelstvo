@@ -10,6 +10,10 @@ from catalog.loader import get_module
 from db import repository as repo
 from db.models import Child
 from lessons.enrollment_access import normalize_stage, resolve_chosen_tale
+from lessons.schedule import meeting_still_bookable
+
+# Набор на этап 1 (старт 15 июля) с преподавателем закрыт.
+WITH_TEACHER_STAGE1_CLOSED = True
 
 
 def validate_registration_module(body: RegisterWebhook) -> dict | None:
@@ -49,6 +53,11 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
                 400,
                 "Для докупки встречи укажите chosen_stage (1 или 2) и chosen_tale_number (1–4).",
             )
+        if not meeting_still_bookable(stage=stage, tale_number=int(body.chosen_tale_number)):
+            raise HTTPException(
+                400,
+                "Встреча по этой сказке уже прошла — докупить нельзя.",
+            )
         lesson_slug = (body.lesson_slug or "").strip() or None
         chosen_tale_slug = lesson_slug
         chosen_tale_title = None
@@ -78,6 +87,15 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
         raise HTTPException(
             400,
             "Укажите chosen_stage (1 или 2) — период с 15 июля или с 10 августа.",
+        )
+    if (
+        WITH_TEACHER_STAGE1_CLOSED
+        and module["tariff_code"] == "with_teacher"
+        and stage == "stage-1"
+    ):
+        raise HTTPException(
+            400,
+            "Набор на этап 1 с преподавателем закрыт. Выберите старт 10 августа.",
         )
     if body.chosen_tale_number:
         raise HTTPException(

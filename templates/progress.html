@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260709c">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260727a">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -276,11 +276,11 @@
           </section>
           {% endif %}
           {% for track in cab.tracks %}
+          {{ render_weekly_lessons(track) }}
           {{ render_chest(track, child, loop.index, '#treasury-all' if multi_track_treasury else none) }}
           {% if not multi_track_treasury %}
           {{ render_treasury(track, loop.index) }}
           {% endif %}
-          {{ render_weekly_lessons(track) }}
           {% if track.story_stages %}
           <section class="chit-panel chit-panel--stories">
             <h2 class="chit-section-title">Мои сказки · {{ track.group_label }}</h2>
@@ -356,9 +356,9 @@
           'missions_subtitle': cab.missions_subtitle,
           'group_label': ''
         } %}
+        {{ render_weekly_lessons(legacy_track) }}
         {{ render_chest(legacy_track, child, loop.index) }}
         {{ render_treasury(legacy_track, loop.index) }}
-        {{ render_weekly_lessons(legacy_track) }}
         {% if cab.story_stages %}
         <section class="chit-panel chit-panel--stories">
           <h2 class="chit-section-title">Мои сказки</h2>
@@ -630,6 +630,28 @@
       </table>
       </section>
 
+      <section class="chit-panel chit-panel--parent chit-panel--feedback" id="parent-feedback">
+        <h2 class="chit-section-title chit-section-title--calm">Срочный вопрос</h2>
+        <p class="chit-guide-sub">Напишите, если нужна быстрая помощь. Сообщение уйдёт на {{ contact_email }}, мы ответим вам на почту, указанную при записи.</p>
+        <form class="chit-feedback-form" id="chit-parent-feedback" data-token="{{ progress_token }}" novalidate>
+          {% if children|length > 1 %}
+          <label class="chit-feedback-form__label" for="chit-feedback-child">Ребёнок (по желанию)</label>
+          <select class="chit-feedback-form__input" id="chit-feedback-child" name="child_name">
+            <option value="">Не указывать</option>
+            {% for child in children %}
+            <option value="{{ child.name }}">{{ child.name }}</option>
+            {% endfor %}
+          </select>
+          {% elif children|length == 1 %}
+          <input type="hidden" id="chit-feedback-child" name="child_name" value="{{ children[0].name }}">
+          {% endif %}
+          <label class="chit-feedback-form__label" for="chit-feedback-message">Ваш вопрос</label>
+          <textarea class="chit-feedback-form__input chit-feedback-form__textarea" id="chit-feedback-message" name="message" rows="4" maxlength="4000" required placeholder="Опишите ситуацию — чем скорее сможем помочь"></textarea>
+          <button type="submit" class="chit-btn" id="chit-feedback-submit">Отправить</button>
+          <p class="chit-feedback-form__status" id="chit-feedback-status" hidden role="status"></p>
+        </form>
+      </section>
+
       <section class="chit-panel chit-panel--parent chit-panel--feed">
         <h2 class="chit-section-title chit-section-title--calm">Лента уведомлений</h2>
       <div class="chit-feed">
@@ -694,6 +716,6 @@
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
   <script src="/static/chest_reveal.js?v=20260707h"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
-  <script src="/static/progress_cabinet.js?v=20260708e"></script>
+  <script src="/static/progress_cabinet.js?v=20260727a"></script>
 </body>
 </html>

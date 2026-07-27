@@ -1944,6 +1944,12 @@ a.cc-book__link:hover .cc-book__frame {
   color: #fff;
   box-shadow: 0 2px 12px rgba(74, 82, 136, 0.25);
 }
+.cc-pill.is-disabled,
+.cc-pill:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .cc-pick-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

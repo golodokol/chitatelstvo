@@ -3,7 +3,7 @@ window.CHIT_COURSE = (function () {
   var ASSETS = 'https://api.chitatelstvo.ru/assets';
   var COVERS = 'https://api.chitatelstvo.ru/assets/diary-covers';
   var COVERS_VERSION = '20260710f';
-  var PAGES_VERSION = '20260710g';
+  var PAGES_VERSION = '20260726a';
 
   var MODULES = {
     'grade-1': { single: 1, self_paced: 2, with_teacher: 3, label: '1 класс' },
@@ -15,7 +15,7 @@ window.CHIT_COURSE = (function () {
   };
 
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990 };
   var MEETING_ADDON_PRICE = 799;
   var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
   var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
@@ -24,6 +24,13 @@ window.CHIT_COURSE = (function () {
     '1': ['2026-07-16', '2026-07-23', '2026-07-30', '2026-08-06'],
     '2': ['2026-08-13', '2026-08-20', '2026-08-27', '2026-09-03']
   };
+
+  var LESSON_OPENS_ISO = {
+    '1': ['2026-07-15', '2026-07-29', '2026-08-03', '2026-08-05'],
+    '2': ['2026-08-10', '2026-08-17', '2026-08-24', '2026-08-31']
+  };
+
+  var WITH_TEACHER_STAGE1_CLOSED = true;
 
   function todayIsoLocal() {
     var d = new Date();
@@ -35,28 +42,28 @@ window.CHIT_COURSE = (function () {
   var TARIFF_COPY = {
     single: {
       name: 'Разовое',
-      mood: 'Одна сказка и встреча с преподавателем',
+      mood: 'Одна сказка на платформе — без встречи',
       list: [
         '1 сказка на выбор',
         'Видео и интерактивные задания',
         'Личная страница прогресса',
-        '1 живая встреча с преподавателем'
+        'Без живой встречи в цене'
       ],
-      meetNote: 'Встреча по четвергам · мини-группы до 6 детей',
+      meetNote: 'Только онлайн. Встречу можно докупить отдельно, пока дата не прошла',
       priceNote: 'за 1 занятие',
       pickTag: 'Попробовать',
-      pickHint: '1 сказка + встреча по четвергам'
+      pickHint: '1 сказка онлайн, без встречи'
     }
   };
 
   var ORDER_PRODUCTS = {
-    single: { title: 'Читательство · Разовое', price: 1490, uid: '797131986522' },
+    single: { title: 'Читательство · Разовое', price: 799, uid: '797131986522' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642' },
     with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022' }
   };
 
   var SCHEDULE = {
-    '1': { lessons: ['15 июля', '22 июля', '29 июля', '5 августа'], weekdays: ['среда', 'среда', 'среда', 'среда'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] },
+    '1': { lessons: ['15 июля', '29 июля', '3 августа', '5 августа'], weekdays: ['среда', 'среда', 'понедельник', 'среда'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] },
     '2': { lessons: ['10 августа', '17 августа', '24 августа', '31 августа'], weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'], meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] }
   };
 
@@ -297,27 +304,50 @@ window.CHIT_COURSE = (function () {
     return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
   }
 
-  function singleMeetingStatus(stage, taleNum) {
+  function lessonIsOpen(stage, taleNum) {
+    var dates = LESSON_OPENS_ISO[String(stage)];
+    if (!dates || !taleNum) return false;
+    var open = dates[Number(taleNum) - 1];
+    return !!(open && open <= todayIsoLocal());
+  }
+
+  function lessonOpenLabel(stage, index) {
+    var s = SCHEDULE[String(stage)];
+    if (!s || index < 0) return '';
+    if (lessonIsOpen(stage, index + 1)) return 'Уже доступен для прохождения';
+    var wd = s.weekdays && s.weekdays[index] ? s.weekdays[index] + ', ' : '';
+    return 'Урок откроется: ' + wd + s.lessons[index];
+  }
+
+  function singleMeetingAddonAvailable(stage, taleNum) {
     var dates = SINGLE_MEETINGS_ISO[String(stage)];
-    if (!dates || !taleNum) return 'online_only';
+    if (!dates || !taleNum) return false;
     var meet = dates[Number(taleNum) - 1];
-    return meet && meet > todayIsoLocal() ? 'with_meeting' : 'online_only';
+    return !!(meet && meet > todayIsoLocal());
+  }
+
+  function singleMeetingStatus(stage, taleNum) {
+    return singleMeetingAddonAvailable(stage, taleNum) ? 'addon_available' : 'online_only';
   }
 
   function singleMeetingLabel(stage, taleNum) {
-    if (singleMeetingStatus(stage, taleNum) === 'with_meeting') {
+    if (singleMeetingAddonAvailable(stage, taleNum)) {
       var sched = SCHEDULE[String(stage)];
       var idx = Number(taleNum) - 1;
       var date = sched && sched.meetings[idx] ? 'четверг, ' + sched.meetings[idx] : '';
-      return 'Встреча с преподавателем: ' + date;
+      return 'Встречу можно докупить: ' + date + ' · ' + MEETING_ADDON_PRICE + ' ₽';
     }
-    return 'Только онлайн · встреча по этой сказке недоступна';
+    return 'Только онлайн. Занятие-квест по этой сказке уже нельзя докупить';
   }
 
   function singleTaleBadgeHtml(stage, taleNum) {
-    var online = singleMeetingStatus(stage, taleNum) === 'online_only';
-    var cls = online ? 'cc-tale-badge cc-tale-badge--online' : 'cc-tale-badge cc-tale-badge--meet';
-    var text = online ? 'Только онлайн' : 'Встреча ещё доступна';
+    var open = lessonIsOpen(stage, taleNum);
+    if (open) {
+      return '<span class="cc-tale-badge cc-tale-badge--open">Уже доступен</span>';
+    }
+    var addon = singleMeetingAddonAvailable(stage, taleNum);
+    var cls = addon ? 'cc-tale-badge cc-tale-badge--meet' : 'cc-tale-badge cc-tale-badge--online';
+    var text = addon ? 'Встречу можно докупить' : 'Только онлайн';
     return '<span class="' + cls + '">' + text + '</span>';
   }
 
@@ -488,8 +518,12 @@ window.CHIT_COURSE = (function () {
     coverUrl: coverUrl,
     coverSlug: coverSlug,
     formatPrice: formatPrice,
+    lessonIsOpen: lessonIsOpen,
+    lessonOpenLabel: lessonOpenLabel,
+    singleMeetingAddonAvailable: singleMeetingAddonAvailable,
     singleMeetingStatus: singleMeetingStatus,
     singleMeetingLabel: singleMeetingLabel,
-    singleTaleBadgeHtml: singleTaleBadgeHtml
+    singleTaleBadgeHtml: singleTaleBadgeHtml,
+    WITH_TEACHER_STAGE1_CLOSED: WITH_TEACHER_STAGE1_CLOSED
   };
 })();
