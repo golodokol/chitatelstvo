@@ -1,4 +1,4 @@
-"""Блок «Урок этой недели» на личной странице."""
+"""Блок «Сказка этой недели» / «Будет доступно позже» на личной странице."""
 
 from __future__ import annotations
 
@@ -29,17 +29,27 @@ def test_weekly_lessons_prefers_playable_lesson_over_grandfathered_soon_week():
         _lesson(week=3, title="Носов", unlocked=False),
     ]
     weekly, label = _weekly_lessons(links)
-    assert label == "Урок этой недели"
+    assert label == "Сказка этой недели"
     assert len(weekly) == 1
     assert weekly[0]["title"] == "Царевна лягушка"
     assert weekly[0]["module_week"] == 1
 
 
-def test_weekly_lessons_advances_when_next_lesson_is_playable():
+def test_weekly_lessons_open_label_for_playable():
     links = [
         _lesson(week=1, title="Сказка 1", url="/lesson/1", unlocked=True),
         _lesson(week=2, title="Сказка 2", url="/lesson/2", unlocked=True),
     ]
-    weekly, _ = _weekly_lessons(links)
-    assert weekly[0]["module_week"] == 2
-    assert weekly[0]["title"] == "Сказка 2"
+    weekly, label = _weekly_lessons(links)
+    assert label == "Сказки этой недели"
+    assert {w["module_week"] for w in weekly} == {1, 2}
+
+
+def test_weekly_lessons_closed_label():
+    links = [
+        _lesson(week=1, title="По щучьему велению", unlocked=False),
+    ]
+    weekly, label = _weekly_lessons(links)
+    assert label == "Будет доступно позже"
+    assert len(weekly) == 1
+    assert weekly[0]["title"] == "По щучьему велению"

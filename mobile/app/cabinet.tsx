@@ -133,7 +133,7 @@ export default function CabinetScreen() {
               cab.weekly_lessons ??
               (cab.daily_lesson ? [cab.daily_lesson] : []),
             weekly_lessons_label:
-              cab.weekly_lessons_label ?? "Урок этой недели",
+              cab.weekly_lessons_label ?? "Сказка этой недели",
             missions: cab.missions,
             missions_title: cab.missions_title,
             missions_subtitle: cab.missions_subtitle,
@@ -312,7 +312,7 @@ export default function CabinetScreen() {
                 {track.weekly_lessons?.length ? (
                   <View style={styles.panel}>
                     <Text style={styles.panelTitle}>
-                      {track.weekly_lessons_label ?? "Урок этой недели"}
+                      {track.weekly_lessons_label ?? "Сказка этой недели"}
                     </Text>
                     {track.group_label ? (
                       <Text style={styles.hint}>{track.group_label}</Text>

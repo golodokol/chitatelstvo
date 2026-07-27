@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Any
 
 from gamification.badge_assets import BADGE_ASSET_FILES
@@ -210,37 +211,74 @@ def _events_for_tale(events: list[Any], tale_title: str) -> set[str]:
     }
 
 
+def _opens_on_sort_value(lesson: dict) -> date:
+    value = lesson.get("opens_on")
+    if isinstance(value, date):
+        return value
+    iso = lesson.get("opens_on_iso")
+    if iso:
+        try:
+            return date.fromisoformat(str(iso)[:10])
+        except ValueError:
+            pass
+    return date.max
+
+
+def _lesson_access_sort_key(lesson: dict) -> tuple:
+    """Сначала доступные (есть ссылка), затем по дате открытия."""
+    available = 0 if lesson.get("url") else 1
+    week = int(lesson.get("module_week") or 999)
+    title = str(lesson.get("title") or "")
+    return (available, _opens_on_sort_value(lesson), week, title)
+
+
+def sort_lessons_by_access(lesson_links: list[dict]) -> list[dict]:
+    return sorted(lesson_links, key=_lesson_access_sort_key)
+
+
+def _track_access_sort_key(track: dict) -> tuple:
+    links = track.get("lesson_links") or []
+    if not links:
+        return (1, date.max, "")
+    has_url = any(les.get("url") for les in links)
+    soonest = min((_opens_on_sort_value(les) for les in links), default=date.max)
+    label = str(track.get("module_title") or track.get("group_label") or "")
+    return (0 if has_url else 1, soonest, label)
+
+
+def sort_tracks_by_access(tracks: list[dict]) -> list[dict]:
+    return sorted(tracks, key=_track_access_sort_key)
+
+
 def _current_lesson(lesson_links: list[dict]) -> dict | None:
-    for les in lesson_links:
+    ordered = sort_lessons_by_access(lesson_links)
+    for les in ordered:
         if les.get("url"):
             return les
-    for les in lesson_links:
+    for les in ordered:
         if les.get("unlocked"):
             return les
-    return lesson_links[0] if lesson_links else None
+    return ordered[0] if ordered else None
 
 
 def _weekly_lessons(lesson_links: list[dict]) -> tuple[list[dict], str]:
     if not lesson_links:
-        return [], "Урок этой недели"
-    # Как в миссиях и сундуке: «урок недели» = текущий доступный урок (с url),
-    # а не максимальная неделя с unlocked без ссылки (grandfather / «скоро»).
-    current = _current_lesson(lesson_links)
-    anchor = current or lesson_links[0]
-    current_week = int(anchor.get("module_week") or 1)
-    week_lessons = [
-        les for les in lesson_links if int(les.get("module_week") or 1) == current_week
-    ]
-    if not week_lessons:
-        week_lessons = [anchor]
-    label = "Уроки этой недели" if len(week_lessons) > 1 else "Урок этой недели"
+        return [], "Будет доступно позже"
+    # Доступные уроки сверху; закрытые — ниже, по дате открытия.
+    available = [les for les in lesson_links if les.get("url")]
+    if available:
+        week_lessons = sort_lessons_by_access(available)
+        label = "Сказки этой недели" if len(week_lessons) > 1 else "Сказка этой недели"
+    else:
+        week_lessons = sort_lessons_by_access(lesson_links)[:1]
+        label = "Будет доступно позже"
     return week_lessons, label
 
 
 def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
     reward_pts = 15
     cards: list[dict[str, Any]] = []
-    for lesson in lessons:
+    for lesson in sort_lessons_by_access(lessons):
         cards.append(
             {
                 "title": lesson.get("title", "Урок"),
@@ -466,20 +504,29 @@ def _parent_summary(
 def _story_stages(lesson_links: list[dict]) -> list[dict]:
     if not lesson_links:
         return []
+    ordered = sort_lessons_by_access(lesson_links)
     by_stage: dict[str, list[dict]] = {}
-    for les in lesson_links:
+    stage_order: list[str] = []
+    for les in ordered:
         stage = les.get("stage") or "stage-1"
-        by_stage.setdefault(stage, []).append(les)
+        if stage not in by_stage:
+            stage_order.append(stage)
+            by_stage[stage] = []
+        by_stage[stage].append(les)
+    # Этапы тоже: сначала где есть доступные уроки, иначе stage-1 → stage-2.
+    def stage_key(stage: str) -> tuple:
+        items = by_stage[stage]
+        has_url = any(les.get("url") for les in items)
+        preferred = {"stage-1": 0, "stage-2": 1}.get(stage, 9)
+        return (0 if has_url else 1, preferred, stage)
+
     stages: list[dict] = []
-    for stage_key in ("stage-1", "stage-2"):
-        items = by_stage.get(stage_key)
-        if not items:
-            continue
+    for stage_key_name in sorted(stage_order, key=stage_key):
         stages.append(
             {
-                "key": stage_key,
-                "label": STAGE_LABELS.get(stage_key, stage_key),
-                "lessons": items,
+                "key": stage_key_name,
+                "label": STAGE_LABELS.get(stage_key_name, stage_key_name),
+                "lessons": by_stage[stage_key_name],
             }
         )
     return stages
@@ -627,7 +674,7 @@ def _build_track_section(
     chest["slovik_url"] = slovik_url(chest["slovik_key"])
 
     missions = _missions(events, lesson, points, chest)
-    story_stages = track.get("lesson_stages") or _story_stages(lesson_links)
+    story_stages = _story_stages(lesson_links)
     treasury = _treasury_for_track(claims, lesson_links)
 
     return {
@@ -674,7 +721,7 @@ def build_child_cabinet(
 
     track_sections: list[dict[str, Any]] = []
     if tracks:
-        for track in tracks:
+        for track in sort_tracks_by_access(tracks):
             track_sections.append(
                 _build_track_section(
                     track=track,
@@ -691,7 +738,7 @@ def build_child_cabinet(
         chest = primary["chest"]
         daily = primary.get("daily_lesson")
         weekly_lessons = primary.get("weekly_lessons") or []
-        weekly_label = primary.get("weekly_lessons_label") or "Урок этой недели"
+        weekly_label = primary.get("weekly_lessons_label") or "Сказка этой недели"
         missions = primary["missions"]
         missions_title = primary["missions_title"]
         missions_subtitle = primary["missions_subtitle"]

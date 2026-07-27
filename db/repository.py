@@ -721,6 +721,21 @@ def delete_family(db: Session, family_id: uuid.UUID) -> bool:
     return True
 
 
+def get_enrollment(db: Session, enrollment_id: uuid.UUID) -> Enrollment | None:
+    return db.get(Enrollment, enrollment_id)
+
+
+def deactivate_enrollment(db: Session, enrollment_id: uuid.UUID) -> Enrollment | None:
+    """Снять одну запись (сказку/блок), не трогая семью и другие записи."""
+    enrollment = db.get(Enrollment, enrollment_id)
+    if not enrollment or enrollment.status != "active":
+        return None
+    enrollment.status = "completed"
+    db.commit()
+    db.refresh(enrollment)
+    return enrollment
+
+
 def get_family_by_token(db: Session, token: str) -> Family | None:
     stmt = (
         select(Family)

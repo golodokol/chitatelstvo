@@ -121,7 +121,10 @@ def create_enrollment_from_registration(
         return None, None
 
     module = enrollment_data["module"]
-    repo.complete_active_enrollments(db, child.id, group_code=module["group_code"])
+    # Разовые сказки накапливаются: новая не должна закрывать прошлую.
+    # Блоки (индивидуальное / с преподавателем) по-прежнему сменяют запись в том же направлении.
+    if module["tariff_code"] != "single":
+        repo.complete_active_enrollments(db, child.id, group_code=module["group_code"])
     repo.create_enrollment(
         db,
         child_id=child.id,

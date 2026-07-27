@@ -130,6 +130,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                     "child_age": "—",
                     "child_id": None,
                     "family_id": family_id,
+                    "enrollment_id": None,
                     "show_delete": show_delete,
                     "grade": "—",
                     "grade_short": "—",
@@ -161,6 +162,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                         "child_age": str(child_age_years(child)) if child_age_years(child) is not None else "—",
                         "child_id": str(child.id),
                         "family_id": family_id,
+                        "enrollment_id": None,
                         "show_delete": show_delete,
                         "grade": "—",
                         "grade_short": "—",
@@ -193,6 +195,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                         "child_age": str(child_age_years(child)) if child_age_years(child) is not None else "—",
                         "child_id": str(child.id),
                         "family_id": family_id,
+                        "enrollment_id": str(enrollment.id),
                         "show_delete": show_delete and idx == 0,
                         "grade": cols["grade"],
                         "grade_short": cols["grade_short"],
@@ -242,7 +245,13 @@ def _flash_from_query(request: Request) -> dict | None:
     if params.get("deleted") == "1":
         return {
             "type": "ok",
-            "message": params.get("msg") or "Запись удалена.",
+            "message": params.get("msg") or "Семья удалена.",
+            "progress_url": "",
+        }
+    if params.get("ok") == "1":
+        return {
+            "type": "ok",
+            "message": params.get("msg") or "Готово.",
             "progress_url": "",
         }
     if params.get("meeting") == "1":
@@ -489,6 +498,32 @@ def admin_mark_meeting_attendance(
     )
 
 
+def _redirect_admin_enrollment_removed(title: str) -> RedirectResponse:
+    msg = f"Снята запись: {title}."
+    return RedirectResponse(
+        f"/admin?ok=1&msg={quote(msg)}#registrations",
+        status_code=303,
+    )
+
+
+@router.post("/enrollments/{enrollment_id}/remove")
+def admin_remove_enrollment(
+    request: Request,
+    enrollment_id: uuid.UUID,
+    db: Session = Depends(get_db),
+):
+    """Убрать одну сказку/блок, не удаляя семью."""
+    require_admin(request)
+    enrollment = repo.get_enrollment(db, enrollment_id)
+    if not enrollment or enrollment.status != "active":
+        return _redirect_admin_error("Активная запись не найдена.", anchor="registrations")
+    title = enrollment.chosen_tale_title or f"модуль {enrollment.module_id}"
+    removed = repo.deactivate_enrollment(db, enrollment_id)
+    if not removed:
+        return _redirect_admin_error("Не удалось снять запись.", anchor="registrations")
+    return _redirect_admin_enrollment_removed(title)
+
+
 @router.post("/families/{family_id}/delete")
 def admin_delete_family(
     request: Request,
@@ -504,9 +539,9 @@ def admin_delete_family(
         deleted = repo.delete_family(db, family_id)
     except Exception as exc:
         db.rollback()
-        return _redirect_admin_error(f"Не удалось удалить запись: {exc}", anchor="registrations")
+        return _redirect_admin_error(f"Не удалось удалить семью: {exc}", anchor="registrations")
     if not deleted:
-        return _redirect_admin_error("Не удалось удалить запись.", anchor="registrations")
+        return _redirect_admin_error("Не удалось удалить семью.", anchor="registrations")
     return _redirect_admin_deleted(parent_name)
 
 

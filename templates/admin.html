@@ -422,8 +422,11 @@
         Семьи после оплаты на Tilda и записи, созданные вручную выше.
         В таблице: <strong>Класс</strong>, <strong>Формат</strong> (разовое · индивидуальное · с преподавателем),
         <strong>Этап</strong> (дата), <strong>Сказка / блок</strong> (название сказки или «4 сказки»).
-        В колонке «Выдать» — смена доступа для существующего ребёнка.
-        Кнопка <strong>Удалить</strong> удаляет всю семью (родителя, детей, прогресс) — для тестовых записей.
+        В колонке «Выдать» — добавить или сменить доступ у существующего ребёнка.
+        Для <strong>разового</strong> новая сказка добавляется к уже открытым; прошлые разовые не пропадают.
+        Для индивидуального / с преподавателем новая выдача сменяет предыдущий блок того же класса.
+        Кнопка <strong>Убрать сказку</strong> снимает только эту запись.
+        Кнопка <strong>Удалить семью</strong> удаляет родителя, детей и весь прогресс — только для тестовых записей.
       </div>
 
     {% if rows %}
@@ -498,19 +501,33 @@
               {% endif %}
             </td>
             <td class="col-delete">
-              {% if row.show_delete and row.family_id %}
-              <form
-                method="post"
-                action="/admin/families/{{ row.family_id }}/delete"
-                class="delete-form"
-                data-parent="{{ row.parent_name }}"
-                data-email="{{ row.parent_email }}"
-              >
-                <button class="btn btn-danger btn-small" type="submit">Удалить</button>
-              </form>
-              {% else %}
-              —
-              {% endif %}
+              <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch;">
+                {% if row.enrollment_id %}
+                <form
+                  method="post"
+                  action="/admin/enrollments/{{ row.enrollment_id }}/remove"
+                  class="remove-enrollment-form"
+                  data-lesson="{{ row.lesson }}"
+                  data-child="{{ row.child_name }}"
+                >
+                  <button class="btn btn-danger btn-small" type="submit">Убрать сказку</button>
+                </form>
+                {% endif %}
+                {% if row.show_delete and row.family_id %}
+                <form
+                  method="post"
+                  action="/admin/families/{{ row.family_id }}/delete"
+                  class="delete-form"
+                  data-parent="{{ row.parent_name }}"
+                  data-email="{{ row.parent_email }}"
+                >
+                  <button class="btn btn-danger btn-small" type="submit" style="opacity:.85;">Удалить семью</button>
+                </form>
+                {% endif %}
+                {% if not row.enrollment_id and not (row.show_delete and row.family_id) %}
+                —
+                {% endif %}
+              </div>
             </td>
           </tr>
           {% endfor %}
@@ -581,14 +598,27 @@
     });
     syncTaleFields(document);
 
+    document.querySelectorAll('.remove-enrollment-form').forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        var lesson = form.getAttribute('data-lesson') || 'сказку';
+        var child = form.getAttribute('data-child') || 'ребёнка';
+        var message =
+          'Убрать только «' + lesson + '» у ' + child + '?\n\n' +
+          'Семья и другие сказки останутся. Удалить всю семью — отдельной кнопкой ниже.';
+        if (!window.confirm(message)) {
+          event.preventDefault();
+        }
+      });
+    });
+
     document.querySelectorAll('.delete-form').forEach(function (form) {
       form.addEventListener('submit', function (event) {
         var parent = form.getAttribute('data-parent') || 'семья';
         var email = form.getAttribute('data-email') || '';
         var message =
-          'Удалить семью «' + parent + '»' +
+          'Удалить ВСЮ семью «' + parent + '»' +
           (email ? ' (' + email + ')' : '') +
-          ' и всех детей?\n\nПрогресс и доступ будут удалены без возможности восстановления.';
+          ' и всех детей?\n\nПрогресс и доступ будут удалены. Чтобы убрать одну сказку, используйте «Убрать сказку».';
         if (!window.confirm(message)) {
           event.preventDefault();
         }

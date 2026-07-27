@@ -17,6 +17,8 @@ from gamification.cabinet_ui import (
     build_child_cabinet,
     parent_lesson_guide_steps,
     parent_points_rows,
+    sort_lessons_by_access,
+    sort_tracks_by_access,
 )
 from gamification.rules import level_from_points
 from lessons.access import lesson_access_info
@@ -30,20 +32,29 @@ from services.birthday_gift import maybe_grant_birthday_gift
 def group_lessons(lesson_links: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not lesson_links:
         return []
+    ordered = sort_lessons_by_access(lesson_links)
     stages: list[dict[str, Any]] = []
     by_stage: dict[str, list[dict[str, Any]]] = {}
-    for les in lesson_links:
+    stage_order: list[str] = []
+    for les in ordered:
         stage = les.get("stage") or "stage-1"
-        by_stage.setdefault(stage, []).append(les)
-    for stage_key in ("stage-1", "stage-2"):
-        items = by_stage.get(stage_key)
-        if not items:
-            continue
+        if stage not in by_stage:
+            stage_order.append(stage)
+            by_stage[stage] = []
+        by_stage[stage].append(les)
+
+    def stage_key(stage: str) -> tuple:
+        items = by_stage[stage]
+        has_url = any(les.get("url") for les in items)
+        preferred = {"stage-1": 0, "stage-2": 1}.get(stage, 9)
+        return (0 if has_url else 1, preferred, stage)
+
+    for stage_key_name in sorted(stage_order, key=stage_key):
         stages.append(
             {
-                "key": stage_key,
-                "label": STAGE_LABELS.get(stage_key, stage_key),
-                "lessons": items,
+                "key": stage_key_name,
+                "label": STAGE_LABELS.get(stage_key_name, stage_key_name),
+                "lessons": by_stage[stage_key_name],
             }
         )
     return stages
@@ -108,6 +119,7 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
         enrollment = track["enrollment"]
         module = track["module"]
         lesson_links, track_meetings = build_lesson_links_for_track(db, child, enrollment, module)
+        lesson_links = sort_lessons_by_access(lesson_links)
         has_meetings = has_meetings or track_meetings
         all_lesson_links.extend(lesson_links)
         tracks.append(
@@ -122,6 +134,8 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
             }
         )
 
+    tracks = sort_tracks_by_access(tracks)
+    all_lesson_links = sort_lessons_by_access(all_lesson_links)
     module_titles = [t["module_title"] for t in tracks]
     module_title = " · ".join(module_titles) if module_titles else None
 

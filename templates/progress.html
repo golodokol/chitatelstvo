@@ -218,7 +218,7 @@
         {% macro render_weekly_lessons(track) %}
         {% if track.weekly_lessons %}
         <section class="chit-panel chit-panel--mission">
-          <h2 class="chit-section-title">{{ track.weekly_lessons_label or 'Урок этой недели' }}</h2>
+          <h2 class="chit-section-title">{{ track.weekly_lessons_label or 'Сказка этой недели' }}</h2>
           {% if track.group_label %}
           <p class="chit-section-sub">{{ track.group_label }}</p>
           {% endif %}
@@ -349,7 +349,7 @@
           'chest': cab.chest,
           'treasury': cab.treasury if cab.chest.claimed else [],
           'weekly_lessons': cab.weekly_lessons or ([cab.daily_lesson] if cab.daily_lesson else []),
-          'weekly_lessons_label': cab.weekly_lessons_label or 'Урок этой недели',
+          'weekly_lessons_label': cab.weekly_lessons_label or 'Сказка этой недели',
           'story_stages': cab.story_stages,
           'missions': cab.missions,
           'missions_title': cab.missions_title,
@@ -527,6 +527,28 @@
       </section>
     {% endif %}
 
+      <section class="chit-panel chit-panel--parent chit-panel--feedback" id="parent-feedback">
+        <h2 class="chit-section-title chit-section-title--calm">Срочный вопрос</h2>
+        <p class="chit-guide-sub">Напишите, если нужна быстрая помощь. Сообщение уйдёт на {{ contact_email }}, мы ответим вам на почту, указанную при записи.</p>
+        <form class="chit-feedback-form" id="chit-parent-feedback" data-token="{{ progress_token }}" novalidate>
+          {% if children|length > 1 %}
+          <label class="chit-feedback-form__label" for="chit-feedback-child">Ребёнок (по желанию)</label>
+          <select class="chit-feedback-form__input" id="chit-feedback-child" name="child_name">
+            <option value="">Не указывать</option>
+            {% for child in children %}
+            <option value="{{ child.name }}">{{ child.name }}</option>
+            {% endfor %}
+          </select>
+          {% elif children|length == 1 %}
+          <input type="hidden" id="chit-feedback-child" name="child_name" value="{{ children[0].name }}">
+          {% endif %}
+          <label class="chit-feedback-form__label" for="chit-feedback-message">Ваш вопрос</label>
+          <textarea class="chit-feedback-form__input chit-feedback-form__textarea" id="chit-feedback-message" name="message" rows="4" maxlength="4000" required placeholder="Опишите ситуацию — чем скорее сможем помочь"></textarea>
+          <button type="submit" class="chit-btn" id="chit-feedback-submit">Отправить</button>
+          <p class="chit-feedback-form__status" id="chit-feedback-status" hidden role="status"></p>
+        </form>
+      </section>
+
     {% for child in children %}
       {% set cab = child.cabinet %}
       <section class="chit-panel chit-panel--parent">
@@ -628,28 +650,6 @@
           <tr><th>{{ row.label }}</th><td>{{ row.value }}</td></tr>
           {% endfor %}
       </table>
-      </section>
-
-      <section class="chit-panel chit-panel--parent chit-panel--feedback" id="parent-feedback">
-        <h2 class="chit-section-title chit-section-title--calm">Срочный вопрос</h2>
-        <p class="chit-guide-sub">Напишите, если нужна быстрая помощь. Сообщение уйдёт на {{ contact_email }}, мы ответим вам на почту, указанную при записи.</p>
-        <form class="chit-feedback-form" id="chit-parent-feedback" data-token="{{ progress_token }}" novalidate>
-          {% if children|length > 1 %}
-          <label class="chit-feedback-form__label" for="chit-feedback-child">Ребёнок (по желанию)</label>
-          <select class="chit-feedback-form__input" id="chit-feedback-child" name="child_name">
-            <option value="">Не указывать</option>
-            {% for child in children %}
-            <option value="{{ child.name }}">{{ child.name }}</option>
-            {% endfor %}
-          </select>
-          {% elif children|length == 1 %}
-          <input type="hidden" id="chit-feedback-child" name="child_name" value="{{ children[0].name }}">
-          {% endif %}
-          <label class="chit-feedback-form__label" for="chit-feedback-message">Ваш вопрос</label>
-          <textarea class="chit-feedback-form__input chit-feedback-form__textarea" id="chit-feedback-message" name="message" rows="4" maxlength="4000" required placeholder="Опишите ситуацию — чем скорее сможем помочь"></textarea>
-          <button type="submit" class="chit-btn" id="chit-feedback-submit">Отправить</button>
-          <p class="chit-feedback-form__status" id="chit-feedback-status" hidden role="status"></p>
-        </form>
       </section>
 
       <section class="chit-panel chit-panel--parent chit-panel--feed">
