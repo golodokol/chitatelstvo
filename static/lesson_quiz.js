@@ -26,15 +26,85 @@
     );
   }
 
+  function appendQuestionHeader(div, q, idx) {
+    const title = document.createElement('strong');
+    title.className = 'chit-q-title';
+    title.textContent = (idx + 1) + '. ' + (q.text || '');
+    div.appendChild(title);
+    if (q.hint) {
+      const hint = document.createElement('p');
+      hint.className = 'chit-q-hint';
+      hint.textContent = q.hint;
+      div.appendChild(hint);
+    }
+  }
+
+  function notifyFormChange(formId) {
+    const form = document.getElementById(formId);
+    if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  function renderChoiceChips(formId, q, rowKey, options, selectedId) {
+    const wrap = document.createElement('div');
+    wrap.className = 'chit-match-choices';
+    wrap.setAttribute('role', 'group');
+    (options || []).forEach(function (opt) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chit-match-choice';
+      btn.dataset.rightId = opt.id;
+      btn.dataset.rowKey = rowKey;
+      btn.setAttribute('aria-pressed', selectedId === opt.id ? 'true' : 'false');
+      if (selectedId === opt.id) btn.classList.add('is-selected');
+      btn.textContent = opt.text;
+      wrap.appendChild(btn);
+    });
+    return wrap;
+  }
+
+  function clearConflictingChoice(root, rightId, exceptRowKey) {
+    root.querySelectorAll('.chit-match-choice.is-selected').forEach(function (btn) {
+      if (btn.dataset.rightId !== rightId) return;
+      if (btn.dataset.rowKey === exceptRowKey) return;
+      btn.classList.remove('is-selected');
+      btn.setAttribute('aria-pressed', 'false');
+      const group = btn.closest('.chit-match-choices');
+      if (group) group.dataset.selected = '';
+    });
+  }
+
+  function attachExclusiveChoices(root, formId) {
+    root.addEventListener('click', function (event) {
+      const btn = event.target.closest('.chit-match-choice');
+      if (!btn || !root.contains(btn)) return;
+      const group = btn.closest('.chit-match-choices');
+      if (!group) return;
+      const rightId = btn.dataset.rightId;
+      const rowKey = btn.dataset.rowKey;
+      const already = btn.classList.contains('is-selected');
+      group.querySelectorAll('.chit-match-choice').forEach(function (other) {
+        other.classList.remove('is-selected');
+        other.setAttribute('aria-pressed', 'false');
+      });
+      if (!already) {
+        clearConflictingChoice(root, rightId, rowKey);
+        btn.classList.add('is-selected');
+        btn.setAttribute('aria-pressed', 'true');
+        group.dataset.selected = rightId;
+      } else {
+        group.dataset.selected = '';
+      }
+      notifyFormChange(formId);
+    });
+  }
+
   function renderSingleOrMulti(formId, q, idx, multi) {
     const div = document.createElement('div');
     const withImages = optionHasImages(q.options);
     div.className = withImages ? 'chit-q chit-q-with-images' : 'chit-q';
     div.dataset.qid = q.id;
     div.dataset.qtype = q.type || 'single';
-    let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
-    if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
-    div.innerHTML = html;
+    appendQuestionHeader(div, q, idx);
     const container = withImages ? document.createElement('div') : div;
     if (withImages) {
       container.className = 'chit-opt-grid';
@@ -74,9 +144,7 @@
     div.className = 'chit-q';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'true_false';
-    let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
-    if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
-    div.innerHTML = html;
+    appendQuestionHeader(div, q, idx);
     (q.statements || []).forEach(function (stmt) {
       const id = formId + '-' + q.id + '-' + stmt.id;
       const label = document.createElement('label');
@@ -94,9 +162,7 @@
     div.className = 'chit-q chit-q-matching';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'matching';
-    let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
-    if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
-    div.innerHTML = html;
+    appendQuestionHeader(div, q, idx);
     const table = document.createElement('div');
     table.className = 'chit-match-grid';
     const matchWithImages = optionHasImages(q.left);
@@ -104,6 +170,7 @@
     (q.left || []).forEach(function (left) {
       const row = document.createElement('div');
       row.className = 'chit-match-row';
+      row.dataset.leftId = left.id;
       const label = document.createElement('span');
       label.className = matchWithImages ? 'chit-match-left chit-opt-card chit-match-card' : 'chit-match-left';
       if (matchWithImages && left.image) {
@@ -111,39 +178,15 @@
       } else {
         label.textContent = left.text;
       }
-      const select = document.createElement('select');
-      select.className = 'chit-q-select chit-match-select';
-      select.name = formId + '-' + q.id + '-' + left.id;
-      select.dataset.leftId = left.id;
-      const matchPrompt = (function () {
-        if (q.select_prompt) return q.select_prompt;
-        const t = String(q.text || '') + ' ' + String(q.hint || '');
-        const low = t.toLowerCase();
-        if (low.indexOf('желани') !== -1 || low.indexOf('просил') !== -1) return '— выбери желание —';
-        if (low.indexOf('действие') !== -1 || low.indexOf('делает') !== -1 || low.indexOf('героя') !== -1) {
-          return '— выбери действие —';
-        }
-        if (low.indexOf('черт') !== -1) return '— выбери главную черту —';
-        if (low.indexOf('поступ') !== -1 || low.indexOf('привёл') !== -1 || low.indexOf('привел') !== -1) {
-          return '— выбери последствие —';
-        }
-        if (low.indexOf('конец') !== -1 || low.indexOf('начала') !== -1 || low.indexOf('начало') !== -1) {
-          return '— выбери конец —';
-        }
-        return '— выбери уместное —';
-      })();
-      select.innerHTML = '<option value="">' + escapeHtml(matchPrompt) + '</option>';
-      (q.right || []).forEach(function (right) {
-        const opt = document.createElement('option');
-        opt.value = right.id;
-        opt.textContent = right.text;
-        select.appendChild(opt);
-      });
+      const choices = renderChoiceChips(formId, q, left.id, q.right, '');
+      choices.dataset.leftId = left.id;
+      choices.dataset.selected = '';
       row.appendChild(label);
-      row.appendChild(select);
+      row.appendChild(choices);
       table.appendChild(row);
     });
     div.appendChild(table);
+    attachExclusiveChoices(div, formId);
     return div;
   }
 
@@ -291,16 +334,15 @@
     div.dataset.qid = q.id;
     div.dataset.qtype = 'ordering';
     const slotCount = items.length;
-    let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
-    if (q.hint) {
-      html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
-    } else {
-      const instruction = withImages
+    appendQuestionHeader(div, q, idx);
+    if (!q.hint) {
+      const instruction = document.createElement('p');
+      instruction.className = 'chit-order-instruction';
+      instruction.textContent = withImages
         ? ('Перетащи картинки в ячейки 1–' + slotCount + ' по порядку сказки. На телефоне: нажми на картинку, затем на ячейку.')
         : 'Перетащи события в ячейки по порядку сказки. На телефоне: нажми на событие, затем на ячейку.';
-      html += '<p class="chit-order-instruction">' + instruction + '</p>';
+      div.appendChild(instruction);
     }
-    div.innerHTML = html;
 
     const board = document.createElement('div');
     board.className = 'chit-order-board';
@@ -357,27 +399,18 @@
     return div;
   }
 
-  function pictureMatchPlaceholder(q) {
-    if (q.select_prompt) return q.select_prompt;
-    const text = String(q.text || '').toLowerCase();
-    if (text.indexOf('что') !== -1) return '— что это? —';
-    return '— кто это? —';
-  }
-
   function renderPictureMatch(formId, q, idx) {
     const div = document.createElement('div');
     div.className = 'chit-q chit-q-pictures';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'picture_match';
-    let html = '<strong>' + (idx + 1) + '. ' + escapeHtml(q.text) + '</strong>';
-    if (q.hint) html += '<p class="chit-q-hint">' + escapeHtml(q.hint) + '</p>';
-    div.innerHTML = html;
+    appendQuestionHeader(div, q, idx);
     const grid = document.createElement('div');
     grid.className = 'chit-picture-grid';
-    const placeholder = pictureMatchPlaceholder(q);
     (q.pictures || []).forEach(function (pic, picIdx) {
       const card = document.createElement('div');
       card.className = 'chit-picture-card';
+      card.dataset.pictureId = pic.id;
       const badge = document.createElement('span');
       badge.className = 'chit-picture-num';
       badge.textContent = String(picIdx + 1);
@@ -387,25 +420,15 @@
       img.alt = pic.alt || '';
       img.loading = 'lazy';
       card.appendChild(img);
-      const select = document.createElement('select');
-      select.className = 'chit-q-select chit-picture-select';
-      select.name = formId + '-' + q.id + '-' + pic.id;
-      select.dataset.pictureId = pic.id;
-      select.innerHTML = '<option value="">' + escapeHtml(placeholder) + '</option>';
-      (q.labels || []).forEach(function (label) {
-        const opt = document.createElement('option');
-        opt.value = label.id;
-        opt.textContent = label.text;
-        select.appendChild(opt);
-      });
-      card.appendChild(select);
-      select.addEventListener('change', function () {
-        const form = document.getElementById(formId);
-        if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
-      });
+      const choices = renderChoiceChips(formId, q, pic.id, q.labels, '');
+      choices.dataset.pictureId = pic.id;
+      choices.dataset.selected = '';
+      choices.classList.add('chit-match-choices--compact');
+      card.appendChild(choices);
       grid.appendChild(card);
     });
     div.appendChild(grid);
+    attachExclusiveChoices(div, formId);
     return div;
   }
 
@@ -433,15 +456,17 @@
   function collectMatchingAnswer(formId, q) {
     const map = {};
     let complete = true;
+    const root = document.querySelector('#' + formId + ' .chit-q-matching[data-qid="' + q.id + '"]');
     (q.left || []).forEach(function (left) {
-      const select = document.querySelector(
-        '#' + formId + ' select[name="' + formId + '-' + q.id + '-' + left.id + '"]'
-      );
-      if (!select || !select.value) {
+      const group = root
+        ? root.querySelector('.chit-match-choices[data-left-id="' + left.id + '"]')
+        : null;
+      const value = group && group.dataset.selected ? group.dataset.selected : '';
+      if (!value) {
         complete = false;
         return;
       }
-      map[left.id] = select.value;
+      map[left.id] = value;
     });
     return complete ? map : null;
   }
@@ -462,15 +487,17 @@
   function collectPictureMatchAnswer(formId, q) {
     const map = {};
     let complete = true;
+    const root = document.querySelector('#' + formId + ' .chit-q-pictures[data-qid="' + q.id + '"]');
     (q.pictures || []).forEach(function (pic) {
-      const select = document.querySelector(
-        '#' + formId + ' select[name="' + formId + '-' + q.id + '-' + pic.id + '"]'
-      );
-      if (!select || !select.value) {
+      const group = root
+        ? root.querySelector('.chit-match-choices[data-picture-id="' + pic.id + '"]')
+        : null;
+      const value = group && group.dataset.selected ? group.dataset.selected : '';
+      if (!value) {
         complete = false;
         return;
       }
-      map[pic.id] = select.value;
+      map[pic.id] = value;
     });
     return complete ? map : null;
   }

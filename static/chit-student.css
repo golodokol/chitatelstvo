@@ -725,20 +725,81 @@ body.chit-student img {
   flex-direction: column;
   gap: 18px;
   margin-top: 14px;
-  max-width: 420px;
+  max-width: 560px;
 }
 
 .chit-match-row {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 10px;
 }
 
 .chit-match-left {
   font-weight: 700;
-  font-size: 0.98rem;
+  font-size: 1.05rem;
   color: var(--text-warm);
+}
+
+.chit-q-title {
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.chit-match-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chit-match-choice {
+  appearance: none;
+  border: 2px solid var(--border, #d5e0eb);
+  background: var(--white, #fff);
+  color: var(--text-warm, #2a3a4a);
+  border-radius: 14px;
+  padding: 12px 14px;
+  min-height: 48px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  flex: 1 1 calc(50% - 8px);
+  max-width: 100%;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.chit-match-choice:hover {
+  border-color: var(--blue-light, #8fb0d0);
+  background: var(--blue-pale, #f0f5fa);
+}
+
+.chit-match-choice.is-selected {
+  border-color: var(--blue, #4A6D94);
+  background: var(--blue-pale, #EDF2F9);
+  color: var(--blue-deep, #3d5270);
+  box-shadow: 0 0 0 2px rgba(74, 109, 148, 0.18);
+}
+
+.chit-match-choice:focus-visible {
+  outline: 3px solid rgba(74, 109, 148, 0.3);
+  outline-offset: 2px;
+}
+
+.chit-match-choices--compact {
+  gap: 6px;
+}
+
+.chit-match-choices--compact .chit-match-choice {
+  flex: 1 1 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  border-radius: 12px;
 }
 
 .chit-q-select {
@@ -2033,6 +2094,22 @@ a.chit-room__helper:focus-visible {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+a.chit-lesson-card__cover-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+a.chit-lesson-card__cover-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(61, 82, 102, 0.2);
+}
+a.chit-lesson-card__cover-link:focus-visible {
+  outline: 3px solid var(--blue, #4a6d94);
+  outline-offset: 3px;
 }
 
 .chit-lesson-card__body { min-width: 0; }
