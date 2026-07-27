@@ -157,36 +157,214 @@
     return div;
   }
 
+  function renderMatchItemContent(item, withImages) {
+    if (withImages && item.image) {
+      return renderOptionImage(item) + '<span class="chit-opt-caption">' + escapeHtml(item.text) + '</span>';
+    }
+    return '<span class="chit-match-item-text">' + escapeHtml(item.text) + '</span>';
+  }
+
+  function redrawMatchLines(board) {
+    const svg = board.querySelector('.chit-match-lines');
+    if (!svg) return;
+    const rect = board.getBoundingClientRect();
+    const width = Math.max(1, board.clientWidth);
+    const height = Math.max(1, board.clientHeight);
+    svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    svg.setAttribute('width', String(width));
+    svg.setAttribute('height', String(height));
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    board.querySelectorAll('.chit-match-item--left[data-paired]').forEach(function (leftBtn) {
+      const rightId = leftBtn.dataset.paired;
+      if (!rightId) return;
+      const rightBtn = board.querySelector('.chit-match-item--right[data-right-id="' + rightId + '"]');
+      if (!rightBtn) return;
+      const leftRect = leftBtn.getBoundingClientRect();
+      const rightRect = rightBtn.getBoundingClientRect();
+      const x1 = leftRect.right - rect.left;
+      const y1 = leftRect.top + leftRect.height / 2 - rect.top;
+      const x2 = rightRect.left - rect.left;
+      const y2 = rightRect.top + rightRect.height / 2 - rect.top;
+      const mid = (x1 + x2) / 2;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' C ' + mid + ' ' + y1 + ', ' + mid + ' ' + y2 + ', ' + x2 + ' ' + y2);
+      path.setAttribute('class', 'chit-match-line');
+      if (leftBtn.dataset.pairTone) path.setAttribute('data-pair-tone', leftBtn.dataset.pairTone);
+      svg.appendChild(path);
+      const tip = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      const ah = 7;
+      tip.setAttribute(
+        'points',
+        x2 + ',' + y2 + ' ' + (x2 - ah) + ',' + (y2 - ah * 0.55) + ' ' + (x2 - ah) + ',' + (y2 + ah * 0.55)
+      );
+      tip.setAttribute('class', 'chit-match-arrow');
+      if (leftBtn.dataset.pairTone) tip.setAttribute('data-pair-tone', leftBtn.dataset.pairTone);
+      svg.appendChild(tip);
+    });
+  }
+
+  function attachMatchBoard(board, formId) {
+    let activeLeft = null;
+    const tones = ['1', '2', '3', '4', '5', '6'];
+
+    function clearActive() {
+      if (!activeLeft) return;
+      activeLeft.classList.remove('is-active');
+      activeLeft = null;
+      board.classList.remove('has-active-left');
+    }
+
+    function nextTone() {
+      const used = {};
+      board.querySelectorAll('.chit-match-item--left[data-pair-tone]').forEach(function (btn) {
+        used[btn.dataset.pairTone] = true;
+      });
+      for (let i = 0; i < tones.length; i += 1) {
+        if (!used[tones[i]]) return tones[i];
+      }
+      return tones[0];
+    }
+
+    function clearPairForLeft(leftBtn) {
+      const rightId = leftBtn.dataset.paired;
+      leftBtn.removeAttribute('data-paired');
+      leftBtn.removeAttribute('data-pair-tone');
+      leftBtn.classList.remove('is-paired');
+      if (rightId) {
+        const rightBtn = board.querySelector('.chit-match-item--right[data-right-id="' + rightId + '"]');
+        if (rightBtn) {
+          rightBtn.removeAttribute('data-paired-left');
+          rightBtn.removeAttribute('data-pair-tone');
+          rightBtn.classList.remove('is-paired');
+        }
+      }
+    }
+
+    function clearPairForRight(rightBtn) {
+      const leftId = rightBtn.dataset.pairedLeft;
+      if (!leftId) return;
+      const leftBtn = board.querySelector('.chit-match-item--left[data-left-id="' + leftId + '"]');
+      if (leftBtn) clearPairForLeft(leftBtn);
+    }
+
+    function pair(leftBtn, rightBtn) {
+      clearPairForLeft(leftBtn);
+      clearPairForRight(rightBtn);
+      const tone = nextTone();
+      leftBtn.dataset.paired = rightBtn.dataset.rightId;
+      leftBtn.dataset.pairTone = tone;
+      leftBtn.classList.add('is-paired');
+      rightBtn.dataset.pairedLeft = leftBtn.dataset.leftId;
+      rightBtn.dataset.pairTone = tone;
+      rightBtn.classList.add('is-paired');
+      clearActive();
+      redrawMatchLines(board);
+      notifyFormChange(formId);
+    }
+
+    board.addEventListener('click', function (event) {
+      const leftBtn = event.target.closest('.chit-match-item--left');
+      if (leftBtn && board.contains(leftBtn)) {
+        if (leftBtn.classList.contains('is-paired') && activeLeft !== leftBtn) {
+          clearPairForLeft(leftBtn);
+          redrawMatchLines(board);
+          notifyFormChange(formId);
+          clearActive();
+          return;
+        }
+        if (activeLeft === leftBtn) {
+          clearActive();
+          return;
+        }
+        clearActive();
+        activeLeft = leftBtn;
+        leftBtn.classList.add('is-active');
+        board.classList.add('has-active-left');
+        return;
+      }
+
+      const rightBtn = event.target.closest('.chit-match-item--right');
+      if (rightBtn && board.contains(rightBtn)) {
+        if (!activeLeft) {
+          if (rightBtn.classList.contains('is-paired')) {
+            clearPairForRight(rightBtn);
+            redrawMatchLines(board);
+            notifyFormChange(formId);
+          }
+          return;
+        }
+        pair(activeLeft, rightBtn);
+      }
+    });
+
+    window.addEventListener('resize', function () {
+      redrawMatchLines(board);
+    });
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(function () { redrawMatchLines(board); });
+      ro.observe(board);
+    }
+  }
+
   function renderMatching(formId, q, idx) {
     const div = document.createElement('div');
     div.className = 'chit-q chit-q-matching';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'matching';
     appendQuestionHeader(div, q, idx);
-    const table = document.createElement('div');
-    table.className = 'chit-match-grid';
+
+    const tip = document.createElement('p');
+    tip.className = 'chit-match-tip';
+    tip.textContent = 'Нажми героя слева, потом черту справа. Стрелка покажет пару.';
+    div.appendChild(tip);
+
+    const board = document.createElement('div');
+    board.className = 'chit-match-board';
     const matchWithImages = optionHasImages(q.left);
-    if (matchWithImages) div.classList.add('chit-q-with-images');
+    if (matchWithImages) {
+      div.classList.add('chit-q-with-images');
+      board.classList.add('chit-match-board--images');
+    }
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('chit-match-lines');
+    svg.setAttribute('aria-hidden', 'true');
+    board.appendChild(svg);
+
+    const cols = document.createElement('div');
+    cols.className = 'chit-match-cols';
+
+    const leftCol = document.createElement('div');
+    leftCol.className = 'chit-match-col chit-match-col--left';
+    leftCol.setAttribute('aria-label', 'Герои');
     (q.left || []).forEach(function (left) {
-      const row = document.createElement('div');
-      row.className = 'chit-match-row';
-      row.dataset.leftId = left.id;
-      const label = document.createElement('span');
-      label.className = matchWithImages ? 'chit-match-left chit-opt-card chit-match-card' : 'chit-match-left';
-      if (matchWithImages && left.image) {
-        label.innerHTML = renderOptionImage(left) + '<span class="chit-opt-caption">' + escapeHtml(left.text) + '</span>';
-      } else {
-        label.textContent = left.text;
-      }
-      const choices = renderChoiceChips(formId, q, left.id, q.right, '');
-      choices.dataset.leftId = left.id;
-      choices.dataset.selected = '';
-      row.appendChild(label);
-      row.appendChild(choices);
-      table.appendChild(row);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chit-match-item chit-match-item--left';
+      btn.dataset.leftId = left.id;
+      btn.innerHTML = renderMatchItemContent(left, matchWithImages);
+      leftCol.appendChild(btn);
     });
-    div.appendChild(table);
-    attachExclusiveChoices(div, formId);
+
+    const rightCol = document.createElement('div');
+    rightCol.className = 'chit-match-col chit-match-col--right';
+    rightCol.setAttribute('aria-label', 'Варианты');
+    (q.right || []).forEach(function (right) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chit-match-item chit-match-item--right';
+      btn.dataset.rightId = right.id;
+      btn.innerHTML = renderMatchItemContent(right, false);
+      rightCol.appendChild(btn);
+    });
+
+    cols.appendChild(leftCol);
+    cols.appendChild(rightCol);
+    board.appendChild(cols);
+    div.appendChild(board);
+    attachMatchBoard(board, formId);
+    requestAnimationFrame(function () { redrawMatchLines(board); });
     return div;
   }
 
@@ -458,10 +636,10 @@
     let complete = true;
     const root = document.querySelector('#' + formId + ' .chit-q-matching[data-qid="' + q.id + '"]');
     (q.left || []).forEach(function (left) {
-      const group = root
-        ? root.querySelector('.chit-match-choices[data-left-id="' + left.id + '"]')
+      const leftBtn = root
+        ? root.querySelector('.chit-match-item--left[data-left-id="' + left.id + '"]')
         : null;
-      const value = group && group.dataset.selected ? group.dataset.selected : '';
+      const value = leftBtn && leftBtn.dataset.paired ? leftBtn.dataset.paired : '';
       if (!value) {
         complete = false;
         return;
