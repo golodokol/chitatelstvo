@@ -739,31 +739,34 @@ body.chit-student img {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
   overflow: visible;
 }
 
 .chit-match-line {
   fill: none;
   stroke: #7a94b0;
-  stroke-width: 2.25;
+  stroke-width: 2.5;
   stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .chit-match-arrow {
   fill: #7a94b0;
+  stroke: none;
 }
 
+/* No green — it reads as “correct answer”. */
 .chit-match-line[data-pair-tone="1"] { stroke: #4A6D94; }
 .chit-match-arrow[data-pair-tone="1"] { fill: #4A6D94; }
-.chit-match-line[data-pair-tone="2"] { stroke: #5B8F6A; }
-.chit-match-arrow[data-pair-tone="2"] { fill: #5B8F6A; }
+.chit-match-line[data-pair-tone="2"] { stroke: #C49A3C; }
+.chit-match-arrow[data-pair-tone="2"] { fill: #C49A3C; }
 .chit-match-line[data-pair-tone="3"] { stroke: #C17A4A; }
 .chit-match-arrow[data-pair-tone="3"] { fill: #C17A4A; }
 .chit-match-line[data-pair-tone="4"] { stroke: #7A6BA8; }
 .chit-match-arrow[data-pair-tone="4"] { fill: #7A6BA8; }
-.chit-match-line[data-pair-tone="5"] { stroke: #3D8A9A; }
-.chit-match-arrow[data-pair-tone="5"] { fill: #3D8A9A; }
+.chit-match-line[data-pair-tone="5"] { stroke: #5B7FA8; }
+.chit-match-arrow[data-pair-tone="5"] { fill: #5B7FA8; }
 .chit-match-line[data-pair-tone="6"] { stroke: #A05B6E; }
 .chit-match-arrow[data-pair-tone="6"] { fill: #A05B6E; }
 
@@ -822,10 +825,10 @@ body.chit-student img {
 }
 
 .chit-match-item.is-paired[data-pair-tone="1"] { border-color: #4A6D94; background: #EDF2F9; }
-.chit-match-item.is-paired[data-pair-tone="2"] { border-color: #5B8F6A; background: #eef6f0; }
+.chit-match-item.is-paired[data-pair-tone="2"] { border-color: #C49A3C; background: #faf6ea; }
 .chit-match-item.is-paired[data-pair-tone="3"] { border-color: #C17A4A; background: #faf3ee; }
 .chit-match-item.is-paired[data-pair-tone="4"] { border-color: #7A6BA8; background: #f4f1f8; }
-.chit-match-item.is-paired[data-pair-tone="5"] { border-color: #3D8A9A; background: #eef6f8; }
+.chit-match-item.is-paired[data-pair-tone="5"] { border-color: #5B7FA8; background: #eef3f8; }
 .chit-match-item.is-paired[data-pair-tone="6"] { border-color: #A05B6E; background: #f8f0f3; }
 
 .chit-match-board.has-active-left .chit-match-item--right:not(.is-paired) {

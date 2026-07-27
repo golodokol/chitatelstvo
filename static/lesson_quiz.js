@@ -182,21 +182,30 @@
       if (!rightBtn) return;
       const leftRect = leftBtn.getBoundingClientRect();
       const rightRect = rightBtn.getBoundingClientRect();
-      const x1 = leftRect.right - rect.left;
+      const ah = 12;
+      const pad = 6;
+      const x1 = leftRect.right - rect.left + pad;
       const y1 = leftRect.top + leftRect.height / 2 - rect.top;
-      const x2 = rightRect.left - rect.left;
+      // Tip stays in the gap so the button does not clip the arrowhead.
+      const xTip = rightRect.left - rect.left - pad;
       const y2 = rightRect.top + rightRect.height / 2 - rect.top;
-      const mid = (x1 + x2) / 2;
+      const xLineEnd = xTip - ah + 1;
+      const mid = (x1 + xLineEnd) / 2;
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' C ' + mid + ' ' + y1 + ', ' + mid + ' ' + y2 + ', ' + x2 + ' ' + y2);
+      path.setAttribute(
+        'd',
+        'M ' + x1 + ' ' + y1 + ' C ' + mid + ' ' + y1 + ', ' + mid + ' ' + y2 + ', ' + xLineEnd + ' ' + y2
+      );
       path.setAttribute('class', 'chit-match-line');
       if (leftBtn.dataset.pairTone) path.setAttribute('data-pair-tone', leftBtn.dataset.pairTone);
       svg.appendChild(path);
       const tip = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      const ah = 7;
       tip.setAttribute(
         'points',
-        x2 + ',' + y2 + ' ' + (x2 - ah) + ',' + (y2 - ah * 0.55) + ' ' + (x2 - ah) + ',' + (y2 + ah * 0.55)
+        xTip + ',' + y2 + ' ' +
+        (xTip - ah) + ',' + (y2 - ah * 0.62) + ' ' +
+        (xTip - ah * 0.55) + ',' + y2 + ' ' +
+        (xTip - ah) + ',' + (y2 + ah * 0.62)
       );
       tip.setAttribute('class', 'chit-match-arrow');
       if (leftBtn.dataset.pairTone) tip.setAttribute('data-pair-tone', leftBtn.dataset.pairTone);
