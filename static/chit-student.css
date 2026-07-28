@@ -480,6 +480,8 @@ body.chit-student img {
   background: var(--success-bg);
   border-color: var(--success-border);
   color: var(--success);
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .chit-q-badge {
@@ -492,18 +494,22 @@ body.chit-student img {
 
 .chit-q label.is-correct-option {
   color: var(--success);
-  font-weight: 700;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .chit-q label.is-wrong-pick {
   color: var(--error);
   font-weight: 700;
-  text-decoration: line-through;
+  text-decoration: none;
+  opacity: 0.85;
 }
 
 .chit-q-with-images label.chit-opt-card.is-correct-option {
   border-color: var(--success-border);
   box-shadow: 0 0 0 3px var(--success-soft);
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .chit-q-with-images label.chit-opt-card.is-wrong-pick {
@@ -513,7 +519,14 @@ body.chit-student img {
 }
 
 .chit-q-with-images label.chit-opt-card.is-wrong-pick .chit-opt-caption {
-  text-decoration: line-through;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.chit-q label.is-correct-option .chit-opt-caption,
+.chit-q-with-images label.chit-opt-card.is-correct-option .chit-opt-caption {
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .chit-step.is-ok {
