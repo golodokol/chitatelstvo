@@ -325,7 +325,7 @@
 
     const tip = document.createElement('p');
     tip.className = 'chit-match-tip';
-    tip.textContent = 'Нажми героя слева, потом черту справа. Стрелка покажет пару.';
+    tip.textContent = q.match_tip || q.tip || 'Нажми слева, потом справа — стрелка покажет пару.';
     div.appendChild(tip);
 
     const board = document.createElement('div');

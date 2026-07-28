@@ -135,6 +135,10 @@ def quiz_question_for_client(q: dict[str, Any], *, shuffle_options: bool = True)
     }
     if q.get("hint"):
         payload["hint"] = q["hint"]
+    if q.get("match_tip"):
+        payload["match_tip"] = q["match_tip"]
+    if q.get("tip"):
+        payload["tip"] = q["tip"]
 
     if qtype == "single":
         payload["options"] = _shuffle_copy(q.get("options", []), shuffle=shuffle_options)
