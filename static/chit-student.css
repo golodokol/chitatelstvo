@@ -2572,7 +2572,7 @@ a.chit-lesson-card__cover-link:focus-visible {
 .chit-diary-shelf__books {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   gap: 18px 14px;
 }
@@ -2588,6 +2588,7 @@ a.chit-lesson-card__cover-link:focus-visible {
 .chit-diary-book__cover-wrap {
   width: 100%;
   aspect-ratio: 3 / 4;
+  flex-shrink: 0;
   border-radius: 4px 10px 10px 4px;
   overflow: hidden;
   background: #f7f2ea;
@@ -2609,7 +2610,8 @@ a.chit-lesson-card__cover-link:focus-visible {
 .chit-diary-book__cover {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center top;
   display: block;
   background: #f7f2ea;
 }
@@ -2648,6 +2650,7 @@ a.chit-lesson-card__cover-link:focus-visible {
   font-family: 'Literata', Georgia, serif;
   font-size: 0.78rem;
   line-height: 1.25;
+  min-height: calc(1.25em * 3);
   color: var(--text-warm);
   display: -webkit-box;
   -webkit-line-clamp: 3;
