@@ -322,14 +322,15 @@
         "id": "m2",
         "type": "matching",
         "text": "Соедини героя и место.",
+        "match_tip": "Нажми слева, потом справа — стрелка покажет пару.",
         "left": [
           {
-            "id": "old_man",
-            "text": "старик"
+            "id": "start",
+            "text": "старик со старухой в начале"
           },
           {
-            "id": "old_woman",
-            "text": "старуха"
+            "id": "tsaritsa",
+            "text": "старуха-царица"
           },
           {
             "id": "fish",
@@ -338,21 +339,21 @@
         ],
         "right": [
           {
-            "id": "sea",
-            "text": "море"
-          },
-          {
             "id": "dugout",
             "text": "землянка"
           },
           {
             "id": "palace",
             "text": "дворец"
+          },
+          {
+            "id": "sea",
+            "text": "море"
           }
         ],
         "correct": {
-          "old_man": "sea",
-          "old_woman": "dugout",
+          "start": "dugout",
+          "tsaritsa": "palace",
           "fish": "sea"
         }
       },
