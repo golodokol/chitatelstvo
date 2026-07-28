@@ -395,11 +395,11 @@ def main() -> None:
         "meeting_number": 0,
         "badge": "Первый шаг",
         "points": 2,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": (
             "3 класс, этап 1, сказка 1. Без практики чтения. "
-            "Видео и картинки — заглушки."
+            "Пересказ по картинкам (исключение)."
         ),
     }
     teacher_meta = {
@@ -418,8 +418,8 @@ def main() -> None:
         "meeting_number": 1,
         "badge": "Первый шаг",
         "points": 2,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": "Тот же контент, что self_paced; встреча с преподавателем по расписанию.",
     }
     legacy_meta = {
@@ -429,8 +429,8 @@ def main() -> None:
         "stage": "stage-1",
         "tale_number": 1,
         "module_week": 1,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": "Legacy-slug. Зеркало grade-3-self_paced-stage-1-lesson-01.",
     }
 
