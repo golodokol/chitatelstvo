@@ -5,8 +5,8 @@
   "stage": "stage-1",
   "tale_number": 1,
   "module_week": 1,
-  "active": true,
-  "status": "тест",
+  "active": false,
+  "status": "черновик",
   "note": "Legacy-slug. Зеркало extra-9-11-self_paced-stage-1-lesson-01.",
   "title": "Опасное лето",
   "tale_title": "Опасное лето",
@@ -48,22 +48,71 @@
         "hint": "Сопоставь фото с именем героя.",
         "match_tip": "Нажми фото слева, потом имя справа. Стрелка покажет пару.",
         "pictures": [
-          {"id": "p1", "image": "/static/lessons/opasnoe-leto/moomin.png", "alt": "Муми-тролль в лодке с фонарём"},
-          {"id": "p2", "image": "/static/lessons/opasnoe-leto/moominmamma.png", "alt": "Муми-мама в фартуке с сумкой"},
-          {"id": "p3", "image": "/static/lessons/opasnoe-leto/moominpappa.png", "alt": "Муми-папа в шляпе с тростью"},
-          {"id": "p4", "image": "/static/lessons/opasnoe-leto/little-my.png", "alt": "Малышка Мю в красном платье"},
-          {"id": "p5", "image": "/static/lessons/opasnoe-leto/snorkmaiden.png", "alt": "Фрекен Снорк с букетом цветов"},
-          {"id": "p6", "image": "/static/lessons/opasnoe-leto/snufkin.png", "alt": "Снусмумрик в зелёной шляпе"},
-          {"id": "p7", "image": "/static/lessons/opasnoe-leto/emma.png", "alt": "Эмма с метлой"}
+          {
+            "id": "p1",
+            "image": "/static/lessons/opasnoe-leto/moomin.png",
+            "alt": "Муми-тролль в лодке с фонарём"
+          },
+          {
+            "id": "p2",
+            "image": "/static/lessons/opasnoe-leto/moominmamma.png",
+            "alt": "Муми-мама в фартуке с сумкой"
+          },
+          {
+            "id": "p3",
+            "image": "/static/lessons/opasnoe-leto/moominpappa.png",
+            "alt": "Муми-папа в шляпе с тростью"
+          },
+          {
+            "id": "p4",
+            "image": "/static/lessons/opasnoe-leto/little-my.png",
+            "alt": "Малышка Мю в красном платье"
+          },
+          {
+            "id": "p5",
+            "image": "/static/lessons/opasnoe-leto/snorkmaiden.png",
+            "alt": "Фрекен Снорк с букетом цветов"
+          },
+          {
+            "id": "p6",
+            "image": "/static/lessons/opasnoe-leto/snufkin.png",
+            "alt": "Снусмумрик в зелёной шляпе"
+          },
+          {
+            "id": "p7",
+            "image": "/static/lessons/opasnoe-leto/emma.png",
+            "alt": "Эмма с метлой"
+          }
         ],
         "labels": [
-          {"id": "moomin", "text": "Муми-тролль"},
-          {"id": "mamma", "text": "Муми-мама"},
-          {"id": "pappa", "text": "Муми-папа"},
-          {"id": "my", "text": "Малышка Мю"},
-          {"id": "snork", "text": "Фрекен Снорк"},
-          {"id": "snufkin", "text": "Снусмумрик"},
-          {"id": "emma", "text": "Эмма"}
+          {
+            "id": "moomin",
+            "text": "Муми-тролль"
+          },
+          {
+            "id": "mamma",
+            "text": "Муми-мама"
+          },
+          {
+            "id": "pappa",
+            "text": "Муми-папа"
+          },
+          {
+            "id": "my",
+            "text": "Малышка Мю"
+          },
+          {
+            "id": "snork",
+            "text": "Фрекен Снорк"
+          },
+          {
+            "id": "snufkin",
+            "text": "Снусмумрик"
+          },
+          {
+            "id": "emma",
+            "text": "Эмма"
+          }
         ],
         "correct": {
           "p1": "moomin",
@@ -496,27 +545,27 @@
         "items": [
           {
             "id": "e1",
-            "text": "Наводнение накрывает Муми-долину."
+            "text": "Наводнение заливает Муми-долину, семья спасается из дома."
           },
           {
             "id": "e2",
-            "text": "Герои попадают в плавучий театр."
+            "text": "Герои находят плавучий театр и поселяются в нём."
           },
           {
             "id": "e3",
-            "text": "Там герои обретают новых друзей и учатся жить в необычном месте."
+            "text": "Эмма объясняет, что это театр, а не обычный дом."
           },
           {
             "id": "e4",
-            "text": "Муми-тролли решают поставить новый спектакль и вместе готовят представление."
+            "text": "Театр уплывает, и часть друзей оказывается разлучена."
           },
           {
             "id": "e5",
-            "text": "Во время всех испытаний они поддерживают друг друга и не теряют доброты."
+            "text": "Семья готовит спектакль, и на сцене все снова встречаются."
           },
           {
             "id": "e6",
-            "text": "Даже в трудные времена семья, дружба и взаимопомощь помогают справиться со всем — семья возвращается в муми-дом."
+            "text": "Вода спадает, герои возвращаются в муми-дом."
           }
         ],
         "correct": [
