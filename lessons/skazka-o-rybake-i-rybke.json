@@ -446,57 +446,6 @@
         }
       },
       {
-        "id": "m5",
-        "type": "picture_match",
-        "text": "Что изображено на картинке?",
-        "pictures": [
-          {
-            "id": "p1",
-            "image": "/static/lessons/rybaka-i-rybke/place-more.png",
-            "alt": "Море"
-          },
-          {
-            "id": "p2",
-            "image": "/static/lessons/rybaka-i-rybke/place-zemlyanka.png",
-            "alt": "Землянка"
-          },
-          {
-            "id": "p3",
-            "image": "/static/lessons/rybaka-i-rybke/place-koryto.png",
-            "alt": "Корыто"
-          },
-          {
-            "id": "p4",
-            "image": "/static/lessons/rybaka-i-rybke/place-dvorets.png",
-            "alt": "Дворец"
-          }
-        ],
-        "labels": [
-          {
-            "id": "l1",
-            "text": "море"
-          },
-          {
-            "id": "l2",
-            "text": "землянка"
-          },
-          {
-            "id": "l3",
-            "text": "корыто"
-          },
-          {
-            "id": "l4",
-            "text": "дворец"
-          }
-        ],
-        "correct": {
-          "p1": "l1",
-          "p2": "l2",
-          "p3": "l3",
-          "p4": "l4"
-        }
-      },
-      {
         "id": "m6",
         "type": "matching",
         "text": "Вспомни порядок желаний старухи.",

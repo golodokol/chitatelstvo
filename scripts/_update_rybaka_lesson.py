@@ -346,40 +346,6 @@ CONTENT = {
                 "correct": {"p1": "l1", "p2": "l2", "p3": "l3", "p4": "l4"},
             },
             {
-                "id": "m8",
-                "type": "picture_match",
-                "text": "Что изображено на картинке?",
-                "pictures": [
-                    {
-                        "id": "p1",
-                        "image": f"{IMG}/place-more.png",
-                        "alt": "Море",
-                    },
-                    {
-                        "id": "p2",
-                        "image": f"{IMG}/place-zemlyanka.png",
-                        "alt": "Землянка",
-                    },
-                    {
-                        "id": "p3",
-                        "image": f"{IMG}/place-koryto.png",
-                        "alt": "Корыто",
-                    },
-                    {
-                        "id": "p4",
-                        "image": f"{IMG}/place-dvorets.png",
-                        "alt": "Дворец",
-                    },
-                ],
-                "labels": [
-                    opt("l1", "море"),
-                    opt("l2", "землянка"),
-                    opt("l3", "корыто"),
-                    opt("l4", "дворец"),
-                ],
-                "correct": {"p1": "l1", "p2": "l2", "p3": "l3", "p4": "l4"},
-            },
-            {
                 "id": "m9",
                 "type": "multi",
                 "text": "Какая пословица подходит к сказке «О рыбаке и рыбке»?",
