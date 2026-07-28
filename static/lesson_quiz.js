@@ -26,6 +26,18 @@
     );
   }
 
+  function appendPromptImage(div, q) {
+    if (!q.prompt_image) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'chit-q-prompt-image';
+    const img = document.createElement('img');
+    img.src = q.prompt_image;
+    img.alt = q.prompt_image_alt || '';
+    img.loading = 'lazy';
+    wrap.appendChild(img);
+    div.appendChild(wrap);
+  }
+
   function appendQuestionHeader(div, q, idx) {
     const title = document.createElement('strong');
     title.className = 'chit-q-title';
@@ -521,6 +533,7 @@
     div.dataset.qid = q.id;
     div.dataset.qtype = 'ordering';
     const slotCount = items.length;
+    appendPromptImage(div, q);
     appendQuestionHeader(div, q, idx);
     if (!q.hint) {
       const instruction = document.createElement('p');

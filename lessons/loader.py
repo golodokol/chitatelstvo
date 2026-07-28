@@ -139,6 +139,10 @@ def quiz_question_for_client(q: dict[str, Any], *, shuffle_options: bool = True)
         payload["match_tip"] = q["match_tip"]
     if q.get("tip"):
         payload["tip"] = q["tip"]
+    if q.get("prompt_image"):
+        payload["prompt_image"] = q["prompt_image"]
+    if q.get("prompt_image_alt"):
+        payload["prompt_image_alt"] = q["prompt_image_alt"]
 
     if qtype == "single":
         payload["options"] = _shuffle_copy(q.get("options", []), shuffle=shuffle_options)
@@ -210,9 +214,12 @@ def retelling_quiz_for_client(
     for q in client.get("questions", []):
         if _question_type(q) != "ordering":
             continue
-        if q.get("hint"):
+        n = len(q.get("items") or [])
+        if q.get("hint") and "ячейки 1–" in str(q.get("hint")):
+            pass
+        elif not q.get("hint"):
             q["hint"] = (
-                "Перетащи описания событий в ячейки 1–5 по порядку сказки. "
+                f"Перетащи описания событий в ячейки 1–{n} по порядку сказки. "
                 "На телефоне: нажми на событие, затем на ячейку."
             )
         for item in q.get("items", []):

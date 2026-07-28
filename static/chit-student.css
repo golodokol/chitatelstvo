@@ -1008,6 +1008,20 @@ body.chit-student img {
   font-weight: 600;
 }
 
+.chit-q-prompt-image {
+  margin: 0 0 14px;
+  max-width: 420px;
+}
+
+.chit-q-prompt-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1.5px solid var(--border, #d5e0eb);
+  background: var(--white, #fff);
+}
+
 .chit-order-board {
   margin-top: 12px;
   display: grid;
