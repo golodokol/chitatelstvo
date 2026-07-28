@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260728c"
+VERSION = "20260728d"
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'

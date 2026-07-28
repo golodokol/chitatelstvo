@@ -3,7 +3,7 @@ window.CHIT_COURSE = (function () {
   var ASSETS = 'https://api.chitatelstvo.ru/assets';
   var COVERS = 'https://api.chitatelstvo.ru/assets/diary-covers';
   var COVERS_VERSION = '20260710f';
-  var PAGES_VERSION = '20260728c';
+  var PAGES_VERSION = '20260728d';
 
   var MODULES = {
     'grade-1': { single: 1, self_paced: 2, with_teacher: 3, label: '1 класс' },
@@ -49,7 +49,7 @@ window.CHIT_COURSE = (function () {
         'Личная страница прогресса',
         'Без живой встречи в цене'
       ],
-      meetNote: 'Только онлайн. Встречу можно докупить отдельно, пока дата не прошла',
+      meetNote: 'Только онлайн. Живые занятия-квесты — со старта 10 августа',
       priceNote: 'за 1 занятие',
       pickTag: 'Попробовать',
       pickHint: '1 сказка онлайн, без встречи'
@@ -320,10 +320,18 @@ window.CHIT_COURSE = (function () {
   }
 
   function singleMeetingAddonAvailable(stage, taleNum) {
+    if (String(stage) === '1') return false;
     var dates = SINGLE_MEETINGS_ISO[String(stage)];
     if (!dates || !taleNum) return false;
     var meet = dates[Number(taleNum) - 1];
     return !!(meet && meet > todayIsoLocal());
+  }
+
+  function singleMeetingUnavailableLabel(stage) {
+    if (String(stage) === '1') {
+      return 'Только онлайн. Занятия с преподавателем по сказкам потока 15 июля не проводятся — со старта 10 августа';
+    }
+    return 'Только онлайн. Занятие-квест по этой сказке уже нельзя докупить';
   }
 
   function singleMeetingStatus(stage, taleNum) {
@@ -337,7 +345,7 @@ window.CHIT_COURSE = (function () {
       var date = sched && sched.meetings[idx] ? 'четверг, ' + sched.meetings[idx] : '';
       return 'Встречу можно докупить: ' + date + ' · ' + MEETING_ADDON_PRICE + ' ₽';
     }
-    return 'Только онлайн. Занятие-квест по этой сказке уже нельзя докупить';
+    return singleMeetingUnavailableLabel(stage);
   }
 
   function singleTaleBadgeHtml(stage, taleNum) {
@@ -347,7 +355,7 @@ window.CHIT_COURSE = (function () {
     }
     var addon = singleMeetingAddonAvailable(stage, taleNum);
     var cls = addon ? 'cc-tale-badge cc-tale-badge--meet' : 'cc-tale-badge cc-tale-badge--online';
-    var text = addon ? 'Встречу можно докупить' : 'Только онлайн';
+    var text = addon ? 'Встречу можно докупить' : (String(stage) === '1' ? 'Только онлайн · с 10 августа' : 'Только онлайн');
     return '<span class="' + cls + '">' + text + '</span>';
   }
 
@@ -521,6 +529,7 @@ window.CHIT_COURSE = (function () {
     lessonIsOpen: lessonIsOpen,
     lessonOpenLabel: lessonOpenLabel,
     singleMeetingAddonAvailable: singleMeetingAddonAvailable,
+    singleMeetingUnavailableLabel: singleMeetingUnavailableLabel,
     singleMeetingStatus: singleMeetingStatus,
     singleMeetingLabel: singleMeetingLabel,
     singleTaleBadgeHtml: singleTaleBadgeHtml,

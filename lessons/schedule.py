@@ -160,10 +160,39 @@ def meeting_still_bookable(
     module_week: int | None = None,
     today: date | None = None,
 ) -> bool:
-    """Можно ли ещё докупить встречу (дата встречи строго в будущем)."""
+    """Можно ли ещё докупить встречу (дата встречи строго в будущем).
+
+    Поток 15 июля (этап 1): живых встреч нет — докупка закрыта.
+    Встречи снова доступны со старта 10 августа (этап 2).
+    """
     if module_week is None:
         if stage is None or tale_number is None:
             return False
         module_week = module_week_for_tale(stage, tale_number)
-    meet = meeting_on(int(module_week))
+    week = int(module_week)
+    if week <= 4:
+        return False
+    meet = meeting_on(week)
     return meet > (today or date.today())
+
+
+def meeting_addon_closed_message(
+    *,
+    stage: str | None = None,
+    tale_number: int | None = None,
+    module_week: int | None = None,
+) -> str:
+    """Текст отказа в докупке встречи."""
+    if module_week is None and stage is not None and tale_number is not None:
+        module_week = module_week_for_tale(stage, tale_number)
+    if module_week is not None and int(module_week) <= 4:
+        return (
+            "Встречи по сказкам потока 15 июля не проводятся. "
+            "Живые занятия с преподавателем — со старта 10 августа."
+        )
+    if stage and normalize_stage(stage) == "stage-1":
+        return (
+            "Встречи по сказкам потока 15 июля не проводятся. "
+            "Живые занятия с преподавателем — со старта 10 августа."
+        )
+    return "Встреча по этой сказке уже прошла — докупить нельзя."

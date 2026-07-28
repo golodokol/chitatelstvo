@@ -48,12 +48,20 @@ function lessonOpenLabel(stage, index) {
   return 'Урок откроется: ' + lessonPrefix + s.lessons[index];
 }
 
-/** Можно ли ещё докупить встречу (дата строго в будущем). Разовое встречу не включает. */
+/** Можно ли ещё докупить встречу. Поток 15 июля закрыт; со старта 10 августа — если дата в будущем. */
 function singleMeetingAddonAvailable(stage, taleNum) {
+  if (String(stage) === '1') return false;
   var dates = CHIT_SINGLE_MEETINGS_ISO[String(stage)];
   if (!dates || !taleNum) return false;
   var meet = dates[Number(taleNum) - 1];
   return !!(meet && meet > todayIsoLocal());
+}
+
+function singleMeetingUnavailableLabel(stage) {
+  if (String(stage) === '1') {
+    return 'Только онлайн. Занятия с преподавателем по сказкам потока 15 июля не проводятся — со старта 10 августа';
+  }
+  return 'Только онлайн. Занятие-квест по этой сказке уже нельзя докупить';
 }
 
 function singleMeetingAddonLine(stage, taleNum) {
@@ -90,7 +98,7 @@ function taleScheduleHtml(stage, index, tariff) {
       html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Встречу можно докупить отдельно: <strong>' +
         meet.date + '</strong> · ' + MEETING_ADDON_PRICE + ' ₽</span>';
     } else {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--online">Только онлайн. Занятие-квест по этой сказке уже нельзя докупить</span>';
+      html += '<span class="tale-schedule__meet tale-schedule__meet--online">' + singleMeetingUnavailableLabel(stage) + '</span>';
     }
   } else if (tariff === 'with_teacher') {
     html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>' + meetingWeekday(stage, index) + ', ' + s.meetings[index] + '</strong></span>';

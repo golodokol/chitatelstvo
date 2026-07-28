@@ -228,7 +228,7 @@
       '<strong>Задания на смысл</strong> — чтение по карточкам, вопросы к тексту, творчество',
       '<strong>Личная страница</strong> — баллы, уровни и бейджи, прогресс виден родителю',
       '<strong>Эмоциометр и игровые задания</strong> — ребёнок думает о героях и их переживаниях',
-      '<strong>Живые встречи</strong> — на тарифе «С преподавателем»; на «Разовом» — можно докупить отдельно'
+      '<strong>Живые встречи</strong> — на тарифе «С преподавателем» со старта 10 августа; поток 15 июля — только онлайн'
     ];
     var how = [
       '<strong>Формат:</strong> онлайн — видео и задания на платформе',
@@ -503,7 +503,7 @@
 
             '<div class="cc-step-block" id="cc-date-box" style="display:none">' +
               '<div class="cc-step-label">шаг 2 · когда начать</div>' +
-              '<p class="cc-step-hint" id="cc-step-hint" hidden>799 ₽ — урок на платформе. Встречу можно докупить отдельно (799 ₽), пока её дата не прошла.</p>' +
+              '<p class="cc-step-hint" id="cc-step-hint" hidden>799 ₽ — урок на платформе. Живые занятия-квесты — со старта 10 августа.</p>' +
               '<p class="cc-step-hint" id="cc-stage1-closed-note" hidden>Набор на этап 1 с преподавателем закрыт — доступна запись на старт 10 августа.</p>' +
               '<div class="cc-pills" id="cc-stages">' +
                 '<button type="button" class="cc-pill" data-stage="1">Старт курса 15 июля</button>' +
@@ -546,8 +546,8 @@
           '<div class="cc-faq" id="cc-faq">' +
             faqItem('Когда начинается курс?', 'Два старта: <strong>15 июля</strong> и <strong>10 августа</strong>. Каждый — блок из 4 сказок (4 недели).') +
             faqItem('Что будет после оплаты?', 'На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс.') +
-            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене. Встречу можно докупить отдельно, пока её дата не прошла.') +
-            faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '); встречу можно докупить отдельно. Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').') +
+            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене. Живые занятия-квесты — со старта 10 августа.') +
+            faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи со старта 10 августа (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').') +
           '</div>' +
         '</div>' +
       '</section>' +
@@ -699,7 +699,7 @@
           if (D.singleMeetingAddonAvailable(state.stage, state.taleNum)) {
             html += '<br>' + esc(D.singleMeetingLabel(state.stage, state.taleNum).toLowerCase());
           } else {
-            html += '<br>только онлайн. Занятие-квест по этой сказке уже нельзя докупить';
+            html += '<br>' + esc(D.singleMeetingUnavailableLabel(state.stage).toLowerCase());
           }
         } else {
           html += '<br><em>Выберите дату и сказку</em>';

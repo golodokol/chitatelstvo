@@ -54,9 +54,13 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
                 "Для докупки встречи укажите chosen_stage (1 или 2) и chosen_tale_number (1–4).",
             )
         if not meeting_still_bookable(stage=stage, tale_number=int(body.chosen_tale_number)):
+            from lessons.schedule import meeting_addon_closed_message
+
             raise HTTPException(
                 400,
-                "Встреча по этой сказке уже прошла — докупить нельзя.",
+                meeting_addon_closed_message(
+                    stage=stage, tale_number=int(body.chosen_tale_number)
+                ),
             )
         lesson_slug = (body.lesson_slug or "").strip() or None
         chosen_tale_slug = lesson_slug

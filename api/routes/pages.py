@@ -5,7 +5,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from config.settings import MEETING_ADDON_MODULE_ID, MEETING_ADDON_PRICE_RUB, PUBLIC_BASE_URL, ROOT
-from lessons.schedule import meeting_date_label, meeting_still_bookable, module_week_for_tale
+from lessons.schedule import (
+    meeting_addon_closed_message,
+    meeting_date_label,
+    meeting_still_bookable,
+    module_week_for_tale,
+)
 from lessons.single_content import content_slug_for_single
 from services.checkout_urls import build_meeting_addon_pay_url
 
@@ -61,7 +66,9 @@ def page_order_meeting(
     if not meeting_still_bookable(stage=stage, tale_number=tale, module_week=module_week):
         raise HTTPException(
             status_code=410,
-            detail="Встреча по этой сказке уже прошла — докупить нельзя.",
+            detail=meeting_addon_closed_message(
+                stage=stage, tale_number=tale, module_week=module_week
+            ),
         )
     lesson_slug = slug or content_slug_for_single(
         group_code=group,
