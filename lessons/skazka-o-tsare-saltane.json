@@ -5,8 +5,8 @@
   "stage": "stage-1",
   "tale_number": 1,
   "module_week": 1,
-  "active": true,
-  "status": "тест",
+  "active": false,
+  "status": "черновик",
   "note": "Legacy-slug. Зеркало grade-3-self_paced-stage-1-lesson-01.",
   "title": "Сказка о царе Салтане",
   "tale_title": "Сказка о царе Салтане",
@@ -276,8 +276,7 @@
       {
         "id": "m2",
         "type": "matching",
-        "text": "Выбери подходящую черту к каждому герою.",
-        "match_tip": "Выбери героя слева и подходящую черту справа.",
+        "text": "Соедини героя и его главную черту.",
         "left": [
           {
             "id": "saltan",
@@ -325,7 +324,6 @@
         "id": "m3",
         "type": "matching",
         "text": "Соедини поступок и то, к чему он привёл.",
-        "match_tip": "Выбери слева событие и справа результат, к чему оно привело.",
         "left": [
           {
             "id": "letter",
