@@ -698,8 +698,6 @@
           html += '<br>' + esc(D.formatPrice(D.TARIFF_PRICE.single)) + ' · урок на платформе';
           if (D.singleMeetingAddonAvailable(state.stage, state.taleNum)) {
             html += '<br>' + esc(D.singleMeetingLabel(state.stage, state.taleNum).toLowerCase());
-          } else {
-            html += '<br>' + esc(D.singleMeetingUnavailableLabel(state.stage).toLowerCase());
           }
         } else {
           html += '<br><em>Выберите дату и сказку</em>';
@@ -720,8 +718,7 @@
       var mwd = s.meetingWeekdays && s.meetingWeekdays[index] ? s.meetingWeekdays[index] + ' ' : 'чт ';
       var html = '<span style="font-size:13px;color:var(--muted)">';
       if (tariff === 'single') {
-        html += esc(D.lessonOpenLabel(stage, index)) + '<br>';
-        html += esc(D.singleMeetingLabel(stage, index + 1));
+        html += esc(D.lessonOpenLabel(stage, index));
       } else if (tariff === 'with_teacher') {
         html += 'Встреча: ' + mwd + s.meetings[index] + '<br>';
         html += esc(D.lessonOpenLabel(stage, index));

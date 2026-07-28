@@ -93,13 +93,6 @@ function taleScheduleHtml(stage, index, tariff) {
   var html = '<div class="tale-schedule">';
   if (tariff === 'single') {
     html += '<span class="tale-schedule__line"><strong>' + lessonOpenLabel(stage, index) + '</strong></span>';
-    var meet = singleMeetingAddonLine(stage, taleNum);
-    if (meet.available) {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Встречу можно докупить отдельно: <strong>' +
-        meet.date + '</strong> · ' + MEETING_ADDON_PRICE + ' ₽</span>';
-    } else {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--online">' + singleMeetingUnavailableLabel(stage) + '</span>';
-    }
   } else if (tariff === 'with_teacher') {
     html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>' + meetingWeekday(stage, index) + ', ' + s.meetings[index] + '</strong></span>';
     html += '<span class="tale-schedule__line">' + lessonOpenLabel(stage, index) + '</span>';

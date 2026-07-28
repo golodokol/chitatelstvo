@@ -3,7 +3,7 @@ window.CHIT_COURSE = (function () {
   var ASSETS = 'https://api.chitatelstvo.ru/assets';
   var COVERS = 'https://api.chitatelstvo.ru/assets/diary-covers';
   var COVERS_VERSION = '20260710f';
-  var PAGES_VERSION = '20260728d';
+  var PAGES_VERSION = '20260728e';
 
   var MODULES = {
     'grade-1': { single: 1, self_paced: 2, with_teacher: 3, label: '1 класс' },
@@ -353,10 +353,11 @@ window.CHIT_COURSE = (function () {
     if (open) {
       return '<span class="cc-tale-badge cc-tale-badge--open">Уже доступен</span>';
     }
-    var addon = singleMeetingAddonAvailable(stage, taleNum);
-    var cls = addon ? 'cc-tale-badge cc-tale-badge--meet' : 'cc-tale-badge cc-tale-badge--online';
-    var text = addon ? 'Встречу можно докупить' : (String(stage) === '1' ? 'Только онлайн · с 10 августа' : 'Только онлайн');
-    return '<span class="' + cls + '">' + text + '</span>';
+    var sched = SCHEDULE[String(stage)];
+    var idx = Number(taleNum) - 1;
+    var date = sched && sched.lessons[idx] ? sched.lessons[idx] : '';
+    var wd = sched && sched.weekdays && sched.weekdays[idx] ? sched.weekdays[idx] + ', ' : '';
+    return '<span class="cc-tale-badge cc-tale-badge--online">Откроется ' + wd + date + '</span>';
   }
 
   var SKILLS = [

@@ -430,13 +430,6 @@ function taleScheduleHtml(stage, index, tariff) {
   var html = '<div class="tale-schedule">';
   if (tariff === 'single') {
     html += '<span class="tale-schedule__line"><strong>' + lessonOpenLabel(stage, index) + '</strong></span>';
-    var meet = singleMeetingAddonLine(stage, taleNum);
-    if (meet.available) {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--optional">Дополнительно можно докупить групповое занятие-квест с преподавателем: <strong>' +
-        meet.date + '</strong> · ' + MEETING_ADDON_PRICE + ' ₽</span>';
-    } else {
-      html += '<span class="tale-schedule__meet tale-schedule__meet--online">' + singleMeetingUnavailableLabel(stage) + '</span>';
-    }
   } else if (tariff === 'with_teacher') {
     html += '<span class="tale-schedule__meet">Встреча с преподавателем: <strong>' + meetingWeekday(stage, index) + ', ' + s.meetings[index] + '</strong></span>';
     html += '<span class="tale-schedule__line">' + lessonOpenLabel(stage, index) + '</span>';
@@ -1624,8 +1617,6 @@ if (faqList) {
         var meetLine = singleMeetingAddonLine(state.stage, state.taleNum);
         if (meetLine.available) {
           html += '<br>дополнительно можно докупить групповое занятие-квест с преподавателем: ' + meetLine.date + ' · ' + MEETING_ADDON_PRICE + ' ₽';
-        } else {
-          html += '<br>' + singleMeetingUnavailableLabel(state.stage).toLowerCase();
         }
       } else if (state.stage) {
         html += '<br><span class="summary-empty">Выберите сказку</span>';
