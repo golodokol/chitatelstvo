@@ -1312,6 +1312,83 @@ body.chit-student img {
   margin-top: 12px;
 }
 
+.chit-match-board--pictures {
+  max-width: 760px;
+}
+
+.chit-match-board--pictures .chit-match-cols {
+  gap: 56px;
+  align-items: stretch;
+}
+
+.chit-match-board--pictures .chit-match-col {
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.chit-match-item--photo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 10px;
+  min-height: 72px;
+  text-align: right;
+}
+
+.chit-match-photo-num {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--blue-deep, #4A6D94);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 24px;
+  text-align: center;
+}
+
+.chit-match-item--photo .chit-opt-img-wrap {
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+}
+
+.chit-match-item--photo .chit-opt-img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.chit-match-board--pictures .chit-match-item--right {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .chit-match-board--pictures .chit-match-cols {
+    gap: 28px;
+  }
+
+  .chit-match-item--photo .chit-opt-img-wrap,
+  .chit-match-item--photo .chit-opt-img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .chit-match-item--photo,
+  .chit-match-board--pictures .chit-match-item--right {
+    min-height: 60px;
+  }
+}
+
 .chit-picture-card {
   position: relative;
   border: 1.5px solid var(--border);

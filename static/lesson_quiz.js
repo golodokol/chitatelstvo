@@ -601,34 +601,62 @@
 
   function renderPictureMatch(formId, q, idx) {
     const div = document.createElement('div');
-    div.className = 'chit-q chit-q-pictures';
+    div.className = 'chit-q chit-q-matching chit-q-pictures chit-q-with-images';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'picture_match';
     appendQuestionHeader(div, q, idx);
-    const grid = document.createElement('div');
-    grid.className = 'chit-picture-grid';
+
+    const tip = document.createElement('p');
+    tip.className = 'chit-match-tip';
+    tip.textContent = q.match_tip || q.tip || 'Нажми фото слева, потом имя справа. Стрелка покажет пару.';
+    div.appendChild(tip);
+
+    const board = document.createElement('div');
+    board.className = 'chit-match-board chit-match-board--images chit-match-board--pictures';
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('chit-match-lines');
+    svg.setAttribute('aria-hidden', 'true');
+    board.appendChild(svg);
+
+    const cols = document.createElement('div');
+    cols.className = 'chit-match-cols';
+
+    const leftCol = document.createElement('div');
+    leftCol.className = 'chit-match-col chit-match-col--left';
+    leftCol.setAttribute('aria-label', 'Фото');
     (q.pictures || []).forEach(function (pic, picIdx) {
-      const card = document.createElement('div');
-      card.className = 'chit-picture-card';
-      card.dataset.pictureId = pic.id;
-      const badge = document.createElement('span');
-      badge.className = 'chit-picture-num';
-      badge.textContent = String(picIdx + 1);
-      card.appendChild(badge);
-      const img = document.createElement('img');
-      img.src = pic.image;
-      img.alt = pic.alt || '';
-      img.loading = 'lazy';
-      card.appendChild(img);
-      const choices = renderChoiceChips(formId, q, pic.id, q.labels, '');
-      choices.dataset.pictureId = pic.id;
-      choices.dataset.selected = '';
-      choices.classList.add('chit-match-choices--compact');
-      card.appendChild(choices);
-      grid.appendChild(card);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chit-match-item chit-match-item--left chit-match-item--photo';
+      btn.dataset.leftId = pic.id;
+      const alt = pic.alt || ('Фото ' + (picIdx + 1));
+      btn.innerHTML =
+        '<span class="chit-match-photo-num">' + (picIdx + 1) + '</span>' +
+        '<span class="chit-opt-img-wrap">' +
+        '<img class="chit-opt-img" src="' + escapeHtml(pic.image) + '" alt="' + escapeHtml(alt) + '" loading="lazy">' +
+        '</span>';
+      leftCol.appendChild(btn);
     });
-    div.appendChild(grid);
-    attachExclusiveChoices(div, formId);
+
+    const rightCol = document.createElement('div');
+    rightCol.className = 'chit-match-col chit-match-col--right';
+    rightCol.setAttribute('aria-label', 'Имена');
+    (q.labels || []).forEach(function (label) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chit-match-item chit-match-item--right';
+      btn.dataset.rightId = label.id;
+      btn.innerHTML = '<span class="chit-match-item-text">' + escapeHtml(label.text) + '</span>';
+      rightCol.appendChild(btn);
+    });
+
+    cols.appendChild(leftCol);
+    cols.appendChild(rightCol);
+    board.appendChild(cols);
+    div.appendChild(board);
+    attachMatchBoard(board, formId);
+    requestAnimationFrame(function () { redrawMatchLines(board); });
     return div;
   }
 
@@ -689,10 +717,10 @@
     let complete = true;
     const root = document.querySelector('#' + formId + ' .chit-q-pictures[data-qid="' + q.id + '"]');
     (q.pictures || []).forEach(function (pic) {
-      const group = root
-        ? root.querySelector('.chit-match-choices[data-picture-id="' + pic.id + '"]')
+      const leftBtn = root
+        ? root.querySelector('.chit-match-item--left[data-left-id="' + pic.id + '"]')
         : null;
-      const value = group && group.dataset.selected ? group.dataset.selected : '';
+      const value = leftBtn && leftBtn.dataset.paired ? leftBtn.dataset.paired : '';
       if (!value) {
         complete = false;
         return;

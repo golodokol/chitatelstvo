@@ -55,6 +55,7 @@
         "type": "picture_match",
         "text": "Давайте вспомним основных героев этой истории",
         "hint": "Сопоставь фото с именем героя.",
+        "match_tip": "Нажми фото слева, потом имя справа. Стрелка покажет пару.",
         "pictures": [
           {"id": "p1", "image": "/static/lessons/opasnoe-leto/moomin.png", "alt": "Муми-тролль в лодке с фонарём"},
           {"id": "p2", "image": "/static/lessons/opasnoe-leto/moominmamma.png", "alt": "Муми-мама в фартуке с сумкой"},
