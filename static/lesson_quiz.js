@@ -529,7 +529,9 @@
     const div = document.createElement('div');
     const withImages = optionHasImages(q.items);
     const items = q.items || [];
-    div.className = withImages ? 'chit-q chit-q-ordering chit-q-ordering-images' : 'chit-q chit-q-ordering';
+    div.className = withImages
+      ? 'chit-q chit-q-ordering chit-q-ordering-images'
+      : 'chit-q chit-q-ordering chit-q-ordering--text';
     div.dataset.qid = q.id;
     div.dataset.qtype = 'ordering';
     const slotCount = items.length;
@@ -540,17 +542,17 @@
       instruction.className = 'chit-order-instruction';
       instruction.textContent = withImages
         ? ('Перетащи картинки в ячейки 1–' + slotCount + ' по порядку сказки. На телефоне: нажми на картинку, затем на ячейку.')
-        : 'Перетащи события в ячейки по порядку сказки. На телефоне: нажми на событие, затем на ячейку.';
+        : 'Перетащи события в шаги 1–' + slotCount + ' по порядку книги. На телефоне: нажми событие, затем шаг.';
       div.appendChild(instruction);
     }
 
     const board = document.createElement('div');
-    board.className = 'chit-order-board';
+    board.className = withImages ? 'chit-order-board' : 'chit-order-board chit-order-board--text';
     board.dataset.orderBoard = q.id;
 
     const slotsWrap = document.createElement('div');
-    slotsWrap.className = 'chit-order-slots';
-    // Два ряда: для 6 → 3+3, для 5 → 3+2, для 4 → 2+2
+    slotsWrap.className = withImages ? 'chit-order-slots' : 'chit-order-slots chit-order-slots--flow';
+    // Два ряда (для 6 → 3+3). Текст — лёгкие шаги со стрелками, без крупных рамок.
     const cols = slotCount <= 3 ? slotCount : Math.ceil(slotCount / 2);
     slotsWrap.dataset.cols = String(cols);
     slotsWrap.setAttribute('role', 'list');
@@ -575,17 +577,17 @@
     board.appendChild(slotsWrap);
 
     const poolWrap = document.createElement('div');
-    poolWrap.className = 'chit-order-pool';
+    poolWrap.className = withImages ? 'chit-order-pool' : 'chit-order-pool chit-order-pool--text';
     const poolLabel = document.createElement('p');
     poolLabel.className = 'chit-order-pool-label';
-    poolLabel.textContent = withImages ? 'Картинки' : 'События';
+    poolLabel.textContent = withImages ? 'Картинки' : 'События — перетащи в порядок выше';
     poolWrap.appendChild(poolLabel);
     const pool = document.createElement('div');
-    pool.className = 'chit-order-pool-cards';
-    pool.setAttribute('aria-label', 'Запас картинок');
+    pool.className = withImages ? 'chit-order-pool-cards' : 'chit-order-pool-cards chit-order-pool-cards--loose';
+    pool.setAttribute('aria-label', withImages ? 'Запас картинок' : 'События');
     shuffleItems(items).forEach(function (item) {
       const card = document.createElement('div');
-      card.className = withImages ? 'chit-order-card chit-order-card--image' : 'chit-order-card';
+      card.className = withImages ? 'chit-order-card chit-order-card--image' : 'chit-order-card chit-order-card--text';
       card.dataset.itemId = item.id;
       card.draggable = true;
       card.tabIndex = 0;
