@@ -48,8 +48,41 @@
   },
   "comprehension_quiz": {
     "title": "Мини-тест по книге",
-    "pass_score": 6,
+    "pass_score": 7,
     "questions": [
+      {
+        "id": "heroes",
+        "type": "picture_match",
+        "text": "Давайте вспомним основных героев этой истории",
+        "hint": "Сопоставь фото с именем героя.",
+        "pictures": [
+          {"id": "p1", "image": "/static/lessons/opasnoe-leto/moomin.png", "alt": "Муми-тролль в лодке с фонарём"},
+          {"id": "p2", "image": "/static/lessons/opasnoe-leto/moominmamma.png", "alt": "Муми-мама в фартуке с сумкой"},
+          {"id": "p3", "image": "/static/lessons/opasnoe-leto/moominpappa.png", "alt": "Муми-папа в шляпе с тростью"},
+          {"id": "p4", "image": "/static/lessons/opasnoe-leto/little-my.png", "alt": "Малышка Мю в красном платье"},
+          {"id": "p5", "image": "/static/lessons/opasnoe-leto/snorkmaiden.png", "alt": "Фрекен Снорк с букетом цветов"},
+          {"id": "p6", "image": "/static/lessons/opasnoe-leto/snufkin.png", "alt": "Снусмумрик в зелёной шляпе"},
+          {"id": "p7", "image": "/static/lessons/opasnoe-leto/emma.png", "alt": "Эмма с метлой"}
+        ],
+        "labels": [
+          {"id": "moomin", "text": "Муми-тролль"},
+          {"id": "mamma", "text": "Муми-мама"},
+          {"id": "pappa", "text": "Муми-папа"},
+          {"id": "my", "text": "Малышка Мю"},
+          {"id": "snork", "text": "Фрекен Снорк"},
+          {"id": "snufkin", "text": "Снусмумрик"},
+          {"id": "emma", "text": "Эмма"}
+        ],
+        "correct": {
+          "p1": "moomin",
+          "p2": "mamma",
+          "p3": "pappa",
+          "p4": "my",
+          "p5": "snork",
+          "p6": "snufkin",
+          "p7": "emma"
+        }
+      },
       {
         "id": "q1",
         "type": "single",
