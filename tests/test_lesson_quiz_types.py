@@ -70,13 +70,14 @@ def test_retelling_quiz_for_client_ordering_images():
     assert all(item.get("image") for item in q1["items"])
 
 
-def test_retelling_quiz_for_client_strips_images_for_older():
-    quiz = get_lesson("tsarevna-lyagushka")["retelling_quiz"]
-    client = retelling_quiz_for_client(quiz, group_code="grade-3", shuffle_options=False)
+def test_retelling_quiz_for_client_text_for_older_without_images():
+    quiz = get_lesson("uralskie-skazy")["retelling_quiz"]
+    client = retelling_quiz_for_client(quiz, group_code="grade-4", shuffle_options=False)
     q1 = client["questions"][0]
     assert q1["type"] == "ordering"
     assert all("image" not in item for item in q1["items"])
-    assert q1["items"][0]["text"] == "Царь собрал трёх сыновей у замка"
+    assert "Степан" in q1["items"][0]["text"]
+    assert "ячейки" in (q1.get("hint") or "").lower() or "событи" in (q1.get("hint") or "").lower()
 
 
 def test_retelling_quiz_keeps_saltan_images_for_grade_3():
