@@ -364,8 +364,8 @@ def main() -> None:
         "meeting_number": 0,
         "badge": "Первый шаг",
         "points": 2,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": (
             "Внеклассное 6–8 лет, этап 1, сказка 1. "
             "Простые задания + практика чтения. Видео и картинки — заглушки."
@@ -387,8 +387,8 @@ def main() -> None:
         "meeting_number": 1,
         "badge": "Первый шаг",
         "points": 2,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": "Тот же контент, что self_paced; встреча с преподавателем по расписанию.",
     }
     legacy_meta = {
@@ -398,8 +398,8 @@ def main() -> None:
         "stage": "stage-1",
         "tale_number": 1,
         "module_week": 1,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": "Legacy-slug. Зеркало extra-6-8-self_paced-stage-1-lesson-01.",
     }
 
