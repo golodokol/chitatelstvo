@@ -38,3 +38,17 @@ def test_opasnoe_leto_chest_rewards():
         "Напиши письмо герою",
     ]
     assert all(item.get("download_url", "").endswith(".pdf") for item in items)
+
+
+def test_uralskie_skazy_chest_rewards():
+    items = items_for_treasury(
+        rewards_for_tale("uralskie-skazy", "Уральские сказы")
+    )
+    labels = [item["label"] for item in items]
+    assert labels == [
+        "Сделай комикс: чудо → испытание → цена выбора",
+        "Нарисуй дух горы в двух обликах",
+        "Напиши свой мини-сказ",
+        "Нарисуй Хозяйку Медной горы",
+    ]
+    assert all(item.get("download_url", "").endswith(".pdf") for item in items)
