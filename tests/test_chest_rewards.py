@@ -52,3 +52,16 @@ def test_uralskie_skazy_chest_rewards():
         "Нарисуй Хозяйку Медной горы",
     ]
     assert all(item.get("download_url", "").endswith(".pdf") for item in items)
+
+
+def test_tsare_saltane_chest_rewards():
+    items = items_for_treasury(
+        rewards_for_tale("skazka-o-tsare-saltane", "Сказка о царе Салтане")
+    )
+    labels = [item["label"] for item in items]
+    assert labels == [
+        "Сделай комикс: ложь → испытание → правда",
+        "Напиши письмо Салтану от Гвидона",
+        "Нарисуй свой остров",
+    ]
+    assert all(item.get("download_url", "").endswith(".pdf") for item in items)
