@@ -25,3 +25,16 @@ def test_rewards_for_lesson_slug_use_creative_tasks():
         "Обведи стрелу",
     ]
     assert all(item.get("download_url") for item in items)
+
+
+def test_opasnoe_leto_chest_rewards():
+    items = items_for_treasury(
+        rewards_for_tale("opasnoe-leto", "Опасное лето")
+    )
+    labels = [item["label"] for item in items]
+    assert labels == [
+        "Сделай комикс: потоп → театр → роль",
+        "Нарисуй свой театр",
+        "Напиши письмо герою",
+    ]
+    assert all(item.get("download_url", "").endswith(".pdf") for item in items)

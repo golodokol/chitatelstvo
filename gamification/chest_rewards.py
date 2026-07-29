@@ -123,6 +123,48 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
             "in_treasury": True,
         },
     ],
+    "extra-9-11-stage1-tale-01": [
+        {
+            "kind": LETTER_KIND,
+            "label": "Письмо от школы",
+            "description": "Личное письмо от школы — прочитай сразу после открытия сундука",
+            "preview_files": ("letter.png", "letter.jpg"),
+            "download_files": ("letter.pdf",),
+            "fallback_image": "/static/sloviki/slovik-writes.png",
+            "downloadable": False,
+            "in_treasury": False,
+        },
+        {
+            "kind": "creative_1",
+            "label": "Сделай комикс: потоп → театр → роль",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-1.png", "creative-1.jpg"),
+            "download_files": ("creative-1.pdf",),
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Нарисуй свой театр",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-2.png", "creative-2.jpg"),
+            "download_files": ("creative-2.pdf",),
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Напиши письмо герою",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-3.png", "creative-3.jpg"),
+            "download_files": ("creative-3.pdf",),
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
 }
 
 CHEST_REWARD_SUMMARY = "бонусная страница с заданием и ещё сюрпризы"
