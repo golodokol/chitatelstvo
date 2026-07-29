@@ -65,3 +65,17 @@ def test_tsare_saltane_chest_rewards():
         "Нарисуй свой остров",
     ]
     assert all(item.get("download_url", "").endswith(".pdf") for item in items)
+
+
+def test_rybaka_i_rybke_chest_rewards():
+    items = items_for_treasury(
+        rewards_for_tale("skazka-o-rybake-i-rybke", "Сказка о рыбаке и рыбке")
+    )
+    labels = [item["label"] for item in items]
+    assert labels == [
+        "Нарисуй золотую рыбку",
+        "Раскрась море спокойным и бурным",
+        "Сделай комикс: поймал — попросила — отпустил",
+        "Нарисуй корыто и 3 добрых желания",
+    ]
+    assert all(item.get("download_url", "").endswith(".pdf") for item in items)
