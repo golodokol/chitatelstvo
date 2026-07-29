@@ -79,3 +79,16 @@ def test_rybaka_i_rybke_chest_rewards():
         "Нарисуй корыто и 3 добрых желания",
     ]
     assert all(item.get("download_url", "").endswith(".pdf") for item in items)
+
+
+def test_plyushevyy_zayats_chest_rewards():
+    items = items_for_treasury(
+        rewards_for_tale("plyushevyy-zayats", "Плюшевый заяц")
+    )
+    labels = [item["label"] for item in items]
+    assert labels == [
+        "Нарисуй своего плюшевого зайца",
+        "Сделай комикс: подарок → любовь → чудо",
+        "Раскрась зайца",
+    ]
+    assert all(item.get("download_url", "").endswith(".pdf") for item in items)
