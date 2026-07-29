@@ -207,14 +207,27 @@ def retelling_quiz_for_client(
     group_code: str | None = None,
     shuffle_options: bool = True,
 ) -> dict[str, Any]:
-    """Квиз пересказа: для старших групп убираем картинки из ordering."""
+    """Квиз пересказа: для старших групп убираем картинки из ordering.
+
+    Исключение: если в уроке уже заданы картинки событий — показываем их
+    (как у «Царя Салтана»), даже для старших классов.
+    """
     client = quiz_for_client(quiz, block_key="retelling_quiz", shuffle_options=shuffle_options)
     if retelling_uses_images(group_code):
         return client
     for q in client.get("questions", []):
         if _question_type(q) != "ordering":
             continue
-        n = len(q.get("items") or [])
+        items = q.get("items") or []
+        if any(item.get("image") for item in items):
+            n = len(items)
+            if not q.get("hint"):
+                q["hint"] = (
+                    f"Перетащи картинки в шаги 1–{n} по порядку сказки. "
+                    "На телефоне: нажми картинку, затем шаг."
+                )
+            continue
+        n = len(items)
         if q.get("hint") and "ячейки 1–" in str(q.get("hint")):
             pass
         elif not q.get("hint"):
@@ -222,7 +235,7 @@ def retelling_quiz_for_client(
                 f"Перетащи описания событий в ячейки 1–{n} по порядку сказки. "
                 "На телефоне: нажми на событие, затем на ячейку."
             )
-        for item in q.get("items", []):
+        for item in items:
             item.pop("image", None)
             item.pop("alt", None)
     return client
