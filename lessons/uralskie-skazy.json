@@ -44,6 +44,8 @@
         "id": "q1",
         "type": "single",
         "text": "Кем впервые предстаёт перед Степаном Хозяйка Медной горы?",
+        "prompt_image": "/static/lessons/uralskie-skazy/khozyayka.png",
+        "prompt_image_alt": "Хозяйка Медной горы",
         "options": [
           {
             "id": "a",
@@ -458,6 +460,8 @@
         "type": "ordering",
         "text": "Расставь события по порядку.",
         "hint": "Перетащи события в шаги 1–6 по порядку сказа. На телефоне: нажми событие, затем шаг.",
+        "prompt_image": "/static/lessons/uralskie-skazy/retelling-cover.png",
+        "prompt_image_alt": "Степан и Хозяйка Медной горы в малахитовой пещере",
         "items": [
           {
             "id": "e1",

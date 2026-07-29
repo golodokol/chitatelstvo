@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "lessons" / "catalog" / "grade-4-self_paced-stage-1-lesson-01.json"
 WITH_TEACHER = ROOT / "lessons" / "catalog" / "grade-4-with_teacher-stage-1-lesson-01.json"
 LEGACY = ROOT / "lessons" / "uralskie-skazy.json"
+IMG = "/static/lessons/uralskie-skazy"
 
 
 def opt(oid: str, text: str) -> dict:
@@ -60,6 +61,8 @@ CONTENT = {
                 "id": "q1",
                 "type": "single",
                 "text": "Кем впервые предстаёт перед Степаном Хозяйка Медной горы?",
+                "prompt_image": f"{IMG}/khozyayka.png",
+                "prompt_image_alt": "Хозяйка Медной горы",
                 "options": [
                     opt(
                         "a",
@@ -388,6 +391,10 @@ CONTENT = {
                 "hint": (
                     "Перетащи события в шаги 1–6 по порядку сказа. "
                     "На телефоне: нажми событие, затем шаг."
+                ),
+                "prompt_image": f"{IMG}/retelling-cover.png",
+                "prompt_image_alt": (
+                    "Степан и Хозяйка Медной горы в малахитовой пещере"
                 ),
                 "items": [
                     {

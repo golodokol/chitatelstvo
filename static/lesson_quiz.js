@@ -116,6 +116,7 @@
     div.className = withImages ? 'chit-q chit-q-with-images' : 'chit-q';
     div.dataset.qid = q.id;
     div.dataset.qtype = q.type || 'single';
+    appendPromptImage(div, q);
     appendQuestionHeader(div, q, idx);
     const container = withImages ? document.createElement('div') : div;
     if (withImages) {
