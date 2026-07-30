@@ -116,6 +116,38 @@ def build_welcome_message(
     return "\n".join(lines)
 
 
+def strip_child_name_prefix(text: str, child_name: str) -> str:
+    """Убирает имя ребёнка в начале строки, чтобы не дублировать его в сводке."""
+    raw = (text or "").strip()
+    name = (child_name or "").strip()
+    if not raw or not name:
+        return raw
+    for prefix in (f"{name} ", f"{name}\u00a0"):
+        if raw.startswith(prefix):
+            rest = raw[len(prefix) :]
+            if not rest:
+                return raw
+            return rest[:1].upper() + rest[1:]
+    return raw
+
+
+def normalize_progress_digest_line(message: str, child_name: str) -> str:
+    """Достаёт строку прогресса из новой или старой записи pending-письма."""
+    child = (child_name or "").strip() or "ребёнок"
+    for raw in (message or "").splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("• ") or line.startswith("- "):
+            line = line[2:].strip()
+        if line.startswith("Ребёнок:"):
+            continue
+        if line.startswith("Следующий шаг:"):
+            continue
+        return strip_child_name_prefix(line, child)
+    return strip_child_name_prefix((message or "").strip(), child)
+
+
 def build_progress_message(
     *,
     parent_name: str,
@@ -138,42 +170,48 @@ def build_progress_message(
     )
 
 
-def build_progress_digest_item(*, child_name: str, parent_message: str, next_action: str) -> str:
-    """Короткая запись для дневной сводки (хранится в pending email)."""
+def build_progress_digest_item(*, child_name: str, parent_message: str, next_action: str = "") -> str:
+    """Короткая запись для дневной сводки (хранится в pending email).
+
+    next_action намеренно не включаем — в письме родителям только факт прохождения.
+    """
     child = child_name.strip() or "ребёнок"
-    update = (parent_message or "").strip()
-    nxt = (next_action or "").strip()
-    lines = [f"Ребёнок: {child}", update]
-    if nxt:
-        lines.append(f"Следующий шаг: {nxt}")
-    return "\n".join(lines)
+    return strip_child_name_prefix((parent_message or "").strip(), child)
 
 
 def build_progress_digest_message(
     *,
     parent_name: str,
     progress_url: str,
-    items: list[str],
+    children_updates: list[tuple[str, list[str]]] | None = None,
+    items: list[str] | None = None,
 ) -> str:
-    """Одно письмо за день: все изменения ребёнка."""
+    """Одно письмо за день: имя ребёнка один раз, ниже список пройденного."""
     parent = parent_name.strip() or "родитель"
-    bullets: list[str] = []
-    for raw in items:
-        text = (raw or "").strip()
-        if not text:
-            continue
-        # Уже оформленный пункт или многострочная запись
-        if text.startswith("• ") or text.startswith("- "):
-            bullets.append(text)
-            continue
-        chunk_lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-        if not chunk_lines:
-            continue
-        bullets.append("• " + chunk_lines[0])
-        for ln in chunk_lines[1:]:
-            bullets.append(f"  {ln}")
+    sections = children_updates
+    if sections is None and items is not None:
+        # Старый вызов: плоский список строк
+        sections = [("", list(items))]
+    sections = sections or []
 
-    body_items = "\n".join(bullets) if bullets else "• Сегодня были обновления на личной странице."
+    blocks: list[str] = []
+    for child_name, lines in sections:
+        child = (child_name or "").strip()
+        clean_lines: list[str] = []
+        for raw in lines:
+            line = normalize_progress_digest_line(raw, child)
+            if line:
+                clean_lines.append(line)
+        if not clean_lines:
+            continue
+        block_lines: list[str] = []
+        if child:
+            block_lines.append(f"{child}:")
+        for line in clean_lines:
+            block_lines.append(f"• {line}")
+        blocks.append("\n".join(block_lines))
+
+    body_items = "\n\n".join(blocks) if blocks else "• Сегодня были обновления на личной странице."
 
     return (
         f"Здравствуйте, {parent}!\n\n"

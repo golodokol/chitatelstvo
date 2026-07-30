@@ -228,10 +228,19 @@ def flush_progress_email_digests(db: Session, *, force: bool = False) -> int:
             continue
 
         progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
+        grouped: dict[str, list[str]] = {}
+        order: list[str] = []
+        for note in pending:
+            child = db.get(Child, note.child_id) if note.child_id else None
+            child_name = (child.name if child else "") or "ребёнок"
+            if child_name not in grouped:
+                grouped[child_name] = []
+                order.append(child_name)
+            grouped[child_name].append(note.message or "")
         body = build_progress_digest_message(
             parent_name=family.parent_name,
             progress_url=progress_url,
-            items=[n.message for n in pending],
+            children_updates=[(name, grouped[name]) for name in order],
         )
         note_ids = [n.id for n in pending]
 
