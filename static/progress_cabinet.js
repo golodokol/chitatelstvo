@@ -75,6 +75,76 @@
     }
   });
 
+  var TREASURY_MAX_ROWS = 3;
+
+  function treasuryColumnCount(grid) {
+    var style = window.getComputedStyle(grid);
+    var cols = style.gridTemplateColumns;
+    if (!cols || cols === 'none') return 4;
+    return cols.split(' ').filter(function (part) { return part && part !== '0px'; }).length || 4;
+  }
+
+  function initTreasuryPager(root) {
+    var grid = root.querySelector('.chit-treasury-grid');
+    var pager = root.querySelector('[data-treasury-pager]');
+    if (!grid || !pager) return;
+    var items = Array.prototype.slice.call(grid.querySelectorAll('.chit-treasury-item'));
+    if (!items.length) return;
+
+    var prevBtn = pager.querySelector('[data-treasury-prev]');
+    var nextBtn = pager.querySelector('[data-treasury-next]');
+    var label = pager.querySelector('[data-treasury-label]');
+    var page = 0;
+
+    function pageSize() {
+      return Math.max(1, treasuryColumnCount(grid) * TREASURY_MAX_ROWS);
+    }
+
+    function pageCount() {
+      return Math.max(1, Math.ceil(items.length / pageSize()));
+    }
+
+    function render() {
+      var size = pageSize();
+      var pages = pageCount();
+      if (page >= pages) page = pages - 1;
+      if (page < 0) page = 0;
+      var start = page * size;
+      var end = start + size;
+      items.forEach(function (item, index) {
+        item.hidden = index < start || index >= end;
+      });
+      var needsPager = pages > 1;
+      pager.hidden = !needsPager;
+      if (label) label.textContent = (page + 1) + ' / ' + pages;
+      if (prevBtn) prevBtn.disabled = page <= 0;
+      if (nextBtn) nextBtn.disabled = page >= pages - 1;
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        page -= 1;
+        render();
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        page += 1;
+        render();
+      });
+    }
+
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(render, 120);
+    });
+
+    render();
+  }
+
+  document.querySelectorAll('[data-treasury]').forEach(initTreasuryPager);
+
   var modal = document.getElementById('badge-modal');
   var titleEl = document.getElementById('badge-modal-title');
   var textEl = document.getElementById('badge-modal-text');

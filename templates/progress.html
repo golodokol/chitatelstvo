@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260729a">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260730b">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -196,17 +196,24 @@
           <h2 class="chit-section-title">Моя сокровищница{% if track.group_label %} · {{ track.group_label }}{% endif %}</h2>
           <p class="chit-section-sub">Творческие задания из сундука — можно скачать снова.</p>
           {% if track.treasury %}
-          <div class="chit-treasury-grid">
-            {% for item in track.treasury %}
-            <article class="chit-treasury-item">
-              {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
-              <strong>{{ item.label }}</strong>
-              <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
-              {% if item.downloadable and item.download_url %}
-              <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
-              {% endif %}
-            </article>
-            {% endfor %}
+          <div class="chit-treasury" data-treasury>
+            <div class="chit-treasury-grid">
+              {% for item in track.treasury %}
+              <article class="chit-treasury-item">
+                {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
+                <strong>{{ item.label }}</strong>
+                <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
+                {% if item.downloadable and item.download_url %}
+                <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
+                {% endif %}
+              </article>
+              {% endfor %}
+            </div>
+            <nav class="chit-treasury-pager" data-treasury-pager hidden aria-label="Страницы сокровищницы">
+              <button type="button" class="chit-treasury-pager__btn" data-treasury-prev aria-label="Предыдущая страница">‹</button>
+              <span class="chit-treasury-pager__label" data-treasury-label></span>
+              <button type="button" class="chit-treasury-pager__btn" data-treasury-next aria-label="Следующая страница">›</button>
+            </nav>
           </div>
           {% else %}
           <p class="chit-treasury-empty">Открой сундук выше — награды появятся здесь.</p>
@@ -271,17 +278,24 @@
           <section class="chit-panel chit-panel--treasury" id="treasury-all">
             <h2 class="chit-section-title">Моя сокровищница</h2>
             <p class="chit-section-sub">Творческие задания из всех открытых сундуков — можно скачать снова.</p>
-            <div class="chit-treasury-grid">
-              {% for item in cab.treasury %}
-              <article class="chit-treasury-item">
-                {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
-                <strong>{{ item.label }}</strong>
-                <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
-                {% if item.downloadable and item.download_url %}
-                <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
-                {% endif %}
-              </article>
-              {% endfor %}
+            <div class="chit-treasury" data-treasury>
+              <div class="chit-treasury-grid">
+                {% for item in cab.treasury %}
+                <article class="chit-treasury-item">
+                  {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
+                  <strong>{{ item.label }}</strong>
+                  <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
+                  {% if item.downloadable and item.download_url %}
+                  <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
+                  {% endif %}
+                </article>
+                {% endfor %}
+              </div>
+              <nav class="chit-treasury-pager" data-treasury-pager hidden aria-label="Страницы сокровищницы">
+                <button type="button" class="chit-treasury-pager__btn" data-treasury-prev aria-label="Предыдущая страница">‹</button>
+                <span class="chit-treasury-pager__label" data-treasury-label></span>
+                <button type="button" class="chit-treasury-pager__btn" data-treasury-next aria-label="Следующая страница">›</button>
+              </nav>
             </div>
           </section>
           {% endif %}
@@ -726,6 +740,6 @@
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
   <script src="/static/chest_reveal.js?v=20260707h"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
-  <script src="/static/progress_cabinet.js?v=20260727a"></script>
+  <script src="/static/progress_cabinet.js?v=20260730b"></script>
 </body>
 </html>
