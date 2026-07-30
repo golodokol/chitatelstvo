@@ -198,7 +198,22 @@
   function buildTreasuryCard(item) {
     var article = document.createElement('article');
     article.className = 'chit-treasury-item';
+    article.setAttribute('role', 'button');
+    article.setAttribute('tabindex', '0');
+    article.setAttribute('data-treasury-preview', '');
     article.setAttribute('data-just-added', '1');
+    article.setAttribute('data-label', item.label || '');
+    article.setAttribute(
+      'data-caption',
+      item.lesson_caption || (item.tale_title ? ('Урок «' + item.tale_title + '»') : '')
+    );
+    article.setAttribute('data-image', item.image_url || '');
+    article.setAttribute(
+      'data-download',
+      item.downloadable && item.download_url ? item.download_url : ''
+    );
+    article.setAttribute('data-kind', item.kind || '');
+    article.setAttribute('data-tale-slug', item.tale_slug || '');
     if (item.image_url) {
       var img = document.createElement('img');
       img.src = item.image_url;
@@ -212,14 +227,6 @@
     var span = document.createElement('span');
     span.textContent = item.lesson_caption || (item.tale_title ? ('Урок «' + item.tale_title + '»') : '');
     article.appendChild(span);
-    if (item.downloadable && item.download_url) {
-      var link = document.createElement('a');
-      link.className = 'chit-treasury-item__download';
-      link.href = item.download_url;
-      link.download = '';
-      link.textContent = 'Скачать';
-      article.appendChild(link);
-    }
     return article;
   }
 

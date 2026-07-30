@@ -170,6 +170,114 @@
     },
   };
 
+  var RU_TRANSLIT = {
+    а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z',
+    и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r',
+    с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'sch',
+    ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya',
+  };
+
+  function treasurySlug(text) {
+    return String(text || '')
+      .toLowerCase()
+      .split('')
+      .map(function (ch) { return Object.prototype.hasOwnProperty.call(RU_TRANSLIT, ch) ? RU_TRANSLIT[ch] : ch; })
+      .join('')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 56) || 'nagrada';
+  }
+
+  function treasuryFileExt(url) {
+    var match = String(url || '').match(/\.([a-z0-9]+)(?:\?|#|$)/i);
+    return match ? match[1].toLowerCase() : 'pdf';
+  }
+
+  function treasuryDownloadName(label, kind, taleSlug, url) {
+    var parts = ['chitatelstvo'];
+    if (taleSlug) parts.push(treasurySlug(taleSlug));
+    parts.push(treasurySlug(label) || treasurySlug(kind) || 'nagrada');
+    return parts.join('_') + '.' + treasuryFileExt(url);
+  }
+
+  function initTreasuryPreview() {
+    var previewModal = document.getElementById('treasury-modal');
+    if (!previewModal) return;
+    var titleEl = document.getElementById('treasury-modal-title');
+    var captionEl = document.getElementById('treasury-modal-caption');
+    var imgEl = document.getElementById('treasury-modal-img');
+    var downloadEl = document.getElementById('treasury-modal-download');
+    var previewWrap = previewModal.querySelector('.chit-treasury-modal__preview');
+
+    function closePreview() {
+      previewModal.hidden = true;
+      document.body.style.overflow = '';
+      if (imgEl) {
+        imgEl.removeAttribute('src');
+        imgEl.alt = '';
+      }
+    }
+
+    function openPreview(card) {
+      var label = card.getAttribute('data-label') || '';
+      var caption = card.getAttribute('data-caption') || '';
+      var image = card.getAttribute('data-image') || '';
+      var download = card.getAttribute('data-download') || '';
+      var kind = card.getAttribute('data-kind') || '';
+      var taleSlug = card.getAttribute('data-tale-slug') || '';
+      if (titleEl) titleEl.textContent = label;
+      if (captionEl) captionEl.textContent = caption;
+      if (imgEl && previewWrap) {
+        if (image) {
+          imgEl.src = image;
+          imgEl.alt = label;
+          previewWrap.hidden = false;
+        } else {
+          imgEl.removeAttribute('src');
+          previewWrap.hidden = true;
+        }
+      }
+      if (downloadEl) {
+        if (download) {
+          downloadEl.href = download;
+          downloadEl.setAttribute('download', treasuryDownloadName(label, kind, taleSlug, download));
+          downloadEl.hidden = false;
+        } else {
+          downloadEl.removeAttribute('href');
+          downloadEl.removeAttribute('download');
+          downloadEl.hidden = true;
+        }
+      }
+      previewModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    document.addEventListener('click', function (event) {
+      var card = event.target.closest('[data-treasury-preview]');
+      if (!card) return;
+      event.preventDefault();
+      openPreview(card);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !previewModal.hidden) {
+        closePreview();
+        return;
+      }
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      var card = event.target.closest('[data-treasury-preview]');
+      if (!card) return;
+      event.preventDefault();
+      openPreview(card);
+    });
+
+    previewModal.querySelectorAll('[data-treasury-modal-close]').forEach(function (el) {
+      el.addEventListener('click', closePreview);
+    });
+  }
+
+  initTreasuryPreview();
+
   var modal = document.getElementById('badge-modal');
   var titleEl = document.getElementById('badge-modal-title');
   var textEl = document.getElementById('badge-modal-text');

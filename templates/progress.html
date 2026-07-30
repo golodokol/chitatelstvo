@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260730b">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260730d">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -199,13 +199,19 @@
           <div class="chit-treasury" data-treasury>
             <div class="chit-treasury-grid">
               {% for item in track.treasury %}
-              <article class="chit-treasury-item">
+              <article class="chit-treasury-item"
+                role="button"
+                tabindex="0"
+                data-treasury-preview
+                data-label="{{ item.label }}"
+                data-caption="{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}"
+                data-image="{{ item.image_url or '' }}"
+                data-download="{{ item.download_url if item.downloadable and item.download_url else '' }}"
+                data-kind="{{ item.kind or '' }}"
+                data-tale-slug="{{ item.tale_slug or '' }}">
                 {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
                 <strong>{{ item.label }}</strong>
                 <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
-                {% if item.downloadable and item.download_url %}
-                <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
-                {% endif %}
               </article>
               {% endfor %}
             </div>
@@ -281,13 +287,19 @@
             <div class="chit-treasury" data-treasury>
               <div class="chit-treasury-grid">
                 {% for item in cab.treasury %}
-                <article class="chit-treasury-item">
+                <article class="chit-treasury-item"
+                  role="button"
+                  tabindex="0"
+                  data-treasury-preview
+                  data-label="{{ item.label }}"
+                  data-caption="{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}"
+                  data-image="{{ item.image_url or '' }}"
+                  data-download="{{ item.download_url if item.downloadable and item.download_url else '' }}"
+                  data-kind="{{ item.kind or '' }}"
+                  data-tale-slug="{{ item.tale_slug or '' }}">
                   {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
                   <strong>{{ item.label }}</strong>
                   <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
-                  {% if item.downloadable and item.download_url %}
-                  <a class="chit-treasury-item__download" href="{{ item.download_url }}" download>Скачать</a>
-                  {% endif %}
                 </article>
                 {% endfor %}
               </div>
@@ -737,9 +749,22 @@
     </div>
   </div>
 
+  <div class="chit-treasury-modal" id="treasury-modal" hidden aria-modal="true" role="dialog" aria-labelledby="treasury-modal-title">
+    <div class="chit-treasury-modal__backdrop" data-treasury-modal-close></div>
+    <div class="chit-treasury-modal__sheet">
+      <button type="button" class="chit-treasury-modal__close" aria-label="Закрыть" data-treasury-modal-close>×</button>
+      <h3 class="chit-treasury-modal__title" id="treasury-modal-title"></h3>
+      <p class="chit-treasury-modal__caption" id="treasury-modal-caption"></p>
+      <div class="chit-treasury-modal__preview">
+        <img id="treasury-modal-img" src="" alt="">
+      </div>
+      <a class="chit-btn chit-treasury-modal__download" id="treasury-modal-download" href="#" download hidden>Скачать файл</a>
+    </div>
+  </div>
+
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
-  <script src="/static/chest_reveal.js?v=20260730c"></script>
+  <script src="/static/chest_reveal.js?v=20260730d"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
-  <script src="/static/progress_cabinet.js?v=20260730c"></script>
+  <script src="/static/progress_cabinet.js?v=20260730d"></script>
 </body>
 </html>
