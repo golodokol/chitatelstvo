@@ -9,10 +9,13 @@
   var sparksEl = document.getElementById('chest-modal-sparks');
   var rewardsEl = document.getElementById('chest-modal-rewards');
   var subEl = document.getElementById('chest-modal-sub');
+  var titleEl = document.getElementById('chest-modal-title');
   var claimBtn = document.getElementById('chest-modal-claim');
 
   var activePanel = null;
   var activeItems = [];
+  var claimDone = false;
+  var claimedTreasurySection = null;
 
   function wait(ms) {
     return new Promise(function (resolve) {
@@ -21,6 +24,8 @@
   }
 
   function resetModal() {
+    claimDone = false;
+    claimedTreasurySection = null;
     if (chestImg) {
       chestImg.className = 'chit-chest-modal__chest';
       chestImg.src = '/static/chest/chest-closed.png';
@@ -30,6 +35,12 @@
     if (rewardsEl) rewardsEl.innerHTML = '';
     if (animateStage) animateStage.hidden = false;
     if (revealStage) revealStage.hidden = true;
+    if (titleEl) titleEl.textContent = 'Сундук открыт!';
+    if (claimBtn) {
+      claimBtn.disabled = false;
+      claimBtn.hidden = false;
+      claimBtn.textContent = 'Забрать награду';
+    }
   }
 
   function spawnSparks() {
@@ -150,6 +161,7 @@
 
   function markPanelClaimed(panel) {
     panel.setAttribute('data-chest-claimed', '1');
+    panel.setAttribute('data-chest-ready', '0');
     panel.classList.remove('is-ready');
     panel.classList.add('is-claimed');
     var img = panel.querySelector('[data-chest-img]');
@@ -167,8 +179,118 @@
     if (hint) hint.textContent = 'Награда уже в сокровищнице';
   }
 
+  function treasuryHref(panel) {
+    return panel.getAttribute('data-treasury-href') || '#treasury-1';
+  }
+
+  function treasuryIdFromHref(href) {
+    if (!href || href.charAt(0) !== '#') return 'treasury-1';
+    return href.slice(1) || 'treasury-1';
+  }
+
+  function isTreasuryItem(item) {
+    if (!item) return false;
+    var kind = String(item.kind || '');
+    if (kind === 'letter') return false;
+    return true;
+  }
+
+  function buildTreasuryCard(item) {
+    var article = document.createElement('article');
+    article.className = 'chit-treasury-item';
+    article.setAttribute('data-just-added', '1');
+    if (item.image_url) {
+      var img = document.createElement('img');
+      img.src = item.image_url;
+      img.alt = '';
+      img.loading = 'lazy';
+      article.appendChild(img);
+    }
+    var strong = document.createElement('strong');
+    strong.textContent = item.label || '';
+    article.appendChild(strong);
+    var span = document.createElement('span');
+    span.textContent = item.lesson_caption || (item.tale_title ? ('Урок «' + item.tale_title + '»') : '');
+    article.appendChild(span);
+    if (item.downloadable && item.download_url) {
+      var link = document.createElement('a');
+      link.className = 'chit-treasury-item__download';
+      link.href = item.download_url;
+      link.download = '';
+      link.textContent = 'Скачать';
+      article.appendChild(link);
+    }
+    return article;
+  }
+
+  function ensureTreasuryShell(panel) {
+    var href = treasuryHref(panel);
+    var id = treasuryIdFromHref(href);
+    var section = document.getElementById(id);
+    if (section) {
+      var empty = section.querySelector('.chit-treasury-empty');
+      if (empty) empty.remove();
+      var wrap = section.querySelector('[data-treasury]');
+      if (wrap) return wrap;
+      wrap = document.createElement('div');
+      wrap.className = 'chit-treasury';
+      wrap.setAttribute('data-treasury', '');
+      wrap.innerHTML =
+        '<div class="chit-treasury-grid"></div>' +
+        '<nav class="chit-treasury-pager" data-treasury-pager hidden aria-label="Страницы сокровищницы">' +
+        '<button type="button" class="chit-treasury-pager__btn" data-treasury-prev aria-label="Предыдущая страница">‹</button>' +
+        '<span class="chit-treasury-pager__label" data-treasury-label></span>' +
+        '<button type="button" class="chit-treasury-pager__btn" data-treasury-next aria-label="Следующая страница">›</button>' +
+        '</nav>';
+      section.appendChild(wrap);
+      return wrap;
+    }
+
+    section = document.createElement('section');
+    section.className = 'chit-panel chit-panel--treasury chit-panel--treasury-under-chest';
+    section.id = id;
+    section.innerHTML =
+      '<h2 class="chit-section-title">Моя сокровищница</h2>' +
+      '<p class="chit-section-sub">Творческие задания из сундука — можно скачать снова.</p>' +
+      '<div class="chit-treasury" data-treasury>' +
+      '<div class="chit-treasury-grid"></div>' +
+      '<nav class="chit-treasury-pager" data-treasury-pager hidden aria-label="Страницы сокровищницы">' +
+      '<button type="button" class="chit-treasury-pager__btn" data-treasury-prev aria-label="Предыдущая страница">‹</button>' +
+      '<span class="chit-treasury-pager__label" data-treasury-label></span>' +
+      '<button type="button" class="chit-treasury-pager__btn" data-treasury-next aria-label="Следующая страница">›</button>' +
+      '</nav>' +
+      '</div>';
+    panel.insertAdjacentElement('afterend', section);
+    return section.querySelector('[data-treasury]');
+  }
+
+  function addItemsToTreasury(panel, items) {
+    var list = (items || []).filter(isTreasuryItem);
+    if (!list.length) return null;
+    var wrap = ensureTreasuryShell(panel);
+    if (!wrap) return null;
+    var grid = wrap.querySelector('.chit-treasury-grid');
+    if (!grid) return null;
+    list.forEach(function (item) {
+      grid.appendChild(buildTreasuryCard(item));
+    });
+    if (window.ChitTreasury && window.ChitTreasury.refresh) {
+      window.ChitTreasury.refresh(wrap);
+    }
+    return document.getElementById(treasuryIdFromHref(treasuryHref(panel)));
+  }
+
+  function scrollToTreasury(section) {
+    if (!section) return;
+    try {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      section.scrollIntoView(true);
+    }
+  }
+
   async function claimReward() {
-    if (!activePanel || !claimBtn) return;
+    if (!activePanel || !claimBtn || claimDone) return;
     claimBtn.disabled = true;
     var token = activePanel.getAttribute('data-progress-token');
     var childId = activePanel.getAttribute('data-child-id');
@@ -185,9 +307,16 @@
       });
       var data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Ошибка');
+      claimDone = true;
       markPanelClaimed(activePanel);
-      closeModal();
-      window.location.reload();
+      var treasuryItems = data.items && data.items.length ? data.items : activeItems;
+      claimedTreasurySection = addItemsToTreasury(activePanel, treasuryItems);
+      if (titleEl) titleEl.textContent = 'Награды в сокровищнице!';
+      if (subEl) {
+        subEl.textContent = 'Сначала ты увидел награды здесь — теперь они лежат в сокровищнице под сундуком.';
+      }
+      claimBtn.textContent = 'Смотреть сокровищницу';
+      claimBtn.disabled = false;
     } catch (err) {
       claimBtn.disabled = false;
       if (subEl) subEl.textContent = (err && err.message) || 'Не удалось сохранить награду';
@@ -201,7 +330,7 @@
       activePanel = panel;
       activeItems = panelItems(panel);
       if (subEl) {
-        subEl.textContent = 'Скачай творческие задания — они сохранятся в сокровищнице под сундуком.';
+        subEl.textContent = 'Посмотри награды. Потом нажми «Забрать награду» — они появятся в сокровищнице.';
       }
       renderRewards(activeItems);
       playOpenAnimation(panel);
@@ -209,10 +338,22 @@
   };
 
   modal.querySelectorAll('[data-chest-modal-close]').forEach(function (el) {
-    el.addEventListener('click', closeModal);
+    el.addEventListener('click', function () {
+      var section = claimDone ? claimedTreasurySection : null;
+      closeModal();
+      if (section) scrollToTreasury(section);
+    });
   });
 
   if (claimBtn) {
-    claimBtn.addEventListener('click', claimReward);
+    claimBtn.addEventListener('click', function () {
+      if (claimDone) {
+        var section = claimedTreasurySection;
+        closeModal();
+        if (section) scrollToTreasury(section);
+        return;
+      }
+      claimReward();
+    });
   }
 })();
