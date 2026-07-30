@@ -110,12 +110,22 @@
     });
   }
 
+  function isExclusiveChoice(q, multi) {
+    if (!multi) return true;
+    if (Number(q.pick) === 1) return true;
+    const hint = String(q.hint || '');
+    // «Выбери одну / Отметь одного / Выбери верное» — radio, not multi-check
+    return /выбери\s+одн|отметь\s+одн|выбери\s+верно/i.test(hint);
+  }
+
   function renderSingleOrMulti(formId, q, idx, multi) {
     const div = document.createElement('div');
     const withImages = optionHasImages(q.options);
+    const exclusive = isExclusiveChoice(q, multi);
     div.className = withImages ? 'chit-q chit-q-with-images' : 'chit-q';
     div.dataset.qid = q.id;
     div.dataset.qtype = q.type || 'single';
+    if (exclusive && multi) div.dataset.exclusive = '1';
     appendPromptImage(div, q);
     appendQuestionHeader(div, q, idx);
     const container = withImages ? document.createElement('div') : div;
@@ -133,7 +143,8 @@
     }
     (q.options || []).forEach(function (opt) {
       const id = formId + '-' + q.id + '-' + opt.id;
-      const inputType = multi ? 'checkbox' : 'radio';
+      const inputType = exclusive ? 'radio' : 'checkbox';
+      // Multi (and exclusive multi-as-radio) share a namespaced name for collectMultiAnswer.
       const name = multi ? formId + '-' + q.id : q.id;
       const label = document.createElement('label');
       label.className = withImages ? 'chit-opt-card' : '';
