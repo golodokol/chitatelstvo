@@ -454,9 +454,18 @@ body.chit-student img {
 
 .chit-q { margin: 12px 0; padding: 10px 12px; border-radius: 10px; border: 1.5px solid transparent; }
 
-.chit-q.is-correct {
-  background: var(--success-bg);
-  border-color: var(--success-border);
+.chit-q.is-locked {
+  opacity: 0.92;
+  cursor: default;
+}
+.chit-q.is-locked,
+.chit-q.is-locked .chit-match-board,
+.chit-q.is-locked .chit-order-board,
+.chit-q.is-locked label {
+  pointer-events: none;
+}
+.chit-q.is-locked input {
+  cursor: default;
 }
 
 .chit-q.is-wrong {

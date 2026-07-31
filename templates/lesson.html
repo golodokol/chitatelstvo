@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% include "_favicon.html" %}
   <title>Читательство · {{ lesson.title }}</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260730a">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260731a">
   <style>
     .chit-lesson-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     .chit-lesson-page h2 { font-family: 'Literata', Georgia, serif; font-size: 1.15rem; margin: 0 0 8px; }
@@ -463,19 +463,115 @@
       const step = form.closest('.chit-step');
       if (step) step.classList.remove('is-ok', 'is-wrong', 'is-partial');
       form.querySelectorAll('.chit-q').forEach(function (node) {
+        if (node.classList.contains('is-locked')) return;
         node.classList.remove('is-correct', 'is-wrong', 'is-incomplete', 'is-partial');
-      });
-      form.querySelectorAll('.chit-q-badge').forEach(function (node) {
-        node.remove();
-      });
-      form.querySelectorAll('label').forEach(function (node) {
-        node.classList.remove('is-correct-option', 'is-wrong-pick');
+        node.querySelectorAll('.chit-q-badge').forEach(function (badge) { badge.remove(); });
+        node.querySelectorAll('label').forEach(function (label) {
+          label.classList.remove('is-correct-option', 'is-wrong-pick');
+        });
       });
       const msg = step ? step.querySelector('.chit-quiz-verdict') : null;
       if (msg) {
         msg.className = 'chit-msg chit-quiz-verdict';
         msg.textContent = '';
         msg.style.display = 'none';
+      }
+    }
+
+    function quizLockStorageKey(formId) {
+      return 'chit-quiz-locks:' + CFG.slug + ':' + CFG.childId + ':' + formId;
+    }
+
+    function saveQuizLockState(formId, state) {
+      try {
+        sessionStorage.setItem(quizLockStorageKey(formId), JSON.stringify(state || {}));
+      } catch (e) {}
+    }
+
+    function loadQuizLockState(formId) {
+      try {
+        const raw = sessionStorage.getItem(quizLockStorageKey(formId));
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        return data && typeof data === 'object' ? data : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function clearQuizLockState(formId) {
+      try {
+        sessionStorage.removeItem(quizLockStorageKey(formId));
+      } catch (e) {}
+    }
+
+    function setQuestionLocked(qEl, locked) {
+      if (!qEl) return;
+      qEl.classList.toggle('is-locked', !!locked);
+      qEl.querySelectorAll('input, select, textarea, button').forEach(function (el) {
+        el.disabled = !!locked;
+      });
+    }
+
+    function lockEntireQuizForm(formId) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+      form.querySelectorAll('.chit-q').forEach(function (qEl) {
+        setQuestionLocked(qEl, true);
+      });
+    }
+
+    function applyQuizResultLocks(formId, results, lockEntireForm) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+      const byId = {};
+      (results || []).forEach(function (r) { byId[r.id] = r; });
+      const lockedIds = [];
+      form.querySelectorAll('.chit-q').forEach(function (qEl) {
+        const qid = qEl.dataset.qid;
+        const r = byId[qid];
+        const shouldLock = !!lockEntireForm || !!(r && r.ok);
+        setQuestionLocked(qEl, shouldLock);
+        if (shouldLock && qid) lockedIds.push(qid);
+      });
+      const allCorrect = !!lockEntireForm
+        || ((results || []).length > 0 && !(results || []).some(function (r) { return !r.ok; }));
+      saveQuizLockState(formId, { allCorrect: allCorrect, lockedIds: lockedIds });
+      return allCorrect;
+    }
+
+    function restoreQuizLocks(formId, stepKey) {
+      const saved = loadQuizLockState(formId);
+      if (saved && saved.allCorrect) {
+        if (stepKey === 'comprehension') lessonState.comprehensionAllCorrect = true;
+        if (stepKey === 'meaning') lessonState.meaningAllCorrect = true;
+        if (stepKey === 'retelling') lessonState.retellingAllCorrect = true;
+        lockEntireQuizForm(formId);
+        return;
+      }
+      if (saved && saved.lockedIds && saved.lockedIds.length) {
+        if (stepKey === 'comprehension') lessonState.comprehensionAllCorrect = false;
+        if (stepKey === 'meaning') lessonState.meaningAllCorrect = false;
+        if (stepKey === 'retelling') lessonState.retellingAllCorrect = false;
+        const form = document.getElementById(formId);
+        if (!form) return;
+        const locked = {};
+        saved.lockedIds.forEach(function (id) { locked[id] = true; });
+        form.querySelectorAll('.chit-q').forEach(function (qEl) {
+          setQuestionLocked(qEl, !!locked[qEl.dataset.qid]);
+        });
+        return;
+      }
+      // Урок уже засчитан на сервере, локальных ошибок нет — повторная отправка закрыта.
+      const done = stepKey === 'comprehension' ? lessonState.comprehensionDone
+        : stepKey === 'meaning' ? lessonState.meaningDone
+        : lessonState.retellingDone;
+      if (done) {
+        if (stepKey === 'comprehension') lessonState.comprehensionAllCorrect = true;
+        if (stepKey === 'meaning') lessonState.meaningAllCorrect = true;
+        if (stepKey === 'retelling') lessonState.retellingAllCorrect = true;
+        lockEntireQuizForm(formId);
+        saveQuizLockState(formId, { allCorrect: true, lockedIds: [] });
       }
     }
 
@@ -710,12 +806,13 @@
 
     function updateQuizSubmitButton(btn, step, formId, done) {
       if (!btn) return;
-      // Soft pass can leave wrong items — allow retry until every question is correct.
+      // Полностью верные ответы — повторная отправка закрыта.
+      // Если была хоть одна ошибка — можно исправить незаблокированные вопросы.
       if (done && quizStepAllCorrect(step)) {
         btn.disabled = true;
         btn.setAttribute('disabled', 'disabled');
         btn.classList.remove('is-ready');
-        btn.title = '';
+        btn.title = 'Все ответы уже засчитаны';
         return;
       }
       const prereq = quizPrerequisitesMet(step);
@@ -1229,6 +1326,8 @@
     }
 
     async function submitQuiz(quizType, formId, quiz, btnId, msgId, nextBtnId) {
+      if (quizType === 'comprehension' && lessonState.comprehensionAllCorrect) return;
+      if (quizType === 'meaning_analysis' && lessonState.meaningAllCorrect) return;
       if (quizType === 'comprehension' && CFG.reading && !lessonState.readingDone) {
         showQuizVerdict(formId, 'err', 'Сначала прочитайте сказку по предложениям в блоке «' + (CFG.stepLabels.reading_practice || 'Практика чтения') + '» выше.');
         return;
@@ -1261,6 +1360,7 @@
       if (failedStatus) {
         const revealCorrect = quizRevealCorrect(formId, data.results);
         markQuizResults(formId, data.results, revealCorrect);
+        applyQuizResultLocks(formId, data.results, false);
         showQuizVerdict(formId, 'err', formatQuizVerdict(data, quiz, false, formId));
         document.getElementById(btnId).disabled = false;
         syncQuizButtons();
@@ -1270,6 +1370,7 @@
       const revealCorrect = quizRevealCorrect(formId, data.results);
       if (allOk) clearQuizWrongAttempts(formId);
       markQuizResults(formId, data.results, revealCorrect);
+      applyQuizResultLocks(formId, data.results, allOk);
       showQuizVerdict(formId, 'ok', formatQuizVerdict(data, quiz, true, formId));
       markDone(quizType === 'comprehension' ? 'step-comprehension' : 'step-meaning');
       if (quizType === 'comprehension') {
@@ -1292,6 +1393,7 @@
     }
 
     async function submitRetelling(formId, quiz, btnId, msgId) {
+      if (lessonState.retellingAllCorrect) return;
       if (CFG.meaning && !lessonState.meaningDone) {
         showQuizVerdict(formId, 'err', 'Сначала отправьте ответы в блоке «' + (CFG.stepLabels.tasks || 'Выполняем задания') + '» выше.');
         return;
@@ -1320,6 +1422,7 @@
       if (failedStatus) {
         const revealCorrect = quizRevealCorrect(formId, data.results);
         markQuizResults(formId, data.results, revealCorrect);
+        applyQuizResultLocks(formId, data.results, false);
         showQuizVerdict(formId, 'err', formatRetellingVerdict(false));
         document.getElementById(btnId).disabled = false;
         syncQuizButtons();
@@ -1329,6 +1432,7 @@
       const revealCorrect = quizRevealCorrect(formId, data.results);
       if (allOk) clearQuizWrongAttempts(formId);
       markQuizResults(formId, data.results, revealCorrect);
+      applyQuizResultLocks(formId, data.results, allOk);
       showQuizVerdict(formId, 'ok', formatRetellingVerdict(true));
       markDone('step-retelling');
       lessonState.retellingDone = true;
@@ -1661,9 +1765,18 @@
         });
         lockReadingPractice();
       }
-      if (lessonState.comprehensionDone) markDone('step-comprehension');
-      if (lessonState.meaningDone) markDone('step-meaning');
-      if (lessonState.retellingDone) markDone('step-retelling');
+      if (lessonState.comprehensionDone) {
+        markDone('step-comprehension');
+        restoreQuizLocks('form-comprehension', 'comprehension');
+      }
+      if (lessonState.meaningDone) {
+        markDone('step-meaning');
+        restoreQuizLocks('form-meaning', 'meaning');
+      }
+      if (lessonState.retellingDone) {
+        markDone('step-retelling');
+        restoreQuizLocks('form-retelling', 'retelling');
+      }
       if (lessonState.creativeDone) markDone('step-creative');
       syncQuizButtons();
       updateEmotionButton();
