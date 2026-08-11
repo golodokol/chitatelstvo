@@ -29,9 +29,9 @@
   }
 
   function initChildSwitch() {
-    var switcher = document.querySelector('.chit-child-switch');
+    var switcher = document.querySelector('.chit-child-picker');
     if (!switcher) return;
-    var buttons = switcher.querySelectorAll('.chit-child-switch__btn');
+    var buttons = switcher.querySelectorAll('.chit-child-picker__card');
     var rooms = document.querySelectorAll('.chit-room');
     var storageKey = 'chit-active-room';
 
