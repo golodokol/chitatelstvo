@@ -66,7 +66,13 @@
           <div class="chit-room__brand">
             <div class="chit-room__hello">
               <p class="chit-room__greet">Привет, <strong>{{ cab.name }}</strong>!</p>
-              <p class="chit-room__level-line">Ты уже на уровне <strong>{{ cab.level }}</strong></p>
+              <p class="chit-room__level-line">
+                {% if cab.level == 'Старт' %}
+                Ты ещё на уровне <strong>{{ cab.level }}</strong>
+                {% else %}
+                Ты уже на уровне <strong>{{ cab.level }}</strong>
+                {% endif %}
+              </p>
             </div>
           </div>
           {% if cab.companion.lesson_url %}
