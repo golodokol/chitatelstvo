@@ -1,6 +1,6 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты (один раз):
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=22"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=24"></script>
  * Важно: только ОДИН HTML-блок со скриптом на странице /oplata (удалить старые v=6, v=16).
  */
 (function () {
@@ -336,7 +336,6 @@
     window.tcart.updated = Math.floor(Date.now() / 1000);
     normalizeCartItem(tariff);
     refreshTcartTotals();
-    setTimeout(function () { normalizeCartItem(tariff); refreshTcartTotals(); }, 300);
     return !!(window.tcart.products && window.tcart.products.length);
   }
 
@@ -363,39 +362,50 @@
     return !!(window.tcart && window.tcart.promocode && window.tcart.promocode.message === 'OK');
   }
 
-  function recalcPromoTotals() {
-    if (!window.tcart || typeof window.tcart__calcPromocode !== 'function') return null;
-    var base = window.tcart.prodamount;
+  function catalogBasePrice(tariff) {
+    var p = ORDER_PRODUCTS[tariff];
+    return p ? p.price : null;
+  }
+
+  function recalcPromoTotals(tariff) {
+    if (!window.tcart) return null;
+    var base = catalogBasePrice(tariff);
+    if (typeof base !== 'number') base = window.tcart.prodamount;
     if (typeof base !== 'number') base = window.tcart.amount;
     if (typeof base !== 'number') return null;
-    window.tcart.total = window.tcart__calcPromocode(base);
+    window.tcart.prodamount = base;
+    if (hasActivePromo() && typeof window.tcart__calcPromocode === 'function') {
+      window.tcart.total = window.tcart__calcPromocode(base);
+      window.tcart.amount = window.tcart.total;
+    } else {
+      window.tcart.total = base;
+      window.tcart.amount = base;
+    }
     return window.tcart.total;
   }
 
-  function applyPromoPricingToCart() {
-    if (!hasActivePromo() || !window.tcart) return;
-    var total = recalcPromoTotals();
-    if (typeof total !== 'number' || isNaN(total) || total <= 0) return;
-    var products = window.tcart.products || [];
-    if (products.length !== 1) return;
-    var item = products[0];
-    var qty = parseInt(item.quantity, 10) || 1;
-    var unitPrice = Math.round((total / qty) * 100) / 100;
-    item.price = unitPrice;
-    item.amount = Math.round(unitPrice * qty * 100) / 100;
-    window.tcart.amount = total;
-    window.tcart.updated = Math.floor(Date.now() / 1000);
-    if (typeof window.tcart__saveLocalObj === 'function') window.tcart__saveLocalObj();
-  }
-
-  function finalizeCartForPayment(tariff, options) {
-    options = options || {};
+  function syncCartForPayment(tariff) {
     if (!window.tcart) return;
-    normalizeCartItem(tariff, { keepPricing: hasActivePromo() });
-    if (hasActivePromo()) applyPromoPricingToCart();
+    var p = ORDER_PRODUCTS[tariff];
+    if (!p) return;
+    normalizeCartItem(tariff);
+    var total = p.price;
+    if (hasActivePromo() && typeof window.tcart__calcPromocode === 'function') {
+      total = window.tcart__calcPromocode(p.price);
+    }
+    var products = window.tcart.products || [];
+    if (products.length === 1) {
+      var item = products[0];
+      item.quantity = 1;
+      item.price = total;
+      item.amount = total;
+      window.tcart.products = [item];
+    }
+    window.tcart.amount = total;
+    window.tcart.total = total;
+    window.tcart.prodamount = total;
+    window.tcart.updated = Math.floor(Date.now() / 1000);
     syncPaymentSystem();
-    if (options.redraw !== false) refreshTcartTotals();
-    if (hasActivePromo()) applyPromoPricingToCart();
     if (typeof window.tcart__saveLocalObj === 'function') window.tcart__saveLocalObj();
   }
 
@@ -429,7 +439,9 @@
       window.tcart.prodamount = p.price;
       window.tcart.total = p.price;
     } else {
-      applyPromoPricingToCart();
+      item.price = p.price;
+      item.amount = p.price;
+      recalcPromoTotals(tariff);
     }
     window.tcart.updated = Math.floor(Date.now() / 1000);
     if (typeof window.tcart__saveLocalObj === 'function') window.tcart__saveLocalObj();
@@ -453,9 +465,7 @@
     window._chitPayGuard = true;
     function onPayAttempt() {
       var checkout = readCheckout();
-      if (checkout && checkout.tariff) {
-        finalizeCartForPayment(checkout.tariff, { redraw: false });
-      }
+      if (checkout && checkout.tariff) syncCartForPayment(checkout.tariff);
       applyCheckoutFields(checkout);
     }
     document.addEventListener('click', function (e) {
@@ -500,13 +510,9 @@
     checkoutFinished = true;
     clearSafetyTimer();
     applyPromoCode(data.promo_code, function () {
-      finalizeCartForPayment(data.tariff);
+      normalizeCartItem(data.tariff);
       applyCheckoutFields(data);
-      setTimeout(function () {
-        finalizeCartForPayment(data.tariff);
-        applyCheckoutFields(data);
-        fixFormLayout();
-      }, 400);
+      refreshTcartTotals();
       openCartModal();
       hidePayShell();
       setTimeout(function () { applyCheckoutFields(data); fixFormLayout(); }, 500);
