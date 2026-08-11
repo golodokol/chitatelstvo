@@ -1839,6 +1839,42 @@ body.chit-cabinet {
   background: var(--cream-warm);
 }
 
+.chit-child-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  background: rgba(91, 127, 166, 0.08);
+  border-radius: 14px;
+}
+
+.chit-child-switch__btn {
+  flex: 1 1 140px;
+  min-width: 0;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--blue-deep);
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.chit-child-switch__btn.is-active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.chit-child-switch__btn:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
 body.chit-cabinet--parent {
   background:
     radial-gradient(ellipse 70% 40% at 50% -10%, rgba(91, 127, 166, 0.1), transparent),
@@ -1951,6 +1987,7 @@ body.chit-cabinet--parent {
 @media (max-width: 600px) {
   .chit-tabs { width: 100%; }
   .chit-tabs__btn { font-size: 0.75rem; padding: 10px 8px; white-space: normal; line-height: 1.2; }
+  .chit-child-switch__btn { flex: 1 1 100%; font-size: 0.85rem; padding: 10px 14px; }
 }
 
 .chit-room__hero {

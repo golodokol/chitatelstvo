@@ -28,6 +28,42 @@
     showTab('parent');
   }
 
+  function initChildSwitch() {
+    var switcher = document.querySelector('.chit-child-switch');
+    if (!switcher) return;
+    var buttons = switcher.querySelectorAll('.chit-child-switch__btn');
+    var rooms = document.querySelectorAll('.chit-room');
+    var storageKey = 'chit-active-room';
+
+    function showRoom(roomId) {
+      if (!roomId) return;
+      buttons.forEach(function (btn) {
+        var active = btn.getAttribute('data-room') === roomId;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      rooms.forEach(function (room) {
+        var show = room.id === roomId;
+        room.hidden = !show;
+      });
+      try { sessionStorage.setItem(storageKey, roomId); } catch (e) {}
+    }
+
+    var saved = null;
+    try { saved = sessionStorage.getItem(storageKey); } catch (e) {}
+    if (saved && document.getElementById(saved)) {
+      showRoom(saved);
+    }
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        showRoom(btn.getAttribute('data-room'));
+      });
+    });
+  }
+
+  initChildSwitch();
+
   function showRoomToast(data) {
     if (!data || !data.toast_id) return;
     var key = 'chit-slovik-toast-' + data.toast_id;

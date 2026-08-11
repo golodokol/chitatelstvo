@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260730d">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260811d">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -19,6 +19,22 @@
         <button type="button" class="chit-tabs__btn" role="tab" aria-selected="false" data-tab="parent">Для родителей</button>
       </nav>
     </header>
+
+    {% if children|length > 1 %}
+    <nav class="chit-child-switch" role="tablist" aria-label="Выбор ребёнка">
+      {% for child in children %}
+      <button
+        type="button"
+        class="chit-child-switch__btn{% if loop.first %} is-active{% endif %}"
+        role="tab"
+        aria-selected="{{ 'true' if loop.first else 'false' }}"
+        aria-controls="room-{{ loop.index }}"
+        data-room="room-{{ loop.index }}"
+        id="child-tab-{{ loop.index }}"
+      >{{ child.name }}</button>
+      {% endfor %}
+    </nav>
+    {% endif %}
 
     <!-- ===== Ребёнок: игровая комната ===== -->
     <div class="chit-view chit-view--child" data-view="child">
@@ -41,7 +57,7 @@
 
       {% for child in children %}
       {% set cab = child.cabinet %}
-      <article class="chit-room" id="room-{{ loop.index }}">
+      <article class="chit-room" id="room-{{ loop.index }}"{% if children|length > 1 and not loop.first %} hidden{% endif %} aria-labelledby="child-tab-{{ loop.index }}">
         {% if cab.recent_toast %}
         <script type="application/json" class="chit-room-toast-data">{{ cab.recent_toast | tojson }}</script>
         {% endif %}
@@ -765,6 +781,6 @@
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
   <script src="/static/chest_reveal.js?v=20260730d"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
-  <script src="/static/progress_cabinet.js?v=20260730d"></script>
+  <script src="/static/progress_cabinet.js?v=20260811d"></script>
 </body>
 </html>
