@@ -5,43 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   {% include "_favicon.html" %}
-  <title>Читательство · Спасибо за оплату</title>
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260811a">
+  <title>Читательство · После оплаты</title>
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260811b">
 </head>
 <body class="chit-student chit-thank-page">
   <div class="chit-wrap chit-wrap--wide">
-    <section class="chit-slovik-intro chit-thank-hero" aria-label="Спасибо за оплату">
+    <section class="chit-slovik-intro chit-thank-hero" aria-label="После оплаты">
       <div class="chit-slovik-intro__visual">
         <img
           class="chit-slovik-intro__img"
-          src="{{ slovik_victory_url }}"
-          alt="Словик радуется — оплата прошла успешно"
+          src="{{ slovik_main_url }}"
+          alt="Словик — помощник в приключениях"
           loading="eager"
         >
       </div>
       <div class="chit-slovik-intro__text">
-        <h1 class="chit-thank-title">Вы в Читательстве!</h1>
-        <p class="chit-slovik-intro__hi">Ура! Оплата прошла успешно ✨</p>
+        <h1 class="chit-thank-title">Спасибо!</h1>
+        <p class="chit-slovik-intro__hi">Привет! Я — <strong>Словик</strong> ✨</p>
         <p class="chit-slovik-intro__body">
-          Добро пожаловать в онлайн-школу литературного чтения. Скоро начнётся первое приключение — я буду рядом на каждом уроке.
+          Вы вернулись с платёжной страницы. Ниже — что делать дальше: всё зависит от того, прошла ли оплата до конца.
         </p>
       </div>
     </section>
 
-    <section class="chit-card chit-thank-steps" aria-labelledby="thank-next-title">
-      <h2 id="thank-next-title" class="chit-thank-steps__title">Что дальше?</h2>
+    <section class="chit-card chit-thank-outcome chit-thank-outcome--ok" aria-labelledby="thank-ok-title">
+      <h2 id="thank-ok-title" class="chit-thank-steps__title">Если оплата прошла успешно</h2>
       <ol class="chit-thank-steps__list">
         <li>На email, который вы указали при записи, придёт письмо со <strong>ссылкой на личную страницу</strong> ребёнка.</li>
         <li>Сохраните ссылку в закладки браузера — там будут уроки, Словики и прогресс.</li>
-        <li>Если письма нет в течение 10–15 минут, проверьте папку «Спам» или напишите нам:
-          <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>,
-          <a href="tel:{{ contact_phone_tel }}">{{ contact_phone }}</a>.
-        </li>
+        <li>Если письма нет в течение 10–15 минут, проверьте папку «Спам».</li>
       </ol>
     </section>
 
+    <section class="chit-card chit-thank-outcome chit-thank-outcome--retry" aria-labelledby="thank-fail-title">
+      <h2 id="thank-fail-title" class="chit-thank-steps__title">Если оплата не прошла или вы закрыли окно оплаты</h2>
+      <ol class="chit-thank-steps__list">
+        <li>Запись пока <strong>не завершена</strong> — доступ к урокам откроется только после успешной оплаты.</li>
+        <li>Вернитесь на страницу оплаты и попробуйте ещё раз. Деньги списываются только при успешном платеже.</li>
+        <li>Если списание прошло, а письма нет — напишите нам, мы проверим заказ вручную.</li>
+      </ol>
+    </section>
+
+    <section class="chit-card chit-thank-contact" aria-label="Контакты">
+      <p class="chit-thank-contact__text">
+        Вопросы по оплате или доступу:
+        <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>,
+        <a href="tel:{{ contact_phone_tel }}">{{ contact_phone }}</a>.
+      </p>
+    </section>
+
     <p class="chit-thank-actions">
-      <a class="chit-btn chit-btn--hero" href="{{ site_url }}">На главную</a>
+      <a class="chit-btn chit-btn--hero" href="{{ pay_url }}">Вернуться к оплате</a>
+      <a class="chit-btn chit-btn--outline chit-thank-actions__secondary" href="{{ site_url }}">На главную</a>
     </p>
 
     <footer class="chit-thank-foot">

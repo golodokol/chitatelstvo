@@ -13,7 +13,6 @@ from lessons.schedule import (
 )
 from lessons.single_content import content_slug_for_single
 from gamification.sloviki import slovik_url
-from gamification.sloviki import slovik_url
 from services.checkout_urls import build_meeting_addon_pay_url
 
 router = APIRouter(tags=["pages"])
@@ -36,13 +35,14 @@ PAGE_CONTEXT = {
 
 @router.get("/spasibo", response_class=HTMLResponse)
 def page_spasibo(request: Request) -> HTMLResponse:
-    """Страница после успешной оплаты (Success URL для ST100)."""
+    """Страница возврата с платёжного модуля (успех и неуспех оплаты)."""
     return templates.TemplateResponse(
         request,
         "pages/spasibo.html",
         {
             **PAGE_CONTEXT,
-            "slovik_victory_url": slovik_url("victory"),
+            "pay_url": f"{SITE_URL}/oplata",
+            "slovik_main_url": slovik_url("main"),
         },
     )
 

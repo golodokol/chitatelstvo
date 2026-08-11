@@ -3813,9 +3813,51 @@ a.chit-lesson-companion--link.is-disabled {
   color: var(--blue-deep, #2c4a6e);
 }
 
+.chit-thank-steps {
+  margin-bottom: 16px;
+}
+
+.chit-thank-outcome + .chit-thank-outcome {
+  margin-top: 0;
+}
+
+.chit-thank-outcome--ok {
+  border-left: 4px solid #5a9a57;
+}
+
+.chit-thank-outcome--retry {
+  border-left: 4px solid #c9a227;
+}
+
+.chit-thank-contact {
+  margin-top: 0;
+  background: rgba(91, 127, 166, 0.06);
+}
+
+.chit-thank-contact__text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink, #2c2416);
+}
+
+.chit-thank-contact__text a {
+  color: var(--blue-mid, #5b7fa6);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .chit-thank-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
   margin: 24px 0 0;
-  text-align: center;
+}
+
+.chit-thank-actions__secondary {
+  margin: 0;
 }
 
 .chit-thank-foot {
