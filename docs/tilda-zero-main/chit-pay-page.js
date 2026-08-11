@@ -1,6 +1,6 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты (один раз):
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=25"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=26"></script>
  * Важно: только ОДИН HTML-блок со скриптом на странице /oplata (удалить старые v=6, v=16).
  */
 (function () {
@@ -8,6 +8,7 @@
   window._chitPayPageInited = true;
 
   var STORAGE_KEY = 'chit_checkout';
+  var PROMO_FAIL_KEY = 'chit_promo_failed';
   var ST100_RECID = '2380214471';
   var payShellTimer = null;
   var safetyTimer = null;
@@ -237,7 +238,7 @@
       if (btn && !btn.textContent.trim()) btn.textContent = 'Применить';
     });
     var code = data && String(data.promo_code || '').trim();
-    if (!code) return;
+    if (!code || isPromoBlocked(code)) return;
     setField('promo_code', code);
     var input = document.querySelector('.t706 .t-inputpromocode');
     var btn = document.querySelector('.t706 .t-inputpromocode__btn');
@@ -362,6 +363,58 @@
     return !!(window.tcart && window.tcart.promocode && window.tcart.promocode.message === 'OK');
   }
 
+  function promoAlreadyApplied(code) {
+    if (!code || !hasActivePromo()) return false;
+    var promo = window.tcart.promocode;
+    var saved = String(promo.code || promo.promocode || '').trim();
+    return saved.toLowerCase() === String(code).trim().toLowerCase();
+  }
+
+  function isPromoBlocked(code) {
+    code = String(code || '').trim().toLowerCase();
+    if (!code) return false;
+    try {
+      var raw = sessionStorage.getItem(PROMO_FAIL_KEY);
+      var list = raw ? JSON.parse(raw) : [];
+      return list.indexOf(code) >= 0;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function markPromoBlocked(code) {
+    code = String(code || '').trim().toLowerCase();
+    if (!code) return;
+    try {
+      var raw = sessionStorage.getItem(PROMO_FAIL_KEY);
+      var list = raw ? JSON.parse(raw) : [];
+      if (list.indexOf(code) < 0) list.push(code);
+      sessionStorage.setItem(PROMO_FAIL_KEY, JSON.stringify(list));
+    } catch (e) {}
+  }
+
+  function clearCheckoutPromo(data) {
+    if (data) delete data.promo_code;
+    try {
+      var stored = readCheckout();
+      if (stored) {
+        delete stored.promo_code;
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+      }
+    } catch (e) {}
+    setField('promo_code', '');
+    var input = document.querySelector('.t706 .t-inputpromocode');
+    var btn = document.querySelector('.t706 .t-inputpromocode__btn');
+    if (input) input.value = '';
+    if (btn) btn.style.display = 'none';
+    if (window.tcart) delete window.tcart.promocode;
+  }
+
+  function saveCheckout(data) {
+    if (!data) return;
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
   function catalogBasePrice(tariff) {
     var p = ORDER_PRODUCTS[tariff];
     return p ? p.price : null;
@@ -411,15 +464,24 @@
 
   function applyPromoCode(code, cb) {
     code = String(code || '').trim();
-    if (!code) { if (cb) cb(); return; }
+    if (!code) { if (cb) cb(false); return; }
+    if (isPromoBlocked(code)) { if (cb) cb(false); return; }
+    if (promoAlreadyApplied(code)) { if (cb) cb(true); return; }
     var input = document.querySelector('.t706 .t-inputpromocode');
     var btn = document.querySelector('.t706 .t-inputpromocode__btn');
-    if (!input || !btn) { if (cb) cb(); return; }
+    if (!input || !btn) { if (cb) cb(false); return; }
     setField('promo_code', code);
     input.value = code;
     btn.style.display = 'table-cell';
     try { btn.click(); } catch (e) {}
-    setTimeout(function () { refreshTcartTotals(); if (cb) cb(); }, 600);
+    setTimeout(function () {
+      refreshTcartTotals();
+      var ok = promoAlreadyApplied(code);
+      if (!ok) {
+        markPromoBlocked(code);
+      }
+      if (cb) cb(ok);
+    }, 900);
   }
 
   function bindPayHandlers(tariff) {
@@ -471,7 +533,11 @@
     if (checkoutFinished) return;
     checkoutFinished = true;
     clearSafetyTimer();
-    applyPromoCode(data.promo_code, function () {
+    applyPromoCode(data.promo_code, function (ok) {
+      if (!ok && data.promo_code) {
+        clearCheckoutPromo(data);
+        saveCheckout(data);
+      }
       normalizeCartItem(data.tariff);
       applyCheckoutFields(data);
       refreshTcartTotals();
