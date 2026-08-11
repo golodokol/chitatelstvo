@@ -12,6 +12,8 @@ from lessons.schedule import (
     module_week_for_tale,
 )
 from lessons.single_content import content_slug_for_single
+from gamification.sloviki import slovik_url
+from gamification.sloviki import slovik_url
 from services.checkout_urls import build_meeting_addon_pay_url
 
 router = APIRouter(tags=["pages"])
@@ -38,7 +40,10 @@ def page_spasibo(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         request,
         "pages/spasibo.html",
-        PAGE_CONTEXT,
+        {
+            **PAGE_CONTEXT,
+            "slovik_victory_url": slovik_url("victory"),
+        },
     )
 
 

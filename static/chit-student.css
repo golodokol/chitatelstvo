@@ -3763,3 +3763,78 @@ a.chit-lesson-companion--link.is-disabled {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* —— Страница «Спасибо» после оплаты —— */
+.chit-thank-page {
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+}
+
+.chit-thank-hero {
+  margin-bottom: 20px;
+}
+
+.chit-thank-title {
+  margin: 0 0 10px;
+  font-family: 'Literata', Georgia, serif;
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  font-weight: 700;
+  color: var(--blue-deep, #2c4a6e);
+  line-height: 1.25;
+}
+
+.chit-thank-steps__title {
+  margin: 0 0 14px;
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue-deep, #2c4a6e);
+}
+
+.chit-thank-steps__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--ink, #2c2416);
+}
+
+.chit-thank-steps__list li + li {
+  margin-top: 10px;
+}
+
+.chit-thank-steps__list a {
+  color: var(--blue-mid, #5b7fa6);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.chit-thank-steps__list a:hover {
+  color: var(--blue-deep, #2c4a6e);
+}
+
+.chit-thank-actions {
+  margin: 24px 0 0;
+  text-align: center;
+}
+
+.chit-thank-foot {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted, #6b5d4d);
+}
+
+.chit-thank-foot a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.chit-thank-foot a:hover {
+  text-decoration: underline;
+}
+
+.chit-thank-foot span {
+  margin: 0 6px;
+  opacity: 0.55;
+}

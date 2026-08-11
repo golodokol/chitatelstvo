@@ -1,20 +1,57 @@
-{% extends "legal/layout.html" %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  {% include "_favicon.html" %}
+  <title>Читательство · Спасибо за оплату</title>
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260811a">
+</head>
+<body class="chit-student chit-thank-page">
+  <div class="chit-wrap chit-wrap--wide">
+    <section class="chit-slovik-intro chit-thank-hero" aria-label="Спасибо за оплату">
+      <div class="chit-slovik-intro__visual">
+        <img
+          class="chit-slovik-intro__img"
+          src="{{ slovik_victory_url }}"
+          alt="Словик радуется — оплата прошла успешно"
+          loading="eager"
+        >
+      </div>
+      <div class="chit-slovik-intro__text">
+        <h1 class="chit-thank-title">Вы в Читательстве!</h1>
+        <p class="chit-slovik-intro__hi">Ура! Оплата прошла успешно ✨</p>
+        <p class="chit-slovik-intro__body">
+          Добро пожаловать в онлайн-школу литературного чтения. Скоро начнётся первое приключение — я буду рядом на каждом уроке.
+        </p>
+      </div>
+    </section>
 
-{% block title %}Спасибо за запись — Читательство{% endblock %}
+    <section class="chit-card chit-thank-steps" aria-labelledby="thank-next-title">
+      <h2 id="thank-next-title" class="chit-thank-steps__title">Что дальше?</h2>
+      <ol class="chit-thank-steps__list">
+        <li>На email, который вы указали при записи, придёт письмо со <strong>ссылкой на личную страницу</strong> ребёнка.</li>
+        <li>Сохраните ссылку в закладки браузера — там будут уроки, Словики и прогресс.</li>
+        <li>Если письма нет в течение 10–15 минут, проверьте папку «Спам» или напишите нам:
+          <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>,
+          <a href="tel:{{ contact_phone_tel }}">{{ contact_phone }}</a>.
+        </li>
+      </ol>
+    </section>
 
-{% block content %}
-<h1>Вы в Читательстве!</h1>
-<p class="sub">Оплата прошла успешно. Добро пожаловать в онлайн-школу литературного чтения.</p>
+    <p class="chit-thank-actions">
+      <a class="chit-btn chit-btn--hero" href="{{ site_url }}">На главную</a>
+    </p>
 
-<p>На email, который вы указали при записи, придёт письмо со <strong>ссылкой на личную страницу</strong> ребёнка. Сохраните её в закладки браузера — там будут уроки, баллы и прогресс.</p>
-
-<p>Если письма нет в течение 10–15 минут, проверьте папку «Спам» или напишите нам:</p>
-<ul>
-  <li><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
-  <li><a href="tel:{{ contact_phone_tel }}">{{ contact_phone }}</a></li>
-</ul>
-
-<p style="margin-top: 32px;">
-  <a href="{{ site_url }}" style="display:inline-block;padding:12px 24px;background:#5b7fa6;color:#fff;border-radius:10px;text-decoration:none;font-family:'Nunito',sans-serif;font-weight:700;">На главную</a>
-</p>
-{% endblock %}
+    <footer class="chit-thank-foot">
+      <a href="{{ legal_oferta }}">Оферта</a>
+      <span aria-hidden="true">·</span>
+      <a href="{{ legal_politika }}">Политика</a>
+      <span aria-hidden="true">·</span>
+      <a href="{{ legal_rekvizity }}">Реквизиты</a>
+    </footer>
+  </div>
+  <script src="/static/chit-image-guard.js?v=20260708a"></script>
+</body>
+</html>
