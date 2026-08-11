@@ -385,7 +385,7 @@ function lessonOpenLabel(stage, index) {
   return 'Урок откроется: ' + lessonPrefix + s.lessons[index];
 }
 
-/** Можно ли ещё докупить встречу. Поток 15 июля закрыт; со старта 10 августа — если дата в будущем. */
+/** Можно ли ещё докупить встречу. Блок 1 с преподавателем закрыт; блок 2 — если дата в будущем. */
 function singleMeetingAddonAvailable(stage, taleNum) {
   if (String(stage) === '1') return false;
   var dates = CHIT_SINGLE_MEETINGS_ISO[String(stage)];
@@ -396,7 +396,7 @@ function singleMeetingAddonAvailable(stage, taleNum) {
 
 function singleMeetingUnavailableLabel(stage) {
   if (String(stage) === '1') {
-    return 'Только онлайн. Занятия с преподавателем по сказкам потока 15 июля не проводятся — со старта 10 августа';
+    return 'Только онлайн. Живые занятия по сказкам блока 1 сейчас не проводятся — выберите блок 2';
   }
   return 'Только онлайн. Занятие-квест по этой сказке уже нельзя докупить';
 }
@@ -481,8 +481,8 @@ function buildAccordion(containerId, items) {
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
         courseLink +
-        renderPeriod('Старт курса 15 июля', item.june, '1', item.group) +
-        renderPeriod('Старт 10 августа', item.july, '2', item.group) +
+        renderPeriod('Блок 1 · сказки 1–4', item.june, '1', item.group) +
+        renderPeriod('Блок 2 · сказки 5–8', item.july, '2', item.group) +
       '</div>';
     el.appendChild(div);
   });
@@ -531,7 +531,7 @@ if (faqList) {
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990 };
-  var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
+  var STAGE_LABEL = { '1': 'Блок 1 · сказки 1–4', '2': 'Блок 2 · сказки 5–8' };
   var ORDER_PRODUCTS = {
     single: { title: 'Читательство · Разовое', price: 799, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
@@ -665,7 +665,7 @@ if (faqList) {
 
   function applyEnrollDefaults() {
     // Сразу заполняем форму: так не теряются на пустых шагах.
-    // Класс и основной тариф; старт — 10 августа (этап 1 с преподавателем закрыт).
+    // Класс и основной тариф; для «С преподавателем» — блок 2.
     if (!state.group) {
       state.group = 'grade-1';
       var gBtn = document.querySelector('#chit-groups-basic [data-group="grade-1"]');
@@ -685,9 +685,9 @@ if (faqList) {
       }
     }
     if (!state.stage) {
-      state.stage = '2';
+      state.stage = (state.tariff === 'with_teacher' && WITH_TEACHER_STAGE1_CLOSED) ? '2' : '1';
       document.querySelectorAll('#chit-stages .pill').forEach(function(p) {
-        p.classList.toggle('is-active', p.getAttribute('data-stage') === '2');
+        p.classList.toggle('is-active', p.getAttribute('data-stage') === state.stage);
       });
     }
     showDateBox();
@@ -1621,13 +1621,13 @@ if (faqList) {
       } else if (state.stage) {
         html += '<br><span class="summary-empty">Выберите сказку</span>';
       } else {
-        html += '<br><span class="summary-empty">Выберите дату и сказку</span>';
+        html += '<br><span class="summary-empty">Выберите блок и сказку</span>';
       }
     } else if (state.stage) {
       html += '<br>' + STAGE_LABEL[state.stage] + ' · 4 сказки';
       if (state.tariff === 'with_teacher') html += ' + 4 встречи';
     } else {
-      html += '<br><span class="summary-empty">Выберите дату старта</span>';
+      html += '<br><span class="summary-empty">Выберите блок программы</span>';
     }
     elSummary.innerHTML = html;
     updatePayButton();
@@ -1661,7 +1661,7 @@ if (faqList) {
       elPreview.style.display = 'block';
       elPreview.innerHTML =
         '<div class="block-preview__banner">✓ В тариф уже входят все 4 сказки — выбирать не нужно</div>' +
-        '<div class="block-preview__title">Программа этого старта' +
+        '<div class="block-preview__title">Программа этого блока' +
         (state.tariff === 'with_teacher' ? ' · встречи по четвергам' : '') +
         '</div>' +
         '<div class="block-preview__cards">' +
@@ -1687,12 +1687,12 @@ if (faqList) {
       if (state.tariff === 'single') {
         guide.textContent = onlyOneStage
           ? 'Нажмите на одну сказку в списке — её и оплатите.'
-          : 'Выберите дату, затем нажмите на одну сказку в списке — её и оплатите.';
+          : 'Выберите блок, затем нажмите на одну сказку в списке — её и оплатите.';
       } else if (onlyOneStage) {
         // Одна дата уже выбрана — не просим «выберите дату старта»
         guide.textContent = 'Список ниже — программа блока: все 4 сказки уже входят в тариф, выбирать не нужно.';
       } else {
-        guide.textContent = 'Выберите дату старта. Список ниже — программа блока: все 4 сказки уже входят в тариф, выбирать не нужно.';
+        guide.textContent = 'Выберите блок. Список ниже — все 4 сказки уже входят в тариф.';
       }
     }
     refreshStageAvailability();
@@ -1706,13 +1706,13 @@ if (faqList) {
     var closed = state.tariff === 'with_teacher' && WITH_TEACHER_STAGE1_CLOSED;
     if (root) root.classList.toggle('is-with-teacher-stage1-closed', closed);
     if (stage1) {
-      // Полностью скрываем старт 15 июля для «С преподавателем»
+      // Скрываем блок 1 для «С преподавателем»
       stage1.hidden = closed;
       stage1.style.setProperty('display', closed ? 'none' : '', 'important');
       stage1.classList.toggle('is-disabled', closed);
       stage1.disabled = closed;
       stage1.setAttribute('aria-disabled', closed ? 'true' : 'false');
-      stage1.title = closed ? 'Набор на этап 1 с преподавателем закрыт' : '';
+      stage1.title = closed ? 'Блок 1 с преподавателем сейчас недоступен' : '';
       if (closed) stage1.classList.remove('is-active');
     }
     if (note) note.hidden = !closed;
@@ -1763,7 +1763,7 @@ if (faqList) {
   document.getElementById('chit-stages').onclick = function(e) {
     var btn = e.target.closest('[data-stage]'); if (!btn || btn.disabled || btn.classList.contains('is-disabled') || btn.hidden) return;
     if (state.tariff === 'with_teacher' && WITH_TEACHER_STAGE1_CLOSED && btn.getAttribute('data-stage') === '1') {
-      alert('Набор на этап 1 с преподавателем закрыт. Выберите старт 10 августа.');
+      alert('На тарифе «С преподавателем» блок 1 сейчас недоступен. Выберите блок 2.');
       return;
     }
     state.stage = btn.getAttribute('data-stage'); state.taleNum = 0;
@@ -1839,7 +1839,7 @@ if (faqList) {
   window.chitValidateProgram = function() {
     if (!hidMid.value) { alert('Выберите класс и формат.'); document.getElementById('program').scrollIntoView({behavior:'smooth'}); return false; }
     if (state.tariff === 'with_teacher' && WITH_TEACHER_STAGE1_CLOSED && state.stage === '1') {
-      alert('Набор на этап 1 с преподавателем закрыт. Выберите старт 10 августа.');
+      alert('На тарифе «С преподавателем» блок 1 сейчас недоступен. Выберите блок 2.');
       elDateBox.classList.add('is-visible');
       return false;
     }
@@ -1918,7 +1918,7 @@ if (faqList) {
     { q: '«Книги нужны, чтобы детям стало чуть менее одиноко — нашёлся кто-то, кто их понимает»', c: 'мы строим курс на этом же — понять героя, а не зазубрить пересказ' },
     { q: '«Читать — значит мечтать чужими головами»', c: 'каждый урок — погружение в мир героя' },
     { q: '«Сказка — ложь, да в ней намёк…»', c: 'учимся находить смысл между строк' },
-    { q: '«Лето — это маленькая жизнь»', c: '8 сказок — целое летнее путешествие в книгу' }
+    { q: '«Лето — это маленькая жизнь»', c: '8 сказок — целое путешествие в книгу' }
   ];
   var quoteIdx = 0;
   var quoteEl = document.getElementById('quote-hero');
@@ -1938,7 +1938,7 @@ if (faqList) {
 
   var BOOK_TEXTS = [
     '<strong style="color:var(--blue)">Разовое</strong> — одна сказка на платформе (<span class="hero-book-text__nb">799&nbsp;₽</span>)',
-    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <span class="hero-book-text__nb"><strong>15&nbsp;июля</strong> и <strong>10&nbsp;августа</strong></span>, но присоединиться можно в любой момент',
+    '<strong style="color:var(--blue)">8 сказок</strong> в каждой программе · <span class="hero-book-text__nb">свой темп или с преподавателем</span> · начать можно с любой сказки',
     '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
   ];
   var bookStack = document.querySelector('.book-stack');

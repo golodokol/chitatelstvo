@@ -12,14 +12,14 @@
       <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="180" height="180">
     </a>
     <nav class="site-nav" aria-label="Разделы страницы">
-      <a href="#how-it-works">Как устроено</a>
       <a href="#programs">Программы</a>
+      <a href="#how-it-works">Как проходит</a>
       <a href="#tariffs">Тарифы</a>
-      <a href="#quiz">Подарок</a>
+      <a href="#proof">О школе</a>
       <a href="#faq">Вопросы</a>
     </nav>
     <div class="site-header__right">
-      <a class="header-cta" href="#program">Записаться</a>
+      <a class="header-cta" href="#programs">Выбрать программу</a>
     </div>
   </div>
 </header>
@@ -34,12 +34,12 @@
 
     <div class="hero__content">
       <h1>Понимать книги — с удовольствием</h1>
-      <p class="hero__lead">Онлайн-школа литературного чтения: видео, вопросы на понимание и задания на смысл — ребёнок погружается в сказку, а вы видите прогресс на личной странице</p>
-      <p class="hero__price"><strong>от 799 ₽</strong> за одну сказку на платформе</p>
+      <p class="hero__lead">Онлайн-школа литературного чтения для детей 6–11 лет: 6 программ по возрасту, видео и задания на смысл, личный кабинет с прогрессом. Начать можно в любой день</p>
+      <p class="hero__price"><strong>от 799 ₽</strong> за одну сказку · запись открыта</p>
       <div class="hero__cta">
         <div class="hero__actions">
-          <a class="btn btn--hero" href="#program">Записаться на курс</a>
-          <a class="btn btn--outline" href="https://chitatelstvo.ru/programmy">Смотреть программы</a>
+          <a class="btn btn--hero" href="#programs">Выбрать программу</a>
+          <a class="btn btn--outline" href="#quiz">Попробовать бесплатно</a>
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@
             <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
           </button>
         </div>
-        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <span class="hero-book-text__nb"><strong>15&nbsp;июля</strong> и <strong>10&nbsp;августа</strong></span>, но присоединиться можно в любой момент</p>
+        <p id="hero-book-text"><strong style="color:var(--blue)">8 сказок</strong> в каждой программе · <span class="hero-book-text__nb">свой темп или с преподавателем</span> · начать можно с любой сказки</p>
       </div>
       <a href="#quiz" class="hero__visual-gift">Бесплатный доступ к платформе и один урок-сказка</a>
     </div>
@@ -122,26 +122,21 @@
     <div class="about-text">
       <p><strong>ЧИТАТЕЛЬСТВО</strong> — онлайн-школа литературного чтения для детей. Мы помогаем понимать книги глубже — через видео, вопросы на понимание и задания на смысл. В основе всех занятий — геймификация: за выполнение заданий по книгам начисляются баллы (внутри школы мы называем их «словиками»), а после каждого занятия открывается волшебный сундук с заданием для творческой самостоятельной работы дома.</p>
       <p>Все занятия можно проходить <strong>самостоятельно</strong> в удобном темпе — прогресс виден на личной странице, словики и уровни начисляются сразу после заданий. А если хочется живого общения, программу можно <strong>дополнить занятиями с преподавателем</strong>: там расширенная программа по каждой сказке и квест в мини-группе из 4–6 детей.</p>
-      <p><strong>Базовый курс</strong> — для 1–4 класса, <strong>внеклассное чтение</strong> — для детей 6–11 лет. <strong>12 сказок за лето</strong> — три блока по 4: старт <strong>15 июля</strong>, продолжение <strong>10 августа</strong> и <strong>внеклассная программа</strong>. Оплата — за блок из 4 сказок или за одну, если хотите попробовать.</p>
+      <p><strong>6 программ</strong> для детей 6–11 лет: школьное чтение (1–4 класс) и внеклассное. В каждой — <strong>8 сказок</strong> с видео, заданиями и личным прогрессом. Можно взять одну сказку, блок из 4 или всю программу.</p>
     </div>
-    <div class="summer-timeline" id="timeline">
-      <div class="summer-timeline__track">
-        <div class="summer-timeline__node">
-          <span class="summer-timeline__date">15 июля</span>
-          <span class="summer-timeline__label">4 сказки · 4 недели</span>
-        </div>
-        <span class="summer-timeline__arrow" aria-hidden="true">→</span>
-        <div class="summer-timeline__node">
-          <span class="summer-timeline__date">10 августа</span>
-          <span class="summer-timeline__label">ещё 4 сказки · 4 недели</span>
-        </div>
-        <span class="summer-timeline__arrow" aria-hidden="true">→</span>
-        <div class="summer-timeline__node summer-timeline__node--extra">
-          <span class="summer-timeline__date">внеклассное</span>
-          <span class="summer-timeline__label">ещё 4 сказки · 6–11 лет</span>
-        </div>
-        <span class="summer-timeline__total">= 12 сказок за лето</span>
-      </div>
+    <div class="school-pillars" id="timeline" aria-label="Как устроена школа">
+      <article class="school-pillars__item">
+        <h3 class="school-pillars__title">Программы по возрасту</h3>
+        <p class="school-pillars__text">Шесть направлений — своя полка книг для каждого класса и возраста</p>
+      </article>
+      <article class="school-pillars__item">
+        <h3 class="school-pillars__title">Свой темп</h3>
+        <p class="school-pillars__text">Уроки на платформе без опозданий: присоединиться можно в любой день</p>
+      </article>
+      <article class="school-pillars__item">
+        <h3 class="school-pillars__title">Живые встречи</h3>
+        <p class="school-pillars__text">Опционально — квест в мини-группе 4–6 детей по четвергам</p>
+      </article>
     </div>
     <div class="pull-quote">
       <div class="pull-quote__body">
@@ -292,7 +287,7 @@
   <div class="section__inner">
     <span class="section__chapter"><em>глава 5</em> · формат</span>
     <h2 class="section__title">Выберите свой путь</h2>
-    <p class="section__lead">Самостоятельно в своём темпе или с преподавателем в мини-группе — выберите, как удобнее семье</p>
+    <p class="section__lead">Запись открыта · доступ сразу после оплаты. Самостоятельно или с преподавателем — как удобнее семье</p>
     <div class="tariffs-grid">
       <div class="tariff-card">
         <h3 class="tariff-card__name">Разовое</h3>
@@ -306,7 +301,7 @@
         <div class="tariff-card__meet-slot">
           <div class="tariff-card__meet">
             <span class="tariff-card__meet-line">Только онлайн</span>
-            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Живые занятия-квесты с преподавателем — со старта 10 августа (поток 15 июля — только онлайн)</span>
+            <span class="tariff-card__meet-line tariff-card__meet-line--muted">Живые занятия-квесты — на тарифе «С преподавателем», встречи по четвергам</span>
           </div>
         </div>
         <div class="tariff-card__price">799 ₽</div>
@@ -356,19 +351,72 @@
 <!-- PROGRAMS -->
 <section class="section section--cream paper-bg reveal" id="programs">
   <div class="section__inner">
-    <span class="section__chapter"><em>глава 6</em> · полка сказок</span>
-    <h2 class="section__title">Сказки по классам</h2>
-    <p class="section__lead">Полная программа — 8 сказок. Оплата — за блок из 4 или за одну сказку</p>
+    <span class="section__chapter"><em>глава 6</em> · программы</span>
+    <h2 class="section__title">Выберите программу по возрасту</h2>
+    <p class="section__lead">6 курсов · в каждом 8 сказок · начать можно сегодня</p>
+
+    <div class="course-catalog" id="course-catalog" aria-label="Каталог программ">
+      <a class="course-card" href="https://chitatelstvo.ru/1-klass">
+        <span class="course-card__badge">Базовый курс</span>
+        <strong class="course-card__title">1 класс</strong>
+        <span class="course-card__meta">7–8 лет · 8 сказок</span>
+        <span class="course-card__status">Доступно · старт в любой день</span>
+        <span class="course-card__price">от 799 ₽</span>
+        <span class="course-card__cta">Смотреть программу →</span>
+      </a>
+      <a class="course-card" href="https://chitatelstvo.ru/2-klass">
+        <span class="course-card__badge">Базовый курс</span>
+        <strong class="course-card__title">2 класс</strong>
+        <span class="course-card__meta">8–9 лет · 8 сказок</span>
+        <span class="course-card__status">Доступно · старт в любой день</span>
+        <span class="course-card__price">от 799 ₽</span>
+        <span class="course-card__cta">Смотреть программу →</span>
+      </a>
+      <a class="course-card" href="https://chitatelstvo.ru/3-klass">
+        <span class="course-card__badge">Базовый курс</span>
+        <strong class="course-card__title">3 класс</strong>
+        <span class="course-card__meta">9–10 лет · 8 сказок</span>
+        <span class="course-card__status">Доступно · старт в любой день</span>
+        <span class="course-card__price">от 799 ₽</span>
+        <span class="course-card__cta">Смотреть программу →</span>
+      </a>
+      <a class="course-card" href="https://chitatelstvo.ru/4-klass">
+        <span class="course-card__badge">Базовый курс</span>
+        <strong class="course-card__title">4 класс</strong>
+        <span class="course-card__meta">10–11 лет · 8 сказок</span>
+        <span class="course-card__status">Доступно · старт в любой день</span>
+        <span class="course-card__price">от 799 ₽</span>
+        <span class="course-card__cta">Смотреть программу →</span>
+      </a>
+      <a class="course-card course-card--extra" href="https://chitatelstvo.ru/6-8-let">
+        <span class="course-card__badge">Внеклассное</span>
+        <strong class="course-card__title">6–8 лет</strong>
+        <span class="course-card__meta">Вне школьной программы · 8 сказок</span>
+        <span class="course-card__status">Доступно · старт в любой день</span>
+        <span class="course-card__price">от 799 ₽</span>
+        <span class="course-card__cta">Смотреть программу →</span>
+      </a>
+      <a class="course-card course-card--extra" href="https://chitatelstvo.ru/9-11-let">
+        <span class="course-card__badge">Внеклассное</span>
+        <strong class="course-card__title">9–11 лет</strong>
+        <span class="course-card__meta">Вне школьной программы · 8 сказок</span>
+        <span class="course-card__status">Доступно · старт в любой день</span>
+        <span class="course-card__price">от 799 ₽</span>
+        <span class="course-card__cta">Смотреть программу →</span>
+      </a>
+    </div>
+    <p class="course-catalog__hub"><a href="https://chitatelstvo.ru/programmy">Все программы на одной странице →</a></p>
+
     <div class="prog-shelf" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/programs-shelf-strip.png" alt="" width="900" height="300"></div>
 
     <div class="prog-block">
-      <h3 class="prog-block__title">Базовый курс</h3>
+      <h3 class="prog-block__title">Базовый курс · список сказок</h3>
       <p class="prog-block__sub">Для учеников 1–4 класса</p>
-      <p class="prog-block__note">Эти сказки чаще всего встречаются в летних списках обязательного чтения — мы поможем ребёнку разобрать и понять каждую.</p>
+      <p class="prog-block__note">Сказки из школьных списков чтения — помогаем разобрать и понять каждую.</p>
       <div class="acc" id="acc-basic"></div>
     </div>
     <div class="prog-block">
-      <h3 class="prog-block__title">Внеклассное чтение</h3>
+      <h3 class="prog-block__title">Внеклассное чтение · список сказок</h3>
       <p class="prog-block__sub">Для детей 6–8 и 9–11 лет</p>
       <div class="acc" id="acc-extra"></div>
     </div>
@@ -439,7 +487,7 @@
 
       <div class="step-block">
         <div class="step-label"><em>шаг 2</em> · формат</div>
-        <p class="step-hint step-hint--always">Платный формат на 4 недели. Бесплатный урок — выше, это не то же самое, что «Разовое»</p>
+        <p class="step-hint step-hint--always">Два шага: возраст и формат. Ниже выберите блок из 4 сказок. Бесплатный урок — выше, это не «Разовое»</p>
         <div class="tariff-pick" id="chit-tariffs">
           <div class="pick-card" data-tariff="single">
             <div class="pick-card__tag">Попробовать</div>
@@ -463,13 +511,13 @@
       </div>
 
       <div class="step-block date-box is-visible" id="chit-date-box">
-        <div class="step-label"><em>шаг 3</em> · дата старта</div>
-        <p class="step-hint" id="chit-step3-hint" hidden>Для «Разового» после даты нажмите на одну сказку в списке ниже.</p>
-        <p class="step-hint" id="chit-stage1-closed-note" hidden>Набор на этап 1 с преподавателем закрыт — доступна запись на старт 10 августа.</p>
-        <p class="step-hint step-hint--always" id="chit-step3-guide">Список сказок ниже — программа блока; выбирать их не нужно (кроме «Разового»).</p>
+        <div class="step-label">блок программы</div>
+        <p class="step-hint" id="chit-step3-hint" hidden>Для «Разового» выберите блок и нажмите на одну сказку ниже.</p>
+        <p class="step-hint" id="chit-stage1-closed-note" hidden>На тарифе «С преподавателем» сейчас открыт блок 2 — сказки 5–8 и живые встречи по четвергам.</p>
+        <p class="step-hint step-hint--always" id="chit-step3-guide">В тарифе уже все 4 сказки блока — выбирать сказки не нужно (кроме «Разового»).</p>
         <div class="stage-row" id="chit-stages">
-          <button type="button" class="pill" data-stage="1">Старт курса 15 июля</button>
-          <button type="button" class="pill is-active" data-stage="2">Старт 10 августа</button>
+          <button type="button" class="pill" data-stage="1">Блок 1 · сказки 1–4</button>
+          <button type="button" class="pill is-active" data-stage="2">Блок 2 · сказки 5–8</button>
         </div>
         <div class="tales" id="chit-tales"></div>
         <div class="block-preview" id="chit-block-preview" style="display:none"></div>
@@ -527,6 +575,86 @@
   </div>
 </section>
 
+
+<!-- PROOF -->
+<section class="section section--cream reveal" id="proof">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 7½</em> · отзывы и кабинет</span>
+    <h2 class="section__title">Школа уже работает</h2>
+    <p class="section__lead">Не календарный набор, а постоянная платформа чтения с программами по возрастам</p>
+    <div class="proof-stats" aria-label="О школе в цифрах">
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">6</strong>
+        <span class="proof-stats__label">программ по возрасту</span>
+      </div>
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">48</strong>
+        <span class="proof-stats__label">сказок на полках</span>
+      </div>
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">5</strong>
+        <span class="proof-stats__label">уровней прогресса</span>
+      </div>
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">9</strong>
+        <span class="proof-stats__label">бейджей в коллекции</span>
+      </div>
+    </div>
+
+    <div class="proof-reviews" aria-label="Отзывы родителей">
+      <article class="proof-review">
+        <p class="proof-review__text">«Наконец-то ребёнок не просто „прочитал для галочки“ — он рассказывает, что понял, и сам просит следующую сказку.»</p>
+        <cite class="proof-review__author">Мария, мама ученика 2 класса</cite>
+      </article>
+      <article class="proof-review">
+        <p class="proof-review__text">«Удобно, что всё на личной странице: видно баллы, открытые уроки — не нужно ничего отмечать вручную.»</p>
+        <cite class="proof-review__author">Ольга, тариф «Индивидуальное»</cite>
+      </article>
+      <article class="proof-review">
+        <p class="proof-review__text">«Ребёнку было интересно в „Читательстве“ — настоящее книжное королевство: живые иллюстрации, музыка и задания. Каждый раз ждёт „открытие сундука“.»</p>
+        <cite class="proof-review__author">Николай, старший брат</cite>
+      </article>
+    </div>
+
+
+    <div class="proof-product">
+      <div class="proof-product__text">
+        <h3>Личная страница ребёнка</h3>
+        <p>После оплаты на email приходит ссылка на кабинет: открытые сказки, Словики, уровни и сундук после урока. Ребёнок видит свой путь — вы понимаете, что происходит на каждом занятии.</p>
+        <a class="btn btn--outline" href="#program">Начать с бесплатного урока</a>
+      </div>
+      <figure class="cabinet-mock" aria-label="Как выглядит кабинет">
+        <div class="cabinet-mock__chrome">
+          <span></span><span></span><span></span>
+          <em>комната приключений</em>
+        </div>
+        <div class="cabinet-mock__body">
+          <div class="cabinet-mock__hi">
+            <strong>Привет, Даниил!</strong>
+            <span>Ты уже на уровне Юный читатель</span>
+          </div>
+          <div class="cabinet-mock__stats">
+            <div>
+              <img src="https://api.chitatelstvo.ru/assets/gamify-level-young-reader.png" alt="" width="56" height="56" loading="lazy">
+              <b>Уровень</b>
+              <span>Юный читатель</span>
+            </div>
+            <div>
+              <img src="https://api.chitatelstvo.ru/assets/gamify-badge-meaning.png" alt="" width="48" height="48" loading="lazy">
+              <b>Словики</b>
+              <span>9</span>
+            </div>
+          </div>
+          <div class="cabinet-mock__bar" aria-hidden="true"><i style="width:78%"></i></div>
+          <p class="cabinet-mock__note">До следующего уровня осталось 1 Словик · сундук совсем близко</p>
+        </div>
+        <figcaption>Так выглядит комната приключений после урока</figcaption>
+      </figure>
+    </div>
+
+  </div>
+</section>
+
 <!-- FAQ -->
 <section class="section reveal" id="faq">
   <div class="section__inner">
@@ -536,9 +664,9 @@
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
-          <span class="faq-q__text">Когда начинается курс?</span>
+          <span class="faq-q__text">Когда можно начать?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Два старта: <strong>15 июля</strong> и <strong>10 августа</strong>. Каждый — блок из 4 сказок (4 недели). При записи вы выбираете один период. Полная программа класса — 8 сказок, если пройти оба блока.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>В любой день. Уроки открываются по расписанию платформы — присоединиться можно и с середины программы. В каждой программе 8 сказок (2 блока по 4). Можно взять одну сказку, один блок или всю программу.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
@@ -552,14 +680,14 @@
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Можно ли начать с одной сказки?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Можно <a href="#program">пройти урок бесплатно</a>: для 6–8 лет — «Сказка о рыбаке и рыбке», для 9–11 лет — «Сказка о царе Салтане». Или тариф «Разовое» — 799 ₽ за одну сказку онлайн. Живые занятия-квесты — со старта 10 августа.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Можно <a href="#program">пройти урок бесплатно</a>: для 6–8 лет — «Сказка о рыбаке и рыбке», для 9–11 лет — «Сказка о царе Салтане». Или тариф «Разовое» — 799 ₽ за одну сказку онлайн. Живые занятия-квесты — на тарифе «С преподавателем», по четвергам.</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
           <span class="faq-q__from">родитель спрашивает</span>
           <span class="faq-q__text">Чем отличаются тарифы?</span>
         </button>
-        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span><strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч (1 990 ₽): видео, квизы и сундук после каждого урока. <strong>С преподавателем</strong> — та же основа плюс расширенная программа и квест по сказке в мини-группе 4–6 детей, 4 живые встречи со старта 10 августа (4 990 ₽). <strong>Разовое</strong> — 1 сказка онлайн (799 ₽); поток 15 июля — только онлайн, живые занятия — со старта 10 августа.</p>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span><strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч (1 990 ₽): видео, квизы и сундук после каждого урока. <strong>С преподавателем</strong> — та же основа плюс расширенная программа и квест по сказке в мини-группе 4–6 детей, 4 живые встречи по четвергам (4 990 ₽). <strong>Разовое</strong> — 1 сказка онлайн (799 ₽).</p>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q">
@@ -578,7 +706,7 @@
     <div class="final-cta__bg" aria-hidden="true"></div>
     <div class="final-cta__frame">
       <h2>Почему бы не открыть первую сказку?</h2>
-      <p>Школа только начинает путь — поэтому даём бесплатный доступ к платформе и одному полноценному уроку. Пройдите одно книжное приключение вместе с ребёнком, а если понравится — запись займёт пару минут.</p>
+      <p>Даём бесплатный доступ к платформе и одному полноценному уроку. Пройдите книжное приключение вместе с ребёнком — если понравится, запись на программу займёт пару минут.</p>
       <a class="btn" href="#quiz">Получить урок бесплатно</a>
     </div>
   </section>

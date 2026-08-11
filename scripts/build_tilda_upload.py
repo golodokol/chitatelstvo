@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260728e"
+VERSION = "20260812b"
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'
@@ -163,7 +163,7 @@ def read_head_boilerplate() -> str:
     head = re.sub(r'V="[^"]+"', f'V="{VERSION}"', head)
     head = patch_head_styles(head)
     return (
-        f"<!-- CHIT VERSION {VERSION} · даты 15 июля / 10 августа, пояснения в карточках формата -->\n"
+        f"<!-- CHIT VERSION {VERSION} · evergreen школа, программы по возрастам -->\n"
         + head.rstrip()
         + "\n"
     )

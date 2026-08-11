@@ -1,4 +1,3 @@
-/* Скрыть карточки каталога Tilda на главной (остаются в DOM для оплаты) */
 #allrecords .t-rec[data-record-type="762"],
 #allrecords .t-rec[data-record-type="205"],
 #rec2380183631,
@@ -2125,3 +2124,314 @@
       .acc-head { font-size: 16px; padding: 16px 18px; }
       .tale-card { padding: 18px 16px; }
     }
+
+
+/* ===== Evergreen school: pillars, catalog, proof ===== */
+#chit-main .school-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 960px;
+  margin: 36px auto 0;
+}
+#chit-main .school-pillars__item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 20px;
+  box-shadow: var(--shadow);
+}
+#chit-main .school-pillars__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--blue);
+}
+#chit-main .school-pillars__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+#chit-main .course-catalog {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 28px 0 12px;
+}
+#chit-main .course-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 20px 20px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow);
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+}
+#chit-main .course-card:hover {
+  border-color: #A8C4DD;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(61, 82, 102, .1);
+}
+#chit-main .course-card--extra {
+  background: linear-gradient(180deg, #FBF8FC 0%, #fff 70%);
+}
+#chit-main .course-card__badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--blue-pale, #E8F1F8);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+#chit-main .course-card--extra .course-card__badge {
+  background: var(--accent-pale, #F0EAF5);
+  color: var(--accent);
+}
+#chit-main .course-card__title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--blue);
+  margin-top: 4px;
+}
+#chit-main .course-card__meta,
+#chit-main .course-card__status {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+#chit-main .course-card__status {
+  color: #5A8F6D;
+}
+#chit-main .course-card__price {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+#chit-main .course-card__cta {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent);
+}
+#chit-main .course-catalog__hub {
+  text-align: center;
+  margin: 8px 0 28px;
+}
+#chit-main .course-catalog__hub a {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+#chit-main .course-catalog__hub a:hover { text-decoration: underline; }
+#chit-main .proof-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 28px 0 32px;
+}
+#chit-main .proof-stats__item {
+  text-align: center;
+  padding: 20px 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+#chit-main .proof-stats__num {
+  display: block;
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--blue);
+  line-height: 1.1;
+}
+#chit-main .proof-stats__label {
+  display: block;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+#chit-main .proof-product {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+  gap: 28px;
+  align-items: center;
+  padding: 28px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+#chit-main .proof-product h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  color: var(--blue);
+}
+#chit-main .proof-product p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+#chit-main .proof-product__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#chit-main .proof-product__visual img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+@media (max-width: 900px) {
+  #chit-main .school-pillars,
+  #chit-main .course-catalog { grid-template-columns: 1fr 1fr; }
+  #chit-main .proof-stats { grid-template-columns: 1fr 1fr; }
+  #chit-main .proof-product { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  #chit-main .school-pillars,
+  #chit-main .course-catalog { grid-template-columns: 1fr; }
+}
+
+/* ===== proof reviews + cabinet mock ===== */
+
+#chit-main .proof-reviews {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 8px 0 28px;
+}
+#chit-main .proof-review {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 18px;
+}
+#chit-main .proof-review__text {
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+}
+#chit-main .proof-review__author {
+  display: block;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+#chit-main .cabinet-mock {
+  margin: 0;
+  background: linear-gradient(180deg, #EDF3F9 0%, #F7F5FA 100%);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+#chit-main .cabinet-mock__chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,.85);
+  border-bottom: 1px solid var(--border);
+}
+#chit-main .cabinet-mock__chrome span {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #D4E2EF;
+}
+#chit-main .cabinet-mock__chrome em {
+  margin-left: 8px;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: .02em;
+}
+#chit-main .cabinet-mock__body { padding: 18px 16px 16px; }
+#chit-main .cabinet-mock__hi strong {
+  display: block;
+  font-size: 18px;
+  color: var(--blue);
+}
+#chit-main .cabinet-mock__hi span {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+#chit-main .cabinet-mock__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0 12px;
+}
+#chit-main .cabinet-mock__stats > div {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+#chit-main .cabinet-mock__stats img {
+  display: block;
+  margin: 0 auto 6px;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+#chit-main .cabinet-mock__stats b {
+  display: block;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+#chit-main .cabinet-mock__stats span {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--blue);
+}
+#chit-main .cabinet-mock__bar {
+  height: 10px;
+  border-radius: 999px;
+  background: #D8E5F1;
+  overflow: hidden;
+}
+#chit-main .cabinet-mock__bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #5B7FA6, #8F7DA3);
+  border-radius: inherit;
+}
+#chit-main .cabinet-mock__note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+#chit-main .cabinet-mock figcaption {
+  padding: 10px 14px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  background: rgba(255,255,255,.7);
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 900px) {
+  #chit-main .proof-reviews { grid-template-columns: 1fr; }
+}

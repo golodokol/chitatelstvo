@@ -55,7 +55,7 @@
       '<section class="cc-hero"><div class="cc-hero__grid" style="grid-template-columns:1fr">' +
         '<div><span class="cc-badge">Программы по возрастам</span>' +
         '<h1>Сказки по классам и возрастам</h1>' +
-        '<p class="cc-hero__lead">Шесть программ летнего чтения — выберите свою и запишитесь на курс.</p></div>' +
+        '<p class="cc-hero__lead">Шесть программ по возрастам — выберите свою и начните в любой день.</p></div>' +
       '</div></section>' +
       '<section class="cc-section cc-section--white"><div class="cc-section__inner">' +
         '<div class="cc-hub-grid">' + cards + '</div>' +
@@ -185,7 +185,7 @@
             '<p class="cc-banner__lead">' + esc(meta.lead) + '</p>' +
             '<a class="cc-btn cc-btn--banner" href="#tariffs">Выбрать формат</a>' +
             '<div class="cc-banner__chips">' +
-              '<span class="cc-banner__chip">8 сказок · 15 июля / 10 августа</span>' +
+              '<span class="cc-banner__chip">8 сказок · старт в любой день</span>' +
               '<span class="cc-banner__chip cc-banner__chip--price">от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</span>' +
             '</div>' +
           '</div>' +
@@ -197,7 +197,7 @@
 
   function heroTitleHtml() {
     var h1 = meta.h1;
-    var gradeMatch = h1.match(/^(Летний курс по школьной программе)\s+(\d+\s+класса)$/);
+    var gradeMatch = h1.match(/^(Курс литературного чтения)\s+·\s+(\d+\s+класс)$/);
     if (gradeMatch) {
       return esc(gradeMatch[1]) + '<br>' + esc(gradeMatch[2]);
     }
@@ -228,11 +228,11 @@
       '<strong>Задания на смысл</strong> — чтение по карточкам, вопросы к тексту, творчество',
       '<strong>Личная страница</strong> — баллы, уровни и бейджи, прогресс виден родителю',
       '<strong>Эмоциометр и игровые задания</strong> — ребёнок думает о героях и их переживаниях',
-      '<strong>Живые встречи</strong> — на тарифе «С преподавателем» со старта 10 августа; поток 15 июля — только онлайн'
+      '<strong>Живые встречи</strong> — на тарифе «С преподавателем», по четвергам в мини-группе'
     ];
     var how = [
       '<strong>Формат:</strong> онлайн — видео и задания на платформе',
-      '<strong>Даты:</strong> старт 15 июля или 10 августа, блок из 4 сказок (4 недели)',
+      '<strong>Старт:</strong> в любой день; программа — 2 блока по 4 сказки',
       '<strong>Темп:</strong> одна сказка открывается каждую неделю, внутри недели — свой ритм',
       '<strong>После оплаты</strong> на email приходит ссылка на личную страницу ребёнка'
     ];
@@ -446,13 +446,13 @@
         '<div class="cc-section__inner">' +
           '<span class="cc-chapter"><em>программа</em></span>' +
           '<h2>8 сказок — что читаем</h2>' +
-          '<p class="cc-section__lead">Два старта на выбор. Каждую неделю открывается новая сказка.</p>' +
+          '<p class="cc-section__lead">Два блока по 4 сказки. Можно начать с любого блока.</p>' +
           '<div class="cc-program-block">' +
-            '<h3 class="cc-program-block__title">Старт 15 июля</h3>' +
+            '<h3 class="cc-program-block__title">Блок 1 · сказки 1–4</h3>' +
             '<div class="cc-tale-list cc-tale-list--program">' + taleRowsHtml(program.june, '1', 1, true) + '</div>' +
           '</div>' +
           '<div class="cc-program-block">' +
-            '<h3 class="cc-program-block__title">Старт 10 августа</h3>' +
+            '<h3 class="cc-program-block__title">Блок 2 · сказки 5–8</h3>' +
             '<div class="cc-tale-list cc-tale-list--program">' + taleRowsHtml(program.july, '2', 2, true) + '</div>' +
           '</div>' +
           '<p class="cc-program-note">Можно начать с одной сказки на тарифе «Разовое» — от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</p>' +
@@ -471,7 +471,7 @@
             tariffCard('single', D.TARIFF_COPY.single.name, D.TARIFF_COPY.single.mood,
               D.TARIFF_COPY.single.list,
               D.TARIFF_COPY.single.meetNote, false) +
-            tariffCard('self_paced', 'Индивидуальное', '4 сказки — целое летнее путешествие',
+            tariffCard('self_paced', 'Индивидуальное', '4 сказки — путешествие в книгу',
               ['4 сказки — один период', 'Свой темп, без расписания', 'Видео и задания на каждую сказку', 'Личная страница прогресса', 'Без живых встреч'],
               false, true) +
             tariffCard('with_teacher', 'С преподавателем', '4 сказки и живые разговоры о книге',
@@ -502,12 +502,12 @@
             '</div>' +
 
             '<div class="cc-step-block" id="cc-date-box" style="display:none">' +
-              '<div class="cc-step-label">шаг 2 · когда начать</div>' +
-              '<p class="cc-step-hint" id="cc-step-hint" hidden>799 ₽ — урок на платформе. Живые занятия-квесты — со старта 10 августа.</p>' +
-              '<p class="cc-step-hint" id="cc-stage1-closed-note" hidden>Набор на этап 1 с преподавателем закрыт — доступна запись на старт 10 августа.</p>' +
+              '<div class="cc-step-label">шаг 2 · блок программы</div>' +
+              '<p class="cc-step-hint" id="cc-step-hint" hidden>799 ₽ — урок на платформе. Живые занятия — на тарифе «С преподавателем».</p>' +
+              '<p class="cc-step-hint" id="cc-stage1-closed-note" hidden>На тарифе «С преподавателем» сейчас открыт блок 2 — сказки 5–8 и встречи по четвергам.</p>' +
               '<div class="cc-pills" id="cc-stages">' +
-                '<button type="button" class="cc-pill" data-stage="1">Старт курса 15 июля</button>' +
-                '<button type="button" class="cc-pill" data-stage="2">Старт 10 августа</button>' +
+                '<button type="button" class="cc-pill" data-stage="1">Блок 1 · сказки 1–4</button>' +
+                '<button type="button" class="cc-pill" data-stage="2">Блок 2 · сказки 5–8</button>' +
               '</div>' +
               '<div class="cc-tales" id="cc-tales"></div>' +
               '<div id="cc-block-preview" style="display:none"></div>' +
@@ -544,10 +544,10 @@
           '<span class="cc-chapter"><em>вопросы</em></span>' +
           '<h2>Частые вопросы</h2>' +
           '<div class="cc-faq" id="cc-faq">' +
-            faqItem('Когда начинается курс?', 'Два старта: <strong>15 июля</strong> и <strong>10 августа</strong>. Каждый — блок из 4 сказок (4 недели).') +
+            faqItem('Когда можно начать?', 'В любой день. В программе 8 сказок (2 блока по 4). Можно взять одну сказку, блок или всю программу.') +
             faqItem('Что будет после оплаты?', 'На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс.') +
-            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене. Живые занятия-квесты — со старта 10 августа.') +
-            faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи со старта 10 августа (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').') +
+            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене. Живые занятия — на тарифе «С преподавателем».') +
+            faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи по четвергам (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').') +
           '</div>' +
         '</div>' +
       '</section>' +
@@ -854,7 +854,7 @@
         return false;
       }
       if (state.tariff === 'with_teacher' && D.WITH_TEACHER_STAGE1_CLOSED && state.stage === '1') {
-        alert('Набор на этап 1 с преподавателем закрыт. Выберите старт 10 августа.');
+        alert('На тарифе «С преподавателем» блок 1 сейчас недоступен. Выберите блок 2.');
         return false;
       }
       if (state.tariff === 'single' && (!hidStage.value || !hidTale.value)) {
@@ -899,7 +899,7 @@
       window.location.href = url;
     });
 
-    // По умолчанию: основной тариф + старт 10 августа
+    // По умолчанию: основной тариф + блок 1 (для with_teacher — блок 2)
     state.tariff = 'self_paced';
     state.stage = '2';
     var defTariff = document.querySelector('#cc-tariffs [data-tariff="self_paced"]');

@@ -48,7 +48,7 @@ function lessonOpenLabel(stage, index) {
   return 'Урок откроется: ' + lessonPrefix + s.lessons[index];
 }
 
-/** Можно ли ещё докупить встречу. Поток 15 июля закрыт; со старта 10 августа — если дата в будущем. */
+/** Можно ли ещё докупить встречу. Блок 1 с преподавателем закрыт; блок 2 — если дата в будущем. */
 function singleMeetingAddonAvailable(stage, taleNum) {
   if (String(stage) === '1') return false;
   var dates = CHIT_SINGLE_MEETINGS_ISO[String(stage)];
@@ -59,7 +59,7 @@ function singleMeetingAddonAvailable(stage, taleNum) {
 
 function singleMeetingUnavailableLabel(stage) {
   if (String(stage) === '1') {
-    return 'Только онлайн. Занятия с преподавателем по сказкам потока 15 июля не проводятся — со старта 10 августа';
+    return 'Только онлайн. Живые занятия по сказкам блока 1 сейчас не проводятся — выберите блок 2';
   }
   return 'Только онлайн. Занятие-квест по этой сказке уже нельзя докупить';
 }
