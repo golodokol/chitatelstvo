@@ -1,6 +1,6 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты (один раз):
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=21"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=22"></script>
  * Важно: только ОДИН HTML-блок со скриптом на странице /oplata (удалить старые v=6, v=16).
  */
 (function () {
@@ -364,14 +364,39 @@
   }
 
   function recalcPromoTotals() {
-    if (!window.tcart || typeof window.tcart__calcPromocode !== 'function') return;
+    if (!window.tcart || typeof window.tcart__calcPromocode !== 'function') return null;
     var base = window.tcart.prodamount;
     if (typeof base !== 'number') base = window.tcart.amount;
-    if (typeof base !== 'number') return;
+    if (typeof base !== 'number') return null;
     window.tcart.total = window.tcart__calcPromocode(base);
-    if (typeof window.tcart.amount === 'number') {
-      window.tcart.amount = window.tcart__calcPromocode(window.tcart.amount);
-    }
+    return window.tcart.total;
+  }
+
+  function applyPromoPricingToCart() {
+    if (!hasActivePromo() || !window.tcart) return;
+    var total = recalcPromoTotals();
+    if (typeof total !== 'number' || isNaN(total) || total <= 0) return;
+    var products = window.tcart.products || [];
+    if (products.length !== 1) return;
+    var item = products[0];
+    var qty = parseInt(item.quantity, 10) || 1;
+    var unitPrice = Math.round((total / qty) * 100) / 100;
+    item.price = unitPrice;
+    item.amount = Math.round(unitPrice * qty * 100) / 100;
+    window.tcart.amount = total;
+    window.tcart.updated = Math.floor(Date.now() / 1000);
+    if (typeof window.tcart__saveLocalObj === 'function') window.tcart__saveLocalObj();
+  }
+
+  function finalizeCartForPayment(tariff, options) {
+    options = options || {};
+    if (!window.tcart) return;
+    normalizeCartItem(tariff, { keepPricing: hasActivePromo() });
+    if (hasActivePromo()) applyPromoPricingToCart();
+    syncPaymentSystem();
+    if (options.redraw !== false) refreshTcartTotals();
+    if (hasActivePromo()) applyPromoPricingToCart();
+    if (typeof window.tcart__saveLocalObj === 'function') window.tcart__saveLocalObj();
   }
 
   function cartReady(tariff) {
@@ -404,7 +429,7 @@
       window.tcart.prodamount = p.price;
       window.tcart.total = p.price;
     } else {
-      recalcPromoTotals();
+      applyPromoPricingToCart();
     }
     window.tcart.updated = Math.floor(Date.now() / 1000);
     if (typeof window.tcart__saveLocalObj === 'function') window.tcart__saveLocalObj();
@@ -426,15 +451,20 @@
   function bindPayHandlers(tariff) {
     if (window._chitPayGuard) return;
     window._chitPayGuard = true;
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.t706 .t-submit, .t706 button[type="submit"]')) return;
+    function onPayAttempt() {
       var checkout = readCheckout();
       if (checkout && checkout.tariff) {
-        normalizeCartItem(checkout.tariff, { keepPricing: hasActivePromo() });
-        if (hasActivePromo()) recalcPromoTotals();
+        finalizeCartForPayment(checkout.tariff, { redraw: false });
       }
       applyCheckoutFields(checkout);
-      syncPaymentSystem();
+    }
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.t706 .t-submit, .t706 button[type="submit"]')) return;
+      onPayAttempt();
+    }, true);
+    document.addEventListener('submit', function (e) {
+      if (!e.target || !e.target.closest || !e.target.closest('.t706')) return;
+      onPayAttempt();
     }, true);
     document.addEventListener('change', function (e) {
       if (!e.target.matches || !e.target.matches('.t706 .t-radio_payment[name="paymentsystem"]')) return;
@@ -470,13 +500,12 @@
     checkoutFinished = true;
     clearSafetyTimer();
     applyPromoCode(data.promo_code, function () {
-      normalizeCartItem(data.tariff);
+      finalizeCartForPayment(data.tariff);
       applyCheckoutFields(data);
-      syncPaymentSystem();
-      refreshTcartTotals();
       setTimeout(function () {
-        normalizeCartItem(data.tariff);
-        refreshTcartTotals();
+        finalizeCartForPayment(data.tariff);
+        applyCheckoutFields(data);
+        fixFormLayout();
       }, 400);
       openCartModal();
       hidePayShell();
