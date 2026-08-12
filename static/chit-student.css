@@ -3051,15 +3051,21 @@ a.chit-lesson-card__cover-link:focus-visible {
 }
 
 .chit-badge-card--earned { background: var(--white); border-color: var(--blue-light); }
+/* «Следующий» — ещё не собран: как locked, без цветной «открытой» карточки */
 .chit-badge-card--next {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(143, 125, 163, 0.2);
-  background: var(--white);
+  opacity: 0.55;
+  filter: grayscale(0.5);
+  background: var(--cream-warm);
+  border-color: var(--border);
+  border-style: dashed;
 }
 .chit-badge-card--locked { opacity: 0.5; filter: grayscale(0.55); }
 .chit-badge-card--locked:hover,
 .chit-badge-card--locked:focus-visible,
-.chit-badge-card--locked.is-pressed {
+.chit-badge-card--locked.is-pressed,
+.chit-badge-card--next:hover,
+.chit-badge-card--next:focus-visible,
+.chit-badge-card--next.is-pressed {
   opacity: 0.72;
   filter: grayscale(0.25);
 }
