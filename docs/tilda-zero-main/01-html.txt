@@ -581,7 +581,7 @@
   <div class="section__inner">
     <span class="section__chapter"><em>глава 7½</em> · отзывы и кабинет</span>
     <h2 class="section__title">Школа уже работает</h2>
-    <p class="section__lead">Не календарный набор, а постоянная платформа чтения с программами по возрастам</p>
+    <p class="section__lead">это постоянная платформа чтения с программами по возрастам</p>
     <div class="proof-stats" aria-label="О школе в цифрах">
       <div class="proof-stats__item">
         <strong class="proof-stats__num">6</strong>
