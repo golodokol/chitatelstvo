@@ -102,8 +102,23 @@ def build_lesson_links_for_track(
     return lesson_links, has_meetings
 
 
+def _maybe_heal_first_step_badge(db: Session, child: Child) -> None:
+    """Выдаёт «Первый шаг», если есть учебные события, а бейджа ещё нет."""
+    from gamification.bonus_badges import FIRST_STEP_BADGE, FIRST_STEP_EVENT_TYPES
+
+    badge_names = {b.badge_name for b in child.badges}
+    if FIRST_STEP_BADGE in badge_names:
+        return
+    events = repo.get_child_events(db, child.id, limit=50)
+    if not any(e.event_type in FIRST_STEP_EVENT_TYPES for e in events):
+        return
+    if repo.grant_bonus_badge(db, child, badge_name=FIRST_STEP_BADGE):
+        db.refresh(child)
+
+
 def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_BASE_URL) -> dict[str, Any]:
     maybe_grant_birthday_gift(db, child)
+    _maybe_heal_first_step_badge(db, child)
     events = repo.get_child_events(db, child.id, limit=20)
     tale_ratings = repo.get_child_tale_ratings(db, child.id)
     chest_claims = repo.get_child_chest_claims(db, child.id)

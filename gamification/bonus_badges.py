@@ -9,10 +9,28 @@ from sqlalchemy.orm import Session
 
 from db import repository as repo
 from gamification.rules import LEVELS
+from gamification.streak_badges import STREAK_META_EVENTS
 
+FIRST_STEP_BADGE = "Первый шаг"
 TALE_TRAVELER_BADGE = "Путешественник по сказке"
 TALE_TRAVELER_MIN_TALES = 4
 TALE_TRAVELER_LEVEL = "Литературный детектив"
+
+# Любая учебная активность = «уже сделал первый шаг в школе»
+FIRST_STEP_EVENT_TYPES = frozenset(
+    {
+        "first_task",
+        "video_unlock",
+        "lesson_complete",
+        "emotion_quiz",
+        "reading_practice",
+        "comprehension",
+        "meaning_analysis",
+        "retelling",
+        "creative_task",
+        "live_meeting",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -32,6 +50,28 @@ def _level_upgrade(current_level: str, target: str | None) -> str | None:
     except ValueError:
         return None
     return None
+
+
+def check_first_step_badge(
+    *,
+    child_name: str,
+    current_badges: list[str],
+    event_type: str,
+) -> BonusBadgeGrant | None:
+    """Бейдж «Первый шаг» за первую учебную активность (раньше first_task почти не слали)."""
+    if FIRST_STEP_BADGE in current_badges:
+        return None
+    if event_type in STREAK_META_EVENTS:
+        return None
+    if event_type not in FIRST_STEP_EVENT_TYPES:
+        return None
+    name = child_name.strip() or "Читатель"
+    return BonusBadgeGrant(
+        badge_name=FIRST_STEP_BADGE,
+        level_change=None,
+        child_message=f"{name}, отличный старт — бейдж «{FIRST_STEP_BADGE}» твой!",
+        parent_message=f"{name} сделал(а) первый шаг в школе — бейдж «{FIRST_STEP_BADGE}».",
+    )
 
 
 def check_tale_traveler_badge(
@@ -84,7 +124,16 @@ def bonus_badges_for_event(
     event_type: str,
     tale_title: str | None,
 ) -> list[BonusBadgeGrant]:
-    grant = check_tale_traveler_badge(
+    grants: list[BonusBadgeGrant] = []
+    first = check_first_step_badge(
+        child_name=child_name,
+        current_badges=current_badges,
+        event_type=event_type,
+    )
+    if first:
+        grants.append(first)
+        current_badges = [*current_badges, first.badge_name]
+    traveler = check_tale_traveler_badge(
         db,
         child_id=child_id,
         child_name=child_name,
@@ -93,4 +142,6 @@ def bonus_badges_for_event(
         event_type=event_type,
         tale_title=tale_title,
     )
-    return [grant] if grant else []
+    if traveler:
+        grants.append(traveler)
+    return grants
