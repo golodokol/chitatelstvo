@@ -14,9 +14,364 @@
   "tale_slug": "grade-1-stage2-tale-01",
   "module_week": 5,
   "meeting_number": 0,
-  "badge": "Первый шаг",
+  "badge": "Читатель",
   "points": 2,
-  "active": false,
-  "status": "черновик",
-  "note": "Этап 2: ещё 4 занятия через месяц после этапа 1"
+  "active": true,
+  "status": "тест",
+  "note": "Урок «По щучьему велению» — задания по сценарию 1 класса. Картинки — заглушки путей.",
+  "meaning_one_phrase": "Добрый поступок может вернуться помощью — а желания лучше загадывать с умом.",
+  "video": {
+    "type": "kinescope",
+    "id": "",
+    "title": "Сказка «По щучьему велению»",
+    "duration_min": "8-10",
+    "pass_condition": "просмотр >= 50%"
+  },
+  "emotion_quiz": {
+    "title": "Эмоции героя",
+    "character": "Емеля",
+    "question": {
+      "id": "e1",
+      "text": "Что почувствовал Емеля, когда щука заговорила с ним?",
+      "pick": 2,
+      "correct": ["surprise", "interest"]
+    },
+    "feedback_ok": "Верно! Емеле было удивительно — рыба не должна говорить! И стало интересно: правда ли щука может помочь?",
+    "feedback_retry_hint": "Пока не то. Попробуй выбрать другие эмоции.",
+    "feedback_retry": "Представь: ты на речке, в руках — живая рыба, и она вдруг просит: «Отпусти меня!» Что бы ты почувствовал?"
+  },
+  "reading_practice": {
+    "title": "Практика чтения",
+    "intro": "В твоём возрасте прочитать целую сказку бывает непросто. Прочитай её по коротким предложениям — с картинками. Отмечай каждое, когда прочитаешь!",
+    "cards": [
+      {
+        "id": "rp1",
+        "text": "У ста\u0301рика бы\u0301ло три сы\u0301на.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-01.png",
+        "alt": "Старик и три сына"
+      },
+      {
+        "id": "rp2",
+        "text": "Еме\u0301ля це\u0301лый день лежа\u0301л на пе\u0301чи.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-02.png",
+        "alt": "Емеля на печи"
+      },
+      {
+        "id": "rp3",
+        "text": "Он пошёл за водо\u0301й и пойма\u0301л щу\u0301ку.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-03.png",
+        "alt": "Емеля и щука в проруби"
+      },
+      {
+        "id": "rp4",
+        "text": "Щу\u0301ка научи\u0301ла его волше\u0301бным слова\u0301м.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-04.png",
+        "alt": "Щука говорит с Емелей"
+      },
+      {
+        "id": "rp5",
+        "text": "Вёдра сами пошли\u0301 домо\u0301й.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-05.png",
+        "alt": "Ведра идут по деревне"
+      },
+      {
+        "id": "rp5b",
+        "text": "«По щу\u0301чьему ве\u0301ленью, по моему\u0301 хоте\u0301нью!» — говори\u0301л Еме\u0301ля.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-05b.png",
+        "alt": "Емеля произносит волшебные слова"
+      },
+      {
+        "id": "rp6",
+        "text": "Еме\u0301ля по\u0301ехал к царю\u0301 на пе\u0301чи.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-06.png",
+        "alt": "Печь едет к царю"
+      },
+      {
+        "id": "rp7",
+        "text": "Он постро\u0301ил дворе\u0301ц и жени\u0301лся на царе\u0301вне.",
+        "image": "/static/lessons/po-shchuchemu/reading/reading-07.png",
+        "alt": "Дворец и свадьба"
+      }
+    ]
+  },
+  "comprehension_quiz": {
+    "title": "Понимание сказки",
+    "pass_score": 6,
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "text": "Как звали главного героя?",
+        "options": [
+          {"id": "a", "text": "Иван-царевич"},
+          {"id": "b", "text": "Емеля"},
+          {"id": "c", "text": "Емелька"}
+        ],
+        "correct": "b"
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "text": "Где Емеля любил лежать?",
+        "options": [
+          {"id": "a", "text": "В лесу"},
+          {"id": "b", "text": "На печи"},
+          {"id": "c", "text": "В санях"}
+        ],
+        "correct": "b"
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "text": "Кого поймал Емеля на речке?",
+        "options": [
+          {"id": "a", "text": "Лягушку"},
+          {"id": "b", "text": "Щуку"},
+          {"id": "c", "text": "Рыбака"}
+        ],
+        "correct": "b"
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "text": "Какие слова нужно было говорить?",
+        "options": [
+          {"id": "a", "text": "Абракадабра"},
+          {"id": "b", "text": "По щучьему веленью, по моему хотенью"},
+          {"id": "c", "text": "Раз-два-три"}
+        ],
+        "correct": "b"
+      },
+      {
+        "id": "q5",
+        "type": "single",
+        "text": "Что сделали ведра сами?",
+        "options": [
+          {"id": "a", "text": "Улетели"},
+          {"id": "b", "text": "Пошли домой"},
+          {"id": "c", "text": "Разбились"}
+        ],
+        "correct": "b"
+      },
+      {
+        "id": "q6",
+        "type": "single",
+        "text": "На чём Емеля поехал к царю?",
+        "options": [
+          {"id": "a", "text": "На лошади"},
+          {"id": "b", "text": "На санях"},
+          {"id": "c", "text": "На печи"}
+        ],
+        "correct": "c"
+      },
+      {
+        "id": "q7",
+        "type": "single",
+        "text": "Чем закончилась сказка?",
+        "options": [
+          {"id": "a", "text": "Емеля снова лёг на печь"},
+          {"id": "b", "text": "Емеля женился на царевне и стал править"},
+          {"id": "c", "text": "Щука съела Емелю"}
+        ],
+        "correct": "b"
+      },
+      {
+        "id": "q8",
+        "type": "single",
+        "text": "Почему щука согласилась помочь Емеле?",
+        "options": [
+          {"id": "a", "text": "Потому что он её отпустил"},
+          {"id": "b", "text": "Потому что он её поймал и не отпустил"},
+          {"id": "c", "text": "Потому что он был самым умным"}
+        ],
+        "correct": "a"
+      },
+      {
+        "id": "q9",
+        "type": "single",
+        "text": "Кто бросил Емелю в море?",
+        "options": [
+          {"id": "a", "text": "Братья"},
+          {"id": "b", "text": "Царь"},
+          {"id": "c", "text": "Щука"}
+        ],
+        "correct": "b"
+      }
+    ]
+  },
+  "meaning_quiz": {
+    "title": "Задания по сказке",
+    "pass_score": 4,
+    "questions": [
+      {
+        "id": "m1",
+        "type": "multi",
+        "text": "Выбери лишних героев сказки",
+        "hint": "Отметь только тех героев, которых не было в нашей сказке.",
+        "options": [
+          {"id": "emelya", "text": "Емеля", "image": "/static/lessons/po-shchuchemu/emelya.png", "alt": "Емеля"},
+          {"id": "shchuka", "text": "Щука", "image": "/static/lessons/tsarevna/schuka.png", "alt": "Щука"},
+          {"id": "tsar", "text": "Царь", "image": "/static/lessons/po-shchuchemu/tsar.png", "alt": "Царь"},
+          {"id": "koschei", "text": "Кощей Бессмертный", "image": "/static/lessons/tsarevna/koschei.png", "alt": "Кощей Бессмертный"},
+          {"id": "lyagushka", "text": "Лягушка", "image": "/static/lessons/tsarevna/lyagushka.png", "alt": "Лягушка"},
+          {"id": "kot", "text": "Кот в сапогах", "image": "/static/lessons/tsarevna/kot.png", "alt": "Кот в сапогах"}
+        ],
+        "correct": ["koschei", "lyagushka", "kot"]
+      },
+      {
+        "id": "m2",
+        "type": "matching",
+        "text": "Кто где обитал? Выбери правильное место для каждого героя.",
+        "left": [
+          {"id": "emelya", "text": "Емеля"},
+          {"id": "shchuka", "text": "Щука"},
+          {"id": "tsar", "text": "Царь"},
+          {"id": "marya", "text": "Марья-царевна"}
+        ],
+        "right": [
+          {"id": "izba", "text": "изба, печь"},
+          {"id": "river", "text": "речка, прорубь"},
+          {"id": "palace", "text": "царский дом"},
+          {"id": "window", "text": "окошко дворца"}
+        ],
+        "correct": {
+          "emelya": "izba",
+          "shchuka": "river",
+          "tsar": "palace",
+          "marya": "window"
+        }
+      },
+      {
+        "id": "m3",
+        "type": "picture_match",
+        "text": "Кто на картинке? Выбери имя героя.",
+        "pictures": [
+          {"id": "p1", "image": "/static/lessons/po-shchuchemu/emelya.png", "alt": "Мальчик на печи"},
+          {"id": "p2", "image": "/static/lessons/tsarevna/schuka.png", "alt": "Рыба в проруби"},
+          {"id": "p3", "image": "/static/lessons/po-shchuchemu/pech.png", "alt": "Печь едет по улице"},
+          {"id": "p4", "image": "/static/lessons/po-shchuchemu/marya.png", "alt": "Девушка в короне"}
+        ],
+        "labels": [
+          {"id": "l1", "text": "Емеля"},
+          {"id": "l2", "text": "Щука"},
+          {"id": "l3", "text": "Печь"},
+          {"id": "l4", "text": "Марья-царевна"}
+        ],
+        "correct": {
+          "p1": "l1",
+          "p2": "l2",
+          "p3": "l3",
+          "p4": "l4"
+        }
+      },
+      {
+        "id": "m4",
+        "type": "single",
+        "text": "Почему щука помогла Емеле?",
+        "options": [
+          {"id": "a", "text": "Потому что он её отпустил"},
+          {"id": "b", "text": "Потому что он её поймал и не отпустил"},
+          {"id": "c", "text": "Потому что он был самым умным"}
+        ],
+        "correct": "a"
+      },
+      {
+        "id": "m4b",
+        "type": "single",
+        "text": "Чему учит сказка?",
+        "options": [
+          {"id": "a", "text": "Лежать на печи — это хорошо"},
+          {"id": "b", "text": "Добрый поступок может вернуться помощью"},
+          {"id": "c", "text": "Не нужно слушать сказки"}
+        ],
+        "correct": "b"
+      },
+      {
+        "id": "m5",
+        "type": "single",
+        "text": "Какая пословица подходит к сказке?",
+        "hint": "Выбери одну.",
+        "options": [
+          {"id": "a", "text": "Как аукнется, так и откликнется."},
+          {"id": "b", "text": "Тише едешь — дальше будешь."},
+          {"id": "c", "text": "В гостях хорошо, а дома лучше."},
+          {"id": "d", "text": "Семь раз отмерь, один раз отрежь."}
+        ],
+        "correct": "a"
+      },
+      {
+        "id": "m6",
+        "type": "single",
+        "text": "Что значит поговорка «по щучьему веленью»?",
+        "hint": "Выбери верное значение.",
+        "options": [
+          {"id": "a", "text": "Когда желания исполняются будто сами собой, по волшебству"},
+          {"id": "b", "text": "Когда нужно ловить только щук"},
+          {"id": "c", "text": "Когда нельзя загадывать желания"},
+          {"id": "d", "text": "Когда все спят на печи"}
+        ],
+        "correct": "a"
+      }
+    ]
+  },
+  "retelling_quiz": {
+    "title": "Пробуем пересказать сказку",
+    "pass_score": 1,
+    "questions": [
+      {
+        "id": "r1",
+        "type": "ordering",
+        "text": "Расставь события по порядку.",
+        "items": [
+          {
+            "id": "e1",
+            "text": "Емеля лежал на печи, его послали за водой",
+            "image": "/static/lessons/po-shchuchemu/event-01.png",
+            "alt": "Емеля на печи"
+          },
+          {
+            "id": "e2",
+            "text": "Он поймал щуку и узнал волшебные слова",
+            "image": "/static/lessons/po-shchuchemu/event-02.png",
+            "alt": "Емеля и щука"
+          },
+          {
+            "id": "e3",
+            "text": "Ведра сами пошли домой",
+            "image": "/static/lessons/po-shchuchemu/event-03.png",
+            "alt": "Ведра идут сами"
+          },
+          {
+            "id": "e4",
+            "text": "Емеля поехал к царю на печи",
+            "image": "/static/lessons/po-shchuchemu/event-04.png",
+            "alt": "Печь едет к царю"
+          },
+          {
+            "id": "e5",
+            "text": "Он построил дворец и женился на царевне",
+            "image": "/static/lessons/po-shchuchemu/event-05.png",
+            "alt": "Дворец и свадьба"
+          }
+        ],
+        "correct": ["e1", "e2", "e3", "e4", "e5"]
+      }
+    ]
+  },
+  "creative_tasks": {
+    "title": "Творческие задания",
+    "items": [
+      "Обведи печку с Емелей",
+      "Раскрась щуку",
+      "Придумай, что бы ты попросил по щучьему веленью (одно желание)",
+      "Нарисуй ведра, которые идут сами",
+      "Придумай другую сказку, где предметы делают работу сами"
+    ]
+  },
+  "live_lesson": {
+    "next_meeting_label": null,
+    "price_rub": 799,
+    "meeting_url": null,
+    "enabled": false
+  }
 }
