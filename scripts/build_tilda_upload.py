@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260813b"
+VERSION = "20260813c"
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'
@@ -143,24 +143,30 @@ CHIT_GAMIFY_PATH = (
     'margin-left:auto!important;margin-right:auto!important}'
     '@media(max-width:720px){'
     '#allrecords #chit-main .gamify-levels,#chit-main .gamify-levels{'
-    'display:flex!important;flex-wrap:nowrap!important;justify-content:space-between!important;'
-    'align-items:flex-start!important;gap:6px!important;width:100%!important;max-width:100%!important;'
-    'padding:0 8px!important;margin:0 auto 36px!important;box-sizing:border-box!important}'
+    'display:flex!important;flex-wrap:wrap!important;justify-content:center!important;'
+    'align-items:flex-start!important;gap:18px 10px!important;width:100%!important;max-width:100%!important;'
+    'padding:0 12px!important;margin:0 auto 36px!important;box-sizing:border-box!important}'
     '#allrecords #chit-main .gamify-levels::before,#chit-main .gamify-levels::before{display:none!important}'
     '#allrecords #chit-main .gamify-levels__arrow,#chit-main .gamify-levels__arrow{display:none!important}'
     '#allrecords #chit-main .gamify-levels .gamify-item,#chit-main .gamify-levels .gamify-item{'
-    'flex:1 1 0!important;min-width:0!important;width:auto!important;max-width:none!important;'
-    'gap:6px!important;overflow:visible!important}'
+    'flex:0 0 calc(33.333% - 10px)!important;min-width:96px!important;max-width:118px!important;'
+    'width:auto!important;gap:8px!important;overflow:visible!important}'
     '#allrecords #chit-main .gamify-levels .gamify-item__img,#chit-main .gamify-levels .gamify-item__img{'
-    'width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;'
+    'width:72px!important;height:72px!important;min-width:72px!important;min-height:72px!important;'
     'margin:0 auto!important;overflow:visible!important}'
     '#allrecords #chit-main .gamify-levels .gamify-item__img img,#chit-main .gamify-levels .gamify-item__img img{'
     'transform:none!important}'
     '#allrecords #chit-main .gamify-levels .gamify-item__name,#chit-main .gamify-levels .gamify-item__name{'
-    'font-size:9px!important;max-width:100%!important;min-height:2.6em!important;line-height:1.2!important;'
-    'padding:0 1px!important;letter-spacing:-0.01em!important;white-space:normal!important;'
-    'text-align:center!important;hyphens:manual!important;word-break:normal!important;'
-    'overflow-wrap:break-word!important;overflow:visible!important}'
+    'font-size:12px!important;max-width:100%!important;min-height:0!important;line-height:1.25!important;'
+    'padding:0 2px!important;white-space:normal!important;text-align:center!important;'
+    'writing-mode:horizontal-tb!important;hyphens:none!important;word-break:normal!important;'
+    'overflow-wrap:normal!important;overflow:visible!important}'
+    '}'
+    '@media(max-width:400px){'
+    '#allrecords #chit-main .gamify-levels .gamify-item,#chit-main .gamify-levels .gamify-item{'
+    'flex:0 0 calc(50% - 8px)!important;min-width:120px!important;max-width:150px!important}'
+    '#allrecords #chit-main .gamify-levels .gamify-item__img,#chit-main .gamify-levels .gamify-item__img{'
+    'width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important}'
     '}'
     '</style>'
 )
