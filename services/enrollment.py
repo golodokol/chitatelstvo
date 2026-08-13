@@ -90,7 +90,7 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
     if not stage:
         raise HTTPException(
             400,
-            "Укажите chosen_stage (1 или 2) — период с 15 июля или с 10 августа.",
+            "Укажите chosen_stage (1 или 2) — период с 15 июля или с 15 августа.",
         )
     if (
         WITH_TEACHER_STAGE1_CLOSED
@@ -99,7 +99,7 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
     ):
         raise HTTPException(
             400,
-            "Набор на этап 1 с преподавателем закрыт. Выберите старт 10 августа.",
+            "Набор на этап 1 с преподавателем закрыт. Выберите старт 15 августа.",
         )
     if body.chosen_tale_number:
         raise HTTPException(

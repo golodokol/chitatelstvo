@@ -162,6 +162,7 @@ class RegisterWebhook(BaseModel):
         if raw in (
             "2", "stage-2", "stage_2", "july", "august",
             "10", "10.08", "10 августа",
+            "15", "15.08", "15 августа",
             "20", "20.07", "20 июля",
             "27", "27.07", "27 июля",
         ):
@@ -170,7 +171,7 @@ class RegisterWebhook(BaseModel):
             return "1"
         if "15 июл" in raw:
             return "1"
-        if "10 авг" in raw:
+        if "10 авг" in raw or "15 авг" in raw:
             return "2"
         if "27 июл" in raw:
             return "2"

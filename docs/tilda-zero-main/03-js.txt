@@ -152,8 +152,8 @@ var CHIT_SCHEDULE = {
     meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
   },
   '2': {
-    lessons: ['10 августа', '17 августа', '24 августа', '31 августа'],
-    weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'],
+    lessons: ['15 августа', '17 августа', '24 августа', '31 августа'],
+    weekdays: ['суббота', 'понедельник', 'понедельник', 'понедельник'],
     meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'],
     meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
   }
@@ -166,7 +166,7 @@ var CHIT_SINGLE_MEETINGS_ISO = {
 
 var CHIT_LESSON_OPENS_ISO = {
   '1': ['2026-07-15', '2026-08-03', '2026-08-05', '2026-08-06'],
-  '2': ['2026-08-10', '2026-08-17', '2026-08-24', '2026-08-31']
+  '2': ['2026-08-15', '2026-08-17', '2026-08-24', '2026-08-31']
 };
 
 function taleScheduleHtml(stage, index, tariff) {
@@ -209,7 +209,7 @@ function buildAccordion(containerId, items) {
       '<div class="acc-body">' +
         (item.intro ? '<p>' + item.intro + '</p>' : '') +
         renderPeriod('Старт курса 15 июля', item.june) +
-        renderPeriod('Старт 10 августа', item.july) +
+        renderPeriod('Старт 15 августа', item.july) +
       '</div>';
     el.appendChild(div);
   });
@@ -250,7 +250,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
   };
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
   var TARIFF_PRICE = { single: 1490, self_paced: 1990, with_teacher: 4990 };
-  var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 10 августа' };
+  var STAGE_LABEL = { '1': 'Старт курса 15 июля', '2': 'Старт 15 августа' };
   var ORDER_LINKS = {
     single: '#order:Читательство · Разовое =1490',
     self_paced: '#order:Читательство · Индивидуальное =1990',
@@ -573,7 +573,7 @@ document.getElementById('faq-list').addEventListener('click', function(e) {
 
   var BOOK_TEXTS = [
     '<strong style="color:var(--blue)">Разовое</strong> — одна сказка онлайн, без обязательств',
-    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>15 июля</strong> и <strong>10 августа</strong>',
+    '<strong style="color:var(--blue)">8 сказок</strong> на полке каждого класса. Два старта: <strong>15 июля</strong> и <strong>15 августа</strong>',
     '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
   ];
   var bookStack = document.querySelector('.book-stack');
