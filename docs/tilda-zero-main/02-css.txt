@@ -997,6 +997,49 @@
     }
 
     /* Gamification — уровни и бейджи */
+    .slovik-meet {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      max-width: 720px;
+      margin: 0 auto 44px;
+      padding: 8px 4px;
+    }
+    .slovik-meet__img {
+      width: 168px;
+      height: 168px;
+      flex-shrink: 0;
+      object-fit: contain;
+      display: block;
+    }
+    .slovik-meet__copy { min-width: 0; }
+    .slovik-meet__hi {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1.3;
+    }
+    .slovik-meet__text {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    @media (max-width: 720px) {
+      .slovik-meet {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+        margin-bottom: 36px;
+      }
+      .slovik-meet__img {
+        width: 132px;
+        height: 132px;
+      }
+      .slovik-meet__hi { font-size: 20px; }
+      .slovik-meet__text { font-size: 16px; }
+    }
     .gamify__subtitle {
       text-align: center; font-size: 22px; font-weight: 800;
       color: var(--blue); margin: 0 0 24px;

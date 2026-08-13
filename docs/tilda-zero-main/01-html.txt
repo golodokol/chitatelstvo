@@ -226,6 +226,14 @@
     <h2 class="section__title">Баллы, уровни и бейджи</h2>
     <p class="section__lead">За задания начисляются баллы-словики. После каждого урока — волшебный сундук. На личной странице видны уровни и бейджи</p>
 
+    <aside class="slovik-meet" aria-label="Знакомство со Словиком">
+      <img class="slovik-meet__img" src="https://api.chitatelstvo.ru/static/sloviki/slovik-main.png" alt="Словик — помощник в приключениях" width="168" height="168" loading="lazy">
+      <div class="slovik-meet__copy">
+        <p class="slovik-meet__hi">Привет! Я — <strong>Словик</strong></p>
+        <p class="slovik-meet__text">За задания я дарю словики, после урока открываю сундук — и мы вместе растём от уровня к уровню. Пойдём читать?</p>
+      </div>
+    </aside>
+
     <h3 class="gamify__subtitle">Пять уровней</h3>
     <div class="gamify-levels" aria-label="Уровни прогресса">
       <figure class="gamify-item">
