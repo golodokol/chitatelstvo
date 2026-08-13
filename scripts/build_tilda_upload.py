@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260812e"
+VERSION = "20260813a"
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'
@@ -131,6 +131,40 @@ CHIT_QZ_CRITICAL = (
     '</style>'
 )
 
+CHIT_GAMIFY_PATH = (
+    '<style id="chit-gamify-path">'
+    '#chit-main .gamify__path-wrap{display:flex!important;justify-content:center!important;'
+    'align-items:center!important;width:100%!important;margin:0 auto 20px!important;'
+    'padding:0 16px!important;box-sizing:border-box!important}'
+    '#chit-main .gamify__path-note{display:block!important;width:100%!important;max-width:640px!important;'
+    'margin:0 auto!important;padding:0!important;text-align:center!important;font-size:15px!important;'
+    'line-height:1.55!important;color:#6B8499!important}'
+    '#chit-main #rewards .gamify__subtitle{text-align:center!important;width:100%!important;'
+    'margin-left:auto!important;margin-right:auto!important}'
+    '@media(max-width:720px){'
+    '#allrecords #chit-main .gamify-levels,#chit-main .gamify-levels{'
+    'display:flex!important;flex-wrap:nowrap!important;justify-content:space-between!important;'
+    'align-items:flex-start!important;gap:6px!important;width:100%!important;max-width:100%!important;'
+    'padding:0 8px!important;margin:0 auto 36px!important;box-sizing:border-box!important}'
+    '#allrecords #chit-main .gamify-levels::before,#chit-main .gamify-levels::before{display:none!important}'
+    '#allrecords #chit-main .gamify-levels__arrow,#chit-main .gamify-levels__arrow{display:none!important}'
+    '#allrecords #chit-main .gamify-levels .gamify-item,#chit-main .gamify-levels .gamify-item{'
+    'flex:1 1 0!important;min-width:0!important;width:auto!important;max-width:none!important;'
+    'gap:6px!important;overflow:visible!important}'
+    '#allrecords #chit-main .gamify-levels .gamify-item__img,#chit-main .gamify-levels .gamify-item__img{'
+    'width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;'
+    'margin:0 auto!important;overflow:visible!important}'
+    '#allrecords #chit-main .gamify-levels .gamify-item__img img,#chit-main .gamify-levels .gamify-item__img img{'
+    'transform:none!important}'
+    '#allrecords #chit-main .gamify-levels .gamify-item__name,#chit-main .gamify-levels .gamify-item__name{'
+    'font-size:9px!important;max-width:100%!important;min-height:2.6em!important;line-height:1.2!important;'
+    'padding:0 1px!important;letter-spacing:-0.01em!important;white-space:normal!important;'
+    'text-align:center!important;hyphens:manual!important;word-break:normal!important;'
+    'overflow-wrap:break-word!important;overflow:visible!important}'
+    '}'
+    '</style>'
+)
+
 
 def patch_head_styles(head: str) -> str:
     head = re.sub(r'<style id="chit-btn-fix">[^<]+</style>', CHIT_BTN_FIX, head)
@@ -138,6 +172,7 @@ def patch_head_styles(head: str) -> str:
     head = re.sub(r'<style id="chit-qz-launcher-critical">[\s\S]*?</style>', CHIT_QZ_LAUNCHER, head)
     head = re.sub(r'<style id="chit-qz-critical">[\s\S]*?</style>', CHIT_QZ_CRITICAL, head)
     head = re.sub(r'<style id="chit-qz-close">[\s\S]*?</style>', CHIT_QZ_CLOSE, head)
+    head = re.sub(r'<style id="chit-gamify-path">[\s\S]*?</style>', CHIT_GAMIFY_PATH, head)
     head = head.replace(
         '#chit-main .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;text-decoration:none;border:none;cursor:pointer}',
         '#chit-main .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:12px;font-weight:700;text-decoration:none;cursor:pointer}'
