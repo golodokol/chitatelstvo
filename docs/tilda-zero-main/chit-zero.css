@@ -1000,8 +1000,8 @@
     .slovik-meet {
       display: flex;
       align-items: center;
-      gap: 28px;
-      max-width: 720px;
+      gap: 20px;
+      max-width: 760px;
       margin: 0 auto 44px;
       padding: 8px 4px;
     }
@@ -1012,13 +1012,37 @@
       object-fit: contain;
       display: block;
     }
-    .slovik-meet__copy { min-width: 0; }
+    .slovik-meet__copy {
+      position: relative;
+      min-width: 0;
+      flex: 1;
+      background: #fff;
+      border: 2px solid #C5D9ED;
+      border-radius: 20px;
+      padding: 22px 26px 20px;
+      box-shadow: 0 10px 28px rgba(91, 127, 166, 0.12);
+    }
+    .slovik-meet__copy::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-left: 2px solid #C5D9ED;
+      border-bottom: 2px solid #C5D9ED;
+      transform: translateY(-50%) rotate(45deg);
+    }
     .slovik-meet__hi {
       margin: 0 0 10px;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
       color: var(--blue);
       line-height: 1.3;
+    }
+    .slovik-meet__hi strong {
+      color: var(--accent);
     }
     .slovik-meet__text {
       margin: 0;
@@ -1030,12 +1054,24 @@
       .slovik-meet {
         flex-direction: column;
         text-align: center;
-        gap: 16px;
+        gap: 14px;
         margin-bottom: 36px;
       }
       .slovik-meet__img {
         width: 132px;
         height: 132px;
+      }
+      .slovik-meet__copy {
+        padding: 18px 18px 16px;
+        border-radius: 18px;
+      }
+      .slovik-meet__copy::before {
+        left: 50%;
+        top: -10px;
+        border-left: 2px solid #C5D9ED;
+        border-bottom: none;
+        border-top: 2px solid #C5D9ED;
+        transform: translateX(-50%) rotate(45deg);
       }
       .slovik-meet__hi { font-size: 20px; }
       .slovik-meet__text { font-size: 16px; }
@@ -2653,5 +2689,39 @@
   }
   body.qz-modal-open #chit-main .feedback-tab {
     display: none !important;
+  }
+}
+
+/* Slovik speech window */
+#chit-main .slovik-meet__copy {
+  position: relative !important;
+  background: #fff !important;
+  border: 2px solid #C5D9ED !important;
+  border-radius: 20px !important;
+  padding: 22px 26px 20px !important;
+  box-shadow: 0 10px 28px rgba(91, 127, 166, 0.12) !important;
+}
+#chit-main .slovik-meet__copy::before {
+  content: '' !important;
+  position: absolute !important;
+  left: -12px !important;
+  top: 50% !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: #fff !important;
+  border-left: 2px solid #C5D9ED !important;
+  border-bottom: 2px solid #C5D9ED !important;
+  transform: translateY(-50%) rotate(45deg) !important;
+}
+#chit-main .slovik-meet__hi strong {
+  color: var(--accent) !important;
+}
+@media (max-width: 720px) {
+  #chit-main .slovik-meet__copy::before {
+    left: 50% !important;
+    top: -10px !important;
+    border-bottom: none !important;
+    border-top: 2px solid #C5D9ED !important;
+    transform: translateX(-50%) rotate(45deg) !important;
   }
 }
