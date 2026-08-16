@@ -17,3 +17,6 @@ data/creative_uploads/
 Thumbs.db
 mobile/node_modules/
 docs/images/печать А3.pdf
+
+# Office lock files
+~$*

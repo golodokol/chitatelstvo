@@ -42,6 +42,10 @@ def single_lesson_playable(
     lesson: dict[str, Any],
     enrollment: Enrollment | None = None,
 ) -> bool:
+    # Quest / station lessons (early courses)
+    if lesson.get("lesson_format") == "quest" or lesson.get("stations"):
+        return bool(lesson.get("active", True) and lesson.get("stations"))
+
     if lesson.get("tariff_code") != "single":
         return bool(lesson.get("active", True) and lesson.get("video"))
     # Оболочка single может оставаться черновиком: важна готовность контента сказки

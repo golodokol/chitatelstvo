@@ -1,0 +1,141 @@
+{
+  "slug": "early-stories-with_teacher-stage-1-lesson-08",
+  "title": "Моя первая история",
+  "tale_title": "Моя первая история",
+  "module_id": 25,
+  "group_code": "early-stories",
+  "group_label": "Первые истории",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 8,
+  "tale_number": 8,
+  "tale_slug": "early-stories-stage1-tale-08",
+  "module_week": 8,
+  "meeting_number": 0,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Каркас станций модуля 1.",
+  "lesson_format": "quest",
+  "stations": [
+    {
+      "id": "hello",
+      "title": "Приветствие",
+      "kind": "intro_video",
+      "slovik_line": "Сегодня: Моя первая история",
+      "audio": "ph-m1-l08-hi",
+      "spark": false
+    },
+    {
+      "id": "warm",
+      "title": "Разминка",
+      "kind": "find",
+      "slovik_line": "Вспомним прошлое.",
+      "audio": "ph-m1-l08-warm",
+      "spark": false,
+      "rounds": [
+        {
+          "correct": "A",
+          "options": [
+            "A",
+            "M",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "new",
+      "title": "Новое",
+      "kind": "repeat_sound",
+      "slovik_line": "Новый навык.",
+      "audio": "ph-m1-l08-new",
+      "sound": "ph-m1-l08-sound",
+      "spark": false
+    },
+    {
+      "id": "game1",
+      "title": "Игра 1",
+      "kind": "listen_pick",
+      "slovik_line": "Поиграем!",
+      "audio": "ph-m1-l08-g1",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "yes",
+          "options": [
+            {
+              "id": "yes",
+              "label": "Да"
+            },
+            {
+              "id": "no",
+              "label": "Нет"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "break",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Отойдём от экрана.",
+      "audio": "shared-pause-start",
+      "spark": false,
+      "hint": "Короткая пауза без экрана."
+    },
+    {
+      "id": "game2",
+      "title": "Игра 2",
+      "kind": "find",
+      "slovik_line": "Ещё практика.",
+      "audio": "ph-m1-l08-g2",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "A",
+          "options": [
+            "A",
+            "M",
+            "S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quest",
+      "title": "Мини-квест",
+      "kind": "mini_quest",
+      "slovik_line": "Почти финиш!",
+      "audio": "ph-m1-l08-quest",
+      "spark": false,
+      "steps": [
+        {
+          "kind": "find",
+          "correct": "A",
+          "options": [
+            "A",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reward",
+      "title": "Награда",
+      "kind": "reward",
+      "slovik_line": "Молодец!",
+      "audio": "shared-reward",
+      "spark": false,
+      "parent_note": "Урок «Моя первая история» пройден. Повторите дома главный навык."
+    }
+  ],
+  "quest": {
+    "goal_label": "слоги на тропе",
+    "goal_count": 3
+  }
+}

@@ -527,10 +527,12 @@ if (faqList) {
     'grade-3': { single: 7, self_paced: 8, with_teacher: 9, label: '3 класс' },
     'grade-4': { single: 10, self_paced: 11, with_teacher: 12, label: '4 класс' },
     'extra-6-8': { single: 13, self_paced: 14, with_teacher: 15, label: '6–8 лет' },
-    'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' }
+    'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' },
+    'early-letters': { self_paced: 21, with_teacher: 22, trial: 20, label: 'Буквы оживают' },
+    'early-stories': { self_paced: 24, with_teacher: 25, trial: 23, label: 'Первые истории' }
   };
-  var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем', trial: 'Пробный' };
+  var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990, trial: 0 };
   var STAGE_LABEL = { '1': 'Блок 1 · сказки 1–4', '2': 'Блок 2 · сказки 5–8' };
   var ORDER_PRODUCTS = {
     single: { title: 'Читательство · Разовое', price: 799, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
@@ -659,6 +661,12 @@ if (faqList) {
     'extra-9-11': {
       '1': ['Опасное лето Т. Янссон', 'Рони, дочь разбойника А. Линдгрен', 'Собака Пес Д. Пеннак', 'Вафельное сердце М. Парр'],
       '2': ['Чудесное путешествие Нильса с дикими гусями С. Лагерлеф', 'Чудесное путешествие Нильса с дикими гусями С. Лагерлеф, 2 часть', 'Полианна Э. Портер', 'Калиф-аист, Маленький Мук В. Гауф']
+    },
+    'early-letters': {
+      '1': ['Мир звуков', 'Первый звук слова', 'Буква А — голос открывается', 'Буква М — звук мотора', 'Буква С — звук змейки', 'Буквы дружат', 'Буквы в моём мире', 'Буквенный праздник']
+    },
+    'early-stories': {
+      '1': ['Как буквы становятся слогом', 'Читаем слог без остановки', 'Из слогов — слова', 'Слово находит картинку', 'Слова строят фразу', 'Что случилось сначала?', 'Герой, место, действие', 'Моя первая история']
     }
   };
   var state = { group: '', tariff: '', stage: '', taleNum: 0 };
@@ -1659,17 +1667,20 @@ if (faqList) {
     } else {
       elTales.style.display = 'none';
       elPreview.style.display = 'block';
+      var early = state.group && state.group.indexOf('early-') === 0;
+      var unitCap = early ? 'Урок' : 'Сказка';
+      var countLabel = early ? 'все 8 уроков' : 'все 4 сказки';
       elPreview.innerHTML =
-        '<div class="block-preview__banner">✓ В тариф уже входят все 4 сказки — выбирать не нужно</div>' +
-        '<div class="block-preview__title">Программа этого блока' +
-        (state.tariff === 'with_teacher' ? ' · встречи по четвергам' : '') +
+        '<div class="block-preview__banner">✓ В тариф уже входят ' + countLabel + ' — выбирать не нужно</div>' +
+        '<div class="block-preview__title">Программа этого модуля' +
+        (state.tariff === 'with_teacher' ? ' · встречи с преподавателем' : '') +
         '</div>' +
         '<div class="block-preview__cards">' +
         list.map(function(t, i) {
           return '<div class="block-preview__card">' +
-            '<div class="block-preview__num">Сказка ' + (i + 1) + ' · входит</div>' +
+            '<div class="block-preview__num">' + unitCap + ' ' + (i + 1) + ' · входит</div>' +
             '<div class="block-preview__name">' + t + '</div>' +
-            taleScheduleHtml(state.stage, i, state.tariff) +
+            (early ? '' : taleScheduleHtml(state.stage, i, state.tariff)) +
           '</div>';
         }).join('') +
         '</div>' +
@@ -1790,10 +1801,154 @@ if (faqList) {
       var tariff = btn.getAttribute('data-tariff-jump');
       var card = document.querySelector('#chit-tariffs [data-tariff="' + tariff + '"]');
       if (card) card.click();
-      var program = document.getElementById('program');
-      if (program) program.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var programs = document.getElementById('programs');
+      if (programs) programs.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+
+  (function initFareModal() {
+    var modal = document.getElementById('fare-modal');
+    if (!modal) return;
+    var courseEl = document.getElementById('fare-modal-course');
+    var noteEl = document.getElementById('fare-modal-note');
+    var continueBtn = document.getElementById('fare-modal-continue');
+    var track = document.getElementById('fare-modal-track');
+    var ctx = { group: '', enroll: 'lead', title: '', meta: '', tariff: 'self_paced' };
+
+    function setFare(tariff) {
+      ctx.tariff = tariff || 'self_paced';
+      if (!track) return;
+      track.querySelectorAll('.fare-card').forEach(function(card) {
+        var on = card.getAttribute('data-fare') === ctx.tariff;
+        card.classList.toggle('is-selected', on);
+        card.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+    }
+
+    function openFare(card) {
+      if (!card) return;
+      ctx.group = card.getAttribute('data-group') || '';
+      ctx.enroll = card.getAttribute('data-enroll') || (ctx.group ? 'pay' : 'lead');
+      ctx.title = card.getAttribute('data-course-title') || '';
+      ctx.meta = card.getAttribute('data-course-meta') || '';
+      ctx.trialSlug = card.getAttribute('data-trial-slug') || '';
+      setFare('self_paced');
+      if (courseEl) {
+        courseEl.textContent = ctx.title + (ctx.meta ? ' · ' + ctx.meta : '');
+      }
+      if (noteEl) {
+        if (ctx.trialSlug) {
+          noteEl.textContent = 'Пробный урок бесплатно — через заявку. Модуль из 8 занятий — тарифы ниже.';
+        } else {
+          noteEl.textContent = ctx.enroll === 'pay'
+            ? 'После выбора тарифа откроется форма записи и оплаты'
+            : 'Для этой программы пока заявка — оплата откроется после старта набора';
+        }
+      }
+      if (continueBtn) {
+        if (ctx.trialSlug && ctx.enroll === 'lead') {
+          continueBtn.textContent = 'Получить пробный бесплатно';
+        } else {
+          continueBtn.textContent = ctx.enroll === 'pay' ? 'Продолжить запись' : 'Оставить заявку';
+        }
+      }
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('fare-modal-open');
+    }
+
+    function closeFare() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('fare-modal-open');
+    }
+
+    function applyToEnroll() {
+      if (ctx.group) {
+        var gBtn = document.querySelector(
+          '#chit-groups-basic [data-group="' + ctx.group + '"], #chit-groups-extra [data-group="' + ctx.group + '"]'
+        );
+        if (gBtn) onGroupClick(gBtn);
+        else if (MODULES[ctx.group]) {
+          state.group = ctx.group;
+          refreshStageAvailability();
+          showDateBox();
+          renderTales();
+          syncHidden();
+        }
+      }
+      var tCard = document.querySelector('#chit-tariffs [data-tariff="' + ctx.tariff + '"]');
+      if (tCard) tCard.click();
+      else {
+        state.tariff = ctx.tariff;
+        refreshStageAvailability();
+        showDateBox();
+        renderTales();
+        syncHidden();
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      var detail = e.target.closest('[data-course-detail]');
+      if (detail) return;
+
+      var openBtn = e.target.closest('[data-open-tariffs]');
+      var courseCard = e.target.closest('#course-catalog .course-card');
+      if (openBtn || (courseCard && !e.target.closest('a'))) {
+        if (openBtn) e.preventDefault();
+        if (courseCard) {
+          e.preventDefault();
+          openFare(courseCard);
+        }
+        return;
+      }
+
+      if (e.target.closest('[data-fare-close]')) {
+        e.preventDefault();
+        closeFare();
+      }
+    });
+
+    if (track) {
+      track.addEventListener('click', function(e) {
+        var fareCard = e.target.closest('[data-fare]');
+        if (!fareCard) return;
+        setFare(fareCard.getAttribute('data-fare'));
+      });
+    }
+
+    if (continueBtn) {
+      continueBtn.addEventListener('click', function() {
+        closeFare();
+        if (ctx.enroll === 'pay' && ctx.group) {
+          applyToEnroll();
+          var program = document.getElementById('program');
+          if (program) program.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        try {
+          sessionStorage.setItem('chit_lead_course', JSON.stringify({
+            title: ctx.title,
+            meta: ctx.meta,
+            tariff: ctx.tariff,
+            group: ctx.group,
+            trialSlug: ctx.trialSlug || ''
+          }));
+        } catch (err) {}
+        var lead = document.getElementById('lead');
+        if (lead) lead.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var age = document.getElementById('lead_child_age');
+        if (age && ctx.meta && !age.value) {
+          var m = ctx.meta.match(/(\d+\s*[–-]\s*\d+\s*лет|\d+\s*класс)/i);
+          if (m) age.placeholder = m[1];
+        }
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) closeFare();
+    });
+  })();
 
   document.addEventListener('DOMContentLoaded', function() {
     syncToCartForm();
@@ -1915,10 +2070,9 @@ if (faqList) {
 
 (function initInteractive() {
   var HERO_QUOTES = [
-    { q: '«Книги нужны, чтобы детям стало чуть менее одиноко — нашёлся кто-то, кто их понимает»', c: 'мы строим курс на этом же — понять героя, а не зазубрить пересказ' },
+    { q: '«Книги нужны, чтобы детям стало чуть менее одиноко — нашёлся кто-то, кто их понимает»', c: 'мы строим курс на этом же — понять героя, его чувства и поступки' },
     { q: '«Читать — значит мечтать чужими головами»', c: 'каждый урок — погружение в мир героя' },
-    { q: '«Сказка — ложь, да в ней намёк…»', c: 'учимся находить смысл между строк' },
-    { q: '«Лето — это маленькая жизнь»', c: '8 сказок — целое путешествие в книгу' }
+    { q: '«Сказка — ложь, да в ней намёк…»', c: 'учимся находить смысл между строк' }
   ];
   var quoteIdx = 0;
   var quoteEl = document.getElementById('quote-hero');
@@ -1937,9 +2091,9 @@ if (faqList) {
   }
 
   var BOOK_TEXTS = [
-    '<strong style="color:var(--blue)">Разовое</strong> — одна сказка на платформе (<span class="hero-book-text__nb">799&nbsp;₽</span>)',
-    '<strong style="color:var(--blue)">8 сказок</strong> в каждой программе · <span class="hero-book-text__nb">свой темп или с преподавателем</span> · начать можно с любой сказки',
-    '<strong style="color:var(--blue)">4 сказки</strong> — один блок. Свой темп, без расписания'
+    '<strong style="color:var(--blue)">Разовое</strong> — одна сказка на платформе (<span class="hero-book-text__nb">799&nbsp;₽</span>)<span class="hero-book-text__line">Свой темп на платформе · живые встречи — дополнительно</span>',
+    '<strong style="color:var(--blue)">12 программ</strong> · старт в любой день<span class="hero-book-text__line">Свой темп на платформе · живые встречи — дополнительно</span>',
+    '<strong style="color:var(--blue)">Один блок</strong> программы<span class="hero-book-text__line">Свой темп на платформе · живые встречи — дополнительно</span>'
   ];
   var bookStack = document.querySelector('.book-stack');
   var bookText = document.getElementById('hero-book-text');
@@ -2039,6 +2193,127 @@ if (faqList) {
       link.addEventListener('click', function() {
         setOpen(false);
       });
+    });
+  })();
+
+  (function initPlatformTabs() {
+    var tabs = document.querySelectorAll('#platform-tabs .platform-tab');
+    if (!tabs.length) return;
+    tabs.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var panelId = btn.getAttribute('data-panel');
+        tabs.forEach(function(t) {
+          var on = t === btn;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        document.querySelectorAll('.platform-panel').forEach(function(panel) {
+          var match = panel.id === 'platform-panel-' + panelId;
+          panel.classList.toggle('is-active', match);
+          if (match) panel.removeAttribute('hidden');
+          else panel.setAttribute('hidden', '');
+        });
+      });
+    });
+  })();
+
+  (function initCourseFilters() {
+    var filters = document.querySelectorAll('#course-filters .course-filter');
+    var cards = document.querySelectorAll('#course-catalog .course-card');
+    if (!filters.length || !cards.length) return;
+    filters.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var kind = btn.getAttribute('data-filter') || 'all';
+        filters.forEach(function(f) {
+          var on = f === btn;
+          f.classList.toggle('is-active', on);
+          f.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        cards.forEach(function(card) {
+          var cardKind = card.getAttribute('data-kind') || '';
+          var show = kind === 'all' || cardKind === kind;
+          card.classList.toggle('is-hidden', !show);
+        });
+      });
+    });
+  })();
+
+  (function initLeadForm() {
+    var form = document.getElementById('chit-lead-form');
+    if (!form) return;
+    var note = document.getElementById('chit-lead-note');
+    var API_BASE = (window.CHIT_API_BASE || 'https://api.chitatelstvo.ru').replace(/\/$/, '');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var name = (form.querySelector('#lead_parent_name') || {}).value || '';
+      var email = (form.querySelector('#lead_parent_email') || {}).value || '';
+      var phone = (form.querySelector('#lead_parent_phone') || {}).value || '';
+      var age = (form.querySelector('#lead_child_age') || {}).value || '';
+      var childName = (form.querySelector('#lead_child_name') || {}).value || 'Ребёнок';
+      var saved = null;
+      try {
+        saved = JSON.parse(sessionStorage.getItem('chit_lead_course') || 'null');
+      } catch (err) {}
+      var trialSlug = (saved && saved.trialSlug) || '';
+      if (!trialSlug && saved && saved.group === 'early-letters') trialSlug = 'early-letters-trial-lesson-01';
+      if (!trialSlug && saved && saved.group === 'early-stories') trialSlug = 'early-stories-trial-lesson-01';
+      if (!trialSlug && saved && /Буквы оживают/i.test(saved.title || '')) trialSlug = 'early-letters-trial-lesson-01';
+      if (!trialSlug && saved && /Первые истории/i.test(saved.title || '')) trialSlug = 'early-stories-trial-lesson-01';
+
+      if (trialSlug) {
+        var ageNum = parseInt(String(age).replace(/\D+/g, ''), 10);
+        var payload = {
+          parent_name: name,
+          parent_email: email,
+          phone: phone,
+          child_name: childName,
+          child_age: ageNum || null,
+          trial_slug: trialSlug,
+          trial_title: (saved && saved.title) || ''
+        };
+        fetch(API_BASE + '/api/early/trial', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function(r) { return r.json().then(function(j) { return { ok: r.ok, j: j }; }); })
+          .then(function(res) {
+            if (note) {
+              note.hidden = false;
+              note.textContent = (res.j && res.j.message) || 'Заявка отправлена.';
+              if (res.j && res.j.lesson_url) {
+                note.innerHTML = (res.j.message || 'Пробный открыт.') +
+                  ' <a href="' + res.j.lesson_url + '">Открыть урок</a>';
+              }
+            }
+          })
+          .catch(function() {
+            if (note) {
+              note.hidden = false;
+              note.textContent = 'Не удалось отправить. Напишите на info@chitatelstvo.ru';
+            }
+          });
+        return;
+      }
+
+      var courseLine = '';
+      if (saved && saved.title) {
+        courseLine = 'Программа: ' + saved.title +
+          (saved.meta ? ' (' + saved.meta + ')' : '') +
+          (saved.tariff ? '\nТариф: ' + saved.tariff : '') + '\n';
+      }
+      var body =
+        courseLine +
+        'Имя родителя: ' + name + '\n' +
+        'Email: ' + email + '\n' +
+        'Телефон: ' + phone + '\n' +
+        'Возраст ребёнка: ' + age + '\n';
+      var mailto =
+        'mailto:info@chitatelstvo.ru' +
+        '?subject=' + encodeURIComponent('Консультация · Читательство') +
+        '&body=' + encodeURIComponent(body);
+      if (note) note.hidden = false;
+      window.location.href = mailto;
     });
   })();
 

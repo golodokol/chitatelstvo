@@ -21,6 +21,7 @@ from services.lesson_player import (
     get_child_or_404,
     handle_emotion_quiz_submit,
     handle_manual_mark,
+    handle_quest_complete,
     handle_quiz_submit,
     handle_reading_practice_submit,
     handle_retelling_submit,
@@ -123,9 +124,13 @@ def lesson_page(
         "chest_url": payload["chest_url"],
     }
 
+    template_name = "lesson.html"
+    if payload.get("lesson_format") == "quest" or (payload.get("lesson") or {}).get("stations"):
+        template_name = "lesson_quest.html"
+
     return templates.TemplateResponse(
         request,
-        "lesson.html",
+        template_name,
         {
             "lesson": payload["lesson"],
             "slug": slug,
@@ -154,6 +159,7 @@ def lesson_page(
             "test_key": test_key if test_bypass else None,
             "step_labels": lesson_step_labels_payload(),
             "step_badges": lesson_step_badges_for_lesson(payload["lesson"]),
+            "assets_base": payload.get("assets_base") or "",
         },
     )
 
@@ -309,6 +315,29 @@ def tale_rating(
         child_id=child_id,
         slug=slug,
         rating=body.rating,
+        test_key=body.test_key,
+    )
+
+
+class QuestCompleteBody(LessonAuth):
+    sparks: int = Field(default=0, ge=0, le=20)
+
+
+@router.post("/api/lesson/{slug}/quest-complete")
+def quest_complete(
+    slug: str,
+    body: QuestCompleteBody,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> dict:
+    rate_limit(request)
+    child_id = _verify_access(body, slug)
+    get_child_or_404(db, child_id)
+    return handle_quest_complete(
+        db,
+        child_id=child_id,
+        slug=slug,
+        sparks=body.sparks,
         test_key=body.test_key,
     )
 

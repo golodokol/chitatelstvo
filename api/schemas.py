@@ -60,7 +60,7 @@ class RegisterWebhook(BaseModel):
     child_name: str = Field(min_length=1, max_length=100)
     child_age: int | None = Field(default=None)
     child_birth_date: date | None = Field(default=None)
-    module_id: int | None = Field(default=None, ge=1, le=19)
+    module_id: int | None = Field(default=None, ge=1, le=25)
     chosen_stage: str | None = Field(default=None, max_length=50)
     chosen_tale_number: int | None = Field(default=None, ge=1, le=4)
     lesson_slug: str | None = Field(default=None, max_length=120)

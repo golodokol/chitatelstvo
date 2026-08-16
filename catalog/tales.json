@@ -527,6 +527,204 @@
       "tale_title": "Калиф-аист, Маленький Мук В. Гауф",
       "lesson_title": "Калиф-аист, Маленький Мук В. Гауф",
       "slug": "extra-9-11-stage2-tale-04"
+    },
+    {
+      "id": 49,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 0,
+      "tale_title": "Словик и пропавшие звуки",
+      "lesson_title": "Словик и пропавшие звуки",
+      "slug": "early-letters-stage1-tale-00"
+    },
+    {
+      "id": 50,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 1,
+      "tale_title": "Мир звуков",
+      "lesson_title": "Мир звуков",
+      "slug": "early-letters-stage1-tale-01"
+    },
+    {
+      "id": 51,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 2,
+      "tale_title": "Первый звук слова",
+      "lesson_title": "Первый звук слова",
+      "slug": "early-letters-stage1-tale-02"
+    },
+    {
+      "id": 52,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 3,
+      "tale_title": "Буква А — голос открывается",
+      "lesson_title": "Буква А — голос открывается",
+      "slug": "early-letters-stage1-tale-03"
+    },
+    {
+      "id": 53,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 4,
+      "tale_title": "Буква М — звук мотора",
+      "lesson_title": "Буква М — звук мотора",
+      "slug": "early-letters-stage1-tale-04"
+    },
+    {
+      "id": 54,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 5,
+      "tale_title": "Буква С — звук змейки",
+      "lesson_title": "Буква С — звук змейки",
+      "slug": "early-letters-stage1-tale-05"
+    },
+    {
+      "id": 55,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 6,
+      "tale_title": "Буквы дружат",
+      "lesson_title": "Буквы дружат",
+      "slug": "early-letters-stage1-tale-06"
+    },
+    {
+      "id": 56,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 7,
+      "tale_title": "Буквы в моём мире",
+      "lesson_title": "Буквы в моём мире",
+      "slug": "early-letters-stage1-tale-07"
+    },
+    {
+      "id": 57,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 8,
+      "tale_title": "Буквенный праздник",
+      "lesson_title": "Буквенный праздник",
+      "slug": "early-letters-stage1-tale-08"
+    },
+    {
+      "id": 58,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 0,
+      "tale_title": "Спаси первую историю",
+      "lesson_title": "Спаси первую историю",
+      "slug": "early-stories-stage1-tale-00"
+    },
+    {
+      "id": 59,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 1,
+      "tale_title": "Как буквы становятся слогом",
+      "lesson_title": "Как буквы становятся слогом",
+      "slug": "early-stories-stage1-tale-01"
+    },
+    {
+      "id": 60,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 2,
+      "tale_title": "Читаем слог без остановки",
+      "lesson_title": "Читаем слог без остановки",
+      "slug": "early-stories-stage1-tale-02"
+    },
+    {
+      "id": 61,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 3,
+      "tale_title": "Из слогов — слова",
+      "lesson_title": "Из слогов — слова",
+      "slug": "early-stories-stage1-tale-03"
+    },
+    {
+      "id": 62,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 4,
+      "tale_title": "Слово находит картинку",
+      "lesson_title": "Слово находит картинку",
+      "slug": "early-stories-stage1-tale-04"
+    },
+    {
+      "id": 63,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 5,
+      "tale_title": "Слова строят фразу",
+      "lesson_title": "Слова строят фразу",
+      "slug": "early-stories-stage1-tale-05"
+    },
+    {
+      "id": 64,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 6,
+      "tale_title": "Что случилось сначала?",
+      "lesson_title": "Что случилось сначала?",
+      "slug": "early-stories-stage1-tale-06"
+    },
+    {
+      "id": 65,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 7,
+      "tale_title": "Герой, место, действие",
+      "lesson_title": "Герой, место, действие",
+      "slug": "early-stories-stage1-tale-07"
+    },
+    {
+      "id": 66,
+      "group_code": "early-stories",
+      "group_label": "Первые истории",
+      "stage": "stage-1",
+      "stage_label": "Модуль 1",
+      "tale_number": 8,
+      "tale_title": "Моя первая история",
+      "lesson_title": "Моя первая история",
+      "slug": "early-stories-stage1-tale-08"
     }
   ]
 }

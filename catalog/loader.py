@@ -25,12 +25,10 @@ def get_module(module_id: int) -> dict[str, Any] | None:
 
 
 def get_tale(group_code: str, stage: str, tale_number: int) -> dict[str, Any] | None:
-    stage_label = {"stage-1": "Этап 1", "stage-2": "Этап 2"}.get(stage, stage)
     for tale in load_tales():
         if (
             tale["group_code"] == group_code
             and tale["stage"] == stage
-            and tale["stage_label"] == stage_label
             and tale["tale_number"] == tale_number
         ):
             return tale

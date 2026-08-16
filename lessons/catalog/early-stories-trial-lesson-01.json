@@ -1,0 +1,354 @@
+{
+  "slug": "early-stories-trial-lesson-01",
+  "title": "Спаси первую историю",
+  "tale_title": "Спаси первую историю",
+  "module_id": 23,
+  "group_code": "early-stories",
+  "group_label": "Первые истории",
+  "tariff_code": "trial",
+  "tariff_label": "Пробный урок",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 1,
+  "tale_number": 0,
+  "tale_slug": "early-stories-stage1-tale-00",
+  "module_week": 1,
+  "meeting_number": 0,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": true,
+  "status": "тест",
+  "note": "Бесплатный пробный квест.",
+  "lesson_format": "quest",
+  "stations": [
+    {
+      "id": "closed_book",
+      "title": "Закрытая книжка",
+      "kind": "intro_video",
+      "slovik_line": "Помоги спасти первую историю!",
+      "audio": "ph-trial-intro",
+      "spark": false
+    },
+    {
+      "id": "letter_stones",
+      "title": "Камни букв",
+      "kind": "find",
+      "slovik_line": "Покажи букву и послушай звук.",
+      "audio": "ph-s1-enter",
+      "spark": false,
+      "rounds": [
+        {
+          "prompt_audio": "ph-s1-prompt-m",
+          "correct": "M",
+          "sound": "ph-s1-sound-m",
+          "options": [
+            "M",
+            "A",
+            "S",
+            "O"
+          ]
+        },
+        {
+          "prompt_audio": "ph-s1-prompt-a",
+          "correct": "A",
+          "sound": "ph-s1-sound-a",
+          "options": [
+            "S",
+            "O",
+            "A",
+            "M"
+          ]
+        },
+        {
+          "prompt_audio": "ph-s1-prompt-s",
+          "correct": "S",
+          "sound": "ph-s1-sound-s",
+          "options": [
+            "A",
+            "S",
+            "M",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sound_path",
+      "title": "Звуковая тропа",
+      "kind": "drag_join",
+      "slovik_line": "Веди звук по дорожке.",
+      "audio": "ph-s2-enter",
+      "spark": true,
+      "left": {
+        "id": "M",
+        "label": "М",
+        "sound": "ph-s1-sound-m"
+      },
+      "right": {
+        "id": "A",
+        "label": "А",
+        "sound": "ph-s1-sound-a"
+      },
+      "result": {
+        "label": "МА",
+        "sound": "ph-s2-syllable-ma"
+      },
+      "extra_joins": [
+        {
+          "left": {
+            "id": "S",
+            "label": "С",
+            "sound": "ph-s1-sound-s"
+          },
+          "right": {
+            "id": "O",
+            "label": "О",
+            "sound": "ph-s1-sound-o"
+          },
+          "result": {
+            "label": "СО",
+            "sound": "ph-s2-syllable-so"
+          }
+        }
+      ]
+    },
+    {
+      "id": "syllable_meadow",
+      "title": "Поляна слогов",
+      "kind": "listen_pick",
+      "slovik_line": "Что я сказал? Нажми на слог.",
+      "audio": "ph-s3-enter",
+      "spark": false,
+      "rounds": [
+        {
+          "sound": "ph-s3-say-ma",
+          "correct": "ma",
+          "options": [
+            {
+              "id": "ma",
+              "label": "МА"
+            },
+            {
+              "id": "mo",
+              "label": "МО"
+            },
+            {
+              "id": "sa",
+              "label": "СА"
+            }
+          ]
+        },
+        {
+          "sound": "ph-s3-say-so",
+          "correct": "so",
+          "options": [
+            {
+              "id": "sa",
+              "label": "СА"
+            },
+            {
+              "id": "so",
+              "label": "СО"
+            },
+            {
+              "id": "mo",
+              "label": "МО"
+            }
+          ]
+        },
+        {
+          "sound": "ph-s3-say-mo",
+          "correct": "mo",
+          "options": [
+            {
+              "id": "ma",
+              "label": "МА"
+            },
+            {
+              "id": "mo",
+              "label": "МО"
+            },
+            {
+              "id": "sa",
+              "label": "СА"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "path_break",
+      "title": "Пауза на тропе",
+      "kind": "break",
+      "slovik_line": "Два шага — и скажи ма.",
+      "audio": "ph-s4-enter",
+      "spark": false,
+      "hint": "Пройди два шага по полу и проговори «ма»."
+    },
+    {
+      "id": "word_house",
+      "title": "Домик слов",
+      "kind": "word_picture",
+      "slovik_line": "Прочитай и найди картинку.",
+      "audio": "ph-s5-enter",
+      "spark": true,
+      "items": [
+        {
+          "word": "МАМА",
+          "audio": "ph-s5-word-mama",
+          "correct": "mama",
+          "options": [
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/stories/mama.png"
+            },
+            {
+              "id": "sok",
+              "label": "Сок",
+              "image": "/static/early/stories/sok.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/stories/kot.png"
+            }
+          ]
+        },
+        {
+          "word": "СОК",
+          "audio": "ph-s5-word-sok",
+          "correct": "sok",
+          "options": [
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/stories/mama.png"
+            },
+            {
+              "id": "sok",
+              "label": "Сок",
+              "image": "/static/early/stories/sok.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/stories/kot.png"
+            }
+          ]
+        },
+        {
+          "word": "КОТ",
+          "audio": "ph-s5-word-kot",
+          "correct": "kot",
+          "options": [
+            {
+              "id": "sok",
+              "label": "Сок",
+              "image": "/static/early/stories/sok.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/stories/kot.png"
+            },
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/stories/mama.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "story_window",
+      "title": "Окно истории",
+      "kind": "phrase_picture",
+      "slovik_line": "Прочитай фразу.",
+      "audio": "ph-s6-enter",
+      "spark": false,
+      "phrase": "КОТ СПИТ",
+      "phrase_audio": "ph-s6-phrase",
+      "correct": "sleep",
+      "options": [
+        {
+          "id": "sleep",
+          "label": "Кот спит",
+          "image": "/static/early/stories/kot-sleep.png"
+        },
+        {
+          "id": "run",
+          "label": "Кот бежит",
+          "image": "/static/early/stories/kot-run.png"
+        }
+      ]
+    },
+    {
+      "id": "book_key",
+      "title": "Ключ от книжки",
+      "kind": "mini_quest",
+      "slovik_line": "Собери путь ещё раз.",
+      "audio": "ph-s7-enter",
+      "spark": false,
+      "steps": [
+        {
+          "kind": "find",
+          "correct": "MA",
+          "options": [
+            "MA",
+            "SO",
+            "MO"
+          ]
+        },
+        {
+          "kind": "word_picture",
+          "word": "КОТ",
+          "correct": "kot",
+          "options": [
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/stories/kot.png"
+            },
+            {
+              "id": "sok",
+              "label": "Сок",
+              "image": "/static/early/stories/sok.png"
+            }
+          ]
+        },
+        {
+          "kind": "phrase_picture",
+          "phrase": "КОТ СПИТ",
+          "correct": "sleep",
+          "options": [
+            {
+              "id": "sleep",
+              "label": "Кот спит",
+              "image": "/static/early/stories/kot-sleep.png"
+            },
+            {
+              "id": "run",
+              "label": "Кот бежит",
+              "image": "/static/early/stories/kot-run.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reward",
+      "title": "Награда Словика",
+      "kind": "reward",
+      "slovik_line": "Ты спас первую историю!",
+      "audio": "ph-s8-reward",
+      "spark": false,
+      "parent_note": "Дома ещё раз прочитайте МАМА и КОТ СПИТ. Дальше — модуль из 8 уроков."
+    }
+  ],
+  "quest": {
+    "goal_label": "слоги на тропе",
+    "goal_count": 3
+  }
+}

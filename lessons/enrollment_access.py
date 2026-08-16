@@ -10,6 +10,8 @@ from lessons.loader import list_legacy_lessons, list_module_lessons
 from lessons.single_content import single_lesson_playable
 from lessons.stages import normalize_stage
 
+EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
+
 
 def resolve_chosen_tale(
     *,
@@ -18,7 +20,7 @@ def resolve_chosen_tale(
     chosen_tale_number: int | None,
 ) -> dict[str, Any] | None:
     stage = normalize_stage(chosen_stage)
-    if not stage or not chosen_tale_number:
+    if not stage or chosen_tale_number is None:
         return None
     return get_tale(group_code, stage, chosen_tale_number)
 
@@ -64,12 +66,10 @@ def child_can_access_lesson(
     if not module:
         return False
 
-    if module["tariff_code"] == "single":
-        if lesson.get("tariff_code") != "single":
-            return False
-        return True
+    if module["tariff_code"] in ("single", "trial"):
+        return lesson.get("tariff_code") == module["tariff_code"]
 
-    if lesson.get("tariff_code") == "single":
+    if lesson.get("tariff_code") in ("single", "trial"):
         return False
 
     stage = normalize_stage(active.chosen_stage)
@@ -115,10 +115,11 @@ def list_lessons_for_enrollment(enrollment: Enrollment) -> list[dict[str, Any]]:
         return []
 
     lessons = list_module_lessons(enrollment.module_id, active_only=False)
-    if module["tariff_code"] == "single":
-        lessons = [les for les in lessons if les.get("tariff_code") == "single"]
+    tariff = module["tariff_code"]
+    if tariff in ("single", "trial"):
+        lessons = [les for les in lessons if les.get("tariff_code") == tariff]
     else:
-        lessons = [les for les in lessons if les.get("tariff_code") != "single"]
+        lessons = [les for les in lessons if les.get("tariff_code") not in ("single", "trial")]
         stage = normalize_stage(enrollment.chosen_stage)
         if stage:
             lessons = [les for les in lessons if les.get("stage") == stage]

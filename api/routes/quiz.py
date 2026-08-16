@@ -12,13 +12,16 @@ from pydantic import BaseModel, EmailStr, Field
 
 from api.deps import rate_limit
 from config.settings import PUBLIC_BASE_URL, ROOT
-from services.quiz_leads import LEADS_FILE, build_quiz_lead_rows, load_quiz_leads
+from db.session import get_db
 from notifications.email_channel import send_email
 from notifications.email_templates import (
     SUBJECT_QUIZ_AUTO,
     build_quiz_auto_email,
     build_quiz_auto_email_html,
 )
+from services.early_trial import grant_early_trial, resolve_trial_module_id
+from services.quiz_leads import LEADS_FILE, build_quiz_lead_rows, load_quiz_leads
+from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["quiz"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
@@ -71,8 +74,19 @@ def _answers_by_id(answers: list[QuizAnswer]) -> dict[str, str]:
     return out
 
 
-def _send_quiz_auto_email(body: QuizLeadRequest) -> bool:
+def _send_quiz_auto_email(
+    body: QuizLeadRequest,
+    *,
+    trial_access: dict | None = None,
+) -> bool:
     checklist_url = checklist_pdf_url()
+    trial_title = body.trial_title
+    trial_lesson_url = None
+    trial_progress_url = None
+    if trial_access:
+        trial_title = trial_access.get("lesson_title") or trial_title
+        trial_lesson_url = trial_access.get("lesson_url")
+        trial_progress_url = trial_access.get("progress_url")
     message = build_quiz_auto_email(
         parent_name=body.parent_name,
         child_name=body.child_name,
@@ -80,7 +94,9 @@ def _send_quiz_auto_email(body: QuizLeadRequest) -> bool:
         answers_by_id=_answers_by_id(body.answers),
         checklist_url=checklist_url,
         site_url=SITE_URL,
-        trial_title=body.trial_title,
+        trial_title=trial_title,
+        trial_lesson_url=trial_lesson_url,
+        trial_progress_url=trial_progress_url,
     )
     html_message = build_quiz_auto_email_html(
         parent_name=body.parent_name,
@@ -90,7 +106,9 @@ def _send_quiz_auto_email(body: QuizLeadRequest) -> bool:
         checklist_url=checklist_url,
         site_url=SITE_URL,
         assets_url=PUBLIC_BASE_URL,
-        trial_title=body.trial_title,
+        trial_title=trial_title,
+        trial_lesson_url=trial_lesson_url,
+        trial_progress_url=trial_progress_url,
     )
     attachments = []
     if CHECKLIST_PDF.is_file():
@@ -125,11 +143,32 @@ def quiz_checklist_pdf() -> FileResponse:
 
 
 @router.post("/api/quiz/lead")
-def quiz_lead(body: QuizLeadRequest, request: Request, _: None = Depends(rate_limit)) -> dict:
+def quiz_lead(
+    body: QuizLeadRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    _: None = Depends(rate_limit),
+) -> dict:
     answers = [a for a in body.answers if a.answer.strip()]
     if not answers:
         raise HTTPException(422, "Ответьте хотя бы на один вопрос квиза")
     body = body.model_copy(update={"answers": answers})
+
+    trial_access = None
+    if resolve_trial_module_id(trial_slug=body.trial_slug):
+        try:
+            trial_access = grant_early_trial(
+                db,
+                parent_name=body.parent_name,
+                parent_email=str(body.parent_email),
+                child_name=body.child_name,
+                child_age=body.child_age,
+                phone=body.phone,
+                trial_slug=body.trial_slug,
+            )
+        except Exception:
+            logger.exception("Не удалось выдать пробный early для %s", body.parent_email)
+
     LEADS_FILE.parent.mkdir(parents=True, exist_ok=True)
     record = {
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -143,22 +182,34 @@ def quiz_lead(body: QuizLeadRequest, request: Request, _: None = Depends(rate_li
         "trial_age": body.trial_age,
         "trial_slug": body.trial_slug,
         "trial_title": body.trial_title,
+        "trial_module_id": (trial_access or {}).get("module_id"),
+        "trial_lesson_url": (trial_access or {}).get("lesson_url"),
     }
     with LEADS_FILE.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     email_sent = False
     try:
-        email_sent = _send_quiz_auto_email(body)
+        email_sent = _send_quiz_auto_email(body, trial_access=trial_access)
     except Exception:
         logger.exception("Не удалось отправить автоматическое письмо квиза на %s", body.parent_email)
+
+    message = (
+        "Спасибо! PDF-чек-лист уже отправлен на email."
+        if email_sent
+        else "Спасибо! Заявка принята."
+    )
+    if trial_access and trial_access.get("lesson_url"):
+        message = (
+            "Спасибо! Пробный урок открыт — ссылка уже на email "
+            "(и PDF-чек-лист, если письмо ушло)."
+        )
 
     return {
         "ok": True,
         "email_sent": email_sent,
         "checklist_url": checklist_pdf_url(),
-        "message": (
-            "Спасибо! PDF-чек-лист уже отправлен на email. "
-            "Личное письмо от основателя школы придёт чуть позже."
-        ),
+        "trial_lesson_url": (trial_access or {}).get("lesson_url"),
+        "trial_progress_url": (trial_access or {}).get("progress_url"),
+        "message": message,
     }

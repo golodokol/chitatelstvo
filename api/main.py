@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from config.settings import PUBLIC_BASE_URL, ROOT
-from api.routes import admin, auth, cabinet_api, chest, chest_v1, legal, lesson, lesson_v1, pages, progress, quiz, telegram, test_lesson, webhook
+from api.routes import admin, auth, cabinet_api, chest, chest_v1, early_trial, legal, lesson, lesson_v1, pages, progress, quiz, telegram, test_lesson, webhook
 
 app = FastAPI(
     title="Литературная школа онлайн",
@@ -37,6 +37,7 @@ app.include_router(lesson.router)
 app.include_router(progress.router)
 app.include_router(chest.router)
 app.include_router(quiz.router)
+app.include_router(early_trial.router)
 app.include_router(telegram.router)
 app.include_router(test_lesson.router)
 

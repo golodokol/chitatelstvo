@@ -46,6 +46,16 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
             "chosen_tale_title": tale["tale_title"],
         }
 
+    if module["tariff_code"] == "trial":
+        # Бесплатный пробный: всегда stage-1, без выбора сказки
+        return {
+            "module": module,
+            "chosen_stage": "stage-1",
+            "chosen_tale_number": None,
+            "chosen_tale_slug": None,
+            "chosen_tale_title": None,
+        }
+
     if module["tariff_code"] == "meeting_addon":
         stage = normalize_stage(body.chosen_stage)
         if not stage or not body.chosen_tale_number:
@@ -66,7 +76,16 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
         chosen_tale_slug = lesson_slug
         chosen_tale_title = None
         if not chosen_tale_slug:
-            for group_code in ("grade-1", "grade-2", "grade-3", "grade-4", "extra-6-8", "extra-9-11"):
+            for group_code in (
+                "grade-1",
+                "grade-2",
+                "grade-3",
+                "grade-4",
+                "extra-6-8",
+                "extra-9-11",
+                "early-letters",
+                "early-stories",
+            ):
                 tale = resolve_chosen_tale(
                     group_code=group_code,
                     chosen_stage=stage,
@@ -87,6 +106,9 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
         }
 
     stage = normalize_stage(body.chosen_stage)
+    # Early modules: default stage-1 if omitted (старт модуля 1)
+    if not stage and module.get("group_code") in ("early-letters", "early-stories"):
+        stage = "stage-1"
     if not stage:
         raise HTTPException(
             400,
@@ -96,6 +118,7 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
         WITH_TEACHER_STAGE1_CLOSED
         and module["tariff_code"] == "with_teacher"
         and stage == "stage-1"
+        and module.get("group_code") not in ("early-letters", "early-stories")
     ):
         raise HTTPException(
             400,
@@ -126,8 +149,11 @@ def create_enrollment_from_registration(
 
     module = enrollment_data["module"]
     # Разовые сказки накапливаются: новая не должна закрывать прошлую.
+    # Пробный early не закрывает платный модуль той же группы.
     # Блоки (индивидуальное / с преподавателем) по-прежнему сменяют запись в том же направлении.
-    if module["tariff_code"] != "single":
+    if module["tariff_code"] == "trial":
+        pass
+    elif module["tariff_code"] != "single":
         repo.complete_active_enrollments(db, child.id, group_code=module["group_code"])
     repo.create_enrollment(
         db,

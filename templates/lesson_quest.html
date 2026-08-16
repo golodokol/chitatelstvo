@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include "_favicon.html" %}
+  <title>Читательство · {{ lesson.title }}</title>
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260731a">
+  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260816a">
+</head>
+<body class="chit-student chit-lesson-page chit-quest-page">
+  <div class="chit-wrap">
+    <p class="chit-back"><a class="chit-back__link" href="{{ progress_url }}">← К странице уроков</a></p>
+
+    <header class="quest-head">
+      <img class="quest-head__slovik" id="quest-slovik" src="{{ slovik.initial_url }}" alt="Словик" width="72" height="72">
+      <div>
+        <h1 class="quest-head__title">{{ lesson.title }}</h1>
+        <p class="quest-head__child">Привет, <strong>{{ child_name }}</strong>! Словик рядом.</p>
+      </div>
+    </header>
+
+    <div class="quest-progress" aria-label="Прогресс квеста">
+      <div class="quest-progress__bar"><span id="quest-progress-fill"></span></div>
+      <p class="quest-progress__label" id="quest-progress-label">Станция 1</p>
+      <p class="quest-sparks" id="quest-sparks"></p>
+    </div>
+
+    <section class="chit-card quest-stage" id="quest-stage">
+      <p class="quest-stage__eyebrow" id="quest-station-title">Загрузка…</p>
+      <p class="quest-stage__line" id="quest-slovik-line"></p>
+      <div id="quest-body"></div>
+      <div id="quest-msg" class="chit-msg" style="display:none" aria-live="polite"></div>
+      <div class="quest-actions">
+        <button type="button" class="chit-btn" id="quest-btn-audio">Слушать Словика</button>
+        <button type="button" class="chit-btn chit-btn--primary" id="quest-btn-next" hidden>Дальше</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    window.CHIT_QUEST = {
+      slug: {{ slug|tojson }},
+      childId: {{ child_id|tojson }},
+      exp: {{ exp }},
+      sig: {{ sig|tojson }},
+      testKey: {{ (test_key or '')|tojson }},
+      stations: {{ (lesson.stations or [])|tojson }},
+      quest: {{ (lesson.quest or {})|tojson }},
+      progressUrl: {{ progress_url|tojson }},
+      assetsBase: {{ (assets_base or '')|tojson }},
+      slovikUrl: {{ slovik.initial_url|tojson }}
+    };
+  </script>
+  <script src="/static/lesson_quest.js?v=20260816a"></script>
+</body>
+</html>

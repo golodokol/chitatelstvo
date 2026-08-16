@@ -323,12 +323,16 @@ def _quiz_email_parts(
     checklist_url: str,
     site_url: str,
     trial_title: str | None = None,
+    trial_lesson_url: str | None = None,
+    trial_progress_url: str | None = None,
 ) -> dict[str, str]:
     parent = parent_name.strip() or "родитель"
     child_gen = name_genitive(child_name)
     problem = _quiz_problem_paragraph(child_name, answers_by_id)
     age_intro = _quiz_age_intro(child_age)
     trial = (trial_title or "").strip()
+    lesson_url = (trial_lesson_url or "").strip()
+    progress_url = (trial_progress_url or "").strip()
 
     if _age_in_quiz_range(child_age):
         thanks = (
@@ -338,11 +342,16 @@ def _quiz_email_parts(
     else:
         thanks = f"Спасибо, что прошли короткий опрос для {child_gen}."
 
-    if trial:
+    if trial and lesson_url:
+        gift_line = (
+            f"Ваш бесплатный урок «{trial}» уже открыт.\n"
+            f"Открыть урок: {lesson_url}\n"
+            f"Личная страница: {progress_url or lesson_url}"
+        )
+    elif trial:
         gift_line = (
             f"Вы выбрали бесплатный урок «{trial}». "
-            "Мы откроем доступ к платформе и этой сказке — "
-            "ссылка придёт отдельным письмом чуть позже."
+            "Мы откроем доступ к платформе — ссылка придёт отдельно, если не пришла в этом письме."
         )
     else:
         gift_line = (
@@ -358,6 +367,8 @@ def _quiz_email_parts(
         "checklist_url": checklist_url,
         "program_url": f"{site_url}/#program",
         "gift_line": gift_line,
+        "trial_lesson_url": lesson_url,
+        "trial_progress_url": progress_url,
     }
 
 
@@ -370,8 +381,10 @@ def build_quiz_auto_email(
     checklist_url: str,
     site_url: str = "https://chitatelstvo.ru",
     trial_title: str | None = None,
+    trial_lesson_url: str | None = None,
+    trial_progress_url: str | None = None,
 ) -> str:
-    """Автоматическое письмо после квиза: PDF-чек-лист + напоминание про пробный урок."""
+    """Автоматическое письмо после квиза: PDF-чек-лист + ссылка на пробный урок."""
     parts = _quiz_email_parts(
         parent_name=parent_name,
         child_name=child_name,
@@ -380,6 +393,8 @@ def build_quiz_auto_email(
         checklist_url=checklist_url,
         site_url=site_url,
         trial_title=trial_title,
+        trial_lesson_url=trial_lesson_url,
+        trial_progress_url=trial_progress_url,
     )
 
     lines = [
@@ -415,6 +430,8 @@ def build_quiz_auto_email_html(
     site_url: str = "https://chitatelstvo.ru",
     assets_url: str = "https://api.chitatelstvo.ru",
     trial_title: str | None = None,
+    trial_lesson_url: str | None = None,
+    trial_progress_url: str | None = None,
 ) -> str:
     parts = _quiz_email_parts(
         parent_name=parent_name,
@@ -424,10 +441,27 @@ def build_quiz_auto_email_html(
         checklist_url=checklist_url,
         site_url=site_url,
         trial_title=trial_title,
+        trial_lesson_url=trial_lesson_url,
+        trial_progress_url=trial_progress_url,
     )
     logo_url = quiz_logo_url(assets_url)
     home_url = html.escape(site_url, quote=True)
     age_block = f'<p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["age_intro"])}</p>'
+    gift_html = html.escape(parts["gift_line"]).replace("\n", "<br>")
+    trial_btn = ""
+    if parts.get("trial_lesson_url"):
+        trial_btn = (
+            f'<p style="margin:0 0 16px;text-align:center;">'
+            f'<a href="{html.escape(parts["trial_lesson_url"], quote=True)}" '
+            f'style="display:inline-block;background:#5B7FA6;color:#fff;text-decoration:none;'
+            f'padding:12px 22px;border-radius:12px;font-weight:700;">Открыть пробный урок</a></p>'
+        )
+        if parts.get("trial_progress_url"):
+            trial_btn += (
+                f'<p style="margin:0 0 16px;text-align:center;font-size:14px;">'
+                f'<a href="{html.escape(parts["trial_progress_url"], quote=True)}" '
+                f'style="color:#5B7FA6;">Личная страница ребёнка</a></p>'
+            )
 
     return f"""<!DOCTYPE html>
 <html lang="ru">
@@ -446,7 +480,8 @@ def build_quiz_auto_email_html(
     <p style="margin:0 0 8px;line-height:1.6;">Ваш PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» <strong>прикреплён к письму</strong>.</p>
     <p style="margin:0 0 16px;line-height:1.6;">Если вложение не открылось — <a href="{html.escape(parts["checklist_url"], quote=True)}" style="color:#5B7FA6;">скачайте PDF по ссылке</a>.</p>
     <p style="margin:0 0 16px;line-height:1.6;">Отметьте пункты вместе с ребёнком — так проще увидеть, где нужна поддержка.</p>
-    <p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["gift_line"])}</p>
+    {trial_btn}
+    <p style="margin:0 0 16px;line-height:1.6;">{gift_html}</p>
     <p style="margin:0;line-height:1.6;">с теплом, команда Читательства</p>
     <p style="margin:24px 0 0;font-size:13px;color:#7A8FA3;line-height:1.5;"><a href="mailto:info@chitatelstvo.ru" style="color:#7A8FA3;">info@chitatelstvo.ru</a></p>
   </div>

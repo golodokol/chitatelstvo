@@ -22,6 +22,20 @@ from lessons.schedule import (
 # Дата выката нового календаря; записи до неё сохраняют доступ по старому старту.
 SCHEDULE_SHIFT_DATE = date(2026, 7, 10)
 
+EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
+EARLY_MODULE_START = date(2026, 9, 1)  # вторник
+
+
+def early_lesson_opens_on(module_week: int) -> date:
+    """Открытие уроков early-модуля: вт / чт / вт / чт …
+
+    1 → 1 сен, 2 → 3 сен, 3 → 8 сен, 4 → 10 сен и далее.
+    """
+    week = max(1, int(module_week or 1))
+    pair = (week - 1) // 2
+    day_in_pair = 0 if week % 2 == 1 else 2  # вт = +0, чт = +2
+    return EARLY_MODULE_START + timedelta(days=7 * pair + day_in_pair)
+
 
 def _registration_date(child: Child) -> date:
     if child.created_at:
@@ -136,8 +150,19 @@ def is_lesson_unlocked(
     enrollment: Enrollment | None = None,
     module: dict[str, Any] | None = None,
 ) -> bool:
+    # Бесплатный пробный early — сразу
+    if lesson.get("tariff_code") == "trial" or (module and module.get("tariff_code") == "trial"):
+        return True
+
     lesson_week = effective_module_week(lesson, enrollment, module)
     today = date.today()
+
+    group_code = (lesson.get("group_code") or (module or {}).get("group_code") or "")
+    if group_code in EARLY_GROUPS:
+        if today >= early_lesson_opens_on(lesson_week):
+            return True
+        admin_weeks = _admin_unlocked_weeks(child)
+        return admin_weeks > 0 and lesson_week <= admin_weeks
 
     if today >= lesson_opens_on(lesson_week):
         return True

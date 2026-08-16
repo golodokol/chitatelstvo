@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Собрать единый HTML для вставки в Zero Block на Tilda."""
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260814b"
+VERSION = "20260816i"
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'

@@ -11,11 +11,13 @@ window.CHIT_COURSE = (function () {
     'grade-3': { single: 7, self_paced: 8, with_teacher: 9, label: '3 класс' },
     'grade-4': { single: 10, self_paced: 11, with_teacher: 12, label: '4 класс' },
     'extra-6-8': { single: 13, self_paced: 14, with_teacher: 15, label: '6–8 лет' },
-    'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' }
+    'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' },
+    'early-letters': { self_paced: 21, with_teacher: 22, trial: 20, label: 'Буквы оживают' },
+    'early-stories': { self_paced: 24, with_teacher: 25, trial: 23, label: 'Первые истории' }
   };
 
-  var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем' };
-  var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990 };
+  var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем', trial: 'Пробный' };
+  var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990, trial: 0 };
   var MEETING_ADDON_PRICE = 799;
   var STAGE_LABEL = { '1': 'Блок 1 · сказки 1–4', '2': 'Блок 2 · сказки 5–8' };
   var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
@@ -44,10 +46,11 @@ window.CHIT_COURSE = (function () {
       name: 'Разовое',
       mood: 'Одна сказка на платформе — без встречи',
       list: [
-        '1 сказка на выбор',
-        'Видео и интерактивные задания',
+        '1 сказка на платформе',
+        'Видео и задания на смысл',
         'Личная страница прогресса',
-        'Без живой встречи в цене'
+        'Блок из 4 сказок — нет',
+        'Живые встречи — нет'
       ],
       meetNote: 'Только онлайн. Живые занятия-квесты — на тарифе «С преподавателем»',
       priceNote: 'за 1 занятие',

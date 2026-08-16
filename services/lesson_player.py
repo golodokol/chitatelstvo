@@ -475,6 +475,9 @@ def build_lesson_json(
         "retelling_quiz": retelling_quiz_for_client(retelling, group_code=group_code) if retelling else None,
         "creative_tasks": lesson.get("creative_tasks"),
         "live_lesson": build_live_lesson_block(lesson, enrollment, child=child),
+        "stations": lesson.get("stations") or [],
+        "quest": lesson.get("quest") or {},
+        "lesson_format": lesson.get("lesson_format") or ("quest" if lesson.get("stations") else "tale"),
         "slovik": build_slovik_payload(lesson),
         "existing_rating": existing_rating.rating if existing_rating else None,
         "can_rate": can_rate,
@@ -881,4 +884,36 @@ def handle_tale_rating(
         "status": "saved",
         "rating": row.rating,
         "message": "Спасибо! Оценка попала в читательский дневник.",
+    }
+
+
+def handle_quest_complete(
+    db: Session,
+    *,
+    child_id: uuid.UUID,
+    slug: str,
+    sparks: int = 0,
+    test_key: str | None = None,
+) -> dict[str, Any]:
+    _, lesson = prepare_lesson_for_child(
+        db,
+        child_id,
+        slug,
+        bypass=verify_test_lesson_key(test_key),
+    )
+    if lesson.get("lesson_format") != "quest" and not lesson.get("stations"):
+        raise HTTPException(400, "Этот урок не является квестом со станциями.")
+
+    status, event_id = submit_learning_event(
+        db,
+        child_id=child_id,
+        event_type="lesson_complete",
+        tale_title=lesson["title"],
+        notes=f"quest complete sparks={int(sparks or 0)}",
+        payload={"sparks": int(sparks or 0), "format": "quest"},
+    )
+    return {
+        "status": status,
+        "event_id": str(event_id) if event_id else None,
+        "message": "Урок пройден!",
     }
