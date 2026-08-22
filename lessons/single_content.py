@@ -46,6 +46,10 @@ def single_lesson_playable(
     if lesson.get("lesson_format") == "quest" or lesson.get("stations"):
         return bool(lesson.get("active", True) and lesson.get("stations"))
 
+    # Пробные early без video в summary — всё равно открыты в кабинете.
+    if lesson.get("tariff_code") == "trial":
+        return bool(lesson.get("active", True))
+
     if lesson.get("tariff_code") != "single":
         return bool(lesson.get("active", True) and lesson.get("video"))
     # Оболочка single может оставаться черновиком: важна готовность контента сказки

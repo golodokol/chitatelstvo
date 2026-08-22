@@ -169,6 +169,13 @@ var CHIT_LESSON_OPENS_ISO = {
   '2': ['2026-08-15', '2026-08-17', '2026-08-24', '2026-08-31']
 };
 
+/** Early-курсы (Буквы / Истории), модуль 1: 4 встречи по четвергам */
+var CHIT_EARLY_SCHEDULE = {
+  meetings: ['3 сентября', '10 сентября', '17 сентября', '24 сентября'],
+  meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'],
+  meetingsIso: ['2026-09-03', '2026-09-10', '2026-09-17', '2026-09-24']
+};
+
 function taleScheduleHtml(stage, index, tariff) {
   var s = CHIT_SCHEDULE[stage];
   if (!s || index < 0 || index > 3) return '';

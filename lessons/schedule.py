@@ -52,6 +52,15 @@ STAGE_2_MEETINGS = (
     date(2026, 9, 3),
 )
 
+# Early-курсы (Буквы оживают / Первые истории), модуль 1 — встречи по четвергам
+EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
+EARLY_MEETINGS = (
+    date(2026, 9, 3),
+    date(2026, 9, 10),
+    date(2026, 9, 17),
+    date(2026, 9, 24),
+)
+
 STAGE_LABELS = {
     "stage-1": "Этап 1 · старт 15 июля",
     "stage-2": "Этап 2 · старт 15 августа",
@@ -85,10 +94,23 @@ def lesson_opens_on(module_week: int) -> date:
     return STAGE_2_LESSON_OPENS[module_week - 5]
 
 
-def meeting_on(module_week: int) -> date:
-    if module_week <= 4:
-        return STAGE_1_MEETINGS[module_week - 1]
-    return STAGE_2_MEETINGS[module_week - 5]
+def meeting_on(module_week: int, *, group_code: str | None = None) -> date:
+    week = int(module_week)
+    if group_code in EARLY_GROUPS:
+        # 4 встречи на модуль: недели 1–2 → 3 сен, 3–4 → 10 сен, …
+        idx = min(3, max(0, (max(1, week) - 1) // 2))
+        return EARLY_MEETINGS[idx]
+    if week <= 4:
+        return STAGE_1_MEETINGS[week - 1]
+    return STAGE_2_MEETINGS[week - 5]
+
+
+def early_meeting_labels(*, weekday: str = "четверг", with_year: bool = True) -> list[str]:
+    labels: list[str] = []
+    for meet in EARLY_MEETINGS:
+        text = format_date_ru(meet, weekday=weekday)
+        labels.append(f"{text} {meet.year}" if with_year else text)
+    return labels
 
 
 def module_week_for_tale(stage: str | None, tale_number: int) -> int:
@@ -108,13 +130,14 @@ def meeting_date_label(
     tale_number: int | None = None,
     weekday: str | None = None,
     with_year: bool = True,
+    group_code: str | None = None,
 ) -> str:
     """Подпись даты встречи для апселла и страницы заказа."""
     if module_week is None:
         if stage is None or tale_number is None:
             raise ValueError("meeting_date_label needs module_week or stage+tale_number")
         module_week = module_week_for_tale(stage, tale_number)
-    meet = meeting_on(module_week)
+    meet = meeting_on(module_week, group_code=group_code)
     text = format_date_ru(meet, weekday=weekday)
     if with_year:
         return f"{text} {meet.year}"
@@ -159,17 +182,22 @@ def meeting_still_bookable(
     tale_number: int | None = None,
     module_week: int | None = None,
     today: date | None = None,
+    group_code: str | None = None,
 ) -> bool:
     """Можно ли ещё докупить встречу (дата встречи строго в будущем).
 
     Поток 15 июля (этап 1): живых встреч нет — докупка закрыта.
     Встречи снова доступны со старта 15 августа (этап 2).
+    Early: 4 встречи в сентябре — докупка, пока дата встречи в будущем.
     """
     if module_week is None:
         if stage is None or tale_number is None:
             return False
         module_week = module_week_for_tale(stage, tale_number)
     week = int(module_week)
+    if group_code in EARLY_GROUPS:
+        meet = meeting_on(week, group_code=group_code)
+        return meet > (today or date.today())
     if week <= 4:
         return False
     meet = meeting_on(week)

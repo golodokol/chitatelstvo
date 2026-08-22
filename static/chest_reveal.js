@@ -99,7 +99,7 @@
         var link = document.createElement('a');
         link.className = 'chit-chest-modal__reward-download';
         link.href = item.download_url;
-        link.download = '';
+        link.download = item.download_name || '';
         link.textContent = 'Скачать';
         card.appendChild(link);
       }
@@ -212,6 +212,7 @@
       'data-download',
       item.downloadable && item.download_url ? item.download_url : ''
     );
+    article.setAttribute('data-download-name', item.download_name || '');
     article.setAttribute('data-kind', item.kind || '');
     article.setAttribute('data-tale-slug', item.tale_slug || '');
     if (item.image_url) {

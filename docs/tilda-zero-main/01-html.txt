@@ -39,7 +39,7 @@
       <div class="hero__cta">
         <div class="hero__actions">
           <a class="btn btn--hero" href="#programs">Выбрать программу</a>
-          <a class="btn btn--outline" href="#quiz">Попробовать бесплатно</a>
+          <a class="btn btn--outline" href="#quiz" data-quiz="reading">Попробовать бесплатно</a>
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@
         </div>
         <p id="hero-book-text"><strong style="color:var(--blue)">12 программ</strong> · старт в любой день<span class="hero-book-text__line">Свой темп на платформе · живые встречи — дополнительно</span></p>
       </div>
-      <a href="#quiz" class="hero__visual-gift">Бесплатный доступ к платформе и один урок-сказка</a>
+      <a href="#quiz" class="hero__visual-gift" data-quiz="reading">Бесплатный доступ к платформе и один урок-сказка</a>
     </div>
   </div>
   <p class="hero__scroll"><a href="#programs">↓ листайте вниз — 12 программ и запись</a></p>
@@ -98,7 +98,7 @@
         <h2 class="section__title section__title--left">Выберите программу</h2>
         <p class="section__lead section__lead--left">От первых букв до литературного чтения · часть доступна сегодня</p>
       </div>
-      <a class="catalog-help" href="#quiz">
+      <a class="catalog-help" href="#quiz" data-quiz="reading">
         <span class="catalog-help__eyebrow">Не знаете, что выбрать?</span>
         <strong class="catalog-help__title">Помогите подобрать</strong>
         <span class="catalog-help__hint">Подборка за 2 минуты →</span>
@@ -114,8 +114,8 @@
     </div>
 
     <div class="course-catalog" id="course-catalog" aria-label="Каталог программ">
-      <article class="course-card course-card--early" data-kind="early" data-enroll="lead" data-group="early-letters" data-trial-slug="early-letters-trial-lesson-01" data-course-title="Буквы оживают" data-course-meta="4–6 лет · звук → буква → слог">
-        <div class="course-card__media" aria-hidden="true"></div>
+      <article class="course-card course-card--early" data-kind="early" data-enroll="pay" data-group="early-letters" data-trial-slug="early-letters-trial-lesson-01" data-course-title="Буквы оживают" data-course-meta="4–6 лет · звук → буква → слог">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-letters.jpg" alt="" width="800" height="450" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Первые шаги</span>
@@ -128,11 +128,18 @@
           <li>Слоги складываются в слова</li>
           </ul>
           <span class="course-card__status">Доступно · старт в любой день</span>
-          <span class="course-card__price">от 799 ₽</span>
-          <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+          <span class="course-card__price">от 799 ₽ · есть пробный</span>
+          <div class="course-card__actions course-card__actions--early">
+            <a class="course-card__btn course-card__btn--trial" href="#quiz" data-qz-open data-quiz="early"
+               data-trial-age="4-6"
+               data-trial-slug="early-letters-trial-lesson-01"
+               data-trial-title="Словик и пропавшие звуки">Пробный урок бесплатно</a>
+            <button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button>
+            <button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button>
+          </div></div>
       </article>
-      <article class="course-card course-card--early" data-kind="early" data-enroll="lead" data-group="early-stories" data-trial-slug="early-stories-trial-lesson-01" data-course-title="Первые истории" data-course-meta="5–7 лет · слово → фраза → смысл">
-        <div class="course-card__media" aria-hidden="true"></div>
+      <article class="course-card course-card--early" data-kind="early" data-enroll="pay" data-group="early-stories" data-trial-slug="early-stories-trial-lesson-01" data-course-title="Первые истории" data-course-meta="5–7 лет · слово → фраза → смысл">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-stories.jpg" alt="" width="800" height="450" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Первые шаги</span>
@@ -145,11 +152,18 @@
           <li>Вопросы на смысл</li>
           </ul>
           <span class="course-card__status">Доступно · старт в любой день</span>
-          <span class="course-card__price">от 799 ₽</span>
-          <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+          <span class="course-card__price">от 799 ₽ · есть пробный</span>
+          <div class="course-card__actions course-card__actions--early">
+            <a class="course-card__btn course-card__btn--trial" href="#quiz" data-qz-open data-quiz="early"
+               data-trial-age="5-7"
+               data-trial-slug="early-stories-trial-lesson-01"
+               data-trial-title="Спаси первую историю">Пробный урок бесплатно</a>
+            <button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button>
+            <button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button>
+          </div></div>
       </article>
       <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="1 класс" data-course-meta="7–8 лет · 8 сказок" data-group="grade-1">
-        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-grade-1.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Базовый курс</span>
@@ -166,7 +180,7 @@
           <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/1-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
       </article>
       <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="2 класс" data-course-meta="8–9 лет · 8 сказок" data-group="grade-2">
-        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-grade-2.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Базовый курс</span>
@@ -183,7 +197,7 @@
           <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/2-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
       </article>
       <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="3 класс" data-course-meta="9–10 лет · 8 сказок" data-group="grade-3">
-        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-grade-3.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Базовый курс</span>
@@ -200,7 +214,7 @@
           <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/3-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
       </article>
       <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="4 класс" data-course-meta="10–11 лет · 8 сказок" data-group="grade-4">
-        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-grade-4.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Базовый курс</span>
@@ -217,7 +231,7 @@
           <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/4-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
       </article>
       <article class="course-card course-card--extra" data-kind="extra" data-enroll="pay" data-course-title="6–8 лет" data-course-meta="Вне школьной программы · 8 сказок" data-group="extra-6-8">
-        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-extra-6-8.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Внеклассное</span>
@@ -234,7 +248,7 @@
           <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/6-8-let" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
       </article>
       <article class="course-card course-card--extra" data-kind="extra" data-enroll="pay" data-course-title="9–11 лет" data-course-meta="Вне школьной программы · 8 сказок" data-group="extra-9-11">
-        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-extra-9-11.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Внеклассное</span>
@@ -250,8 +264,8 @@
           <span class="course-card__price">от 799 ₽</span>
           <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/9-11-let" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
       </article>
-      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Ветер в ивах" data-course-meta="6–9 лет · старт в сентябре">
-        <div class="course-card__media" aria-hidden="true"></div>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Ветер в ивах" data-course-meta="6–9 лет · старт в сентябре" data-cover="wind">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-wind.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Медленное чтение</span>
@@ -267,8 +281,8 @@
           <span class="course-card__price">от 799 ₽</span>
           <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Предзапись</button></div></div>
       </article>
-      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Таинственный сад" data-course-meta="10–12 лет · старт в сентябре">
-        <div class="course-card__media" aria-hidden="true"></div>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Таинственный сад" data-course-meta="10–12 лет · старт в сентябре" data-cover="garden">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-garden.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Медленное чтение</span>
@@ -284,8 +298,8 @@
           <span class="course-card__price">от 799 ₽</span>
           <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Предзапись</button></div></div>
       </article>
-      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Русские сказки" data-course-meta="6–9 лет · старт в октябре">
-        <div class="course-card__media" aria-hidden="true"></div>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Русские сказки" data-course-meta="6–9 лет · старт в октябре" data-cover="rus-6-9">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-rus-6-9.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Русские сказки</span>
@@ -301,8 +315,8 @@
           <span class="course-card__price">от 799 ₽</span>
           <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Оставить заявку</button></div></div>
       </article>
-      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Русские сказки" data-course-meta="10–12 лет · старт в октябре">
-        <div class="course-card__media" aria-hidden="true"></div>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Русские сказки" data-course-meta="10–12 лет · старт в октябре" data-cover="rus-10-12">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-rus-10-12.jpg" alt="" width="800" height="500" loading="lazy"></div>
         <div class="course-card__body">
           <div class="course-card__tags">
             <span class="course-card__badge">Русские сказки</span>
@@ -346,7 +360,6 @@
     <p class="section__lead section__lead--left">Одинаковые форматы для всех программ · выберите курс в каталоге выше</p>
     <div class="fare-track" role="list">
       <article class="fare-card" role="listitem" data-tariff-jump="single">
-        <span class="fare-card__radio" aria-hidden="true"></span>
         <h3 class="fare-card__name">Разовое</h3>
         <p class="fare-card__price">799 ₽</p>
         <p class="fare-card__sub">1 сказка</p>
@@ -361,7 +374,6 @@
       </article>
       <article class="fare-card fare-card--rec" role="listitem" data-tariff-jump="self_paced">
         <span class="fare-card__badge">Рекомендуем</span>
-        <span class="fare-card__radio" aria-hidden="true"></span>
         <h3 class="fare-card__name">Индивидуальное</h3>
         <p class="fare-card__price">1 990 ₽</p>
         <p class="fare-card__delta">+1 191 ₽ к разовому</p>
@@ -376,7 +388,6 @@
         <a class="fare-card__cta" href="#programs" data-tariff-jump="self_paced">Выбрать курс</a>
       </article>
       <article class="fare-card" role="listitem" data-tariff-jump="with_teacher">
-        <span class="fare-card__radio" aria-hidden="true"></span>
         <h3 class="fare-card__name">С преподавателем</h3>
         <p class="fare-card__price">4 990 ₽</p>
         <p class="fare-card__delta">+4 191 ₽ к разовому</p>
@@ -666,10 +677,28 @@
         <div class="enroll-trial__head">
           <span class="enroll-trial__badge">0 ₽ · без карты</span>
           <h3 class="enroll-trial__title">Попробуйте один урок</h3>
-          <p class="enroll-trial__sub">Выберите возраст ребёнка — откроем доступ к полноценной сказке на платформе</p>
+          <p class="enroll-trial__sub">Выберите возраст — откроем доступ к пробному уроку на платформе</p>
         </div>
         <div class="enroll-trial__cards">
-          <a class="enroll-trial__card" href="#quiz" data-qz-open
+          <a class="enroll-trial__card enroll-trial__card--early" href="#quiz" data-qz-open data-quiz="early"
+             data-trial-age="4-6"
+             data-trial-slug="early-letters-trial-lesson-01"
+             data-trial-title="Словик и пропавшие звуки">
+            <span class="enroll-trial__age">4–6 лет · Буквы оживают</span>
+            <span class="enroll-trial__name">Словик и пропавшие звуки</span>
+            <span class="enroll-trial__author">квест со Словиком</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+          <a class="enroll-trial__card enroll-trial__card--early" href="#quiz" data-qz-open data-quiz="early"
+             data-trial-age="5-7"
+             data-trial-slug="early-stories-trial-lesson-01"
+             data-trial-title="Спаси первую историю">
+            <span class="enroll-trial__age">5–7 лет · Первые истории</span>
+            <span class="enroll-trial__name">Спаси первую историю</span>
+            <span class="enroll-trial__author">квест со Словиком</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+          <a class="enroll-trial__card" href="#quiz" data-qz-open data-quiz="reading"
              data-trial-age="6-8"
              data-trial-slug="grade-2-self_paced-stage-1-lesson-01"
              data-trial-title="Сказка о рыбаке и рыбке">
@@ -678,7 +707,7 @@
             <span class="enroll-trial__author">А. С. Пушкин</span>
             <span class="enroll-trial__cta">Получить урок бесплатно</span>
           </a>
-          <a class="enroll-trial__card" href="#quiz" data-qz-open
+          <a class="enroll-trial__card" href="#quiz" data-qz-open data-quiz="reading"
              data-trial-age="9-11"
              data-trial-slug="grade-3-self_paced-stage-1-lesson-01"
              data-trial-title="Сказка о царе Салтане">
@@ -690,32 +719,83 @@
         </div>
       </div>
 
-      <div class="enroll-or" role="presentation"><span>или запишитесь на курс</span></div>
+      <div class="enroll-or" role="presentation" id="chit-enroll-paid"><span>или запишитесь на курс</span></div>
 
-      <div class="step-block">
-        <div class="step-label"><em>шаг 1</em> · класс или возраст</div>
-        <p class="step-hint step-hint--always">Один выбор: школьный класс или внеклассное чтение по возрасту</p>
-        <div class="group-block">
-          <h4 class="group-title">Базовый курс · 1–4 класс</h4>
-          <div class="pills" id="chit-groups-basic">
-            <button type="button" class="pill is-active" data-group="grade-1">1 класс</button>
-            <button type="button" class="pill" data-group="grade-2">2 класс</button>
-            <button type="button" class="pill" data-group="grade-3">3 класс</button>
-            <button type="button" class="pill" data-group="grade-4">4 класс</button>
-          </div>
+      <div class="enroll-course-lock" id="chit-enroll-course" hidden>
+        <div class="enroll-course-lock__text">
+          <span class="enroll-course-lock__label">Вы записываетесь на</span>
+          <strong class="enroll-course-lock__title" id="chit-enroll-course-title"></strong>
+          <span class="enroll-course-lock__meta" id="chit-enroll-course-meta"></span>
         </div>
-        <div class="group-block">
-          <h4 class="group-title">Внеклассное чтение</h4>
-          <div class="pills" id="chit-groups-extra">
-            <button type="button" class="pill" data-group="extra-6-8">6–8 лет</button>
-            <button type="button" class="pill" data-group="extra-9-11">9–11 лет</button>
-          </div>
+        <button type="button" class="enroll-course-lock__change" id="chit-enroll-change">Сменить курс</button>
+      </div>
+
+      <div class="step-block" id="chit-step-group">
+        <div class="step-label"><em>шаг 1</em> · какой курс нужен</div>
+        <p class="step-hint step-hint--always">Выберите одну программу. Удобнее начать с каталога выше — курс подставится сам</p>
+        <div class="enroll-tracks">
+          <section class="enroll-track">
+            <div class="enroll-track__head">
+              <h4 class="enroll-track__title">Первые шаги</h4>
+              <p class="enroll-track__sub">4–7 лет · звук, буква, слово, смысл</p>
+            </div>
+            <div class="enroll-track__opts pills" id="chit-groups-early">
+              <button type="button" class="pill enroll-opt" data-group="early-letters">
+                <span class="enroll-opt__name">Буквы оживают</span>
+                <span class="enroll-opt__meta">4–6 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="early-stories">
+                <span class="enroll-opt__name">Первые истории</span>
+                <span class="enroll-opt__meta">5–7 лет</span>
+              </button>
+            </div>
+          </section>
+          <section class="enroll-track">
+            <div class="enroll-track__head">
+              <h4 class="enroll-track__title">Базовый курс</h4>
+              <p class="enroll-track__sub">1–4 класс · сказки из школьной программы</p>
+            </div>
+            <div class="enroll-track__opts pills" id="chit-groups-basic">
+              <button type="button" class="pill enroll-opt" data-group="grade-1">
+                <span class="enroll-opt__name">1 класс</span>
+                <span class="enroll-opt__meta">7–8 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="grade-2">
+                <span class="enroll-opt__name">2 класс</span>
+                <span class="enroll-opt__meta">8–9 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="grade-3">
+                <span class="enroll-opt__name">3 класс</span>
+                <span class="enroll-opt__meta">9–10 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="grade-4">
+                <span class="enroll-opt__name">4 класс</span>
+                <span class="enroll-opt__meta">10–11 лет</span>
+              </button>
+            </div>
+          </section>
+          <section class="enroll-track">
+            <div class="enroll-track__head">
+              <h4 class="enroll-track__title">Внеклассное чтение</h4>
+              <p class="enroll-track__sub">Книги вне школьного списка · по возрасту</p>
+            </div>
+            <div class="enroll-track__opts pills" id="chit-groups-extra">
+              <button type="button" class="pill enroll-opt" data-group="extra-6-8">
+                <span class="enroll-opt__name">6–8 лет</span>
+                <span class="enroll-opt__meta">внеклассное</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="extra-9-11">
+                <span class="enroll-opt__name">9–11 лет</span>
+                <span class="enroll-opt__meta">внеклассное</span>
+              </button>
+            </div>
+          </section>
         </div>
       </div>
 
-      <div class="step-block">
-        <div class="step-label"><em>шаг 2</em> · формат</div>
-        <p class="step-hint step-hint--always">Два шага: возраст и формат. Ниже выберите блок из 4 сказок. Бесплатный урок — выше, это не «Разовое»</p>
+      <div class="step-block" id="chit-step-tariff">
+        <div class="step-label" id="chit-step-tariff-label"><em>шаг 2</em> · выберите тариф</div>
+        <p class="step-hint step-hint--always" id="chit-step-tariff-hint">Разовое — один урок. Индивидуальное — весь модуль в своём темпе. С преподавателем — модуль плюс живые встречи</p>
         <div class="tariff-pick" id="chit-tariffs">
           <div class="pick-card" data-tariff="single">
             <div class="pick-card__tag">Попробовать</div>
@@ -958,7 +1038,7 @@
     <div class="final-cta__frame">
       <h2>Почему бы не открыть первую сказку?</h2>
       <p>Даём бесплатный доступ к платформе и одному полноценному уроку. Пройдите книжное приключение вместе с ребёнком — если понравится, запись на программу займёт пару минут.</p>
-      <a class="btn" href="#quiz">Получить урок бесплатно</a>
+      <a class="btn" href="#quiz" data-quiz="reading">Получить урок бесплатно</a>
     </div>
   </section>
 </div>
@@ -1137,10 +1217,10 @@
             <div class="qz-success-icon" aria-hidden="true">✓</div>
             <h2 class="qz-title" style="text-align:center">Спасибо!</h2>
             <p class="qz-sub" style="text-align:center">Мы получили ваши ответы.</p>
-            <p style="text-align:center;margin:0 0 12px"><strong>PDF-чек-лист уже на вашем email.</strong></p>
+            <p style="text-align:center;margin:0 0 12px" data-qz-success-pdf><strong>PDF-чек-лист уже на вашем email.</strong></p>
             <p data-qz-gift-line style="text-align:center;margin:0 0 12px">Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
             <div class="qz-success-links">
-              <a class="qz-link-btn" href="https://api.chitatelstvo.ru/quiz/checklist.pdf?v=20260615b" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
+              <a class="qz-link-btn" data-qz-checklist-link href="https://api.chitatelstvo.ru/quiz/checklist.pdf?v=20260615b" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
               <a class="qz-link-btn" href="#program" data-qz-close style="background:var(--qz-blue);color:#fff;border-color:transparent">Записаться на программу</a>
             </div>
           </section>
@@ -1150,7 +1230,7 @@
   </div>
 </div>
 
-<a href="#quiz" class="qz-launcher" id="qz-launcher" aria-haspopup="dialog" aria-controls="qz-modal">
+<a href="#quiz" class="qz-launcher" id="qz-launcher" data-quiz="reading" aria-haspopup="dialog" aria-controls="qz-modal">
   <span class="qz-launcher__icon" aria-hidden="true">🎁</span>
   <span class="qz-launcher__text">Подборка + подарок</span>
 </a>

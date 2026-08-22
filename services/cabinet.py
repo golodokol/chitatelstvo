@@ -29,6 +29,15 @@ from lessons.step_labels import event_type_label
 from services.birthday_gift import maybe_grant_birthday_gift
 
 
+def _lesson_is_ready(lesson: dict[str, Any]) -> bool:
+    """playable/active: null в JSON не должен считаться «не готово»."""
+    if "playable" in lesson and lesson["playable"] is not None:
+        return bool(lesson["playable"])
+    if "active" in lesson and lesson["active"] is not None:
+        return bool(lesson["active"])
+    return True
+
+
 def group_lessons(lesson_links: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not lesson_links:
         return []
@@ -90,12 +99,12 @@ def build_lesson_links_for_track(
             "tale_slug": les.get("tale_slug") or les["slug"],
             "module_id": les.get("module_id"),
             "group_code": module.get("group_code"),
-            "ready": les.get("playable", les.get("active", True)),
+            "ready": _lesson_is_ready(les),
         }
         if access.get("meeting_on_label"):
             link["meeting_on"] = access["meeting_on"]
             link["meeting_on_label"] = access["meeting_on_label"]
-        if access["unlocked"] and les.get("playable", les.get("active", True)):
+        if access["unlocked"] and _lesson_is_ready(les):
             link["url"] = build_lesson_url(child.id, les["slug"])
         enrich_lesson_link(link)
         lesson_links.append(link)
@@ -143,6 +152,8 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
                 "group_label": module["group_label"],
                 "module_title": module["title"],
                 "module_id": module["id"],
+                "tariff_code": module.get("tariff_code") or "",
+                "tariff_label": module.get("tariff_label") or "",
                 "lesson_links": lesson_links,
                 "lesson_stages": group_lessons(lesson_links),
                 "has_meetings": track_meetings,

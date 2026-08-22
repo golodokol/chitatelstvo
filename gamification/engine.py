@@ -173,11 +173,14 @@ def _merge_with_rules(llm: GamificationResponse, req: GamificationRequest) -> Ga
         req.event_type,
         req.learner.current_badges,
         req.learner.current_level,
+        tale_title=req.learner.tale_title,
     )
 
     badge = llm.badge_name
     if badge and badge in req.learner.current_badges:
         badge = rules["badge_name"]
+    if badge == "Читатель" and rules["badge_name"] is None:
+        badge = None
 
     level = llm.level_change
     if level:
@@ -208,6 +211,7 @@ def _generate_from_rules(req: GamificationRequest) -> GamificationResponse:
         req.event_type,
         req.learner.current_badges,
         req.learner.current_level,
+        tale_title=req.learner.tale_title,
     )
     messages = fallback_messages(
         req.event_type,

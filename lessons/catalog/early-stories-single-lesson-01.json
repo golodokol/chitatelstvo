@@ -1,0 +1,22 @@
+{
+  "slug": "early-stories-single-lesson-01",
+  "title": "Разовое занятие — Первые истории",
+  "tale_title": null,
+  "module_id": 27,
+  "group_code": "early-stories",
+  "group_label": "Первые истории",
+  "tariff_code": "single",
+  "tariff_label": "Разовое занятие",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1 (выбор урока)",
+  "lesson_number": 1,
+  "tale_number": null,
+  "tale_slug": null,
+  "module_week": 1,
+  "meeting_number": 0,
+  "badge": "Первый шаг",
+  "points": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Разовое: при записи выбирают любой урок № 1–8 модуля 1. Контент — из self_paced того же урока."
+}

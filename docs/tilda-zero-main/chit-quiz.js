@@ -9,8 +9,9 @@
   var AUTO_ONCE_PER_SESSION = AUTO_CFG.oncePerSession !== false;
   var AUTO_STORAGE_KEY = 'chit_quiz_popup';
   var autoOpenTimer = null;
+  var activeVariant = 'reading';
 
-  var QUESTIONS = [
+  var QUESTIONS_READING = [
     {
       id: 'frequency',
       title: 'Как часто ребёнок читает дома?',
@@ -63,6 +64,94 @@
     }
   ];
 
+  var QUESTIONS_EARLY = [
+    {
+      id: 'readiness',
+      title: 'Как ребёнок сейчас с буквами и чтением?',
+      options: [
+        'Ещё почти не знает буквы',
+        'Знает некоторые буквы',
+        'Складывает слоги или короткие слова',
+        'Уже читает простые тексты'
+      ]
+    },
+    {
+      id: 'sounds',
+      title: 'Что получается легче всего?',
+      options: [
+        'Слушать и повторять звуки',
+        'Узнавать буквы на картинках',
+        'Складывать слоги в слова',
+        'Пока всё в новинку'
+      ]
+    },
+    {
+      id: 'interest',
+      title: 'Что ребёнку сейчас интереснее?',
+      options: [
+        'Игры со звуками и буквами',
+        'Короткие истории и картинки',
+        'Сказки вслух вместе со взрослым',
+        'Пока неясно — хотим попробовать'
+      ]
+    },
+    {
+      id: 'format_early',
+      title: 'Какой формат вам удобнее?',
+      options: [
+        'Короткие квесты дома в своём темпе',
+        'С педагогом в мини-группе',
+        'Сначала один бесплатный урок',
+        'Нужна подсказка, что выбрать'
+      ]
+    },
+    {
+      id: 'goal_early',
+      title: 'Что важнее сейчас?',
+      options: [
+        'Мягко подготовить к школе',
+        'Чтобы полюбил буквы и истории',
+        'Уверенность в первых словах',
+        'Попробовать без давления'
+      ]
+    }
+  ];
+
+  var COPY = {
+    reading: {
+      introBadge: 'Бесплатный доступ к платформе и один урок-сказка!',
+      introSub: 'Ответьте на 5 вопросов — получите чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email. А чуть позже откроем доступ к платформе и бесплатному полноценному уроку, чтобы вы прошли одно книжное приключение вместе с ребёнком.',
+      formSub: 'Оставьте контакты — пришлём PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email.',
+      giftNow: '<strong>Сейчас:</strong> PDF-чек-лист на email — проверить понимание текста вместе с ребёнком.',
+      giftLater: '<strong>Чуть позже:</strong> бесплатный доступ к платформе, один полноценный урок-сказка и личное письмо от основателя с рекомендациями.',
+      ageNote: 'Наши программы для читающих детей — примерно 6–11 лет',
+      submit: 'Получить PDF-чек-лист',
+      successPdf: '<strong>PDF-чек-лист уже на вашем email.</strong>',
+      successDefaultGift: 'Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.',
+      successTrialGift: function (title) {
+        return 'Бесплатный урок «' + title + '» откроем чуть позже — ссылка придёт отдельным письмом.';
+      },
+      showChecklistLink: true,
+      questionSub: 'Ответьте честно — так мы точнее подстроим рекомендации в письме'
+    },
+    early: {
+      introBadge: 'Бесплатный пробный квест со Словиком!',
+      introSub: '5 коротких вопросов — и откроем пробный урок для ребёнка, который ещё только знакомится с буквами и первыми историями. Без карты и без давления.',
+      formSub: 'Оставьте контакты — пришлём ссылку на пробный урок и короткие рекомендации на email.',
+      giftNow: '<strong>Сейчас:</strong> доступ к пробному квесту на платформе (ссылка в письме).',
+      giftLater: '<strong>В письме:</strong> подсказка, с чего начать — «Буквы оживают» или «Первые истории».',
+      ageNote: 'Этот квиз — для детей, которые ещё не читают сами или только начинают (примерно 4–7 лет)',
+      submit: 'Получить пробный урок',
+      successPdf: '<strong>Письмо со ссылкой на урок уже уходит на ваш email.</strong>',
+      successDefaultGift: 'Откройте письмо — там ссылка на пробный квест со Словиком.',
+      successTrialGift: function (title) {
+        return 'Пробный урок «' + title + '» уже открываем — ссылка придёт на email в течение минуты.';
+      },
+      showChecklistLink: false,
+      questionSub: 'Ответьте честно — так мы подскажем, с какого курса начать'
+    }
+  };
+
   var root = document.getElementById('chit-quiz');
   if (!root) return;
 
@@ -76,6 +165,14 @@
   var elError = root.querySelector('.qz-error');
   var form = root.querySelector('#qz-form');
 
+  function questions() {
+    return activeVariant === 'early' ? QUESTIONS_EARLY : QUESTIONS_READING;
+  }
+
+  function copy() {
+    return COPY[activeVariant] || COPY.reading;
+  }
+
   function showError(msg) {
     if (!elError) return;
     elError.textContent = msg;
@@ -88,10 +185,11 @@
   }
 
   function updateProgress() {
+    var qs = questions();
     var pct;
-    if (stepIndex < QUESTIONS.length) {
-      pct = Math.round(((stepIndex + 1) / QUESTIONS.length) * 80);
-    } else if (stepIndex === QUESTIONS.length) {
+    if (stepIndex < qs.length) {
+      pct = Math.round(((stepIndex + 1) / qs.length) * 80);
+    } else if (stepIndex === qs.length) {
       pct = 92;
     } else {
       pct = 100;
@@ -99,10 +197,10 @@
     if (elProgressFill) elProgressFill.style.width = pct + '%';
     if (elProgressPct) elProgressPct.textContent = pct + '%';
     if (elProgressLabel) {
-      if (stepIndex < QUESTIONS.length) {
-        elProgressLabel.textContent = 'Вопрос ' + (stepIndex + 1) + ' из ' + QUESTIONS.length;
-      } else if (stepIndex === QUESTIONS.length) {
-        elProgressLabel.textContent = 'Подборка готова';
+      if (stepIndex < qs.length) {
+        elProgressLabel.textContent = 'Вопрос ' + (stepIndex + 1) + ' из ' + qs.length;
+      } else if (stepIndex === qs.length) {
+        elProgressLabel.textContent = activeVariant === 'early' ? 'Почти готово' : 'Подборка готова';
       } else {
         elProgressLabel.textContent = 'Готово';
       }
@@ -131,7 +229,6 @@
       if (isForm) dialog.classList.add('qz-modal--form-compact');
       h = card.offsetHeight;
     }
-    // На форме контактов не даём появляться полосе прокрутки справа
     if (isForm) {
       dialog.style.overflow = 'hidden';
       var fit = Math.min(Math.max(h, 280), max);
@@ -140,24 +237,76 @@
       return;
     }
     dialog.style.overflow = '';
-    var fit = Math.min(h, max);
-    dialog.style.height = fit + 'px';
-    dialog.style.maxHeight = fit + 'px';
+    var fit2 = Math.min(h, max);
+    dialog.style.height = fit2 + 'px';
+    dialog.style.maxHeight = fit2 + 'px';
   }
 
   function showStep(index) {
+    var qs = questions();
     stepIndex = index;
     refreshSteps();
     elSteps.forEach(function (step, i) {
       step.classList.toggle('is-active', i === index);
     });
-    root.classList.toggle('qz-phase-questions', index >= 0 && index < QUESTIONS.length);
-    root.classList.toggle('qz-intro-collapsed', index > 0 && index < QUESTIONS.length);
-    root.classList.toggle('qz-form-step', index === QUESTIONS.length);
-    root.classList.toggle('qz-success-step', index > QUESTIONS.length);
+    root.classList.toggle('qz-phase-questions', index >= 0 && index < qs.length);
+    root.classList.toggle('qz-intro-collapsed', index > 0 && index < qs.length);
+    root.classList.toggle('qz-form-step', index === qs.length);
+    root.classList.toggle('qz-success-step', index > qs.length);
     updateProgress();
     hideError();
     window.setTimeout(fitDialogHeight, 40);
+  }
+
+  function applyVariantCopy() {
+    var c = copy();
+    root.setAttribute('data-quiz-variant', activeVariant);
+    var badge = root.querySelector('.qz-intro-gift__badge');
+    var introSub = root.querySelector('.qz-intro-gift__sub');
+    var formStep = root.querySelector('[data-step="form"]');
+    var formSub = formStep && formStep.querySelector('.qz-sub');
+    var giftPs = formStep && formStep.querySelectorAll('.qz-gift p');
+    var ageNote = root.querySelector('.qz-age-note');
+    var submitBtn = form && form.querySelector('.qz-btn--submit');
+    var successPdf = root.querySelector('[data-qz-success-pdf]');
+    var checklistLink = root.querySelector('[data-qz-checklist-link]');
+
+    if (badge) badge.textContent = c.introBadge;
+    if (introSub) introSub.textContent = c.introSub;
+    if (formSub) formSub.textContent = c.formSub;
+    if (giftPs && giftPs.length >= 2) {
+      giftPs[0].innerHTML = c.giftNow;
+      giftPs[1].innerHTML = c.giftLater;
+    }
+    if (ageNote) ageNote.textContent = c.ageNote;
+    if (submitBtn && !submitBtn.disabled) submitBtn.textContent = c.submit;
+    if (successPdf) successPdf.innerHTML = c.successPdf;
+    if (checklistLink) {
+      checklistLink.hidden = !c.showChecklistLink;
+      checklistLink.style.display = c.showChecklistLink ? '' : 'none';
+    }
+  }
+
+  function detectVariantFromTrial(trial) {
+    if (!trial || typeof trial !== 'object') return 'reading';
+    if (trial.quiz === 'early' || trial.quiz === 'reading') return trial.quiz;
+    var age = String(trial.age || '');
+    var slug = String(trial.slug || '');
+    if (age === '4-6' || age === '5-7') return 'early';
+    if (slug.indexOf('early-') === 0) return 'early';
+    return 'reading';
+  }
+
+  function resolveVariant(el) {
+    if (el && el.getAttribute) {
+      var fromEl = el.getAttribute('data-quiz');
+      if (fromEl === 'early' || fromEl === 'reading') return fromEl;
+    }
+    try {
+      var raw = sessionStorage.getItem('chit_trial');
+      if (raw) return detectVariantFromTrial(JSON.parse(raw));
+    } catch (err) {}
+    return 'reading';
   }
 
   function resetQuiz() {
@@ -167,9 +316,10 @@
       var btn = form.querySelector('.qz-btn--submit');
       if (btn) {
         btn.disabled = false;
-        btn.textContent = 'Получить PDF-чек-лист';
+        btn.textContent = copy().submit;
       }
     }
+    applyVariantCopy();
     renderQuestions();
     showStep(0);
   }
@@ -177,14 +327,16 @@
   function renderQuestions() {
     var container = root.querySelector('#qz-questions');
     if (!container) return;
-    container.innerHTML = QUESTIONS.map(function (q, qi) {
+    var qs = questions();
+    var sub = copy().questionSub;
+    container.innerHTML = qs.map(function (q, qi) {
       var opts = q.options.map(function (opt, oi) {
         return '<button type="button" class="qz-option" data-q="' + qi + '" data-v="' + oi + '">' + opt + '</button>';
       }).join('');
       return (
         '<section class="qz-step' + (qi === 0 ? ' is-active' : '') + '" data-step="' + qi + '">' +
           '<h2 class="qz-title">' + q.title + '</h2>' +
-          '<p class="qz-sub">Ответьте честно — так мы точнее подстроим рекомендации в письме</p>' +
+          '<p class="qz-sub">' + sub + '</p>' +
           '<div class="qz-options">' + opts + '</div>' +
           '<div class="qz-nav">' +
             (qi > 0 ? '<button type="button" class="qz-btn qz-btn--back" data-back="' + qi + '">Назад</button>' : '') +
@@ -268,17 +420,32 @@
 
   function rememberTrialFromEl(el) {
     if (!el || !el.getAttribute) return;
-    var slug = el.getAttribute('data-trial-slug');
-    if (!slug) return;
+    var quizAttr = el.getAttribute('data-quiz') || '';
+    var slug = el.getAttribute('data-trial-slug') || '';
+    var age = el.getAttribute('data-trial-age') || '';
+    var title = el.getAttribute('data-trial-title') || '';
+    var quiz = quizAttr === 'early' || quizAttr === 'reading'
+      ? quizAttr
+      : (age === '4-6' || age === '5-7' || slug.indexOf('early-') === 0 ? 'early' : 'reading');
+
+    if (!slug && !quizAttr) {
+      try {
+        sessionStorage.removeItem('chit_trial');
+        sessionStorage.removeItem('chit_trial_age_hint');
+      } catch (err) {}
+      return;
+    }
+
     try {
-      var age = el.getAttribute('data-trial-age') || '';
       sessionStorage.setItem('chit_trial', JSON.stringify({
         age: age,
         slug: slug,
-        title: el.getAttribute('data-trial-title') || ''
+        title: title,
+        quiz: quiz
       }));
-      var hintAge = age === '6-8' ? '7' : (age === '9-11' ? '10' : '');
+      var hintAge = age === '4-6' ? '5' : (age === '5-7' ? '6' : (age === '6-8' ? '7' : (age === '9-11' ? '10' : '')));
       if (hintAge) sessionStorage.setItem('chit_trial_age_hint', hintAge);
+      else sessionStorage.removeItem('chit_trial_age_hint');
     } catch (err) {}
   }
 
@@ -287,6 +454,7 @@
     if (!success) return;
     var giftLine = success.querySelector('[data-qz-gift-line]');
     if (!giftLine) return;
+    var c = copy();
     var title = '';
     try {
       var raw = sessionStorage.getItem('chit_trial');
@@ -295,16 +463,15 @@
         if (trial && trial.title) title = String(trial.title);
       }
     } catch (err) {}
-    giftLine.textContent = title
-      ? ('Бесплатный урок «' + title + '» откроем чуть позже — ссылка придёт отдельным письмом.')
-      : 'Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.';
+    giftLine.textContent = title ? c.successTrialGift(title) : c.successDefaultGift;
   }
 
-  function openQuizModal(source) {
+  function openQuizModal(source, fromEl) {
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
     cancelAutoOpen();
     markQuizPopup(source || 'open');
+    activeVariant = resolveVariant(fromEl);
     resetQuiz();
     applyTrialAgeHint();
     updateSuccessForTrial();
@@ -341,7 +508,7 @@
       el.addEventListener('click', function (e) {
         e.preventDefault();
         rememberTrialFromEl(el);
-        openQuizModal('manual');
+        openQuizModal('manual', el);
       });
     });
     modal.querySelectorAll('[data-qz-close]').forEach(function (el) {
@@ -355,16 +522,10 @@
     });
   }
 
-  function normalizePhone(raw) {
-    var digits = String(raw || '').replace(/\D/g, '');
-    if (digits.length === 11 && digits.charAt(0) === '8') digits = '7' + digits.slice(1);
-    if (digits.length === 10) digits = '7' + digits;
-    return digits;
-  }
-
   function allQuestionsAnswered() {
-    for (var i = 0; i < QUESTIONS.length; i++) {
-      if (!answers[QUESTIONS[i].id]) return false;
+    var qs = questions();
+    for (var i = 0; i < qs.length; i++) {
+      if (!answers[qs[i].id]) return false;
     }
     return true;
   }
@@ -390,7 +551,7 @@
   }
 
   function buildAnswersPayload() {
-    return QUESTIONS.map(function (q) {
+    return questions().map(function (q) {
       return { id: q.id, question: q.title, answer: answers[q.id] || '' };
     }).filter(function (item) {
       return item.answer && item.answer.trim();
@@ -416,7 +577,8 @@
       phone: '',
       child_name: form.child_name.value.trim(),
       child_age: parseInt(form.child_age.value.trim(), 10),
-      answers: buildAnswersPayload()
+      answers: buildAnswersPayload(),
+      quiz_variant: activeVariant
     };
     try {
       var trialRaw = sessionStorage.getItem('chit_trial');
@@ -426,9 +588,10 @@
           if (trial.age) payload.trial_age = String(trial.age);
           if (trial.slug) payload.trial_slug = String(trial.slug);
           if (trial.title) payload.trial_title = String(trial.title);
+          if (trial.quiz && !payload.quiz_variant) payload.quiz_variant = String(trial.quiz);
         }
       }
-    } catch (err) {}
+    } catch (err2) {}
     fetch(API_BASE + '/api/quiz/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -450,13 +613,13 @@
       .then(function () {
         markQuizPopup('done');
         updateSuccessForTrial();
-        showStep(QUESTIONS.length + 1);
+        showStep(questions().length + 1);
       })
-      .catch(function (err) {
-        showError(err && err.message ? err.message : 'Не удалось отправить. Проверьте связь и попробуйте ещё раз.');
+      .catch(function (err3) {
+        showError(err3 && err3.message ? err3.message : 'Не удалось отправить. Проверьте связь и попробуйте ещё раз.');
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Получить PDF-чек-лист';
+          btn.textContent = copy().submit;
         }
       });
   }
@@ -465,10 +628,12 @@
   bindModal();
 
   root.addEventListener('click', function (e) {
+    var qs = questions();
     var opt = e.target.closest('.qz-option');
     if (opt) {
       var qi = Number(opt.getAttribute('data-q'));
-      var q = QUESTIONS[qi];
+      var q = qs[qi];
+      if (!q) return;
       answers[q.id] = q.options[Number(opt.getAttribute('data-v'))];
       opt.closest('.qz-options').querySelectorAll('.qz-option').forEach(function (b) {
         b.classList.toggle('is-selected', b === opt);
@@ -480,8 +645,8 @@
     var next = e.target.closest('[data-next]');
     if (next && !next.disabled) {
       var ni = Number(next.getAttribute('data-next'));
-      if (ni < QUESTIONS.length - 1) showStep(ni + 1);
-      else showStep(QUESTIONS.length);
+      if (ni < qs.length - 1) showStep(ni + 1);
+      else showStep(qs.length);
       return;
     }
     var back = e.target.closest('[data-back]');

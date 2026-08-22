@@ -2,40 +2,49 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   {% include "_favicon.html" %}
   <title>Читательство · {{ lesson.title }}</title>
   <link rel="stylesheet" href="/static/chit-student.css?v=20260731a">
-  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260816a">
+  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260822n">
 </head>
 <body class="chit-student chit-lesson-page chit-quest-page">
-  <div class="chit-wrap">
+  <div class="chit-wrap quest-wrap">
     <p class="chit-back"><a class="chit-back__link" href="{{ progress_url }}">← К странице уроков</a></p>
 
-    <header class="quest-head">
-      <img class="quest-head__slovik" id="quest-slovik" src="{{ slovik.initial_url }}" alt="Словик" width="72" height="72">
-      <div>
-        <h1 class="quest-head__title">{{ lesson.title }}</h1>
-        <p class="quest-head__child">Привет, <strong>{{ child_name }}</strong>! Словик рядом.</p>
-      </div>
-    </header>
+    <article class="quest-board">
+      <header class="quest-head">
+        <div class="quest-head__text">
+          <h1 class="quest-head__title">{{ lesson.title }}</h1>
+          <p class="quest-head__child">Привет, <strong>{{ child_name }}</strong>!</p>
+        </div>
+      </header>
 
-    <div class="quest-progress" aria-label="Прогресс квеста">
-      <div class="quest-progress__bar"><span id="quest-progress-fill"></span></div>
-      <p class="quest-progress__label" id="quest-progress-label">Станция 1</p>
-      <p class="quest-sparks" id="quest-sparks"></p>
-    </div>
-
-    <section class="chit-card quest-stage" id="quest-stage">
-      <p class="quest-stage__eyebrow" id="quest-station-title">Загрузка…</p>
-      <p class="quest-stage__line" id="quest-slovik-line"></p>
-      <div id="quest-body"></div>
-      <div id="quest-msg" class="chit-msg" style="display:none" aria-live="polite"></div>
-      <div class="quest-actions">
-        <button type="button" class="chit-btn" id="quest-btn-audio">Слушать Словика</button>
-        <button type="button" class="chit-btn chit-btn--primary" id="quest-btn-next" hidden>Дальше</button>
+      <div class="quest-progress" aria-label="Прогресс квеста">
+        <div class="quest-sparks-hud" id="quest-sparks-hud" aria-label="Три искорки">
+          <span class="quest-spark-chip" data-spark="sound">Звук</span>
+          <span class="quest-spark-chip" data-spark="letter">Буква</span>
+          <span class="quest-spark-chip" data-spark="syllable">Слог</span>
+        </div>
+        <div class="quest-path" id="quest-path" role="img" aria-label="Прогресс по станциям"></div>
+        <p class="quest-progress__label" id="quest-progress-label">Станция 1</p>
       </div>
-    </section>
+
+      <section class="quest-stage" id="quest-stage">
+        <div class="quest-stage__intro">
+          <p class="quest-stage__eyebrow" id="quest-station-title">Загрузка…</p>
+          <p class="quest-stage__line" id="quest-slovik-line" hidden></p>
+        </div>
+        <div id="quest-body"></div>
+        <div id="quest-msg" class="chit-msg quest-msg" style="display:none" aria-live="polite"></div>
+        <footer class="quest-footer">
+          <div class="quest-actions">
+            <button type="button" class="chit-btn" id="quest-btn-audio" hidden>Послушать Словика</button>
+            <button type="button" class="chit-btn chit-btn--primary" id="quest-btn-next" hidden>Дальше</button>
+          </div>
+        </footer>
+      </section>
+    </article>
   </div>
 
   <script>
@@ -48,10 +57,13 @@
       stations: {{ (lesson.stations or [])|tojson }},
       quest: {{ (lesson.quest or {})|tojson }},
       progressUrl: {{ progress_url|tojson }},
+      chestUrl: {{ chest_url|tojson }},
+      taleSlug: {{ (lesson.tale_slug or slug)|tojson }},
       assetsBase: {{ (assets_base or '')|tojson }},
-      slovikUrl: {{ slovik.initial_url|tojson }}
+      slovikUrl: {{ slovik.initial_url|tojson }},
+      childName: {{ child_name|tojson }}
     };
   </script>
-  <script src="/static/lesson_quest.js?v=20260816a"></script>
+  <script src="/static/lesson_quest.js?v=20260822n"></script>
 </body>
 </html>

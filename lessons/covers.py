@@ -21,6 +21,8 @@ COVER_FILENAME_RE = re.compile(
     re.IGNORECASE,
 )
 
+EARLY_ASSETS_VERSION = "20260822n"
+
 # Подсказка из имени файла → фрагменты в title урока
 HINT_ALIASES: dict[str, tuple[str, ...]] = {
     "царевна лягушка": ("царевна лягушка",),
@@ -238,7 +240,19 @@ def enrich_lesson_link(link: dict) -> dict:
     """Добавляет cover_url и cover_state в словарь урока для шаблона."""
     week = link.get("module_week")
     title = link.get("title") or ""
-    link["cover_url"] = cover_url_for_lesson(week, title)
+    cover = cover_url_for_lesson(week, title)
+    if not cover:
+        group = str(link.get("group_code") or "")
+        early_covers = {
+            "early-letters": "course-cover-letters.jpg",
+            "early-stories": "course-cover-stories.jpg",
+        }
+        filename = early_covers.get(group)
+        if filename:
+            from config.settings import PUBLIC_BASE_URL
+
+            cover = f"{PUBLIC_BASE_URL.rstrip('/')}/assets/{filename}?v={EARLY_ASSETS_VERSION}"
+    link["cover_url"] = cover
     link["cover_state"] = lesson_cover_state(
         url=link.get("url"),
         unlocked=bool(link.get("unlocked")),

@@ -83,7 +83,10 @@ LETTERS_STATIONS_TRIAL = [
          {"kind": "find", "correct": "MA", "options": ["MA", "SA", "MO"]},
      ]},
     {"id": "reward", "title": "Награда Словика", "kind": "reward", "slovik_line": "Ты вернул звуки!", "audio": "bo-s9-reward", "spark": False,
-     "parent_note": "Понравилось? В модуле 1 — 8 таких маршрутов. Дома: скажите «ма» и найдите А в имени ребёнка."},
+     "parent_note": "Продолжайте занятия: в модуле — 8 таких маршрутов.",
+     "module_url": "https://chitatelstvo.ru/#programs",
+     "module_cta": "О модуле и записи",
+     "chest_cta": "Открыть сундук"},
 ]
 
 STORIES_STATIONS_TRIAL = [
@@ -192,7 +195,7 @@ def lesson_meta(
     active: bool,
     note: str,
 ) -> dict:
-    return {
+    lesson = {
         "slug": slug,
         "title": title,
         "tale_title": title,
@@ -207,7 +210,7 @@ def lesson_meta(
         "tale_number": tale_number,
         "tale_slug": tale_slug,
         "module_week": module_week,
-        "meeting_number": 0,
+        "meeting_number": ((module_week - 1) // 2) + 1 if tariff_code == "with_teacher" else 0,
         "badge": "Первый шаг",
         "points": 2,
         "active": active,
@@ -220,6 +223,17 @@ def lesson_meta(
             "goal_count": 3,
         },
     }
+    if tariff_code == "with_teacher":
+        from lessons.schedule import meeting_date_label
+
+        lesson["live_lesson"] = {
+            "next_meeting_label": meeting_date_label(
+                module_week,
+                weekday="четверг",
+                group_code=group_code,
+            )
+        }
+    return lesson
 
 
 def main() -> None:
@@ -231,10 +245,10 @@ def main() -> None:
     early_modules = [
         {"id": 20, "group_code": "early-letters", "group_label": "Буквы оживают", "tariff_code": "trial", "tariff_label": "Пробный урок", "title": "Пробный урок, Буквы оживают", "tales_count": 1, "stages": "Модуль 1", "tale_numbers": "пробный", "meetings": 0, "price_rub": 0, "status": "тест", "note": "Бесплатный пробный: авто-доступ после заявки."},
         {"id": 21, "group_code": "early-letters", "group_label": "Буквы оживают", "tariff_code": "self_paced", "tariff_label": "Индивидуальное обучение", "title": "Модуль 1 самостоятельно, Буквы оживают", "tales_count": 8, "stages": "Модуль 1 (вт/чт с 1 сентября)", "tale_numbers": "1–8", "meetings": 0, "price_rub": 1990, "status": "черновик", "note": "8 интерактивных уроков, без встреч. Открытие: вт/чт."},
-        {"id": 22, "group_code": "early-letters", "group_label": "Буквы оживают", "tariff_code": "with_teacher", "tariff_label": "Модуль с преподавателем", "title": "Модуль 1 с преподавателем, Буквы оживают", "tales_count": 8, "stages": "Модуль 1 (вт/чт с 1 сентября)", "tale_numbers": "1–8", "meetings": 4, "price_rub": 4990, "status": "черновик", "note": "8 уроков + 4 встречи. Открытие уроков: вт/чт."},
+        {"id": 22, "group_code": "early-letters", "group_label": "Буквы оживают", "tariff_code": "with_teacher", "tariff_label": "Модуль с преподавателем", "title": "Модуль 1 с преподавателем, Буквы оживают", "tales_count": 8, "stages": "Модуль 1 (вт/чт с 1 сентября)", "tale_numbers": "1–8", "meetings": 4, "price_rub": 4990, "status": "черновик", "note": "8 уроков + 4 встречи по четвергам: 3, 10, 17, 24 сентября 2026."},
         {"id": 23, "group_code": "early-stories", "group_label": "Первые истории", "tariff_code": "trial", "tariff_label": "Пробный урок", "title": "Пробный урок, Первые истории", "tales_count": 1, "stages": "Модуль 1", "tale_numbers": "пробный", "meetings": 0, "price_rub": 0, "status": "тест", "note": "Бесплатный пробный: авто-доступ после заявки."},
         {"id": 24, "group_code": "early-stories", "group_label": "Первые истории", "tariff_code": "self_paced", "tariff_label": "Индивидуальное обучение", "title": "Модуль 1 самостоятельно, Первые истории", "tales_count": 8, "stages": "Модуль 1 (вт/чт с 1 сентября)", "tale_numbers": "1–8", "meetings": 0, "price_rub": 1990, "status": "черновик", "note": "8 интерактивных уроков, без встреч. Открытие: вт/чт."},
-        {"id": 25, "group_code": "early-stories", "group_label": "Первые истории", "tariff_code": "with_teacher", "tariff_label": "Модуль с преподавателем", "title": "Модуль 1 с преподавателем, Первые истории", "tales_count": 8, "stages": "Модуль 1 (вт/чт с 1 сентября)", "tale_numbers": "1–8", "meetings": 4, "price_rub": 4990, "status": "черновик", "note": "8 уроков + 4 встречи. Открытие уроков: вт/чт."},
+        {"id": 25, "group_code": "early-stories", "group_label": "Первые истории", "tariff_code": "with_teacher", "tariff_label": "Модуль с преподавателем", "title": "Модуль 1 с преподавателем, Первые истории", "tales_count": 8, "stages": "Модуль 1 (вт/чт с 1 сентября)", "tale_numbers": "1–8", "meetings": 4, "price_rub": 4990, "status": "черновик", "note": "8 уроков + 4 встречи по четвергам: 3, 10, 17, 24 сентября 2026."},
     ]
     # Re-read to keep 1-19 intact
     modules_data = json.loads(modules_path.read_text(encoding="utf-8"))
@@ -274,12 +288,8 @@ def main() -> None:
         lesson_number=1, tale_number=0, tale_slug="early-letters-stage1-tale-00", module_week=1,
         stations=LETTERS_STATIONS_TRIAL, active=True, note="Бесплатный пробный квест.",
     ))
-    write_json(LESSONS / "early-stories-trial-lesson-01.json", lesson_meta(
-        slug="early-stories-trial-lesson-01", title="Спаси первую историю", module_id=23,
-        group_code="early-stories", group_label="Первые истории", tariff_code="trial", tariff_label="Пробный урок",
-        lesson_number=1, tale_number=0, tale_slug="early-stories-stage1-tale-00", module_week=1,
-        stations=STORIES_STATIONS_TRIAL, active=True, note="Бесплатный пробный квест.",
-    ))
+    # Trial JSON is hand-edited in lessons/catalog/early-stories-trial-lesson-01.json
+    # Do not overwrite from STORIES_STATIONS_TRIAL.
 
     for tariff_code, tariff_label, mid_letters, mid_stories in (
         ("self_paced", "Индивидуальное обучение", 21, 24),

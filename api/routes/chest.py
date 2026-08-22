@@ -43,7 +43,7 @@ def _lesson_for_slug(child, tale_slug: str) -> dict | None:
 def _chest_ready_for_tale(db: Session, child_id: uuid.UUID, lesson: dict) -> bool:
     events = repo.get_child_events(db, child_id, limit=50)
     done = _events_for_tale(events, lesson.get("title", ""))
-    return chest_ready_from_done(done)
+    return chest_ready_from_done(done, lesson, events)
 
 
 @router.post("/api/progress/{token}/chest/claim")

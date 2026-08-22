@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Читательство · превью вёрстки</title>
+</head>
+<body style="margin:0">
+<!-- Читательство · единый файл для HTML-элемента Zero Block (20260818c)
+     Вставить целиком: Tilda → Zero Block → двойной клик по элементу </> → Ctrl+A → вставить → Опубликовать
+     CSS и JS грузятся с https://api.chitatelstvo.ru/assets (нужен деплой на сервер).
+
+     ВАЖНО ПРО ПРОМОКОД (скидку считает Tilda, не наш сервер):
+     1) Настройки сайта → Платёжные системы → Промокоды — создать код (напр. ALFACHILDREN).
+     2) Блок ST100 на главной И на /oplata → Настройки блока → включить переключатель «Промокоды» → Опубликовать.
+        Без этого кнопка «Записаться» покажет полную цену, скидка в корзине не применится.
+     3) В ST100: скрытое поле promo_code (Hidden) для webhook — значение пустое, подставит Zero Block.
+     Не дублируйте видимое поле «Промокод» в ST100. Проверка: ввести код → сумма на кнопке должна уменьшиться.
+     Подробно: docs/tilda-zero-main/ST100_SETUP.md
+-->
+<!-- CHIT VERSION 20260818c · evergreen школа, программы по возрастам -->
+<script>(function(){var E="1781424531092000001",B=0;function p(){var r=document.getElementById("rec2378409351");if(!r)return;r.querySelectorAll("style").forEach(function(s){var t=s.textContent||"";if(t.indexOf(E)<0&&t.indexOf("t396__artboard")<0)return;var n=t.replace(/left:\s*calc\([^)]+\)/gi,"left:0").replace(/width:\s*(?:1200|960|640|480|320)px/gi,"width:100%").replace(/height:\s*37000px/gi,"height:auto").replace(/height:\s*35000px/gi,"height:auto").replace(/height:\s*100vh/gi,"height:auto").replace(/display:\s*table/gi,"display:block").replace(/top:\s*-\d+px/gi,"top:0");if(n!==t)s.textContent=n;});}function f(){if(B)return;B=1;p();var r=document.getElementById("rec2378409351");if(r){r.style.setProperty("padding-top","0","important");r.style.setProperty("margin-top","0","important");r.style.setProperty("width","100%","important");r.style.setProperty("max-width","100%","important");r.style.setProperty("overflow-x","hidden","important");}var m=document.getElementById("chit-main");if(!m){B=0;return;}m.style.setProperty("width","100%","important");m.style.setProperty("max-width","100%","important");m.style.setProperty("overflow-x","hidden","important");var w=m.closest(".t396");if(w){w.style.setProperty("display","block","important");w.style.setProperty("position","relative","important");w.style.setProperty("width","100%","important");w.style.setProperty("max-width","100%","important");w.style.setProperty("left","0","important");w.style.setProperty("transform","none","important");w.style.setProperty("overflow-x","hidden","important");}var a=m.closest(".t396__artboard");if(a){a.style.setProperty("width","100%","important");a.style.setProperty("max-width","100%","important");a.style.setProperty("height","auto","important");a.style.setProperty("left","0","important");a.style.setProperty("transform","none","important");}var el=m.closest(".tn-elem");if(el){el.style.setProperty("display","block","important");el.style.setProperty("position","relative","important");el.style.setProperty("left","0","important");el.style.setProperty("top","0","important");el.style.setProperty("width","100%","important");el.style.setProperty("max-width","100%","important");el.style.setProperty("min-width","0","important");el.style.setProperty("height","auto","important");el.style.setProperty("transform","none","important");el.style.setProperty("margin","0","important");}B=0;}function hook(){if(window._chitHook)return;var o=window.t396_init;if(typeof o!=="function")return;window._chitHook=1;window.t396_init=function(){var x=o.apply(this,arguments);p();f();return x;};}p();f();hook();setTimeout(function(){p();f();},120);setTimeout(f,400);})();</script>
+<style id="chit-critical">#chit-main{--blue:#5B7FA6;--accent:#8F7DA3;--cream:#F6F4F9;--text:#3D5266;--muted:#6B8499;--border:#D4E2EF;--white:#fff;--max:1120px;font-family:'Nunito',system-ui,sans-serif;color:var(--text);background:var(--cream);line-height:1.6;font-size:17px;width:100%;max-width:100%;box-sizing:border-box}#chit-main *,#chit-main *::before,#chit-main *::after{box-sizing:border-box}#chit-main .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);border-bottom:1px solid var(--border)}#chit-main .site-header__inner{max-width:var(--max);margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:20px;min-height:100px}#chit-main .logo{width:200px;height:88px;overflow:hidden;display:inline-flex;flex-shrink:0}#chit-main .logo__img{height:88px;width:auto;max-width:200px;object-fit:contain;display:block}#chit-main .hero{padding:40px 24px 48px;background:linear-gradient(180deg,var(--cream) 0%,var(--white) 100%)}#chit-main .hero--premium .hero__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);column-gap:clamp(36px,5vw,72px);row-gap:10px;max-width:1120px;margin:0 auto;width:100%}#chit-main .hero--premium h1{font-size:clamp(30px,3.6vw,42px);font-weight:800;color:var(--blue);line-height:1.14;margin:0 0 16px;max-width:100%;overflow-wrap:break-word;word-break:break-word}#chit-main .hero__lead{margin:0 0 20px;color:var(--muted);line-height:1.6;max-width:100%;overflow-wrap:break-word;word-break:break-word}#chit-main .hero--premium .hero__badge--hero-top{max-width:100%;overflow-wrap:break-word;word-break:break-word}#chit-main .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:12px;font-weight:700;text-decoration:none;cursor:pointer}#chit-main .btn:not(.btn--outline){background:var(--blue);color:#fff;border:none}#chit-main .btn--outline{background:transparent;color:var(--blue);border:2px solid #C5D9ED;-webkit-text-fill-color:var(--blue)}#chit-main .hero__showcase{background:var(--white);border-radius:28px;border:2px solid var(--border);padding:36px 20px 32px;text-align:center;position:relative;width:100%;max-width:920px;margin:8px auto 0;min-height:340px;overflow:visible}#chit-main .hero__showcase-label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 20px}#chit-main .book-stack{display:flex;justify-content:center;align-items:flex-end;gap:28px;margin:0 auto 24px;min-height:220px;width:100%}#chit-main .book{width:108px;height:156px;border-radius:4px 10px 10px 4px;overflow:hidden;border:none;padding:0;flex:0 0 auto;position:relative;background:#E8F1F8;cursor:pointer}#chit-main .book:nth-child(1){transform:rotate(-10deg)}#chit-main .book:nth-child(2){width:124px;height:180px;transform:translateY(-14px)}#chit-main .book:nth-child(3){transform:rotate(10deg)}#chit-main .book__cover{width:100%!important;height:100%!important;max-width:none!important;object-fit:cover;display:block;pointer-events:none}#chit-main #hero-book-text{min-height:52px;margin:0 auto;max-width:480px;line-height:1.55}</style>
+<style id="chit-hero-gift-fix">#chit-main .hero__showcase::after{display:none!important}#chit-main .hero__visual-gift{text-decoration:none!important;border-bottom:none!important;box-shadow:none!important}#chit-main .hero__visual-gift:hover{text-decoration:underline!important;text-underline-offset:3px}</style>
+<style id="chit-mobile-cls">@media(max-width:960px){#chit-main .hero__showcase{min-height:320px;padding:32px 16px 28px;overflow:visible!important}#chit-main .book-stack{gap:20px;min-height:200px;overflow:visible!important}#chit-main .book.is-active,#chit-main .book:nth-child(1).is-active,#chit-main .book:nth-child(2).is-active,#chit-main .book:nth-child(3).is-active{transform:translateY(-12px)!important;scale:none!important}#chit-main .book:nth-child(1).is-active{transform:rotate(-4deg) translateY(-12px)!important}#chit-main .book:nth-child(3).is-active{transform:rotate(4deg) translateY(-12px)!important}}</style>
+<style id="chit-tilda-kill">#allrecords #rec2378409351 .t396,#allrecords #rec2378409351 .t396__artboard,#allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],#allrecords #rec2378409351 .tn-elem[data-elem-type="html"],#allrecords #rec2378409351 .tn-atom,#allrecords #rec2378409351 .tn-atom__html{display:block!important;position:relative!important;left:0!important;top:0!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;margin:0!important;transform:none!important;zoom:1!important;overflow:visible!important;clip-path:none!important;-webkit-clip-path:none!important}</style>
+<style id="chit-hero-fit">@media(max-width:960px){html,body,#allrecords,#allrecords .t-records,#allrecords #rec2378409351{overflow-x:hidden!important;max-width:100%!important}#allrecords #rec2378409351 #chit-main{overflow-x:hidden!important;max-width:100%!important;width:100%!important}#chit-main .hero--premium{padding-left:16px!important;padding-right:16px!important;padding-top:20px!important;padding-bottom:44px!important}#chit-main .hero--premium .hero__grid,#chit-main .hero--premium .hero__content,#chit-main .hero--premium .hero__visual,#chit-main .hero--premium h1,#chit-main .hero--premium .hero__lead,#chit-main .hero--premium .hero__cta,#chit-main .hero--premium .hero__cta-note,#chit-main .hero--premium .hero__badge--hero-top,#chit-main .hero--premium .hero__badge-line,#chit-main .hero--premium .hero__showcase-label{max-width:100%!important;width:100%!important;min-width:0!important;overflow-wrap:break-word!important;word-break:break-word!important;hyphens:auto!important;-webkit-hyphens:auto!important}#chit-main .hero--premium .btn--hero{max-width:100%!important;width:100%!important;white-space:normal!important;text-align:center!important;box-sizing:border-box!important}#chit-main .hero__showcase{max-width:100%!important;width:100%!important;margin-left:0!important;margin-right:0!important;box-sizing:border-box!important;padding-top:36px!important}#chit-main .hero__visual{margin-top:8px!important}}</style>
+<style id="chit-tilda-fix">#allrecords #rec2378409351,#allrecords #rec2378409351.t-rec,#allrecords #rec2378409351 .t396,#allrecords #rec2378409351 .t396__artboard{width:100%!important;max-width:100%!important;left:0!important;margin-left:0!important;margin-right:0!important;padding-top:0!important;margin-top:0!important}#allrecords #rec2378409351 .t396{display:block!important;position:relative!important;margin:0!important}#allrecords #rec2378409351 .t396__artboard,#allrecords #rec2378409351 .t396__carrier,#allrecords #rec2378409351 .t396__filter,#allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],#allrecords #rec2378409351 .tn-elem[data-elem-type="html"],#allrecords #rec2378409351 .tn-atom,#allrecords #rec2378409351 .tn-atom__html,#allrecords #rec2378409351 #chit-main{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}#allrecords #rec2378409351 .t396__carrier,#allrecords #rec2378409351 .t396__filter{height:0!important;max-height:0!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;pointer-events:none!important}#allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],#allrecords #rec2378409351 .tn-elem[data-elem-type="html"]{display:block!important;position:relative!important;left:0!important;top:0!important;width:100%!important;max-width:100%!important;min-width:0!important;transform:none!important}@media screen and (max-width:1199px),screen and (max-width:959px),screen and (max-width:639px),screen and (max-width:479px){#allrecords #rec2378409351 .t396,#allrecords #rec2378409351 .t396__artboard,#allrecords #rec2378409351 .tn-elem[data-elem-id="1781424531092000001"],#allrecords #rec2378409351 .tn-elem[data-elem-type="html"]{display:block!important;left:0!important;width:100%!important;max-width:100%!important}}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://static.tildacdn.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet"></noscript>
+<style id="chit-android-hero">@media(max-width:960px){#chit-main .hero--premium .hero__grid,#chit-main .hero--premium .hero__content{width:100%!important;max-width:100%!important;min-width:0!important}#chit-main .hero--premium h1,#chit-main .hero--premium .hero__lead{max-width:100%!important;width:100%!important;overflow-wrap:break-word!important;word-break:break-word!important;box-sizing:border-box!important}#chit-main .hero--premium{overflow:visible!important;padding-left:12px!important;padding-right:12px!important;padding-top:28px!important;padding-bottom:40px!important;scroll-margin-top:68px!important}#chit-main .hero--premium .hero__grid,#chit-main .hero--premium .hero__badge--hero-top{overflow:visible!important}#chit-main .hero--premium .hero__badge--hero-top{margin-top:0!important;margin-bottom:14px!important}#chit-main .site-header__inner{max-width:100%!important;padding-left:12px!important;padding-right:12px!important;gap:8px!important;min-height:0!important}#chit-main .logo{width:120px!important;height:52px!important}#chit-main .logo__img{max-width:120px!important;height:52px!important}#chit-main .header-cta{padding:8px 12px!important;font-size:13px!important}}</style>
+<style id="chit-hide-store">#allrecords .chit-store-hidden,#allrecords .t-rec[data-record-type="205"],#allrecords .t-rec[data-record-type="762"],#allrecords .t-rec[data-record-type="200"],#allrecords .t-rec[data-record-type="210"],#allrecords .t-rec[data-record-type="215"],#allrecords .t-rec[data-record-type="405"],#allrecords .t-store{display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;left:-99999px!important}</style>
+<style id="chit-hero-premium">#chit-main .hero--premium .hero__grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)!important;column-gap:clamp(36px,5vw,72px)!important;row-gap:10px!important;align-items:stretch!important;max-width:1120px;width:100%!important;margin:0 auto}#chit-main .hero--premium .hero__badge--hero-top{grid-column:1/-1!important;grid-row:1!important;justify-self:center!important;text-align:center!important;background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important;margin:0 0 10px!important;max-width:none!important;width:100%!important;gap:6px!important}#chit-main .hero--premium .hero__badge-line--sub{font-size:15px!important;line-height:1.45!important;font-weight:600!important;color:#6B8499!important}#chit-main .hero--premium .hero__badge-line--title em{font-size:18px!important;letter-spacing:.08em!important;font-weight:800!important;color:#8F7DA3!important;font-style:normal!important}#chit-main .hero--premium .hero__content{grid-column:1!important;grid-row:2!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;align-self:stretch!important}#chit-main .hero--premium .hero__visual{grid-column:2!important;grid-row:2!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-self:stretch!important}#chit-main .hero--premium .hero__cta{max-width:none!important;width:100%!important}#chit-main .hero--premium .hero__actions{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;justify-content:flex-start!important;gap:12px!important;width:100%!important}#chit-main .hero--premium .hero__actions .btn{width:auto!important;flex:0 1 auto!important;white-space:nowrap!important}#chit-main .hero--premium .btn--hero{width:auto!important;max-width:none!important}#chit-main .hero--premium .hero__actions .btn--outline{padding:14px 22px!important;font-size:16px!important}#chit-main .hero--premium .hero__cta-note{margin-top:0!important;padding-top:0!important}#chit-main .hero--premium .hero__visual-gift{margin-top:14px!important;padding-top:0!important;align-self:center!important}@media(max-width:960px){#chit-main .hero--premium .hero__grid{grid-template-columns:1fr!important}#chit-main .hero--premium .hero__badge--hero-top{grid-column:1!important;grid-row:1!important}#chit-main .hero--premium .hero__content{grid-column:1!important;grid-row:2!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important}#chit-main .hero--premium .hero__visual{grid-column:1!important;grid-row:3!important;justify-content:flex-start!important}#chit-main .hero--premium .hero__actions{flex-direction:column!important;align-items:stretch!important}#chit-main .hero--premium .hero__actions .btn{width:100%!important}#chit-main .hero--premium .hero__cta-note,#chit-main .hero--premium .hero__visual-gift{margin-top:12px!important;padding-top:0!important}#chit-main .hero--premium .hero__badge-line--sub{font-size:14px!important}#chit-main .hero--premium .hero__badge-line--title em{font-size:16px!important}}</style>
+<style id="chit-gamify-path">#chit-main .gamify__path-wrap{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;margin:0 auto 20px!important;padding:0 16px!important;box-sizing:border-box!important}#chit-main .gamify__path-note{display:block!important;width:100%!important;max-width:640px!important;margin:0 auto!important;padding:0!important;text-align:center!important;font-size:15px!important;line-height:1.55!important;color:#6B8499!important}#chit-main #rewards .gamify__subtitle{text-align:center!important;width:100%!important;margin-left:auto!important;margin-right:auto!important}@media(max-width:720px){#allrecords #chit-main .gamify-levels,#chit-main .gamify-levels{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:flex-start!important;gap:18px 10px!important;width:100%!important;max-width:100%!important;padding:0 12px!important;margin:0 auto 36px!important;box-sizing:border-box!important}#allrecords #chit-main .gamify-levels::before,#chit-main .gamify-levels::before{display:none!important}#allrecords #chit-main .gamify-levels__arrow,#chit-main .gamify-levels__arrow{display:none!important}#allrecords #chit-main .gamify-levels .gamify-item,#chit-main .gamify-levels .gamify-item{flex:0 0 calc(33.333% - 10px)!important;min-width:96px!important;max-width:118px!important;width:auto!important;gap:8px!important;overflow:visible!important}#allrecords #chit-main .gamify-levels .gamify-item__img,#chit-main .gamify-levels .gamify-item__img{width:72px!important;height:72px!important;min-width:72px!important;min-height:72px!important;margin:0 auto!important;overflow:visible!important}#allrecords #chit-main .gamify-levels .gamify-item__img img,#chit-main .gamify-levels .gamify-item__img img{transform:none!important}#allrecords #chit-main .gamify-levels .gamify-item__name,#chit-main .gamify-levels .gamify-item__name{font-size:12px!important;max-width:100%!important;min-height:0!important;line-height:1.25!important;padding:0 2px!important;white-space:normal!important;text-align:center!important;writing-mode:horizontal-tb!important;hyphens:none!important;word-break:normal!important;overflow-wrap:normal!important;overflow:visible!important}}@media(max-width:400px){#allrecords #chit-main .gamify-levels .gamify-item,#chit-main .gamify-levels .gamify-item{flex:0 0 calc(50% - 8px)!important;min-width:120px!important;max-width:150px!important}#allrecords #chit-main .gamify-levels .gamify-item__img,#chit-main .gamify-levels .gamify-item__img{width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important}}</style>
+<style id="chit-mobile-rows">@media(max-width:560px){#chit-main .summer-timeline{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding:18px 12px!important}#chit-main .summer-timeline__track{display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start!important;gap:8px!important;padding-bottom:4px!important}#chit-main .summer-timeline__node{flex:0 0 auto!important;min-width:118px!important;max-width:132px!important;padding:12px 10px!important}#chit-main .summer-timeline__arrow{flex:0 0 auto!important;transform:none!important;font-size:18px!important;line-height:1!important}#chit-main .summer-timeline__total{flex:0 0 100%!important;margin-top:10px!important}}@media(max-width:720px){#chit-main .gamify-badges{display:flex!important;justify-content:center!important;align-items:center!important;gap:4px!important;padding:0 8px!important;width:100%!important;box-sizing:border-box!important}#chit-main .gamify-badges .gamify-item{flex:0 1 auto!important;min-width:0!important}#chit-main .gamify-badges .gamify-item__img{width:calc((100vw - 32px)/3)!important;height:calc((100vw - 32px)/3)!important;max-width:104px!important;max-height:104px!important}}</style>
+<style id="chit-btn-fix">#allrecords #chit-main a.btn,#allrecords #chit-main .btn,#allrecords #chit-main .btn--pay{color:#fff!important;-webkit-text-fill-color:#fff!important}#allrecords #chit-main a.btn--outline,#allrecords #chit-main .btn--outline,#allrecords #chit-main a.btn.btn--outline{color:var(--blue)!important;-webkit-text-fill-color:var(--blue)!important;background:transparent!important;border:2px solid #C5D9ED!important}#allrecords #chit-main .pill.is-active{color:#fff!important;-webkit-text-fill-color:#fff!important}#chit-main.is-with-teacher-stage1-closed #chit-stages [data-stage="1"],#chit-main:has(#chit-tariffs .pick-card[data-tariff="with_teacher"].is-active) #chit-stages [data-stage="1"]{display:none!important;visibility:hidden!important;pointer-events:none!important;position:absolute!important;width:0!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;border:0!important}</style>
+<style id="chit-for-whom-icons">#chit-main .for-whom__icon-wrap{position:absolute!important;left:14px!important;top:50%!important;transform:translateY(-50%)!important;width:80px!important;height:80px!important;min-width:80px!important;min-height:80px!important;border-radius:14px!important;overflow:hidden!important;flex-shrink:0!important;background:#fff!important}@media(max-width:960px){#chit-main .for-whom__item{padding:88px 20px 20px!important;text-align:center!important}#chit-main .for-whom__icon-wrap{left:50%!important;top:14px!important;transform:translateX(-50%)!important}}#chit-main .for-whom__icon{position:absolute!important;top:0!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;display:block!important;margin:0!important;padding:0!important}#chit-main .for-whom__icon-wrap--kids .for-whom__icon,#chit-main .for-whom__icon-wrap--pace .for-whom__icon{transform:scale(1.24)!important}#chit-main .for-whom__icon-wrap--family .for-whom__icon{transform:scale(1.48)!important;object-position:center 50%!important}#chit-main .for-whom__icon-wrap--parents .for-whom__icon{transform:scale(1.48)!important;object-position:center 42%!important}</style>
+<style id="chit-bg-fix">#chit-main .final-cta__bg{position:absolute!important;inset:0!important;z-index:0!important;overflow:hidden!important;transform:none!important}#chit-main .final-cta__bg>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center bottom!important;transform:none!important}#chit-main .chit-meadow-bg .footer{background-image:none!important;background-color:transparent!important}#chit-main .pattern-strip{background-image:url('https://static.tildacdn.com/tild6237-3735-4437-b563-353738363938/pattern-meadow-books.png')!important;background-repeat:repeat!important;background-position:center top!important;background-size:420px!important}#chit-main .pattern-strip::before{background:linear-gradient(180deg,rgba(255,252,248,.93) 0%,rgba(246,244,249,.84) 18%,rgba(246,244,249,.84) 82%,rgba(250,251,252,.93) 100%)!important}#chit-main .chit-meadow-bg{position:relative;background-color:var(--cream);background-image:url('https://static.tildacdn.com/tild6237-3735-4437-b563-353738363938/pattern-meadow-books.png')!important;background-repeat:repeat!important;background-position:center top!important;background-size:420px!important}#chit-main .chit-meadow-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.93) 0%,rgba(246,244,249,.84) 42%,rgba(246,244,249,.86) 100%)!important;pointer-events:none;z-index:0}#chit-main .chit-meadow-bg .founder,#chit-main .chit-meadow-bg .footer{background-image:none!important;background-color:transparent!important;position:relative;z-index:1}#chit-main .chit-meadow-bg .founder::before,#chit-main .chit-meadow-bg .footer::before{display:none!important}#chit-main .founder__photo{height:100%!important;min-height:100%!important;max-height:none!important;object-fit:cover!important}#chit-main .founder__photo-wrap{background:#3d4a56!important}</style>
+<style id="chit-cta-fix">#chit-main .final-cta-scroller{height:auto!important;min-height:0!important;width:100vw!important;max-width:100vw!important;margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;box-sizing:border-box!important}#chit-main .final-cta{position:relative!important;top:auto!important;height:auto!important;min-height:min(84vw,780px)!important;max-height:none!important;width:100%!important;padding:40px 24px 56px!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;overflow:hidden!important}#chit-main .final-cta__bg{background-position:center bottom!important;inset:0!important}#chit-main .final-cta__frame{opacity:1!important;transform:none!important}@media(max-width:768px){#chit-main .final-cta{min-height:620px!important;justify-content:center!important;padding:32px 16px 48px!important}}</style>
+<style id="chit-qz-critical">#qz-modal{display:none!important;position:fixed!important;inset:0!important;z-index:10050!important;align-items:center!important;justify-content:center!important;padding:16px!important;box-sizing:border-box!important}#qz-modal.is-open{display:flex!important}#qz-modal .qz-modal__backdrop{position:absolute!important;inset:0!important;background:rgba(26,38,58,.55)!important}#qz-modal .qz-modal__dialog{position:relative!important;z-index:1!important;width:100%!important;max-width:600px!important;max-height:calc(100vh - 32px)!important;overflow:hidden!important}#chit-quiz .qz-step{display:none!important}#chit-quiz .qz-step.is-active{display:block!important}body.qz-modal-open{overflow:hidden!important}</style>
+<style id="chit-qz-launcher-critical">#chit-main .qz-launcher{position:fixed;bottom:0;left:24px;z-index:199;display:inline-flex;align-items:center;gap:8px;padding:12px 20px 14px;border-radius:14px 14px 0 0;background:var(--accent);color:#fff!important;-webkit-text-fill-color:#fff;text-decoration:none;font-family:Nunito,system-ui,sans-serif;font-size:14px;font-weight:800;box-shadow:0 -4px 24px rgba(143,125,163,.35);transition:background .2s,transform .15s}#chit-main a.qz-launcher,#chit-main a.qz-launcher:visited,#chit-main a.qz-launcher:hover,#chit-main a.qz-launcher:active{color:#fff!important;-webkit-text-fill-color:#fff;text-decoration:none}#chit-main .qz-launcher:hover{background:#7a6a8f;transform:translateY(-2px)}#chit-main .qz-launcher__icon,#chit-main .qz-launcher__text{color:#fff!important;-webkit-text-fill-color:#fff}#chit-main .qz-launcher__icon{font-size:18px;line-height:1}@media(max-width:720px){#chit-main{padding-bottom:calc(54px + env(safe-area-inset-bottom))!important}#chit-main .qz-launcher{left:0;right:50%;justify-content:center;border-radius:0;padding:12px 10px max(14px,env(safe-area-inset-bottom));font-size:13px;line-height:1.2;white-space:nowrap;box-shadow:none;border-right:1px solid rgba(255,255,255,.28)}body.qz-modal-open #chit-main .qz-launcher{display:none!important}}@media(max-width:380px){#chit-main .qz-launcher{font-size:12px}}</style>
+<style id="chit-qz-close">#qz-modal .qz-modal__close{position:absolute!important;top:16px!important;right:36px!important;left:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;width:36px!important;height:36px!important;padding:0!important;border:none!important;border-radius:50%!important;background:#fff!important;color:#4A6D94!important;box-shadow:0 2px 10px rgba(61,82,102,.15)!important;font-size:0!important;line-height:0!important;transform:none!important;margin:0!important;z-index:3!important}#qz-modal .qz-modal__close:hover{background:#EDF2F9!important;transform:none!important}#qz-modal .qz-modal__close-icon{position:relative!important;display:block!important;width:14px!important;height:14px!important}#qz-modal .qz-modal__close-icon::before,#qz-modal .qz-modal__close-icon::after{content:''!important;position:absolute!important;top:50%!important;left:50%!important;width:14px!important;height:2px!important;background:currentColor!important;border-radius:1px!important}#qz-modal .qz-modal__close-icon::before{transform:translate(-50%,-50%) rotate(45deg)!important}#qz-modal .qz-modal__close-icon::after{transform:translate(-50%,-50%) rotate(-45deg)!important}#qz-modal .qz-progress__meta{padding-right:56px!important}#qz-modal .qz-modal__dialog .qz-card{padding-right:68px!important}@media(max-width:720px){#qz-modal .qz-modal__close{top:14px!important;right:28px!important}}</style>
+<link rel="preconnect" href="https://api.chitatelstvo.ru" crossorigin>
+<link rel="dns-prefetch" href="https://api.chitatelstvo.ru">
+<link rel="preload" as="image" href="https://static.tildacdn.com/tild3866-3262-4865-b637-313336366339/hero-book-full.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="style" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260818c">
+<link id="chit-zero-css" rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260818c" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/chit-zero.css?v=20260818c"></noscript>
+<script id="chit-css-head">(function(){var H=document.head||document.documentElement,l=document.getElementById("chit-zero-css");if(l&&l.parentNode!==H)H.appendChild(l);if(l&&!l.onload){l.onload=function(){this.media="all"};setTimeout(function(){if(l.media==="print")l.media="all"},2500);}})();</script>
+<div id="chit-main">
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="logo" href="#top" id="site-logo" aria-label="Читательство — наверх">
+      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="180" height="180">
+    </a>
+    <nav class="site-nav" aria-label="Разделы страницы">
+      <a href="#programs">Программы</a>
+      <a href="#support">Опоры</a>
+      <a href="#platform">Платформа</a>
+      <a href="#proof">Отзывы</a>
+      <a href="#lead">Консультация</a>
+    </nav>
+    <div class="site-header__right">
+      <a class="header-cta" href="#programs">Выбрать программу</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero hero--premium paper-bg" id="top">
+  <div class="hero__grid">
+    <div class="hero__badge hero__badge--hero-top">
+      <span class="hero__badge-line hero__badge-line--sub">онлайн-школа литературного чтения</span>
+      <span class="hero__badge-line hero__badge-line--title"><em>ЧИТАТЕЛЬСТВО</em></span>
+    </div>
+
+    <div class="hero__content">
+      <h1>Учим читать и понимать книги <em class="hero__pleasure">с удовольствием</em></h1>
+      <p class="hero__lead">Помогаем пройти все шаги в мире чтения: от первых слогов до понимания смысла. Для детей 4–12 лет</p>
+      <p class="hero__price"><strong>от 799 ₽</strong> за одну сказку · запись открыта</p>
+      <div class="hero__cta">
+        <div class="hero__actions">
+          <a class="btn btn--hero" href="#programs">Выбрать программу</a>
+          <a class="btn btn--outline" href="#quiz" data-quiz="reading">Попробовать бесплатно</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__visual">
+      <div class="hero__showcase is-active" id="hero-books">
+        <p class="hero__showcase-label">Выберите формат — нажмите на книгу</p>
+        <div class="book-stack" role="group" aria-label="Три формата курса">
+          <button type="button" class="book" data-idx="0" aria-label="Разовое — одна сказка">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
+          </button>
+          <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
+          </button>
+          <button type="button" class="book" data-idx="2" aria-label="Один блок программы">
+            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
+          </button>
+        </div>
+        <p id="hero-book-text"><strong style="color:var(--blue)">12 программ</strong> · старт в любой день<span class="hero-book-text__line">Свой темп на платформе · живые встречи — дополнительно</span></p>
+      </div>
+      <a href="#quiz" class="hero__visual-gift" data-quiz="reading">Бесплатный доступ к платформе и один урок-сказка</a>
+    </div>
+  </div>
+  <p class="hero__scroll"><a href="#programs">↓ листайте вниз — 12 программ и запись</a></p>
+</section>
+
+<!-- HERO QUOTE -->
+<section class="quote-hero" id="quote-hero" title="Нажмите для другой цитаты">
+  <blockquote id="quote-hero-text">«Книги нужны, чтобы детям стало чуть менее одиноко — нашёлся кто-то, кто их понимает»</blockquote>
+  <cite id="quote-hero-cite">мы строим курс на этом же — понять героя, его чувства и поступки</cite>
+  <span class="quote-hero__hint">нажмите — другая цитата</span>
+</section>
+
+<!-- MARQUEE -->
+<div class="quote-marquee" aria-hidden="true">
+  <div class="quote-marquee__track">
+    <span class="quote-marquee__item"><span>Кот в сапогах</span>«Господин, я привёз вам подарки»</span>
+    <span class="quote-marquee__item"><span>Пеппи</span>«Что, правда-правда, что я самая сильная?»</span>
+    <span class="quote-marquee__item"><span>Пеннак</span>«Читать — значит мечтать чужими головами»</span>
+    <span class="quote-marquee__item"><span>Цветик-семицветик</span>«Семицветик, исполни моё желание!»</span>
+    <span class="quote-marquee__item"><span>Муми-тролль</span>«Все смотрели на небо и думали свои думы»</span>
+    <span class="quote-marquee__item"><span>Кот в сапогах</span>«Господин, я привёз вам подарки»</span>
+    <span class="quote-marquee__item"><span>Пеппи</span>«Что, правда-правда, что я самая сильная?»</span>
+    <span class="quote-marquee__item"><span>Пеннак</span>«Читать — значит мечтать чужими головами»</span>
+    <span class="quote-marquee__item"><span>Цветик-семицветик</span>«Семицветик, исполни моё желание!»</span>
+    <span class="quote-marquee__item"><span>Муми-тролль</span>«Все смотрели на небо и думали свои думы»</span>
+  </div>
+</div>
+
+<!-- PROGRAMS (catalog first) -->
+<section class="section section--catalog reveal" id="programs">
+  <div class="section__inner">
+    <div class="catalog-head">
+      <div class="catalog-head__copy">
+        <span class="section__chapter section__chapter--left">12 программ</span>
+        <h2 class="section__title section__title--left">Выберите программу</h2>
+        <p class="section__lead section__lead--left">От первых букв до литературного чтения · часть доступна сегодня</p>
+      </div>
+      <a class="catalog-help" href="#quiz" data-quiz="reading">
+        <span class="catalog-help__eyebrow">Не знаете, что выбрать?</span>
+        <strong class="catalog-help__title">Помогите подобрать</strong>
+        <span class="catalog-help__hint">Подборка за 2 минуты →</span>
+      </a>
+    </div>
+
+    <div class="course-filters" id="course-filters" role="tablist" aria-label="Фильтр программ">
+      <button type="button" class="course-filter is-active" data-filter="all" aria-pressed="true">Все</button>
+      <button type="button" class="course-filter" data-filter="early" aria-pressed="false">Первые шаги</button>
+      <button type="button" class="course-filter" data-filter="basic" aria-pressed="false">Базовый курс</button>
+      <button type="button" class="course-filter" data-filter="extra" aria-pressed="false">Внеклассное</button>
+      <button type="button" class="course-filter" data-filter="upcoming" aria-pressed="false">Скоро / предзапись</button>
+    </div>
+
+    <div class="course-catalog" id="course-catalog" aria-label="Каталог программ">
+      <article class="course-card course-card--early" data-kind="early" data-enroll="pay" data-group="early-letters" data-trial-slug="early-letters-trial-lesson-01" data-course-title="Буквы оживают" data-course-meta="4–6 лет · звук → буква → слог">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-letters.jpg" alt="" width="800" height="450" loading="lazy"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Первые шаги</span>
+            <span class="course-card__chip">Часто выбирают</span>
+          </div>
+          <strong class="course-card__title">Буквы оживают</strong>
+          <span class="course-card__meta">4–6 лет · звук → буква → слог</span>
+          <ul class="course-card__list">
+          <li>Звуки и буквы в игре</li>
+          <li>Слоги складываются в слова</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽ · есть пробный</span>
+          <div class="course-card__actions course-card__actions--early">
+            <a class="course-card__btn course-card__btn--trial" href="#quiz" data-qz-open data-quiz="early"
+               data-trial-age="4-6"
+               data-trial-slug="early-letters-trial-lesson-01"
+               data-trial-title="Словик и пропавшие звуки">Пробный урок бесплатно</a>
+            <button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button>
+            <button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button>
+          </div></div>
+      </article>
+      <article class="course-card course-card--early" data-kind="early" data-enroll="pay" data-group="early-stories" data-trial-slug="early-stories-trial-lesson-01" data-course-title="Первые истории" data-course-meta="5–7 лет · слово → фраза → смысл">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-stories.jpg" alt="" width="800" height="450" loading="lazy"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Первые шаги</span>
+            <span class="course-card__chip">Часто выбирают</span>
+          </div>
+          <strong class="course-card__title">Первые истории</strong>
+          <span class="course-card__meta">5–7 лет · слово → фраза → смысл</span>
+          <ul class="course-card__list">
+          <li>Короткие тексты и первые истории</li>
+          <li>Вопросы на смысл</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽ · есть пробный</span>
+          <div class="course-card__actions course-card__actions--early">
+            <a class="course-card__btn course-card__btn--trial" href="#quiz" data-qz-open data-quiz="early"
+               data-trial-age="5-7"
+               data-trial-slug="early-stories-trial-lesson-01"
+               data-trial-title="Спаси первую историю">Пробный урок бесплатно</a>
+            <button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button>
+            <button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button>
+          </div></div>
+      </article>
+      <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="1 класс" data-course-meta="7–8 лет · 8 сказок" data-group="grade-1">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-grade-1.jpg" alt="" width="800" height="500" loading="lazy"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Базовый курс</span>
+            <span class="course-card__chip">Часто выбирают</span>
+          </div>
+          <strong class="course-card__title">1 класс</strong>
+          <span class="course-card__meta">7–8 лет · 8 сказок</span>
+          <ul class="course-card__list">
+          <li>Школьный список чтения</li>
+          <li>Видео, квизы и сундук</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/1-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+      </article>
+      <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="2 класс" data-course-meta="8–9 лет · 8 сказок" data-group="grade-2">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-grade-2.jpg" alt="" width="800" height="500" loading="lazy"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Базовый курс</span>
+            
+          </div>
+          <strong class="course-card__title">2 класс</strong>
+          <span class="course-card__meta">8–9 лет · 8 сказок</span>
+          <ul class="course-card__list">
+          <li>Школьный список чтения</li>
+          <li>Видео, квизы и сундук</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/2-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+      </article>
+      <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="3 класс" data-course-meta="9–10 лет · 8 сказок" data-group="grade-3">
+        <div class="course-card__media" aria-hidden="true"><img src="https://api.chitatelstvo.ru/assets/course-cover-grade-3.jpg" alt="" width="800" height="500" loading="lazy"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Базовый курс</span>
+            
+          </div>
+          <strong class="course-card__title">3 класс</strong>
+          <span class="course-card__meta">9–10 лет · 8 сказок</span>
+          <ul class="course-card__list">
+          <li>Школьный список чтения</li>
+          <li>Видео, квизы и сундук</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/3-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+      </article>
+      <article class="course-card" data-kind="basic" data-enroll="pay" data-course-title="4 класс" data-course-meta="10–11 лет · 8 сказок" data-group="grade-4">
+        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Базовый курс</span>
+            
+          </div>
+          <strong class="course-card__title">4 класс</strong>
+          <span class="course-card__meta">10–11 лет · 8 сказок</span>
+          <ul class="course-card__list">
+          <li>Школьный список чтения</li>
+          <li>Видео, квизы и сундук</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/4-klass" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+      </article>
+      <article class="course-card course-card--extra" data-kind="extra" data-enroll="pay" data-course-title="6–8 лет" data-course-meta="Вне школьной программы · 8 сказок" data-group="extra-6-8">
+        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Внеклассное</span>
+            
+          </div>
+          <strong class="course-card__title">6–8 лет</strong>
+          <span class="course-card__meta">Вне школьной программы · 8 сказок</span>
+          <ul class="course-card__list">
+          <li>Классика и добрые сказки</li>
+          <li>Свой темп или с преподавателем</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/6-8-let" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+      </article>
+      <article class="course-card course-card--extra" data-kind="extra" data-enroll="pay" data-course-title="9–11 лет" data-course-meta="Вне школьной программы · 8 сказок" data-group="extra-9-11">
+        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Внеклассное</span>
+            
+          </div>
+          <strong class="course-card__title">9–11 лет</strong>
+          <span class="course-card__meta">Вне школьной программы · 8 сказок</span>
+          <ul class="course-card__list">
+          <li>Более сложные тексты</li>
+          <li>Свой темп или с преподавателем</li>
+          </ul>
+          <span class="course-card__status">Доступно · старт в любой день</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><a class="course-card__btn course-card__btn--ghost" href="https://chitatelstvo.ru/9-11-let" data-course-detail>Программа</a><button type="button" class="course-card__btn" data-open-tariffs>Выбрать тариф</button></div></div>
+      </article>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Ветер в ивах" data-course-meta="6–9 лет · старт в сентябре">
+        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Медленное чтение</span>
+            
+          </div>
+          <strong class="course-card__title">Ветер в ивах</strong>
+          <span class="course-card__meta">6–9 лет · старт в сентябре</span>
+          <ul class="course-card__list">
+          <li>Медленное чтение одной книги</li>
+          <li>Предзапись со скидкой 15%</li>
+          </ul>
+          <span class="course-card__status course-card__status--preorder">Предзапись · скидка 15%</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Предзапись</button></div></div>
+      </article>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Таинственный сад" data-course-meta="10–12 лет · старт в сентябре">
+        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Медленное чтение</span>
+            
+          </div>
+          <strong class="course-card__title">Таинственный сад</strong>
+          <span class="course-card__meta">10–12 лет · старт в сентябре</span>
+          <ul class="course-card__list">
+          <li>Медленное чтение одной книги</li>
+          <li>Предзапись со скидкой 15%</li>
+          </ul>
+          <span class="course-card__status course-card__status--preorder">Предзапись · скидка 15%</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Предзапись</button></div></div>
+      </article>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Русские сказки" data-course-meta="6–9 лет · старт в октябре">
+        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Русские сказки</span>
+            
+          </div>
+          <strong class="course-card__title">Русские сказки</strong>
+          <span class="course-card__meta">6–9 лет · старт в октябре</span>
+          <ul class="course-card__list">
+          <li>Народные и авторские сказки</li>
+          <li>Старт в октябре</li>
+          </ul>
+          <span class="course-card__status course-card__status--soon">Октябрь · скоро</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Оставить заявку</button></div></div>
+      </article>
+      <article class="course-card course-card--upcoming" data-kind="upcoming" data-enroll="lead" data-course-title="Русские сказки" data-course-meta="10–12 лет · старт в октябре">
+        <div class="course-card__media" aria-hidden="true"></div>
+        <div class="course-card__body">
+          <div class="course-card__tags">
+            <span class="course-card__badge">Русские сказки</span>
+            
+          </div>
+          <strong class="course-card__title">Русские сказки</strong>
+          <span class="course-card__meta">10–12 лет · старт в октябре</span>
+          <ul class="course-card__list">
+          <li>Народные и авторские сказки</li>
+          <li>Старт в октябре</li>
+          </ul>
+          <span class="course-card__status course-card__status--soon">Октябрь · скоро</span>
+          <span class="course-card__price">от 799 ₽</span>
+          <div class="course-card__actions"><button type="button" class="course-card__btn course-card__btn--ghost" data-open-tariffs>Подробнее</button><button type="button" class="course-card__btn" data-open-tariffs>Оставить заявку</button></div></div>
+      </article>
+    </div>
+    <p class="course-catalog__hub"><a href="https://chitatelstvo.ru/programmy">Все программы на одной странице →</a></p>
+
+
+    <div class="prog-block">
+      <h3 class="prog-block__title">Базовый курс · список сказок</h3>
+      <p class="prog-block__sub">Для учеников 1–4 класса</p>
+      <p class="prog-block__note">Сказки из школьных списков чтения — помогаем разобрать и понять каждую.</p>
+      <div class="acc" id="acc-basic"></div>
+    </div>
+    <div class="prog-block">
+      <h3 class="prog-block__title">Внеклассное чтение · список сказок</h3>
+      <p class="prog-block__sub">Для детей 6–8 и 9–11 лет</p>
+      <div class="acc" id="acc-extra"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFFS -->
+<section class="section reveal" id="tariffs">
+  <div class="section__inner">
+    <div class="fare-head">
+      <h2 class="section__title section__title--left">Тариф</h2>
+      <a class="fare-head__link" href="#faq">Правила тарифов</a>
+    </div>
+    <p class="section__lead section__lead--left">Одинаковые форматы для всех программ · выберите курс в каталоге выше</p>
+    <div class="fare-track" role="list">
+      <article class="fare-card" role="listitem" data-tariff-jump="single">
+        <span class="fare-card__radio" aria-hidden="true"></span>
+        <h3 class="fare-card__name">Разовое</h3>
+        <p class="fare-card__price">799 ₽</p>
+        <p class="fare-card__sub">1 сказка</p>
+        <ul class="fare-card__feats">
+          <li class="is-yes">1 сказка на платформе</li>
+          <li class="is-yes">Видео и задания на смысл</li>
+          <li class="is-yes">Личная страница прогресса</li>
+          <li class="is-no">Блок из 4 сказок</li>
+          <li class="is-no">Живые встречи</li>
+        </ul>
+        <a class="fare-card__cta" href="#programs" data-tariff-jump="single">Выбрать курс</a>
+      </article>
+      <article class="fare-card fare-card--rec" role="listitem" data-tariff-jump="self_paced">
+        <span class="fare-card__badge">Рекомендуем</span>
+        <span class="fare-card__radio" aria-hidden="true"></span>
+        <h3 class="fare-card__name">Индивидуальное</h3>
+        <p class="fare-card__price">1 990 ₽</p>
+        <p class="fare-card__delta">+1 191 ₽ к разовому</p>
+        <p class="fare-card__sub">4 сказки · свой темп</p>
+        <ul class="fare-card__feats">
+          <li class="is-yes">4 сказки на платформе</li>
+          <li class="is-yes">Видео и задания на смысл</li>
+          <li class="is-yes">Личная страница прогресса</li>
+          <li class="is-yes">Блок из 4 сказок</li>
+          <li class="is-no">Живые встречи</li>
+        </ul>
+        <a class="fare-card__cta" href="#programs" data-tariff-jump="self_paced">Выбрать курс</a>
+      </article>
+      <article class="fare-card" role="listitem" data-tariff-jump="with_teacher">
+        <span class="fare-card__radio" aria-hidden="true"></span>
+        <h3 class="fare-card__name">С преподавателем</h3>
+        <p class="fare-card__price">4 990 ₽</p>
+        <p class="fare-card__delta">+4 191 ₽ к разовому</p>
+        <p class="fare-card__sub">4 сказки + квесты</p>
+        <ul class="fare-card__feats">
+          <li class="is-yes">4 сказки на платформе</li>
+          <li class="is-yes">Видео и задания на смысл</li>
+          <li class="is-yes">Личная страница прогресса</li>
+          <li class="is-yes">Блок из 4 сказок</li>
+          <li class="is-yes">Живые встречи</li>
+        </ul>
+        <a class="fare-card__cta" href="#programs" data-tariff-jump="with_teacher">Выбрать курс</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- SUPPORT PILLARS -->
+<section class="section section--pillars reveal" id="support">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава</em> · опора</span>
+    <h2 class="section__title">Рядом на всём пути</h2>
+    <p class="section__lead">Четыре опоры школы — чтобы чтение держало внимание не хуже любимых приложений</p>
+    <div class="support-grid">
+      <article class="support-card">
+        <span class="support-card__num">01</span>
+        <h3 class="support-card__title">Путь чтения</h3>
+        <p class="support-card__text">Звук, буква, слог, слово, фраза, смысл — школа рядом на каждом шаге освоения чтения.</p>
+      </article>
+      <article class="support-card">
+        <span class="support-card__num">02</span>
+        <h3 class="support-card__title">Словики и сундук</h3>
+        <p class="support-card__text">За задания — баллы-словики, после урока открывается волшебный сундук.</p>
+      </article>
+      <article class="support-card">
+        <span class="support-card__num">03</span>
+        <h3 class="support-card__title">Кабинет родителя</h3>
+        <p class="support-card__text">Видно прогресс, уровни и открытые сказки — ничего не нужно отмечать вручную.</p>
+      </article>
+      <article class="support-card">
+        <span class="support-card__num">04</span>
+        <h3 class="support-card__title">Квест с педагогом</h3>
+        <p class="support-card__text">На тарифе «С преподавателем» — живые встречи в мини-группе 4–6 детей.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM TABS -->
+<section class="section reveal" id="platform">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава</em> · платформа</span>
+    <h2 class="section__title">Платформа, на которой интересно учиться</h2>
+    <p class="section__lead">Урок, награды и личный кабинет — в одном месте</p>
+
+    <div class="platform-tabs" id="platform-tabs" role="tablist" aria-label="Разделы платформы">
+      <button type="button" class="platform-tab is-active" role="tab" aria-selected="true" aria-controls="platform-panel-lesson" id="platform-tab-lesson" data-panel="lesson">Урок</button>
+      <button type="button" class="platform-tab" role="tab" aria-selected="false" aria-controls="platform-panel-rewards" id="platform-tab-rewards" data-panel="rewards">Награды</button>
+      <button type="button" class="platform-tab" role="tab" aria-selected="false" aria-controls="platform-panel-cabinet" id="platform-tab-cabinet" data-panel="cabinet">Кабинет</button>
+    </div>
+
+    <div class="platform-panels">
+      <div class="platform-panel is-active" id="platform-panel-lesson" role="tabpanel" aria-labelledby="platform-tab-lesson">
+        <h3 class="platform-panel__title">Как проходит урок</h3>
+        <p class="platform-panel__lead">Одна сказка — один мини-курс: видео, вопросы на понимание и волшебный сундук с творческим заданием дома</p>
+        <div class="lesson-steps">
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-video.png" alt="Этап 1" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-quiz-text.png" alt="Этап 2" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-quiz-meaning.png" alt="Этап 3" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-creative.png" alt="Этап 4" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+      <article class="lesson-step">
+        <div class="lesson-step__icon">
+          <img src="https://api.chitatelstvo.ru/assets/lesson-step-retell.png" alt="Этап 5" width="200" height="200" loading="lazy">
+        </div>
+      </article>
+    </div>
+    
+        <p class="lesson-steps-note">Видео и квизы засчитываются сами — после урока открывается сундук с творческим заданием для работы дома</p>
+  
+      </div>
+
+      <div class="platform-panel" id="platform-panel-rewards" role="tabpanel" aria-labelledby="platform-tab-rewards" hidden>
+        <h3 class="platform-panel__title">Баллы, уровни и бейджи</h3>
+        <p class="platform-panel__lead">За задания начисляются баллы-словики. После каждого урока — волшебный сундук</p>
+        <aside class="slovik-meet" aria-label="Знакомство со Словиком">
+      <img class="slovik-meet__img" src="https://api.chitatelstvo.ru/static/sloviki/slovik-main.png" alt="Словик — помощник в приключениях" width="168" height="168" loading="lazy">
+      <div class="slovik-meet__copy">
+        <p class="slovik-meet__hi">Привет! Я — <strong>Словик</strong></p>
+        <p class="slovik-meet__text">За задания я дарю словики, после урока открываю сундук — и мы вместе растём от уровня к уровню. Пойдём читать?</p>
+      </div>
+    </aside>
+
+    <h3 class="gamify__subtitle">Пять уровней</h3>
+    <div class="gamify-levels" aria-label="Уровни прогресса">
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-start.png" alt="Уровень Старт" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Старт</figcaption>
+      </figure>
+      <figure class="gamify-item gamify-item--scale-up">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-young-reader.png" alt="Уровень Юный читатель" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Юный читатель</figcaption>
+      </figure>
+      <figure class="gamify-item gamify-item--scale-up-sm">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-explorer.png" alt="Уровень Исследователь" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Исследователь</figcaption>
+      </figure>
+      <figure class="gamify-item gamify-item--scale-up">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-word-master.png" alt="Уровень Мастер слова" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Мастер слова</figcaption>
+      </figure>
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-level-detective.png" alt="Уровень Литературный детектив" width="96" height="96" loading="lazy">
+        </div>
+        <figcaption class="gamify-item__name">Литературный детектив</figcaption>
+      </figure>
+    </div>
+
+    <h3 class="gamify__subtitle">Бейджи</h3>
+    <div class="gamify-badges" aria-label="Примеры бейджей">
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-meaning.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+      </figure>
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-storyteller.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+      </figure>
+      <figure class="gamify-item">
+        <div class="gamify-item__img">
+          <img src="https://api.chitatelstvo.ru/assets/gamify-badge-tracker.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+      </figure>
+    </div>
+    <p class="gamify-badges-note">В коллекции — <strong>9 бейджей</strong>. Собирайте их по мере уроков — так чтение становится ещё увлекательнее :)</p>
+  
+      </div>
+
+      <div class="platform-panel" id="platform-panel-cabinet" role="tabpanel" aria-labelledby="platform-tab-cabinet" hidden>
+        <h3 class="platform-panel__title">Личная страница ребёнка</h3>
+        <p class="platform-panel__lead">После оплаты на email приходит ссылка на кабинет: открытые сказки, Словики, уровни и сундук</p>
+        <div class="proof-product proof-product--in-tab">
+          <div class="proof-product__text">
+            <p>Ребёнок видит свой путь — вы понимаете, что происходит на каждом занятии.</p>
+            <a class="btn btn--outline" href="#program">Начать с бесплатного урока</a>
+          </div>
+          <figure class="cabinet-mock" aria-label="Как выглядит кабинет">
+            <div class="cabinet-mock__chrome">
+              <span></span><span></span><span></span>
+              <em>комната приключений</em>
+            </div>
+            <div class="cabinet-mock__body">
+              <div class="cabinet-mock__hi">
+                <strong>Привет, Даниил!</strong>
+                <span>Ты уже на уровне Юный читатель</span>
+              </div>
+              <div class="cabinet-mock__stats">
+                <div>
+                  <img src="https://api.chitatelstvo.ru/assets/gamify-level-young-reader.png" alt="" width="56" height="56" loading="lazy">
+                  <b>Уровень</b>
+                  <span>Юный читатель</span>
+                </div>
+                <div>
+                  <img src="https://api.chitatelstvo.ru/assets/gamify-badge-meaning.png" alt="" width="48" height="48" loading="lazy">
+                  <b>Словики</b>
+                  <span>9</span>
+                </div>
+              </div>
+              <div class="cabinet-mock__bar" aria-hidden="true"><i style="width:78%"></i></div>
+              <p class="cabinet-mock__note">До следующего уровня осталось 1 Словик · сундук совсем близко</p>
+            </div>
+            <figcaption>Так выглядит комната приключений после урока</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section reveal">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 4</em> · о школе</span>
+    <h2 class="section__title">читательство — первая детская литературная школа онлайн</h2>
+    <div class="about-text">
+      <p><strong>ЧИТАТЕЛЬСТВО</strong> — онлайн-школа литературного чтения для детей. Мы сопровождаем первые шаги в чтении: звук → буква → слог → слово → фраза → смысл. Дальше — видео, вопросы на понимание и задания по книгам. В основе занятий — геймификация: за выполнение заданий начисляются баллы («словики»), а после урока открывается волшебный сундук с творческим заданием дома.</p>
+      <p>Все занятия можно проходить <strong>самостоятельно</strong> в удобном темпе — прогресс виден на личной странице, словики и уровни начисляются сразу после заданий. А если хочется живого общения, программу можно <strong>дополнить занятиями с преподавателем</strong>: там расширенная программа по каждой сказке и квест в мини-группе из 4–6 детей.</p>
+      <p><strong>12 программ</strong> для детей 4–12 лет: первые шаги в чтении, школьное чтение (1–4 класс), внеклассное и тематические курсы. Можно взять одну сказку, блок из 4 или всю программу.</p>
+    </div>
+    <div class="school-pillars" id="timeline" aria-label="Как устроена школа">
+      <article class="school-pillars__item">
+        <h3 class="school-pillars__title">Программы по возрасту</h3>
+        <p class="school-pillars__text">Двенадцать программ — от букв до литературного чтения</p>
+      </article>
+      <article class="school-pillars__item">
+        <h3 class="school-pillars__title">Свой темп</h3>
+        <p class="school-pillars__text">Уроки на платформе без опозданий: присоединиться можно в любой день</p>
+      </article>
+      <article class="school-pillars__item">
+        <h3 class="school-pillars__title">Живые встречи</h3>
+        <p class="school-pillars__text">Опционально — квест в мини-группе 4–6 детей по четвергам</p>
+      </article>
+    </div>
+    <div class="pull-quote">
+      <div class="pull-quote__body">
+        <p>«У читателя есть право не понимать сразу — и вернуться к книге, когда появится настоящий вопрос»</p>
+        <cite>Даниэль Пеннак · учим разговаривать с героем, понимать его чувства и поступки</cite>
+      </div>
+      <img class="pull-quote__illus" src="https://api.chitatelstvo.ru/assets/vignette-reading-corner.png" alt="" width="112" height="112">
+    </div>
+  </div>
+</section>
+
+<!-- FOR WHOM -->
+<section class="section section--pale reveal">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 5</em> · для кого</span>
+    <h2 class="section__title">Сегодня школа работает для…</h2>
+    <div class="for-whom">
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--kids">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-kids.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        детей 4–12 лет: от первых букв до литературного чтения
+      </div>
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--family">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-family.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        семей, понимающих ценность чтения
+      </div>
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--pace">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-pace.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        тех, кто привык читать в своём удобном темпе
+      </div>
+      <div class="for-whom__item">
+        <div class="for-whom__icon-wrap for-whom__icon-wrap--parents">
+          <img class="for-whom__icon" src="https://api.chitatelstvo.ru/assets/audience-parents.png" alt="" width="80" height="80" loading="lazy">
+        </div>
+        тех, кто хочет квест по сказке в группе с преподавателем
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="pattern-strip" aria-hidden="true"></div>
+
+<!-- ENROLLMENT -->
+<section class="section section--pale reveal" id="program">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 3</em> · запись</span>
+    <div class="enroll-panel" id="chit-program">
+      <h2 class="enroll-panel__title">Запись в Читательство</h2>
+      <p class="enroll-panel__lead">Сначала можно пройти урок бесплатно — или сразу выбрать программу и оплатить</p>
+
+      <!-- FREE TRIALS: отдельно от оплаты, чтобы не путать с тарифом «Разовое» -->
+      <div class="enroll-trial" id="chit-trial">
+        <div class="enroll-trial__head">
+          <span class="enroll-trial__badge">0 ₽ · без карты</span>
+          <h3 class="enroll-trial__title">Попробуйте один урок</h3>
+          <p class="enroll-trial__sub">Выберите возраст — откроем доступ к пробному уроку на платформе</p>
+        </div>
+        <div class="enroll-trial__cards">
+          <a class="enroll-trial__card enroll-trial__card--early" href="#quiz" data-qz-open data-quiz="early"
+             data-trial-age="4-6"
+             data-trial-slug="early-letters-trial-lesson-01"
+             data-trial-title="Словик и пропавшие звуки">
+            <span class="enroll-trial__age">4–6 лет · Буквы оживают</span>
+            <span class="enroll-trial__name">Словик и пропавшие звуки</span>
+            <span class="enroll-trial__author">квест со Словиком</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+          <a class="enroll-trial__card enroll-trial__card--early" href="#quiz" data-qz-open data-quiz="early"
+             data-trial-age="5-7"
+             data-trial-slug="early-stories-trial-lesson-01"
+             data-trial-title="Спаси первую историю">
+            <span class="enroll-trial__age">5–7 лет · Первые истории</span>
+            <span class="enroll-trial__name">Спаси первую историю</span>
+            <span class="enroll-trial__author">квест со Словиком</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+          <a class="enroll-trial__card" href="#quiz" data-qz-open data-quiz="reading"
+             data-trial-age="6-8"
+             data-trial-slug="grade-2-self_paced-stage-1-lesson-01"
+             data-trial-title="Сказка о рыбаке и рыбке">
+            <span class="enroll-trial__age">6–8 лет</span>
+            <span class="enroll-trial__name">Сказка о рыбаке и рыбке</span>
+            <span class="enroll-trial__author">А. С. Пушкин</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+          <a class="enroll-trial__card" href="#quiz" data-qz-open data-quiz="reading"
+             data-trial-age="9-11"
+             data-trial-slug="grade-3-self_paced-stage-1-lesson-01"
+             data-trial-title="Сказка о царе Салтане">
+            <span class="enroll-trial__age">9–11 лет</span>
+            <span class="enroll-trial__name">Сказка о царе Салтане</span>
+            <span class="enroll-trial__author">А. С. Пушкин</span>
+            <span class="enroll-trial__cta">Получить урок бесплатно</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="enroll-or" role="presentation" id="chit-enroll-paid"><span>или запишитесь на курс</span></div>
+
+      <div class="enroll-course-lock" id="chit-enroll-course" hidden>
+        <div class="enroll-course-lock__text">
+          <span class="enroll-course-lock__label">Вы записываетесь на</span>
+          <strong class="enroll-course-lock__title" id="chit-enroll-course-title"></strong>
+          <span class="enroll-course-lock__meta" id="chit-enroll-course-meta"></span>
+        </div>
+        <button type="button" class="enroll-course-lock__change" id="chit-enroll-change">Сменить курс</button>
+      </div>
+
+      <div class="step-block" id="chit-step-group">
+        <div class="step-label"><em>шаг 1</em> · какой курс нужен</div>
+        <p class="step-hint step-hint--always">Выберите одну программу. Удобнее начать с каталога выше — курс подставится сам</p>
+        <div class="enroll-tracks">
+          <section class="enroll-track">
+            <div class="enroll-track__head">
+              <h4 class="enroll-track__title">Первые шаги</h4>
+              <p class="enroll-track__sub">4–7 лет · звук, буква, слово, смысл</p>
+            </div>
+            <div class="enroll-track__opts pills" id="chit-groups-early">
+              <button type="button" class="pill enroll-opt" data-group="early-letters">
+                <span class="enroll-opt__name">Буквы оживают</span>
+                <span class="enroll-opt__meta">4–6 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="early-stories">
+                <span class="enroll-opt__name">Первые истории</span>
+                <span class="enroll-opt__meta">5–7 лет</span>
+              </button>
+            </div>
+          </section>
+          <section class="enroll-track">
+            <div class="enroll-track__head">
+              <h4 class="enroll-track__title">Базовый курс</h4>
+              <p class="enroll-track__sub">1–4 класс · сказки из школьной программы</p>
+            </div>
+            <div class="enroll-track__opts pills" id="chit-groups-basic">
+              <button type="button" class="pill enroll-opt" data-group="grade-1">
+                <span class="enroll-opt__name">1 класс</span>
+                <span class="enroll-opt__meta">7–8 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="grade-2">
+                <span class="enroll-opt__name">2 класс</span>
+                <span class="enroll-opt__meta">8–9 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="grade-3">
+                <span class="enroll-opt__name">3 класс</span>
+                <span class="enroll-opt__meta">9–10 лет</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="grade-4">
+                <span class="enroll-opt__name">4 класс</span>
+                <span class="enroll-opt__meta">10–11 лет</span>
+              </button>
+            </div>
+          </section>
+          <section class="enroll-track">
+            <div class="enroll-track__head">
+              <h4 class="enroll-track__title">Внеклассное чтение</h4>
+              <p class="enroll-track__sub">Книги вне школьного списка · по возрасту</p>
+            </div>
+            <div class="enroll-track__opts pills" id="chit-groups-extra">
+              <button type="button" class="pill enroll-opt" data-group="extra-6-8">
+                <span class="enroll-opt__name">6–8 лет</span>
+                <span class="enroll-opt__meta">внеклассное</span>
+              </button>
+              <button type="button" class="pill enroll-opt" data-group="extra-9-11">
+                <span class="enroll-opt__name">9–11 лет</span>
+                <span class="enroll-opt__meta">внеклассное</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="step-block" id="chit-step-tariff">
+        <div class="step-label" id="chit-step-tariff-label"><em>шаг 2</em> · выберите тариф</div>
+        <p class="step-hint step-hint--always" id="chit-step-tariff-hint">Разовое — один урок. Индивидуальное — весь модуль в своём темпе. С преподавателем — модуль плюс живые встречи</p>
+        <div class="tariff-pick" id="chit-tariffs">
+          <div class="pick-card" data-tariff="single">
+            <div class="pick-card__tag">Попробовать</div>
+            <div class="pick-card__name">Разовое</div>
+            <div class="pick-card__price">799 ₽</div>
+            <div class="pick-card__hint">1 сказка онлайн, без встречи</div>
+          </div>
+          <div class="pick-card is-active" data-tariff="self_paced">
+            <div class="pick-card__tag">Основной</div>
+            <div class="pick-card__name">Индивидуальное</div>
+            <div class="pick-card__price">1 990 ₽</div>
+            <div class="pick-card__hint">4 сказки · 499 ₽ за сказку, без встреч</div>
+          </div>
+          <div class="pick-card" data-tariff="with_teacher">
+            <div class="pick-card__tag">С поддержкой</div>
+            <div class="pick-card__name">С преподавателем</div>
+            <div class="pick-card__price">4 990 ₽</div>
+            <div class="pick-card__hint">4 сказки + встречи по четвергам</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-block date-box is-visible" id="chit-date-box">
+        <div class="step-label">блок программы</div>
+        <p class="step-hint" id="chit-step3-hint" hidden>Для «Разового» выберите блок и нажмите на одну сказку ниже.</p>
+        <p class="step-hint" id="chit-stage1-closed-note" hidden>На тарифе «С преподавателем» сейчас открыт блок 2 — сказки 5–8 и живые встречи по четвергам.</p>
+        <p class="step-hint step-hint--always" id="chit-step3-guide">В тарифе уже все 4 сказки блока — выбирать сказки не нужно (кроме «Разового»).</p>
+        <div class="stage-row" id="chit-stages">
+          <button type="button" class="pill" data-stage="1">Блок 1 · сказки 1–4</button>
+          <button type="button" class="pill is-active" data-stage="2">Блок 2 · сказки 5–8</button>
+        </div>
+        <div class="tales" id="chit-tales"></div>
+        <div class="block-preview" id="chit-block-preview" style="display:none"></div>
+      </div>
+
+      <div class="step-block step-block--choice">
+        <div class="step-label"><em>готово к оплате</em></div>
+        <div class="summary is-empty" id="chit-summary">
+          <span class="summary-empty">Выберите класс и формат</span>
+        </div>
+      </div>
+
+      <div class="chit-hidden">
+        <input type="hidden" name="module_id" id="module_id" value="">
+        <input type="hidden" name="chosen_stage" id="chosen_stage" value="">
+        <input type="hidden" name="chosen_tale_number" id="chosen_tale_number" value="">
+      </div>
+
+      <div class="enroll-checkout">
+        <h3>Контакты для записи</h3>
+        <p class="form-intro">Заполните поля и нажмите «Записаться» — откроется оплата.</p>
+
+        <div class="form-grid" id="chit-contact-form">
+          <div class="form-field">
+            <label for="chit_parent_name">Имя родителя</label>
+            <input type="text" id="chit_parent_name" name="parent_name" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label for="chit_parent_email">Email</label>
+            <input type="email" id="chit_parent_email" name="parent_email" autocomplete="email" required>
+          </div>
+          <div class="form-field">
+            <label for="chit_parent_telegram">Телефон</label>
+            <input type="tel" id="chit_parent_telegram" name="parent_telegram" autocomplete="tel">
+          </div>
+          <div class="form-field">
+            <label for="chit_child_name">Имя ребёнка</label>
+            <input type="text" id="chit_child_name" name="child_name" required>
+          </div>
+          <div class="form-field">
+            <label for="chit_child_birth_date">День рождения ребёнка</label>
+            <input type="date" id="chit_child_birth_date" name="child_birth_date" autocomplete="bday" required>
+          </div>
+          <div class="form-field">
+            <label for="chit_promo_code">Промокод</label>
+            <input type="text" id="chit_promo_code" name="promo_code" autocomplete="off" spellcheck="false" autocapitalize="characters">
+          </div>
+        </div>
+        <input type="hidden" name="notification_channel" id="chit_notification_channel" value="email">
+
+        <button type="button" class="btn btn--block btn--pay" id="chit-pay-btn" disabled>Записаться</button>
+        <p class="form-consent">Нажимая «Записаться», вы соглашаетесь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">политикой конфиденциальности</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">офертой</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- PROOF -->
+<section class="section section--cream reveal" id="proof">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 6</em> · отзывы</span>
+    <h2 class="section__title">Школа уже работает</h2>
+    <p class="section__lead">постоянная платформа чтения — 12 программ по возрастам</p>
+    <div class="proof-stats" aria-label="О школе в цифрах">
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">12</strong>
+        <span class="proof-stats__label">программ по возрасту</span>
+      </div>
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">48</strong>
+        <span class="proof-stats__label">сказок на полках</span>
+      </div>
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">5</strong>
+        <span class="proof-stats__label">уровней прогресса</span>
+      </div>
+      <div class="proof-stats__item">
+        <strong class="proof-stats__num">9</strong>
+        <span class="proof-stats__label">бейджей в коллекции</span>
+      </div>
+    </div>
+
+        <div class="proof-reviews" aria-label="Отзывы родителей">
+      <article class="proof-review proof-review--card">
+        <div class="proof-review__top">
+          <span class="proof-review__avatar" aria-hidden="true">М</span>
+          <div>
+            <cite class="proof-review__author">Мария</cite>
+            <span class="proof-review__meta">мама · 2 класс</span>
+          </div>
+        </div>
+        <p class="proof-review__result">Результат: сам просит следующую сказку</p>
+        <p class="proof-review__text">«Наконец-то ребёнок не просто „прочитал для галочки“ — он рассказывает, что понял, и сам просит следующую сказку.»</p>
+      </article>
+      <article class="proof-review proof-review--card">
+        <div class="proof-review__top">
+          <span class="proof-review__avatar" aria-hidden="true">О</span>
+          <div>
+            <cite class="proof-review__author">Ольга</cite>
+            <span class="proof-review__meta">тариф «Индивидуальное»</span>
+          </div>
+        </div>
+        <p class="proof-review__result">Результат: прогресс виден в кабинете</p>
+        <p class="proof-review__text">«Удобно, что всё на личной странице: видно баллы, открытые уроки — не нужно ничего отмечать вручную.»</p>
+      </article>
+      <article class="proof-review proof-review--card">
+        <div class="proof-review__top">
+          <span class="proof-review__avatar" aria-hidden="true">Н</span>
+          <div>
+            <cite class="proof-review__author">Николай</cite>
+            <span class="proof-review__meta">старший брат</span>
+          </div>
+        </div>
+        <p class="proof-review__result">Результат: ждёт открытие сундука</p>
+        <p class="proof-review__text">«Ребёнку было интересно — живые иллюстрации, музыка и задания. Каждый раз ждёт „открытие сундука“.»</p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- FAQ -->
+<section class="section reveal" id="faq">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 8</em> · и наши ответы</span>
+    <h2 class="section__title">Вопросы от родителей</h2>
+    <div class="faq-list" id="faq-list">
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Когда можно начать?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>В любой день — с 4 лет. Подберём ступень: буквы и слоги, первые истории или литературное чтение. Уроки открываются по расписанию платформы; присоединиться можно и с середины программы. В каждой программе 8 сказок (2 блока по 4). Можно взять одну сказку, один блок или всю программу.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Что будет после оплаты?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс. На странице есть справка: как устроены занятия и за что начисляются баллы. Сохраните ссылку в закладки браузера.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Можно ли начать с одной сказки?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>Да. Можно <a href="#program">пройти урок бесплатно</a>: для 6–8 лет — «Сказка о рыбаке и рыбке», для 9–11 лет — «Сказка о царе Салтане». Или тариф «Разовое» — 799 ₽ за одну сказку онлайн. Живые занятия-квесты — на тарифе «С преподавателем», по четвергам.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Чем отличаются тарифы?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span><strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч (1 990 ₽): видео, квизы и сундук после каждого урока. <strong>С преподавателем</strong> — та же основа плюс расширенная программа и квест по сказке в мини-группе 4–6 детей, 4 живые встречи по четвергам (4 990 ₽). <strong>Разовое</strong> — 1 сказка онлайн (799 ₽).</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">
+          <span class="faq-q__from">родитель спрашивает</span>
+          <span class="faq-q__text">Когда проходят занятия с преподавателем?</span>
+        </button>
+        <p class="faq-a"><span class="faq-a__sign">Читательство отвечает:</span>По четвергам, в мини-группах до 6 детей. Занятие проходит в формате квеста: по сказке нужно пройти задания. Точное время сообщим после формирования групп.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- LEAD FORM -->
+<section class="section section--lead reveal" id="lead">
+  <div class="section__inner">
+    <div class="lead-panel">
+      <div class="lead-panel__copy">
+        <span class="section__chapter section__chapter--left">подобрать программу</span>
+        <h2 class="section__title section__title--left">Сделайте первый шаг</h2>
+        <p class="section__lead section__lead--left">Оставьте контакты — подскажем ступень: буквы, первые истории или литературное чтение. Или запишем на предзапись со скидкой 15%</p>
+      </div>
+      <form class="lead-form" id="chit-lead-form" action="mailto:info@chitatelstvo.ru" method="post" enctype="text/plain">
+        <div class="lead-form__grid">
+          <div class="form-field">
+            <label for="lead_parent_name">Имя родителя</label>
+            <input type="text" id="lead_parent_name" name="parent_name" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label for="lead_parent_email">Email</label>
+            <input type="email" id="lead_parent_email" name="parent_email" autocomplete="email" required>
+          </div>
+          <div class="form-field">
+            <label for="lead_parent_phone">Телефон</label>
+            <input type="tel" id="lead_parent_phone" name="parent_phone" autocomplete="tel">
+          </div>
+          <div class="form-field">
+            <label for="lead_child_age">Возраст ребёнка</label>
+            <input type="text" id="lead_child_age" name="child_age" placeholder="например, 7 лет" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn--block btn--pay">Получить консультацию</button>
+        <p class="lead-form__note" id="chit-lead-note" hidden>Спасибо! Откроется письмо — нажмите «Отправить». Или напишите на <a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a>.</p>
+        <p class="form-consent">Нажимая кнопку, вы соглашаетесь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">политикой конфиденциальности</a>.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="final-cta-scroller" id="final-cta-scroller">
+  <section class="final-cta" id="final-cta">
+    <div class="final-cta__bg" aria-hidden="true"></div>
+    <div class="final-cta__frame">
+      <h2>Почему бы не открыть первую сказку?</h2>
+      <p>Даём бесплатный доступ к платформе и одному полноценному уроку. Пройдите книжное приключение вместе с ребёнком — если понравится, запись на программу займёт пару минут.</p>
+      <a class="btn" href="#quiz" data-quiz="reading">Получить урок бесплатно</a>
+    </div>
+  </section>
+</div>
+
+<!-- FOUNDER + FOOTER — единый фон луга -->
+<div class="chit-meadow-bg">
+<section class="section founder reveal">
+  <div class="section__inner">
+    <span class="section__chapter"><em>глава 9</em> · команда</span>
+    <h2 class="section__title">Кто стоит за школой</h2>
+    <div class="founder__grid">
+      <article class="founder__card">
+        <div class="founder__photo-wrap">
+          <img class="founder__photo founder__photo--olga" src="https://api.chitatelstvo.ru/assets/founder-olga.jpg" alt="Рощина Ольга" width="200" height="240" loading="lazy">
+        </div>
+        <div class="founder__body">
+          <h3 class="founder__name">Рощина Ольга</h3>
+          <p class="founder__role">Основатель</p>
+          <p class="founder__bio">Школу придумала и сделала Ольга Рощина — основатель и руководитель московского книжного магазина <a href="https://blog.dobrolavka.ru/" target="_blank" rel="noopener"><strong>ДоброЛавка</strong></a>, мама четырёх детей. Видит, как чтение благотворно влияет на собственных детей, и обязательно проверяет все занятия на них :) В проекте отвечает за идею, курсы, сайт и геймификацию. Конкурировать с миром гаджетов книгам всё сложнее — мы стараемся увлечь чтением не хуже!</p>
+        </div>
+      </article>
+      <article class="founder__card">
+        <div class="founder__photo-wrap">
+          <img class="founder__photo founder__photo--anastasia" src="https://api.chitatelstvo.ru/assets/founder-anastasia.jpg" alt="Чирва Анастасия" width="200" height="240" loading="lazy">
+        </div>
+        <div class="founder__body">
+          <h3 class="founder__name">Чирва Анастасия</h3>
+          <p class="founder__role">Преподаватель и методист курсов</p>
+          <p class="founder__bio">Методист онлайн-курсов, преподаватель в FoxFord. Отвечаю за качество курса и разработку образовательных продуктов. Моя задача — чтобы ученики пришли к результату и остались довольны обучением, а родители видели мотивацию детей и желание развиваться дальше. В этом — суперсила методистов.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<footer class="footer chit-meadow-bg__footer">
+  <div class="footer__inner">
+    <img class="footer__logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="256" height="256">
+    <p class="footer__warm">С теплом, команда Читательства</p>
+    <nav class="footer__legal" aria-label="Юридическая информация">
+      <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a>
+      <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">Публичная оферта</a>
+      <a href="https://api.chitatelstvo.ru/legal/rekvizity" target="_blank" rel="noopener">Реквизиты</a>
+    </nav>
+    <p class="footer__contact">
+      <a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> ·
+      <a href="tel:+79585000850">+7 (958) 500-08-50</a>
+    </p>
+    <p class="footer__seller">ИП Рощина Ольга Владимировна · ИНН 231150315327</p>
+    <p class="footer__copy">© Читательство · chitatelstvo.ru</p>
+  </div>
+</footer>
+</div>
+
+<!-- TARIFF MODAL -->
+<div class="fare-modal" id="fare-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="fare-modal-title">
+  <div class="fare-modal__backdrop" data-fare-close tabindex="-1"></div>
+  <div class="fare-modal__dialog" role="document">
+    <button type="button" class="fare-modal__close" data-fare-close aria-label="Закрыть">
+      <span class="fare-modal__close-icon" aria-hidden="true"></span>
+    </button>
+    <div class="fare-modal__head">
+      <div>
+        <p class="fare-modal__eyebrow">Тариф</p>
+        <h2 class="fare-modal__title" id="fare-modal-title">Выберите тариф</h2>
+        <p class="fare-modal__course" id="fare-modal-course"></p>
+      </div>
+      <a class="fare-modal__rules" href="#faq" data-fare-close>Правила тарифов</a>
+    </div>
+    <div class="fare-track fare-track--modal" id="fare-modal-track" role="radiogroup" aria-label="Тарифы">
+      <button type="button" class="fare-card" role="radio" aria-checked="false" data-fare="single">
+        <span class="fare-card__radio" aria-hidden="true"></span>
+        <span class="fare-card__name">Разовое</span>
+        <span class="fare-card__price">799 ₽</span>
+        <span class="fare-card__sub">1 сказка</span>
+        <ul class="fare-card__feats">
+          <li class="is-yes">1 сказка на платформе</li>
+          <li class="is-yes">Видео и задания на смысл</li>
+          <li class="is-yes">Личная страница прогресса</li>
+          <li class="is-no">Блок из 4 сказок</li>
+          <li class="is-no">Живые встречи</li>
+        </ul>
+      </button>
+      <button type="button" class="fare-card fare-card--rec is-selected" role="radio" aria-checked="true" data-fare="self_paced">
+        <span class="fare-card__badge">Рекомендуем</span>
+        <span class="fare-card__radio" aria-hidden="true"></span>
+        <span class="fare-card__name">Индивидуальное</span>
+        <span class="fare-card__price">1 990 ₽</span>
+        <span class="fare-card__delta">+1 191 ₽ к разовому</span>
+        <span class="fare-card__sub">4 сказки · свой темп</span>
+        <ul class="fare-card__feats">
+          <li class="is-yes">4 сказки на платформе</li>
+          <li class="is-yes">Видео и задания на смысл</li>
+          <li class="is-yes">Личная страница прогресса</li>
+          <li class="is-yes">Блок из 4 сказок</li>
+          <li class="is-no">Живые встречи</li>
+        </ul>
+      </button>
+      <button type="button" class="fare-card" role="radio" aria-checked="false" data-fare="with_teacher">
+        <span class="fare-card__radio" aria-hidden="true"></span>
+        <span class="fare-card__name">С преподавателем</span>
+        <span class="fare-card__price">4 990 ₽</span>
+        <span class="fare-card__delta">+4 191 ₽ к разовому</span>
+        <span class="fare-card__sub">4 сказки + квесты</span>
+        <ul class="fare-card__feats">
+          <li class="is-yes">4 сказки на платформе</li>
+          <li class="is-yes">Видео и задания на смысл</li>
+          <li class="is-yes">Личная страница прогресса</li>
+          <li class="is-yes">Блок из 4 сказок</li>
+          <li class="is-yes">Живые встречи</li>
+        </ul>
+      </button>
+    </div>
+    <div class="fare-modal__foot">
+      <button type="button" class="btn btn--block btn--pay" id="fare-modal-continue">Продолжить запись</button>
+      <p class="fare-modal__note" id="fare-modal-note"></p>
+    </div>
+  </div>
+</div>
+
+<div class="qz-modal" id="qz-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="qz-modal-title">
+  <div class="qz-modal__backdrop" data-qz-close tabindex="-1"></div>
+  <div class="qz-modal__dialog">
+    <button type="button" class="qz-modal__close" data-qz-close aria-label="Закрыть квиз"><span class="qz-modal__close-icon" aria-hidden="true"></span></button>
+    <div id="chit-quiz">
+      <div class="qz-shell">
+        <div class="qz-card">
+          <img class="qz-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo-quiz.png?v=20260616a" alt="Читательство" width="220" height="220" loading="lazy">
+          <div class="qz-intro-gift">
+            <p class="qz-intro-gift__badge">Бесплатный доступ к платформе и один урок-сказка!</p>
+            <p class="qz-intro-gift__sub">Ответьте на 5 вопросов — получите чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email. А чуть позже откроем доступ к платформе и бесплатному полноценному уроку, чтобы вы прошли одно книжное приключение вместе с ребёнком.</p>
+          </div>
+          <h2 id="qz-modal-title" class="qz-visually-hidden">Подборка программы чтения</h2>
+          <div class="qz-progress" aria-hidden="true">
+            <div class="qz-progress__meta">
+              <span class="qz-progress__label">Вопрос 1 из 5</span>
+              <span class="qz-progress__pct">0%</span>
+            </div>
+            <div class="qz-progress__bar"><div class="qz-progress__fill"></div></div>
+          </div>
+          <div id="qz-questions"></div>
+          <section class="qz-step" data-step="form">
+            <h2 class="qz-title">Почти готово</h2>
+            <p class="qz-sub">Оставьте контакты — пришлём PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email.</p>
+            <div class="qz-gift">
+              <p class="qz-gift__label">🎁 Что вы получите</p>
+              <p><strong>Сейчас:</strong> PDF-чек-лист на email — проверить понимание текста вместе с ребёнком.</p>
+              <p><strong>Чуть позже:</strong> бесплатный доступ к платформе, один полноценный урок-сказка и личное письмо от основателя с рекомендациями.</p>
+            </div>
+            <form id="qz-form" novalidate>
+              <div class="qz-fields">
+                <div class="qz-field">
+                  <label for="qz-parent-name">Имя родителя</label>
+                  <input id="qz-parent-name" name="parent_name" type="text" autocomplete="name" required>
+                </div>
+                <div class="qz-field">
+                  <label for="qz-parent-email">Email</label>
+                  <input id="qz-parent-email" name="parent_email" type="email" autocomplete="email" required>
+                </div>
+                <div class="qz-field">
+                  <label for="qz-child-name">Имя ребёнка</label>
+                  <input id="qz-child-name" name="child_name" type="text" autocomplete="off" required>
+                </div>
+                <div class="qz-field">
+                  <label for="qz-child-age">Возраст ребёнка</label>
+                  <input id="qz-child-age" name="child_age" type="number" inputmode="numeric" min="1" max="99" autocomplete="off" required>
+                  <p class="qz-age-note">Наши программы пока рассчитаны на возраст 6–11 лет</p>
+                </div>
+              </div>
+              <button type="submit" class="qz-btn qz-btn--submit" style="width:100%">Получить PDF-чек-лист</button>
+              <p class="qz-consent">У нас нет отдела продаж, поэтому доставать рекламой и спамом мы не будем 🙌 Нажимая кнопку, вы соглашаетесь на обработку персональных данных. <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a></p>
+              <p class="qz-error" role="alert"></p>
+            </form>
+          </section>
+          <section class="qz-step" data-step="success">
+            <div class="qz-success-icon" aria-hidden="true">✓</div>
+            <h2 class="qz-title" style="text-align:center">Спасибо!</h2>
+            <p class="qz-sub" style="text-align:center">Мы получили ваши ответы.</p>
+            <p style="text-align:center;margin:0 0 12px" data-qz-success-pdf><strong>PDF-чек-лист уже на вашем email.</strong></p>
+            <p data-qz-gift-line style="text-align:center;margin:0 0 12px">Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
+            <div class="qz-success-links">
+              <a class="qz-link-btn" data-qz-checklist-link href="https://api.chitatelstvo.ru/quiz/checklist.pdf?v=20260615b" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
+              <a class="qz-link-btn" href="#program" data-qz-close style="background:var(--qz-blue);color:#fff;border-color:transparent">Записаться на программу</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="#quiz" class="qz-launcher" id="qz-launcher" data-quiz="reading" aria-haspopup="dialog" aria-controls="qz-modal">
+  <span class="qz-launcher__icon" aria-hidden="true">🎁</span>
+  <span class="qz-launcher__text">Подборка + подарок</span>
+</a>
+
+<div class="feedback-tab" id="feedback-tab">
+  <div class="feedback-tab__panel" id="feedback-tab-panel" role="dialog" aria-label="Обратная связь" aria-hidden="true">
+    <p class="feedback-tab__title">Обратная связь</p>
+    <p class="feedback-tab__text">Если возникли вопросы — напишите, ответим в ближайшее время</p>
+    <div class="feedback-tab__links">
+      <a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a>
+      <a href="#faq">Частые вопросы</a>
+    </div>
+  </div>
+  <button type="button" class="feedback-tab__toggle" id="feedback-tab-toggle" aria-expanded="false" aria-controls="feedback-tab-panel">
+    <span class="feedback-tab__toggle-icon" aria-hidden="true">✉</span>
+    Есть вопросы?
+  </button>
+</div>
+</div>
+<script>window.CHIT_QUIZ_AUTO={enabled:false};</script>
+<script id="chit-quiz-loader">(function(){var A="https://api.chitatelstvo.ru/assets/",V="20260818c",busy=0,done=0,q=[];function run(){while(q.length)(q.shift())();}function rememberTrial(el){if(!el||!el.getAttribute)return;var slug=el.getAttribute("data-trial-slug");if(!slug)return;try{var age=el.getAttribute("data-trial-age")||"";sessionStorage.setItem("chit_trial",JSON.stringify({age:age,slug:slug,title:el.getAttribute("data-trial-title")||""}));var hint=age==="4-6"?"5":(age==="5-7"?"6":(age==="6-8"?"7":(age==="9-11"?"10":"")));if(hint)sessionStorage.setItem("chit_trial_age_hint",hint);}catch(err){}}function openReady(){if(window.chitQuizOpen)window.chitQuizOpen();}window.chitLoadQuiz=function(cb){if(done){if(cb)cb();return openReady();}if(cb)q.push(cb);if(busy)return;busy=1;var c=document.createElement("link");c.rel="stylesheet";c.href=A+"chit-quiz.css?v="+V;c.onload=function(){var s=document.createElement("script");s.src=A+"chit-quiz.js?v="+V;s.onload=function(){done=1;busy=0;run();openReady();};s.onerror=function(){done=1;busy=0;run();};document.head.appendChild(s);};c.onerror=function(){var s=document.createElement("script");s.src=A+"chit-quiz.js?v="+V;s.onload=function(){done=1;busy=0;run();openReady();};document.head.appendChild(s);};document.head.appendChild(c);};document.addEventListener("click",function(e){if(done)return;var t=e.target.closest('[href="#quiz"],[data-qz-open]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();rememberTrial(t);window.chitLoadQuiz();},true);if(location.hash==="#quiz")window.chitLoadQuiz();})();</script>
+<script defer src="https://api.chitatelstvo.ru/assets/chit-zero.js?v=20260818c"></script>
+
+</body></html>

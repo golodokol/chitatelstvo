@@ -13,7 +13,7 @@
   "tale_number": 5,
   "tale_slug": "early-letters-stage1-tale-05",
   "module_week": 5,
-  "meeting_number": 0,
+  "meeting_number": 3,
   "badge": "Первый шаг",
   "points": 2,
   "active": false,
@@ -137,5 +137,8 @@
   "quest": {
     "goal_label": "искорки",
     "goal_count": 3
+  },
+  "live_lesson": {
+    "next_meeting_label": "четверг, 17 сентября 2026"
   }
 }

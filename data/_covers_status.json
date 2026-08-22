@@ -1,0 +1,294 @@
+{
+  "ok": [
+    {
+      "week": 1,
+      "title": "Плюшевый заяц или как игрушки становятся настоящими У. Марджери",
+      "slug": "extra-6-8-self_paced-stage-1-lesson-01",
+      "url": "/static/lesson-covers/urok-1-3ae62d44ac.png"
+    },
+    {
+      "week": 2,
+      "title": "Муми-тролль и комета Т. Янссон",
+      "slug": "extra-6-8-self_paced-stage-1-lesson-02",
+      "url": "/static/lesson-covers/urok-2-d6b147ee56.png"
+    },
+    {
+      "week": 3,
+      "title": "Шляпа волшебника Т. Янссон",
+      "slug": "extra-6-8-self_paced-stage-1-lesson-03",
+      "url": "/static/lesson-covers/urok-3-eb432b388f.png"
+    },
+    {
+      "week": 4,
+      "title": "Приключения медвежонка Паддингтона М. Бонд",
+      "slug": "extra-6-8-self_paced-stage-1-lesson-04",
+      "url": "/static/lesson-covers/urok-4-4ee23d4d3c.png"
+    },
+    {
+      "week": 5,
+      "title": "Невероятные приключения кролика Эдварда К. ДиКамилло",
+      "slug": "extra-6-8-self_paced-stage-2-lesson-01",
+      "url": "/static/lesson-covers/urok-5-2908e7b8fd.png"
+    },
+    {
+      "week": 6,
+      "title": "Тутта Карлссон Первая и единственная, Людвиг Четырнадцатый и др. Я. Экхольм",
+      "slug": "extra-6-8-self_paced-stage-2-lesson-02",
+      "url": "/static/lesson-covers/urok-6-648e313126.png"
+    },
+    {
+      "week": 8,
+      "title": "Чарли и шоколадная фабрика Р. Даль",
+      "slug": "extra-6-8-self_paced-stage-2-lesson-04",
+      "url": "/static/lesson-covers/urok-8-24360cacd6.png"
+    },
+    {
+      "week": 1,
+      "title": "Опасное лето Т. Янссон",
+      "slug": "extra-9-11-self_paced-stage-1-lesson-01",
+      "url": "/static/lesson-covers/urok-1-e03192458b.png"
+    },
+    {
+      "week": 2,
+      "title": "Рони, дочь разбойника Т. Янссон",
+      "slug": "extra-9-11-self_paced-stage-1-lesson-02",
+      "url": "/static/lesson-covers/urok-2-1de69d3cae.png"
+    },
+    {
+      "week": 3,
+      "title": "Собака Пес Д. Пеннак",
+      "slug": "extra-9-11-self_paced-stage-1-lesson-03",
+      "url": "/static/lesson-covers/urok-3-0b9c2a8ba5.png"
+    },
+    {
+      "week": 4,
+      "title": "Вафельное сердце М. Парр",
+      "slug": "extra-9-11-self_paced-stage-1-lesson-04",
+      "url": "/static/lesson-covers/urok-4-bd44c67af6.png"
+    },
+    {
+      "week": 5,
+      "title": "Чудесное путешествие Нильса с дикими гусями С. Лагерлеф",
+      "slug": "extra-9-11-self_paced-stage-2-lesson-01",
+      "url": "/static/lesson-covers/urok-5-a509923953.png"
+    },
+    {
+      "week": 6,
+      "title": "Чудесное путешествие Нильса с дикими гусями С. Лагерлеф 2 часть",
+      "slug": "extra-9-11-self_paced-stage-2-lesson-02",
+      "url": "/static/lesson-covers/urok-6-a509923953.png"
+    },
+    {
+      "week": 7,
+      "title": "Полианна Э. Портер",
+      "slug": "extra-9-11-self_paced-stage-2-lesson-03",
+      "url": "/static/lesson-covers/urok-7-ea55fdb91c.png"
+    },
+    {
+      "week": 8,
+      "title": "Калиф-аист, Маленький Мук В. Гауф",
+      "slug": "extra-9-11-self_paced-stage-2-lesson-04",
+      "url": "/static/lesson-covers/urok-8-ad4556d4d6.png"
+    },
+    {
+      "week": 1,
+      "title": "Царевна лягушка",
+      "slug": "grade-1-self_paced-stage-1-lesson-01",
+      "url": "/static/lesson-covers/urok-1-8ad9fd0eba.png"
+    },
+    {
+      "week": 2,
+      "title": "Рассказы из Азбуки Л.Н. Толстой",
+      "slug": "grade-1-self_paced-stage-1-lesson-02",
+      "url": "/static/lesson-covers/urok-2-fa9b501b44.png"
+    },
+    {
+      "week": 3,
+      "title": "Рассказы Н. Носова (Ступеньки, Заплатка, Затейники, Шляпа)",
+      "slug": "grade-1-self_paced-stage-1-lesson-03",
+      "url": "/static/lesson-covers/urok-3-eb432b388f.png"
+    },
+    {
+      "week": 4,
+      "title": "Кот в сапогах, Мальчик с пальчик Ш. Перро",
+      "slug": "grade-1-self_paced-stage-1-lesson-04",
+      "url": "/static/lesson-covers/urok-4-7e5dc61732.png"
+    },
+    {
+      "week": 5,
+      "title": "По щучьему велению",
+      "slug": "grade-1-self_paced-stage-2-lesson-01",
+      "url": "/static/lesson-covers/urok-5-392551265a.png"
+    },
+    {
+      "week": 6,
+      "title": "Сказка о мёртвой царевне и о семи богатырях А.С. Пушкин",
+      "slug": "grade-1-self_paced-stage-2-lesson-02",
+      "url": "/static/lesson-covers/urok-6-db0557bef4.png"
+    },
+    {
+      "week": 7,
+      "title": "Принцесса на горошине, Дюймовочка Г. Андерсен",
+      "slug": "grade-1-self_paced-stage-2-lesson-03",
+      "url": "/static/lesson-covers/urok-7-13019a9cd8.png"
+    },
+    {
+      "week": 8,
+      "title": "Аля, Кляксич и буква А И.П. Токманова",
+      "slug": "grade-1-self_paced-stage-2-lesson-04",
+      "url": "/static/lesson-covers/urok-8-b0d2adf5ee.png"
+    },
+    {
+      "week": 1,
+      "title": "Сказка о рыбаке и рыбке А.С. Пушкин",
+      "slug": "grade-2-self_paced-stage-1-lesson-01",
+      "url": "/static/lesson-covers/urok-1-5685b51dc0.png"
+    },
+    {
+      "week": 2,
+      "title": "Цветик-семицветик В.П. Катаев",
+      "slug": "grade-2-self_paced-stage-1-lesson-02",
+      "url": "/static/lesson-covers/urok-2-d63a94f6d0.png"
+    },
+    {
+      "week": 3,
+      "title": "Как муравьишка домой добирался, Где раки зимуют В.В. Бианки",
+      "slug": "grade-2-self_paced-stage-1-lesson-03",
+      "url": "/static/lesson-covers/urok-3-fdc8baedd0.png"
+    },
+    {
+      "week": 4,
+      "title": "Гадкий утёнок Г. Андерсен",
+      "slug": "grade-2-self_paced-stage-1-lesson-04",
+      "url": "/static/lesson-covers/urok-4-75985b85ef.png"
+    },
+    {
+      "week": 5,
+      "title": "Филипок + Азбука Л.Н. Толстой",
+      "slug": "grade-2-self_paced-stage-2-lesson-01",
+      "url": "/static/lesson-covers/urok-5-2e7740413a.png"
+    },
+    {
+      "week": 6,
+      "title": "Незнайка на Луне Н. Носов",
+      "slug": "grade-2-self_paced-stage-2-lesson-02",
+      "url": "/static/lesson-covers/urok-6-257d80c607.png"
+    },
+    {
+      "week": 7,
+      "title": "Рикки-Тикки-Тави Р. Киплинг",
+      "slug": "grade-2-self_paced-stage-2-lesson-03",
+      "url": "/static/lesson-covers/urok-7-0c18db72c0.png"
+    },
+    {
+      "week": 8,
+      "title": "Маленькая Бабая-Яга, Маленький водяной О. Пройслер",
+      "slug": "grade-2-self_paced-stage-2-lesson-04",
+      "url": "/static/lesson-covers/urok-8-4e25bca162.png"
+    },
+    {
+      "week": 1,
+      "title": "Сказка о царе Салтане, о сыне его славном и могучем богатыре А.С. Пушкин",
+      "slug": "grade-3-self_paced-stage-1-lesson-01",
+      "url": "/static/lesson-covers/urok-1-09a43370ed.png"
+    },
+    {
+      "week": 2,
+      "title": "Сказка про храброго зайца, Серая Шейка Д.Н. Мамин-Сибиряк",
+      "slug": "grade-3-self_paced-stage-1-lesson-02",
+      "url": "/static/lesson-covers/urok-2-185ac57247.png"
+    },
+    {
+      "week": 3,
+      "title": "Черная курица или Подземные жители А. Погорельский",
+      "slug": "grade-3-self_paced-stage-1-lesson-03",
+      "url": "/static/lesson-covers/urok-3-8eb2a8182f.png"
+    },
+    {
+      "week": 4,
+      "title": "Чудесный доктор А. Куприн",
+      "slug": "grade-3-self_paced-stage-1-lesson-04",
+      "url": "/static/lesson-covers/urok-4-16d405cac5.png"
+    },
+    {
+      "week": 5,
+      "title": "Сказка о молодильных яблоках и живой воде, Волшебное кольцо",
+      "slug": "grade-3-self_paced-stage-2-lesson-01",
+      "url": "/static/lesson-covers/urok-5-a4a43c4a7c.png"
+    },
+    {
+      "week": 6,
+      "title": "Серебряный рубль В. Одоевский",
+      "slug": "grade-3-self_paced-stage-2-lesson-02",
+      "url": "/static/lesson-covers/urok-6-86e27701d3.png"
+    },
+    {
+      "week": 7,
+      "title": "Аленький цветочек С.Т. Аксаков",
+      "slug": "grade-3-self_paced-stage-2-lesson-03",
+      "url": "/static/lesson-covers/urok-7-9c23470050.png"
+    },
+    {
+      "week": 8,
+      "title": "Королевство кривых зеркал В. Губарев",
+      "slug": "grade-3-self_paced-stage-2-lesson-04",
+      "url": "/static/lesson-covers/urok-8-b467b76ce6.png"
+    },
+    {
+      "week": 1,
+      "title": "Уральские сказы П. Бажов",
+      "slug": "grade-4-self_paced-stage-1-lesson-01",
+      "url": "/static/lesson-covers/urok-1-2dcab194eb.png"
+    },
+    {
+      "week": 2,
+      "title": "Сказка о потерянном времени Е. Шварц",
+      "slug": "grade-4-self_paced-stage-1-lesson-02",
+      "url": "/static/lesson-covers/urok-2-a1d266fb21.png"
+    },
+    {
+      "week": 3,
+      "title": "Три толстяка Ю. Олеша",
+      "slug": "grade-4-self_paced-stage-1-lesson-03",
+      "url": "/static/lesson-covers/urok-3-02bae5254b.png"
+    },
+    {
+      "week": 4,
+      "title": "Остров Сокровищ Р. Стивенсон",
+      "slug": "grade-4-self_paced-stage-1-lesson-04",
+      "url": "/static/lesson-covers/urok-4-4963d70470.png"
+    },
+    {
+      "week": 5,
+      "title": "Приключения Тома Сойера М.Твен",
+      "slug": "grade-4-self_paced-stage-2-lesson-01",
+      "url": "/static/lesson-covers/urok-5-a9f4481946.png"
+    },
+    {
+      "week": 6,
+      "title": "Белый Бим, Черное Ухо Г. Троепольский",
+      "slug": "grade-4-self_paced-stage-2-lesson-02",
+      "url": "/static/lesson-covers/urok-6-012a75230e.png"
+    },
+    {
+      "week": 7,
+      "title": "Пеппи Длинный чулок А. Линдгрен",
+      "slug": "grade-4-self_paced-stage-2-lesson-03",
+      "url": "/static/lesson-covers/urok-7-3b3d578c75.png"
+    },
+    {
+      "week": 8,
+      "title": "Путешествия Гулливера Дж. Свифт",
+      "slug": "grade-4-self_paced-stage-2-lesson-04",
+      "url": "/static/lesson-covers/urok-8-982fee9ac7.png"
+    }
+  ],
+  "missing": [
+    {
+      "week": 7,
+      "title": "Карлик Нос В. Гауф",
+      "slug": "extra-6-8-self_paced-stage-2-lesson-03",
+      "url": null
+    }
+  ]
+}

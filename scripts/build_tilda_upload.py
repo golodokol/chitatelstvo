@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260816i"
+VERSION = "20260819b"
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'
@@ -87,9 +87,9 @@ CHIT_HERO_PREMIUM = (
     'max-width:1120px;width:100%!important;margin:0 auto}'
     '#chit-main .hero--premium .hero__badge--hero-top{grid-column:1/-1!important;grid-row:1!important;'
     'justify-self:center!important;text-align:center!important;background:transparent!important;border:none!important;'
-    'box-shadow:none!important;padding:0!important;margin:0 0 10px!important;max-width:none!important;width:100%!important;gap:6px!important}'
+    'box-shadow:none!important;padding:0!important;margin:0 0 14px!important;max-width:none!important;width:100%!important;gap:8px!important}'
     '#chit-main .hero--premium .hero__badge-line--sub{font-size:15px!important;line-height:1.45!important;font-weight:600!important;color:#6B8499!important}'
-    '#chit-main .hero--premium .hero__badge-line--title em{font-size:18px!important;letter-spacing:.08em!important;font-weight:800!important;color:#8F7DA3!important;font-style:normal!important}'
+    '#chit-main .hero--premium .hero__badge-line--title em{font-size:clamp(36px,4.6vw,46px)!important;letter-spacing:.05em!important;line-height:1.1!important;font-weight:800!important;color:#8F7DA3!important;font-style:normal!important}'
     '#chit-main .hero--premium .hero__content{grid-column:1!important;grid-row:2!important;display:flex!important;'
     'flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;align-self:stretch!important}'
     '#chit-main .hero--premium .hero__visual{grid-column:2!important;grid-row:2!important;display:flex!important;'
@@ -112,7 +112,7 @@ CHIT_HERO_PREMIUM = (
     '#chit-main .hero--premium .hero__actions .btn{width:100%!important}'
     '#chit-main .hero--premium .hero__cta-note,#chit-main .hero--premium .hero__visual-gift{margin-top:12px!important;padding-top:0!important}'
     '#chit-main .hero--premium .hero__badge-line--sub{font-size:14px!important}'
-    '#chit-main .hero--premium .hero__badge-line--title em{font-size:16px!important}'
+    '#chit-main .hero--premium .hero__badge-line--title em{font-size:clamp(28px,7.5vw,34px)!important;letter-spacing:.04em!important}'
     '}'
     '</style>'
 )

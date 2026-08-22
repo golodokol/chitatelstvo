@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 from lessons.schedule import (
+    EARLY_MEETINGS,
     STAGE_1_LESSON_OPENS,
     STAGE_1_MEETINGS,
     STAGE_2_LESSON_OPENS,
@@ -126,6 +127,9 @@ def chit_schedule_block() -> str:
     iso2 = [d.isoformat() for d in STAGE_2_MEETINGS]
     open1 = [d.isoformat() for d in STAGE_1_LESSON_OPENS]
     open2 = [d.isoformat() for d in STAGE_2_LESSON_OPENS]
+    em = _labels(EARLY_MEETINGS)
+    emw = _weekdays(EARLY_MEETINGS)
+    em_iso = [d.isoformat() for d in EARLY_MEETINGS]
     return f"""var CHIT_SCHEDULE = {{
   '1': {{
     lessons: {l1!r},
@@ -149,13 +153,20 @@ var CHIT_SINGLE_MEETINGS_ISO = {{
 var CHIT_LESSON_OPENS_ISO = {{
   '1': {open1!r},
   '2': {open2!r}
+}};
+
+/** Early-курсы (Буквы / Истории), модуль 1: 4 встречи по четвергам */
+var CHIT_EARLY_SCHEDULE = {{
+  meetings: {em!r},
+  meetingWeekdays: {emw!r},
+  meetingsIso: {em_iso!r}
 }};"""
 
 
 def replace_schedule_block(text: str) -> str:
     block = chit_schedule_block()
     return re.sub(
-        r"var CHIT_SCHEDULE = \{[\s\S]*?\n\};(?:\n\nvar CHIT_SINGLE_MEETINGS_ISO = \{[\s\S]*?\n\};)?(?:\n\nvar CHIT_LESSON_OPENS_ISO = \{[\s\S]*?\n\};)?",
+        r"var CHIT_SCHEDULE = \{[\s\S]*?\n\};(?:\n\nvar CHIT_SINGLE_MEETINGS_ISO = \{[\s\S]*?\n\};)?(?:\n\nvar CHIT_LESSON_OPENS_ISO = \{[\s\S]*?\n\};)?(?:\n\n/\*\* Early-курсы[\s\S]*?\n\};)?",
         block,
         text,
         count=1,

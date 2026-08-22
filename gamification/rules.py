@@ -135,10 +135,38 @@ EVENT_RULES: dict[str, dict] = {
 }
 
 
+def is_early_letters_title(tale_title: str | None) -> bool:
+    """Пробный/модуль «Буквы» — не даём бейдж «Читатель» (он за первую историю)."""
+    title = (tale_title or "").strip().lower().replace("ё", "е")
+    if not title:
+        return False
+    markers = (
+        "пропавшие звуки",
+        "словик и пропавшие",
+        "буквы оживают",
+    )
+    return any(m in title for m in markers)
+
+
+def is_early_stories_title(tale_title: str | None) -> bool:
+    """Пробный/модуль «Первые истории»."""
+    title = (tale_title or "").strip().lower().replace("ё", "е")
+    if not title:
+        return False
+    markers = (
+        "спаси первую историю",
+        "первые истории",
+        "первая история",
+    )
+    return any(m in title for m in markers)
+
+
 def apply_badge_rules(
     event_type: str,
     current_badges: list[str],
     current_level: str,
+    *,
+    tale_title: str | None = None,
 ) -> dict:
     """Собирает награду по правилам с учётом уже полученных бейджей."""
     rule = EVENT_RULES.get(event_type)
@@ -146,6 +174,9 @@ def apply_badge_rules(
         raise ValueError(f"Неизвестный тип события: {event_type}")
 
     badge = rule["badge"]
+    # «Читатель» — только после истории, не после урока звуков/букв.
+    if badge == "Читатель" and is_early_letters_title(tale_title):
+        badge = None
     if badge and badge in current_badges:
         badge = None
 

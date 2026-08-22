@@ -28,6 +28,40 @@
     showTab('parent');
   }
 
+  function focusChestFromUrl() {
+    var hash = (location.hash || '').replace(/^#/, '');
+    var panel = null;
+    if (hash && hash.indexOf('chest-') === 0) {
+      panel = document.getElementById(hash);
+    }
+    if (!panel) {
+      try {
+        var params = new URLSearchParams(location.search || '');
+        var tale = params.get('chest') || params.get('open_chest');
+        if (tale && tale !== '1') {
+          panel = document.querySelector('.chit-panel--chest[data-tale-slug="' + tale + '"]');
+        }
+        if (!panel && (params.get('chest') || params.get('open_chest') === '1')) {
+          panel = document.querySelector('.chit-panel--chest.is-ready') ||
+            document.querySelector('.chit-panel--chest');
+        }
+      } catch (e) {}
+    }
+    if (!panel) return;
+    try {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (e) {
+      panel.scrollIntoView(true);
+    }
+    panel.classList.add('is-focus');
+    setTimeout(function () { panel.classList.remove('is-focus'); }, 2400);
+  }
+
+  // После урока (?chest=…#chest-N) сразу показываем сундук, не верх карточки.
+  if (location.hash !== '#parent') {
+    setTimeout(focusChestFromUrl, 80);
+  }
+
   function initChildSwitch() {
     var switcher = document.querySelector('.chit-child-picker');
     if (!switcher) return;
@@ -114,10 +148,10 @@
   var TREASURY_MAX_ROWS = 3;
 
   function treasuryColumnCount(grid) {
-    var style = window.getComputedStyle(grid);
-    var cols = style.gridTemplateColumns;
-    if (!cols || cols === 'none') return 4;
-    return cols.split(' ').filter(function (part) { return part && part !== '0px'; }).length || 4;
+    var width = grid.clientWidth || 0;
+    if (width && width <= 520) return 2;
+    if (width && width <= 820) return 3;
+    return 4;
   }
 
   function initTreasuryPager(root) {
@@ -229,7 +263,8 @@
     return match ? match[1].toLowerCase() : 'pdf';
   }
 
-  function treasuryDownloadName(label, kind, taleSlug, url) {
+  function treasuryDownloadName(label, kind, taleSlug, url, custom) {
+    if (custom) return custom;
     var parts = ['chitatelstvo'];
     if (taleSlug) parts.push(treasurySlug(taleSlug));
     parts.push(treasurySlug(label) || treasurySlug(kind) || 'nagrada');
@@ -259,6 +294,7 @@
       var caption = card.getAttribute('data-caption') || '';
       var image = card.getAttribute('data-image') || '';
       var download = card.getAttribute('data-download') || '';
+      var downloadName = card.getAttribute('data-download-name') || '';
       var kind = card.getAttribute('data-kind') || '';
       var taleSlug = card.getAttribute('data-tale-slug') || '';
       if (titleEl) titleEl.textContent = label;
@@ -276,7 +312,7 @@
       if (downloadEl) {
         if (download) {
           downloadEl.href = download;
-          downloadEl.setAttribute('download', treasuryDownloadName(label, kind, taleSlug, download));
+          downloadEl.setAttribute('download', treasuryDownloadName(label, kind, taleSlug, download, downloadName));
           downloadEl.hidden = false;
         } else {
           downloadEl.removeAttribute('href');

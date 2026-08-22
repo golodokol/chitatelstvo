@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 
 from api.event_types import MANUAL_MARK_ONLY
 from api.lesson_signing import build_lesson_url
@@ -22,7 +23,8 @@ from config.settings import (
     VIDEO_UNLOCK_SECONDS,
 )
 from db import repository as repo
-from db.models import Child, Enrollment
+from db.models import Child, Enrollment, Event
+from gamification.cabinet_ui import quest_spark_station_ids
 from gamification.chest_rewards import canonical_tale_slug
 from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from lessons.access import is_lesson_unlocked
@@ -227,7 +229,12 @@ def build_live_lesson_block(
     stage = lesson.get("stage") or "stage-1"
     tale_number = int(lesson.get("tale_number") or 1)
     week = int(lesson.get("module_week") or 0) or None
-    if not meeting_still_bookable(stage=stage, tale_number=tale_number, module_week=week):
+    if not meeting_still_bookable(
+        stage=stage,
+        tale_number=tale_number,
+        module_week=week,
+        group_code=group_code,
+    ):
         return None
 
     slug = lesson.get("slug", "")
@@ -239,10 +246,17 @@ def build_live_lesson_block(
     label = config.get("next_meeting_label")
     if not label:
         if week:
-            label = meeting_date_label(week, weekday="четверг")
+            label = meeting_date_label(
+                week,
+                weekday="четверг",
+                group_code=group_code if group_code in ("early-letters", "early-stories") else None,
+            )
         else:
             label = meeting_date_label(
-                stage=stage, tale_number=tale_number, weekday="четверг"
+                stage=stage,
+                tale_number=tale_number,
+                weekday="четверг",
+                group_code=group_code if group_code in ("early-letters", "early-stories") else None,
             )
     return {
         "mode": "upsell",
@@ -893,6 +907,7 @@ def handle_quest_complete(
     child_id: uuid.UUID,
     slug: str,
     sparks: int = 0,
+    passed_stations: list[str] | None = None,
     test_key: str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
@@ -904,16 +919,59 @@ def handle_quest_complete(
     if lesson.get("lesson_format") != "quest" and not lesson.get("stations"):
         raise HTTPException(400, "Этот урок не является квестом со станциями.")
 
+    spark_ids = quest_spark_station_ids(lesson)
+    valid_ids = {
+        str(station.get("id") or "").strip()
+        for station in (lesson.get("stations") or [])
+        if station.get("id")
+    }
+    passed = [
+        str(sid).strip()
+        for sid in (passed_stations or [])
+        if str(sid).strip() in valid_ids
+    ]
+    sparks_earned = sum(1 for sid in spark_ids if sid in passed)
+    chest_ok = bool(spark_ids) and set(spark_ids) <= set(passed)
+    payload = {
+        "sparks": sparks_earned,
+        "format": "quest",
+        "passed_stations": passed,
+        "chest_ready": chest_ok,
+        "client_sparks": int(sparks or 0),
+    }
+    notes = f"quest complete sparks={sparks_earned} chest={int(chest_ok)}"
+
     status, event_id = submit_learning_event(
         db,
         child_id=child_id,
         event_type="lesson_complete",
         tale_title=lesson["title"],
-        notes=f"quest complete sparks={int(sparks or 0)}",
-        payload={"sparks": int(sparks or 0), "format": "quest"},
+        notes=notes,
+        payload=payload,
     )
+    if status == "duplicate" and event_id:
+        event = db.get(Event, event_id)
+        old = (event.payload if event else None) or {}
+        if event is not None and chest_ok and not old.get("chest_ready"):
+            event.payload = payload
+            flag_modified(event, "payload")
+            event.notes = notes
+            db.commit()
+        elif old.get("chest_ready"):
+            chest_ok = True
+            try:
+                sparks_earned = max(sparks_earned, int(old.get("sparks") or 0))
+            except (TypeError, ValueError):
+                pass
+
     return {
         "status": status,
         "event_id": str(event_id) if event_id else None,
-        "message": "Урок пройден!",
+        "sparks": sparks_earned,
+        "chest_ready": chest_ok,
+        "message": (
+            "Урок пройден!"
+            if chest_ok
+            else "Маршрут пройден. Сундук откроется, когда вернутся все искорки."
+        ),
     }

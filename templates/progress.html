@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260812d">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260822c">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -245,6 +245,7 @@
                 data-caption="{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}"
                 data-image="{{ item.image_url or '' }}"
                 data-download="{{ item.download_url if item.downloadable and item.download_url else '' }}"
+                data-download-name="{{ item.download_name or '' }}"
                 data-kind="{{ item.kind or '' }}"
                 data-tale-slug="{{ item.tale_slug or '' }}">
                 {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
@@ -298,11 +299,11 @@
             </div>
             {% endif %}
             <div class="chit-lesson-card__body">
-              <h3 class="chit-lesson-card__title">Сказка {{ weekly.week_in_stage or 1 }}: {{ weekly.title }}</h3>
+              <h3 class="chit-lesson-card__title">{{ weekly.headline or (('Урок ' if weekly.is_early else 'Сказка ') ~ (weekly.week_in_stage or 1) ~ ': ' ~ weekly.title) }}</h3>
               <p class="chit-lesson-card__goal">{{ weekly.goal }}</p>
               <div class="chit-lesson-card__meta">
                 <span>⏱ {{ weekly.duration }}</span>
-                <span>✨ +{{ weekly.reward_pts }} Словиков и шаг к сундуку</span>
+                <span>✨ +{{ weekly.reward_pts }} {{ weekly.reward_label or 'Словиков и шаг к сундуку' }}</span>
               </div>
               {% if weekly.url %}
               <a class="chit-btn" href="{{ weekly.url }}">Начать урок</a>
@@ -333,6 +334,7 @@
                   data-caption="{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}"
                   data-image="{{ item.image_url or '' }}"
                   data-download="{{ item.download_url if item.downloadable and item.download_url else '' }}"
+                  data-download-name="{{ item.download_name or '' }}"
                   data-kind="{{ item.kind or '' }}"
                   data-tale-slug="{{ item.tale_slug or '' }}">
                   {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
@@ -350,14 +352,44 @@
           </section>
           {% endif %}
           {% for track in cab.tracks %}
-          {{ render_weekly_lessons(track) }}
           {{ render_chest(track, child, loop.index, '#treasury-all' if multi_track_treasury else none) }}
+          {{ render_weekly_lessons(track) }}
           {% if not multi_track_treasury %}
           {{ render_treasury(track, loop.index) }}
           {% endif %}
-          {% if track.story_stages %}
+          {% if track.upcoming_lessons %}
+          <section class="chit-panel chit-panel--stories chit-panel--upcoming">
+            <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
+            {% if track.stories_subtitle %}
+            <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
+            {% endif %}
+            <div class="chit-story-grid">
+              {% for tale in track.upcoming_lessons %}
+              <article class="chit-story-card chit-story-card--soon">
+                <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
+                  <div class="chit-story-card__cover chit-story-card__cover--soon">
+                    {% if tale.cover_url %}
+                    <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                    {% else %}
+                    <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                    {% endif %}
+                    <div class="chit-story-card__overlay">
+                      <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
+                    </div>
+                  </div>
+                  <div class="chit-story-card__meta">
+                    <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                    <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                    <span class="chit-story-card__buy">Выбрать тариф</span>
+                  </div>
+                </a>
+              </article>
+              {% endfor %}
+            </div>
+          </section>
+          {% elif track.story_stages %}
           <section class="chit-panel chit-panel--stories">
-            <h2 class="chit-section-title">Мои сказки · {{ track.group_label }}</h2>
+            <h2 class="chit-section-title">{{ track.stories_title or (('Мои уроки · ' if track.is_early else 'Мои сказки · ') ~ track.group_label) }}</h2>
             {% for stage in track.story_stages %}
             <div class="chit-story-stage">
               <h3 class="chit-story-stage__title">{{ stage.label }}</h3>
@@ -366,6 +398,8 @@
                 <article class="chit-story-card chit-story-card--{{ tale.cover_state }}">
                   {% if tale.url %}
                   <a class="chit-story-card__link" href="{{ tale.url }}">
+                  {% elif track.is_trial and track.buy_url and tale.cover_state != 'open' %}
+                  <a class="chit-story-card__link" href="{{ track.buy_url }}" target="_blank" rel="noopener">
                   {% else %}
                   <div class="chit-story-card__link chit-story-card__link--static">
                   {% endif %}
@@ -377,18 +411,21 @@
                       {% endif %}
                       {% if tale.cover_state != 'open' %}
                       <div class="chit-story-card__overlay">
-                        <span class="chit-story-card__overlay-label">
-                          {% if tale.cover_state == 'locked' %}Откроется{% else %}Скоро{% endif %}
+                        <span class="chit-story-card__overlay-label">Скоро</span>
+                        <span class="chit-story-card__overlay-date">
+                          {% if track.is_trial and not tale.opens_on_label %}после покупки{% else %}{{ tale.opens_on_label }}{% endif %}
                         </span>
-                        <span class="chit-story-card__overlay-date">{{ tale.opens_on_label }}</span>
                       </div>
                       {% endif %}
                     </div>
                     <div class="chit-story-card__meta">
-                      <span class="chit-story-card__week">Сказка {{ tale.week_in_stage }}</span>
+                      <span class="chit-story-card__week">{% if tale.group_code and tale.group_code.startswith('early-') or track.is_early %}Урок{% else %}Сказка{% endif %} {{ tale.week_in_stage }}</span>
                       <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                      {% if not tale.url and track.is_trial and track.buy_url %}
+                      <span class="chit-story-card__buy">Выбрать тариф</span>
+                      {% endif %}
                     </div>
-                  {% if tale.url %}
+                  {% if tale.url or (track.is_trial and track.buy_url and tale.cover_state != 'open') %}
                   </a>
                   {% else %}
                   </div>
@@ -425,6 +462,9 @@
           'weekly_lessons': cab.weekly_lessons or ([cab.daily_lesson] if cab.daily_lesson else []),
           'weekly_lessons_label': cab.weekly_lessons_label or 'Сказка этой недели',
           'story_stages': cab.story_stages,
+          'upcoming_lessons': [],
+          'stories_title': 'Мои сказки',
+          'is_early': cab.is_early,
           'missions': cab.missions,
           'missions_title': cab.missions_title,
           'missions_subtitle': cab.missions_subtitle,
@@ -435,7 +475,7 @@
         {{ render_treasury(legacy_track, loop.index) }}
         {% if cab.story_stages %}
         <section class="chit-panel chit-panel--stories">
-          <h2 class="chit-section-title">Мои сказки</h2>
+          <h2 class="chit-section-title">{% if cab.is_early %}Мои уроки{% else %}Мои сказки{% endif %}</h2>
           {% for stage in cab.story_stages %}
           <div class="chit-story-stage">
             <h3 class="chit-story-stage__title">{{ stage.label }}</h3>
@@ -455,15 +495,13 @@
                     {% endif %}
                     {% if tale.cover_state != 'open' %}
                     <div class="chit-story-card__overlay">
-                      <span class="chit-story-card__overlay-label">
-                        {% if tale.cover_state == 'locked' %}Откроется{% else %}Скоро{% endif %}
-                      </span>
+                      <span class="chit-story-card__overlay-label">Скоро</span>
                       <span class="chit-story-card__overlay-date">{{ tale.opens_on_label }}</span>
                     </div>
                     {% endif %}
                   </div>
                   <div class="chit-story-card__meta">
-                    <span class="chit-story-card__week">Сказка {{ tale.week_in_stage }}</span>
+                    <span class="chit-story-card__week">{% if tale.group_code and tale.group_code.startswith('early-') or cab.is_early %}Урок{% else %}Сказка{% endif %} {{ tale.week_in_stage }}</span>
                     <h4 class="chit-story-card__title">{{ tale.title }}</h4>
                   </div>
                 {% if tale.url %}
@@ -497,6 +535,7 @@
         </section>
         {% endif %}
 
+        {% if cab.show_reading_diary %}
         <section class="chit-panel chit-panel--diary">
           <h2 class="chit-section-title">Читательский дневник</h2>
           <p class="chit-section-sub">Сказки, которые ты оценил — от самых любимых к менее понравившимся</p>
@@ -537,22 +576,25 @@
           <p class="chit-diary-empty">Пройди сказку и поставь ей оценку после урока — она появится здесь с красивой иллюстрацией.</p>
           {% endif %}
         </section>
+        {% endif %}
 
         <section class="chit-panel chit-panel--collection">
           <h2 class="chit-section-title">Моя коллекция</h2>
-          <div class="chit-collection">
+          <div class="chit-collection{% if not cab.collection.show_secrets %} chit-collection--compact{% endif %}">
             <div class="chit-collection__item">
               <span class="chit-collection__num">{{ cab.collection.stories_count }}</span>
-              <span class="chit-collection__label">сказок</span>
+              <span class="chit-collection__label">{{ cab.collection.stories_label or 'сказок' }}</span>
             </div>
             <div class="chit-collection__item">
               <span class="chit-collection__num">{{ cab.collection.cards_count }}</span>
               <span class="chit-collection__label">карточек</span>
             </div>
+            {% if cab.collection.show_secrets %}
             <div class="chit-collection__item">
               <span class="chit-collection__num">{{ cab.collection.secrets_count }}</span>
               <span class="chit-collection__label">секретов</span>
             </div>
+            {% endif %}
             <div class="chit-collection__item">
               <span class="chit-collection__num">{{ cab.collection.points }}</span>
               <span class="chit-collection__label">Словиков</span>
@@ -657,9 +699,12 @@
       {% endif %}
 
       {% if child.lessons %}
-        <h3 class="chit-parent-subhead">Расписание сказок</h3>
+        {% set early_schedule = child.lessons|selectattr('group_code')|map(attribute='group_code')|join(' ')|length > 0 and ('early-' in (child.lessons|map(attribute='group_code')|join(' '))) %}
+        <h3 class="chit-parent-subhead">{% if early_schedule %}Расписание уроков{% else %}Расписание сказок{% endif %}</h3>
         <p class="chit-schedule-intro">
-          {% if module_start_date %}
+          {% if early_schedule %}
+          Модуль стартует 1 сентября — новые уроки открываются по вторникам и четвергам.
+          {% elif module_start_date %}
           Первый этап начинается {{ module_start_date }} — новая сказка открывается по понедельникам.
           {% else %}
           Новая сказка открывается раз в неделю по понедельникам.
@@ -676,7 +721,7 @@
             <li class="chit-lesson-item{% if les.url %} is-open{% elif not les.unlocked %} is-locked{% endif %}">
               <div class="chit-lesson-item__head">
                 <span class="chit-lesson-item__title">{{ les.title }}</span>
-                <span class="chit-lesson-item__week">Сказка {{ les.week_in_stage }}</span>
+                <span class="chit-lesson-item__week">{% if les.group_code and les.group_code.startswith('early-') %}Урок{% else %}Сказка{% endif %} {{ les.week_in_stage }}</span>
               </div>
               <div class="chit-lesson-item__dates">
                 {% if les.url or (les.unlocked and les.ready) %}
@@ -801,8 +846,8 @@
   </div>
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
-  <script src="/static/chest_reveal.js?v=20260730d"></script>
+  <script src="/static/chest_reveal.js?v=20260819c"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
-  <script src="/static/progress_cabinet.js?v=20260811e"></script>
+  <script src="/static/progress_cabinet.js?v=20260822c"></script>
 </body>
 </html>

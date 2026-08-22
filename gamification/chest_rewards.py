@@ -81,6 +81,54 @@ TREASURY_KINDS = frozenset({BONUS_KIND, COLORING_KIND, STICKER_KIND})
 
 # Состав сундука для отдельных сказок (если задан — вместо CHEST_CONTENTS)
 TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
+    # Подарки пробного урока историй пока не загружены — без заглушек Словика.
+    "early-stories-stage1-tale-00": [],
+    "early-letters-stage1-tale-00": [
+        {
+            "kind": "creative_1",
+            "label": "Обведи арбуз",
+            "description": "Задание из сундука пробного урока — скачай и распечатай",
+            "preview_files": ("gift-1.png", "gift-1.jpg"),
+            "download_files": ("gift-1.pdf", "gift-1.png"),
+            "download_name": "Читательство Обведи Арбуз.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Обведи букву А",
+            "description": "Задание из сундука пробного урока — скачай и распечатай",
+            "preview_files": ("gift-2.png", "gift-2.jpg"),
+            "download_files": ("letter-a.pdf", "gift-2.pdf", "gift-2.png"),
+            "download_name": "Читательство Обведи букву А.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Пройди лабиринт",
+            "description": "Задание из сундука пробного урока — скачай и распечатай",
+            "preview_files": ("gift-3.png", "gift-3.jpg"),
+            "download_files": ("gift-3.pdf", "gift-3.png"),
+            "download_name": "Читательство Пройди лабиринт.pdf",
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_4",
+            "label": "Раскрась Словика",
+            "description": "Задание из сундука пробного урока — скачай и распечатай",
+            "preview_files": ("gift-4.png", "gift-4.jpg"),
+            "download_files": ("gift-4.pdf", "gift-4.png"),
+            "download_name": "Читательство Раскрась Словика.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
     "grade-1-stage1-tale-01": [
         {
             "kind": LETTER_KIND,
@@ -415,6 +463,9 @@ def _build_item(entry: dict[str, Any], tale_slug: str, tale_title: str) -> dict[
     }
     if download_url:
         item["download_url"] = download_url
+        name = (entry.get("download_name") or "").strip()
+        if name:
+            item["download_name"] = name
     return item
 
 
@@ -427,13 +478,18 @@ def rewards_for_tale(tale_slug: str, tale_title: str) -> list[dict[str, Any]]:
 
 
 def items_for_treasury(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Только то, что сохраняем в сокровищнице (без письма от школы)."""
-    return [
-        item
-        for item in items
-        if item.get("kind") in TREASURY_KINDS
-        or str(item.get("kind", "")).startswith("creative_")
-    ]
+    """Только то, что сохраняем в сокровищнице (без письма и без пустых заглушек Словика)."""
+    out: list[dict[str, Any]] = []
+    for item in items:
+        kind = str(item.get("kind", ""))
+        if kind not in TREASURY_KINDS and not kind.startswith("creative_"):
+            continue
+        image = str(item.get("image_url") or "")
+        has_file = bool(item.get("download_url")) or "/static/chest/rewards/" in image
+        if not has_file:
+            continue
+        out.append(item)
+    return out
 
 
 def chest_visual_state(

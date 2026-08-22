@@ -1,0 +1,276 @@
+{
+  "mapped": [
+    {
+      "orig": "Урок 1 - Невероятные приключения кролика Эдварда.PNG",
+      "renamed": "urok-5-2908e7b8fd.png",
+      "source_name": "Урок 5 Невероятные приключения кролика Эдварда.png",
+      "hint": "Невероятные приключения кролика Эдварда",
+      "file_week": 1,
+      "module_week": 5,
+      "slug": "extra-6-8-self_paced-stage-2-lesson-01",
+      "title": "Невероятные приключения кролика Эдварда К. ДиКамилло",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 1 - По щучьему велению.PNG",
+      "renamed": "urok-5-392551265a.png",
+      "source_name": "Урок 5 По щучьему велению.png",
+      "hint": "По щучьему велению",
+      "file_week": 1,
+      "module_week": 5,
+      "slug": "grade-1-self_paced-stage-2-lesson-01",
+      "title": "По щучьему велению",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 1 - Приключения Тома Сойера.PNG",
+      "renamed": "urok-5-a9f4481946.png",
+      "source_name": "Урок 5 Приключения Тома Сойера.png",
+      "hint": "Приключения Тома Сойера",
+      "file_week": 1,
+      "module_week": 5,
+      "slug": "grade-4-self_paced-stage-2-lesson-01",
+      "title": "Приключения Тома Сойера М.Твен",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 1 - Сказка о молодильных яблоках.PNG",
+      "renamed": "urok-5-a4a43c4a7c.png",
+      "source_name": "Урок 5 Сказка о молодильных яблоках.png",
+      "hint": "Сказка о молодильных яблоках",
+      "file_week": 1,
+      "module_week": 5,
+      "slug": "grade-3-self_paced-stage-2-lesson-01",
+      "title": "Сказка о молодильных яблоках и живой воде, Волшебное кольцо",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 1 - Филипок.PNG",
+      "renamed": "urok-5-2e7740413a.png",
+      "source_name": "Урок 5 Филипок.png",
+      "hint": "Филипок",
+      "file_week": 1,
+      "module_week": 5,
+      "slug": "grade-2-self_paced-stage-2-lesson-01",
+      "title": "Филипок + Азбука Л.Н. Толстой",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 1 - Чудесное путешествие Нильса с дикими гусями.PNG",
+      "renamed": "urok-5-a509923953.png",
+      "source_name": "Урок 5 Чудесное путешествие Нильса с дикими гусями.png",
+      "hint": "Чудесное путешествие Нильса с дикими гусями",
+      "file_week": 1,
+      "module_week": 5,
+      "slug": "extra-9-11-self_paced-stage-2-lesson-01",
+      "title": "Чудесное путешествие Нильса с дикими гусями С. Лагерлеф",
+      "match_count": 4
+    },
+    {
+      "orig": "Урок 2 - Белый Бим, Чёрное Ухо.PNG",
+      "renamed": "urok-6-012a75230e.png",
+      "source_name": "Урок 6 Белый Бим, Чёрное Ухо.png",
+      "hint": "Белый Бим, Чёрное Ухо",
+      "file_week": 2,
+      "module_week": 6,
+      "slug": "grade-4-self_paced-stage-2-lesson-02",
+      "title": "Белый Бим, Черное Ухо Г. Троепольский",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 2 - Незнайка на Луне.PNG",
+      "renamed": "urok-6-257d80c607.png",
+      "source_name": "Урок 6 Незнайка на Луне.png",
+      "hint": "Незнайка на Луне",
+      "file_week": 2,
+      "module_week": 6,
+      "slug": "grade-2-self_paced-stage-2-lesson-02",
+      "title": "Незнайка на Луне Н. Носов",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 2 - Серебряный рубль.PNG",
+      "renamed": "urok-6-86e27701d3.png",
+      "source_name": "Урок 6 Серебряный рубль.png",
+      "hint": "Серебряный рубль",
+      "file_week": 2,
+      "module_week": 6,
+      "slug": "grade-3-self_paced-stage-2-lesson-02",
+      "title": "Серебряный рубль В. Одоевский",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 2 - Сказка о мертвой Царевне.PNG",
+      "renamed": "urok-6-db0557bef4.png",
+      "source_name": "Урок 6 Сказка о мертвой Царевне.png",
+      "hint": "Сказка о мертвой Царевне",
+      "file_week": 2,
+      "module_week": 6,
+      "slug": "grade-1-self_paced-stage-2-lesson-02",
+      "title": "Сказка о мёртвой царевне и о семи богатырях А.С. Пушкин",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 2 - Тутта Карлссон.PNG",
+      "renamed": "urok-6-648e313126.png",
+      "source_name": "Урок 6 Тутта Карлссон.png",
+      "hint": "Тутта Карлссон",
+      "file_week": 2,
+      "module_week": 6,
+      "slug": "extra-6-8-self_paced-stage-2-lesson-02",
+      "title": "Тутта Карлссон Первая и единственная, Людвиг Четырнадцатый и др. Я. Экхольм",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 2 - Чудесное путешествие Нильса с дикими гусями.PNG",
+      "renamed": "urok-6-a509923953.png",
+      "source_name": "Урок 6 Чудесное путешествие Нильса с дикими гусями.png",
+      "hint": "Чудесное путешествие Нильса с дикими гусями",
+      "file_week": 2,
+      "module_week": 6,
+      "slug": "extra-9-11-self_paced-stage-2-lesson-02",
+      "title": "Чудесное путешествие Нильса с дикими гусями С. Лагерлеф 2 часть",
+      "match_count": 4
+    },
+    {
+      "orig": "Урок 3 - Маленький мук.PNG",
+      "renamed": "urok-8-ad4556d4d6.png",
+      "source_name": "Урок 8 Маленький мук.png",
+      "hint": "Маленький мук",
+      "file_week": 3,
+      "module_week": 8,
+      "slug": "extra-9-11-self_paced-stage-2-lesson-04",
+      "title": "Калиф-аист, Маленький Мук В. Гауф",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 3 - Пеппи Длинный чулок.PNG",
+      "renamed": "urok-7-3b3d578c75.png",
+      "source_name": "Урок 7 Пеппи Длинный чулок.png",
+      "hint": "Пеппи Длинный чулок",
+      "file_week": 3,
+      "module_week": 7,
+      "slug": "grade-4-self_paced-stage-2-lesson-03",
+      "title": "Пеппи Длинный чулок А. Линдгрен",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 3 - Полианна.PNG",
+      "renamed": "urok-7-ea55fdb91c.png",
+      "source_name": "Урок 7 Полианна.png",
+      "hint": "Полианна",
+      "file_week": 3,
+      "module_week": 7,
+      "slug": "extra-9-11-self_paced-stage-2-lesson-03",
+      "title": "Полианна Э. Портер",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 3 - Принцесса на горошине.PNG",
+      "renamed": "urok-7-13019a9cd8.png",
+      "source_name": "Урок 7 Принцесса на горошине.png",
+      "hint": "Принцесса на горошине",
+      "file_week": 3,
+      "module_week": 7,
+      "slug": "grade-1-self_paced-stage-2-lesson-03",
+      "title": "Принцесса на горошине, Дюймовочка Г. Андерсен",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 3 - Рикки-Тикки-Тави.PNG",
+      "renamed": "urok-7-0c18db72c0.png",
+      "source_name": "Урок 7 Рикки-Тикки-Тави.png",
+      "hint": "Рикки-Тикки-Тави",
+      "file_week": 3,
+      "module_week": 7,
+      "slug": "grade-2-self_paced-stage-2-lesson-03",
+      "title": "Рикки-Тикки-Тави Р. Киплинг",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 3 -Аленький цветочек.PNG",
+      "renamed": "urok-7-9c23470050.png",
+      "source_name": "Урок 7 Аленький цветочек.png",
+      "hint": "Аленький цветочек",
+      "file_week": 3,
+      "module_week": 7,
+      "slug": "grade-3-self_paced-stage-2-lesson-03",
+      "title": "Аленький цветочек С.Т. Аксаков",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 4 - Калиф Аист.PNG",
+      "renamed": "urok-8-ad4556d4d6.png",
+      "source_name": "Урок 8 Маленький мук.png",
+      "hint": "Маленький мук",
+      "file_week": 4,
+      "module_week": 8,
+      "slug": "extra-9-11-self_paced-stage-2-lesson-04",
+      "title": "Калиф-аист, Маленький Мук В. Гауф",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 4 - Королевство кривых зеркал.PNG",
+      "renamed": "urok-8-b467b76ce6.png",
+      "source_name": "Урок 8 Королевство кривых зеркал.png",
+      "hint": "Королевство кривых зеркал",
+      "file_week": 4,
+      "module_week": 8,
+      "slug": "grade-3-self_paced-stage-2-lesson-04",
+      "title": "Королевство кривых зеркал В. Губарев",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 4 - Маленькая Баьа-Яга.PNG",
+      "renamed": "urok-8-4e25bca162.png",
+      "source_name": "Урок 8 Маленькая Бабая-Яга.png",
+      "hint": "Маленькая Бабая-Яга",
+      "file_week": 4,
+      "module_week": 8,
+      "slug": "grade-2-self_paced-stage-2-lesson-04",
+      "title": "Маленькая Бабая-Яга, Маленький водяной О. Пройслер",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 4 - Путешествия Гулливера.PNG",
+      "renamed": "urok-8-982fee9ac7.png",
+      "source_name": "Урок 8 Путешествия Гулливера.png",
+      "hint": "Путешествия Гулливера",
+      "file_week": 4,
+      "module_week": 8,
+      "slug": "grade-4-self_paced-stage-2-lesson-04",
+      "title": "Путешествия Гулливера Дж. Свифт",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 4 - Чарли и шоколадная фабрика.PNG",
+      "renamed": "urok-8-24360cacd6.png",
+      "source_name": "Урок 8 Чарли и шоколадная фабрика.png",
+      "hint": "Чарли и шоколадная фабрика",
+      "file_week": 4,
+      "module_week": 8,
+      "slug": "extra-6-8-self_paced-stage-2-lesson-04",
+      "title": "Чарли и шоколадная фабрика Р. Даль",
+      "match_count": 2
+    },
+    {
+      "orig": "Урок 4 Аля, Кляксич и буква А.PNG",
+      "renamed": "urok-8-b0d2adf5ee.png",
+      "source_name": "Урок 8 Аля, Кляксич и буква А.png",
+      "hint": "Аля, Кляксич и буква А",
+      "file_week": 4,
+      "module_week": 8,
+      "slug": "grade-1-self_paced-stage-2-lesson-04",
+      "title": "Аля, Кляксич и буква А И.П. Токманова",
+      "match_count": 2
+    }
+  ],
+  "unmatched": [],
+  "missing_after": [
+    {
+      "week": 7,
+      "title": "Карлик Нос В. Гауф",
+      "example_slug": "extra-6-8-self_paced-stage-2-lesson-03"
+    }
+  ]
+}

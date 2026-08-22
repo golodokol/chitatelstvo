@@ -187,8 +187,11 @@ def unlock_date_for_week(
     *,
     week_days: int = 7,
     cohort_start: date | None = None,
+    group_code: str | None = None,
 ) -> date:
-    """Календарная дата открытия недели из lessons/schedule.py."""
+    """Календарная дата открытия недели."""
+    if group_code in EARLY_GROUPS:
+        return early_lesson_opens_on(week)
     return lesson_opens_on(week)
 
 
@@ -211,18 +214,31 @@ def lesson_access_info(
         enrollment=enrollment,
         module=module,
     )
-    opens = lesson_opens_on(week)
-    info: dict[str, Any] = {
-        "module_week": week,
-        "week_in_stage": week_in_stage(week),
-        "stage": stage_for_week(week),
-        "unlocked": unlocked,
-        "opens_on": opens.strftime("%d.%m.%Y"),
-        "opens_on_label": format_date_ru(opens, weekday=weekday_ru(opens)),
-        "opens_on_iso": opens.isoformat(),
-    }
+    group_code = (module or {}).get("group_code") or lesson.get("group_code")
+    if group_code in EARLY_GROUPS:
+        opens = early_lesson_opens_on(week)
+        info: dict[str, Any] = {
+            "module_week": week,
+            "week_in_stage": week,
+            "stage": "stage-1",
+            "unlocked": unlocked,
+            "opens_on": opens.strftime("%d.%m.%Y"),
+            "opens_on_label": format_date_ru(opens, weekday=weekday_ru(opens)),
+            "opens_on_iso": opens.isoformat(),
+        }
+    else:
+        opens = lesson_opens_on(week)
+        info = {
+            "module_week": week,
+            "week_in_stage": week_in_stage(week),
+            "stage": stage_for_week(week),
+            "unlocked": unlocked,
+            "opens_on": opens.strftime("%d.%m.%Y"),
+            "opens_on_label": format_date_ru(opens, weekday=weekday_ru(opens)),
+            "opens_on_iso": opens.isoformat(),
+        }
     if tariff_has_meetings(module):
-        meet = meeting_on(week)
+        meet = meeting_on(week, group_code=group_code)
         info["meeting_on"] = meet.strftime("%d.%m.%Y")
         info["meeting_on_label"] = format_date_ru(meet, weekday="четверг")
     return info

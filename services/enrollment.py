@@ -29,7 +29,8 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
         if not stage or not body.chosen_tale_number:
             raise HTTPException(
                 400,
-                "Для разового занятия укажите chosen_stage (1 или 2) и chosen_tale_number (1–4).",
+                "Для разового занятия укажите chosen_stage и chosen_tale_number "
+                "(для классов: этап 1–2 и сказка 1–4; для early: модуль 1 и урок 1–8).",
             )
         tale = resolve_chosen_tale(
             group_code=module["group_code"],

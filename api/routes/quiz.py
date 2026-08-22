@@ -16,6 +16,7 @@ from db.session import get_db
 from notifications.email_channel import send_email
 from notifications.email_templates import (
     SUBJECT_QUIZ_AUTO,
+    SUBJECT_QUIZ_EARLY,
     build_quiz_auto_email,
     build_quiz_auto_email_html,
 )
@@ -64,6 +65,7 @@ class QuizLeadRequest(BaseModel):
     trial_age: str | None = Field(default=None, max_length=20)
     trial_slug: str | None = Field(default=None, max_length=120)
     trial_title: str | None = Field(default=None, max_length=200)
+    quiz_variant: str | None = Field(default=None, max_length=20)
 
 
 def _answers_by_id(answers: list[QuizAnswer]) -> dict[str, str]:
@@ -87,6 +89,9 @@ def _send_quiz_auto_email(
         trial_title = trial_access.get("lesson_title") or trial_title
         trial_lesson_url = trial_access.get("lesson_url")
         trial_progress_url = trial_access.get("progress_url")
+    quiz_variant = (body.quiz_variant or "").strip() or None
+    if not quiz_variant and resolve_trial_module_id(trial_slug=body.trial_slug):
+        quiz_variant = "early"
     message = build_quiz_auto_email(
         parent_name=body.parent_name,
         child_name=body.child_name,
@@ -97,6 +102,7 @@ def _send_quiz_auto_email(
         trial_title=trial_title,
         trial_lesson_url=trial_lesson_url,
         trial_progress_url=trial_progress_url,
+        quiz_variant=quiz_variant,
     )
     html_message = build_quiz_auto_email_html(
         parent_name=body.parent_name,
@@ -109,11 +115,13 @@ def _send_quiz_auto_email(
         trial_title=trial_title,
         trial_lesson_url=trial_lesson_url,
         trial_progress_url=trial_progress_url,
+        quiz_variant=quiz_variant,
     )
     attachments = []
-    if CHECKLIST_PDF.is_file():
+    if quiz_variant != "early" and CHECKLIST_PDF.is_file():
         attachments.append((CHECKLIST_PDF_NAME, CHECKLIST_PDF))
-    send_email(str(body.parent_email), SUBJECT_QUIZ_AUTO, message, html_message, attachments)
+    subject = SUBJECT_QUIZ_EARLY if quiz_variant == "early" else SUBJECT_QUIZ_AUTO
+    send_email(str(body.parent_email), subject, message, html_message, attachments)
     return True
 
 
@@ -182,6 +190,7 @@ def quiz_lead(
         "trial_age": body.trial_age,
         "trial_slug": body.trial_slug,
         "trial_title": body.trial_title,
+        "quiz_variant": body.quiz_variant,
         "trial_module_id": (trial_access or {}).get("module_id"),
         "trial_lesson_url": (trial_access or {}).get("lesson_url"),
     }
@@ -194,16 +203,12 @@ def quiz_lead(
     except Exception:
         logger.exception("Не удалось отправить автоматическое письмо квиза на %s", body.parent_email)
 
-    message = (
-        "Спасибо! PDF-чек-лист уже отправлен на email."
-        if email_sent
-        else "Спасибо! Заявка принята."
-    )
     if trial_access and trial_access.get("lesson_url"):
-        message = (
-            "Спасибо! Пробный урок открыт — ссылка уже на email "
-            "(и PDF-чек-лист, если письмо ушло)."
-        )
+        message = "Спасибо! Пробный урок открыт — ссылка уже на email."
+    elif email_sent:
+        message = "Спасибо! PDF-чек-лист уже отправлен на email."
+    else:
+        message = "Спасибо! Заявка принята."
 
     return {
         "ok": True,

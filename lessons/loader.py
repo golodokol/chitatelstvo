@@ -86,6 +86,11 @@ def _lesson_list_item(data: dict[str, Any], *, full: bool = False) -> dict[str, 
         item["tale_title"] = data["tale_title"]
     if full:
         item["video"] = data.get("video")
+        # Нужны для single_lesson_playable (квесты early без video).
+        if data.get("lesson_format"):
+            item["lesson_format"] = data["lesson_format"]
+        if data.get("stations"):
+            item["stations"] = data["stations"]
     return item
 
 

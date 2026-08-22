@@ -13,7 +13,7 @@
   "tale_number": 4,
   "tale_slug": "early-stories-stage1-tale-04",
   "module_week": 4,
-  "meeting_number": 0,
+  "meeting_number": 2,
   "badge": "Первый шаг",
   "points": 2,
   "active": false,
@@ -137,5 +137,8 @@
   "quest": {
     "goal_label": "слоги на тропе",
     "goal_count": 3
+  },
+  "live_lesson": {
+    "next_meeting_label": "четверг, 10 сентября 2026"
   }
 }

@@ -21,7 +21,10 @@ SUBJECT_OTP = "Код для входа в Читательство"
 
 QUIZ_AGE_MIN = 6
 QUIZ_AGE_MAX = 11
+QUIZ_EARLY_AGE_MIN = 4
+QUIZ_EARLY_AGE_MAX = 7
 QUIZ_LOGO_ASSET = "/assets/logo-chitatelstvo-quiz.png?v=20260616c"
+SUBJECT_QUIZ_EARLY = "Пробный урок от Читательства"
 
 
 def quiz_logo_url(api_base: str = "https://api.chitatelstvo.ru") -> str:
@@ -227,7 +230,16 @@ def _age_in_quiz_range(age: int | None) -> bool:
     return age is not None and QUIZ_AGE_MIN <= age <= QUIZ_AGE_MAX
 
 
-def _quiz_age_intro(child_age: int | None) -> str:
+def _age_in_early_range(age: int | None) -> bool:
+    return age is not None and QUIZ_EARLY_AGE_MIN <= age <= QUIZ_EARLY_AGE_MAX
+
+
+def _quiz_age_intro(child_age: int | None, *, quiz_variant: str | None = None) -> str:
+    if quiz_variant == "early" or _age_in_early_range(child_age):
+        return (
+            "Мы помогаем детям, которые ещё только знакомятся с буквами и первыми историями: "
+            "через короткие квесты со Словиком — без спешки и без «надо читать»."
+        )
     if _age_in_quiz_range(child_age):
         return age_band_intro(child_age)  # type: ignore[arg-type]
     return (
@@ -244,6 +256,61 @@ def _quiz_problem_paragraph(child_name: str, answers_by_id: dict[str, str]) -> s
     sam = reflexive_sam(child_nom)
     parts: list[str] = []
 
+    # --- Early (ещё не читает) ---
+    readiness = answers_by_id.get("readiness", "")
+    if readiness == "Ещё почти не знает буквы":
+        parts.append(
+            f"Вы отметили, что {child_nom} ещё почти не знает буквы. "
+            "Это отличный момент для мягкого старта через звуки и игру — без спешки."
+        )
+    elif readiness == "Знает некоторые буквы":
+        parts.append(
+            f"У {child_gen} уже есть знакомые буквы — сейчас важно связать их со звуком "
+            "и первыми слогами в коротких квестах."
+        )
+    elif readiness == "Складывает слоги или короткие слова":
+        parts.append(
+            f"{child_nom} уже складывает слоги — хороший мост к первым историям "
+            "и уверенному чтению коротких фраз."
+        )
+    elif readiness == "Уже читает простые тексты":
+        parts.append(
+            f"Раз {child_nom} уже читает простые тексты, можно смотреть "
+            "и литературные сказки рядом с early-курсами — подскажем в письме."
+        )
+
+    sounds = answers_by_id.get("sounds", "")
+    if sounds == "Слушать и повторять звуки":
+        parts.append("Сильная сторона — слух и повтор. Начнём с звуковых станций.")
+    elif sounds == "Узнавать буквы на картинках":
+        parts.append("Буквы на картинках — отличная опора. Добавим к ним звук и игру.")
+    elif sounds == "Складывать слоги в слова":
+        parts.append("Слоги уже получаются — поддержим ритмом коротких слов и историй.")
+    elif sounds == "Пока всё в новинку":
+        parts.append("Всё в новинку — нормально. Пробный квест как раз для мягкого знакомства.")
+
+    interest = answers_by_id.get("interest", "")
+    if interest == "Игры со звуками и буквами":
+        parts.append("Интерес к играм со звуками — путь курса «Буквы оживают».")
+    elif interest == "Короткие истории и картинки":
+        parts.append("Короткие истории — ближе к курсу «Первые истории».")
+    elif interest == "Сказки вслух вместе со взрослым":
+        parts.append("Совместное чтение вслух — прекрасная база; квест дополнит её игрой.")
+
+    goal_early = answers_by_id.get("goal_early", "")
+    if goal_early == "Мягко подготовить к школе":
+        parts.append("Мягкая подготовка к школе — наш принцип: короткие шаги и успех без давления.")
+    elif goal_early == "Чтобы полюбил буквы и истории":
+        parts.append("Чтобы полюбить буквы и истории — через игру и Словика, а не через «надо».")
+    elif goal_early == "Уверенность в первых словах":
+        parts.append("Уверенность в первых словах растёт от маленьких побед на каждой станции.")
+    elif goal_early == "Попробовать без давления":
+        parts.append("Без давления — наш принцип. Ребёнок идёт в своём темпе.")
+
+    if parts:
+        return " ".join(parts[:2])
+
+    # --- Reading (уже читает) ---
     hard = answers_by_id.get("hard", "")
     if hard == "Понять, о чём текст":
         parts.append(
@@ -325,16 +392,20 @@ def _quiz_email_parts(
     trial_title: str | None = None,
     trial_lesson_url: str | None = None,
     trial_progress_url: str | None = None,
+    quiz_variant: str | None = None,
 ) -> dict[str, str]:
     parent = parent_name.strip() or "родитель"
     child_gen = name_genitive(child_name)
     problem = _quiz_problem_paragraph(child_name, answers_by_id)
-    age_intro = _quiz_age_intro(child_age)
+    age_intro = _quiz_age_intro(child_age, quiz_variant=quiz_variant)
     trial = (trial_title or "").strip()
     lesson_url = (trial_lesson_url or "").strip()
     progress_url = (trial_progress_url or "").strip()
+    is_early = (quiz_variant or "") == "early" or bool(
+        answers_by_id.get("readiness") or answers_by_id.get("goal_early")
+    )
 
-    if _age_in_quiz_range(child_age):
+    if _age_in_quiz_range(child_age) or _age_in_early_range(child_age):
         thanks = (
             f"Спасибо, что прошли короткий опрос для {child_gen} "
             f"({age_years_phrase(child_age)})."  # type: ignore[arg-type]
@@ -369,6 +440,7 @@ def _quiz_email_parts(
         "gift_line": gift_line,
         "trial_lesson_url": lesson_url,
         "trial_progress_url": progress_url,
+        "is_early": "1" if is_early else "",
     }
 
 
@@ -383,8 +455,9 @@ def build_quiz_auto_email(
     trial_title: str | None = None,
     trial_lesson_url: str | None = None,
     trial_progress_url: str | None = None,
+    quiz_variant: str | None = None,
 ) -> str:
-    """Автоматическое письмо после квиза: PDF-чек-лист + ссылка на пробный урок."""
+    """Автоматическое письмо после квиза: PDF-чек-лист и/или ссылка на пробный урок."""
     parts = _quiz_email_parts(
         parent_name=parent_name,
         child_name=child_name,
@@ -395,6 +468,7 @@ def build_quiz_auto_email(
         trial_title=trial_title,
         trial_lesson_url=trial_lesson_url,
         trial_progress_url=trial_progress_url,
+        quiz_variant=quiz_variant,
     )
 
     lines = [
@@ -405,18 +479,36 @@ def build_quiz_auto_email(
         "",
         parts["problem"],
         "",
-        "Ваш PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» прикреплён к письму.",
-        f"Если вложение не открылось — скачайте по ссылке: {parts['checklist_url']}",
-        "",
-        "Отметьте пункты вместе с ребёнком — так проще увидеть, где нужна поддержка.",
-        "",
-        parts["gift_line"],
-        "",
-        "с теплом, команда Читательства",
-        "",
-        "—",
-        "info@chitatelstvo.ru",
     ]
+    if parts["is_early"]:
+        lines.extend(
+            [
+                parts["gift_line"],
+                "",
+                "Откройте урок вместе с ребёнком — это короткий квест со Словиком.",
+                "",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "Ваш PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» прикреплён к письму.",
+                f"Если вложение не открылось — скачайте по ссылке: {parts['checklist_url']}",
+                "",
+                "Отметьте пункты вместе с ребёнком — так проще увидеть, где нужна поддержка.",
+                "",
+                parts["gift_line"],
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "с теплом, команда Читательства",
+            "",
+            "—",
+            "info@chitatelstvo.ru",
+        ]
+    )
     return "\n".join(line for line in lines if line is not None)
 
 
@@ -432,6 +524,7 @@ def build_quiz_auto_email_html(
     trial_title: str | None = None,
     trial_lesson_url: str | None = None,
     trial_progress_url: str | None = None,
+    quiz_variant: str | None = None,
 ) -> str:
     parts = _quiz_email_parts(
         parent_name=parent_name,
@@ -443,6 +536,7 @@ def build_quiz_auto_email_html(
         trial_title=trial_title,
         trial_lesson_url=trial_lesson_url,
         trial_progress_url=trial_progress_url,
+        quiz_variant=quiz_variant,
     )
     logo_url = quiz_logo_url(assets_url)
     home_url = html.escape(site_url, quote=True)
@@ -463,6 +557,23 @@ def build_quiz_auto_email_html(
                 f'style="color:#5B7FA6;">Личная страница ребёнка</a></p>'
             )
 
+    if parts["is_early"]:
+        mid = (
+            f"{trial_btn}"
+            f'<p style="margin:0 0 16px;line-height:1.6;">{gift_html}</p>'
+            f'<p style="margin:0 0 16px;line-height:1.6;">Откройте урок вместе с ребёнком — это короткий квест со Словиком.</p>'
+        )
+    else:
+        mid = (
+            f'<p style="margin:0 0 8px;line-height:1.6;">Ваш PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» '
+            f'<strong>прикреплён к письму</strong>.</p>'
+            f'<p style="margin:0 0 16px;line-height:1.6;">Если вложение не открылось — '
+            f'<a href="{html.escape(parts["checklist_url"], quote=True)}" style="color:#5B7FA6;">скачайте PDF по ссылке</a>.</p>'
+            f'<p style="margin:0 0 16px;line-height:1.6;">Отметьте пункты вместе с ребёнком — так проще увидеть, где нужна поддержка.</p>'
+            f"{trial_btn}"
+            f'<p style="margin:0 0 16px;line-height:1.6;">{gift_html}</p>'
+        )
+
     return f"""<!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -477,11 +588,7 @@ def build_quiz_auto_email_html(
     <p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["thanks"])}</p>
     {age_block}
     <p style="margin:0 0 16px;line-height:1.6;">{html.escape(parts["problem"])}</p>
-    <p style="margin:0 0 8px;line-height:1.6;">Ваш PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» <strong>прикреплён к письму</strong>.</p>
-    <p style="margin:0 0 16px;line-height:1.6;">Если вложение не открылось — <a href="{html.escape(parts["checklist_url"], quote=True)}" style="color:#5B7FA6;">скачайте PDF по ссылке</a>.</p>
-    <p style="margin:0 0 16px;line-height:1.6;">Отметьте пункты вместе с ребёнком — так проще увидеть, где нужна поддержка.</p>
-    {trial_btn}
-    <p style="margin:0 0 16px;line-height:1.6;">{gift_html}</p>
+    {mid}
     <p style="margin:0;line-height:1.6;">с теплом, команда Читательства</p>
     <p style="margin:24px 0 0;font-size:13px;color:#7A8FA3;line-height:1.5;"><a href="mailto:info@chitatelstvo.ru" style="color:#7A8FA3;">info@chitatelstvo.ru</a></p>
   </div>

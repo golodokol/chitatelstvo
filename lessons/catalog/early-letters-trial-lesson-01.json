@@ -18,7 +18,7 @@
   "points": 2,
   "active": true,
   "status": "тест",
-  "note": "Бесплатный пробный квест.",
+  "note": "Пробный квест: звук → буква А (охота и лабиринт) → слог МА. Задание можно пропустить.",
   "lesson_format": "quest",
   "stations": [
     {
@@ -26,258 +26,316 @@
       "title": "Врата страны звуков",
       "kind": "intro_video",
       "slovik_line": "Помоги мне вернуть звуки!",
-      "audio": "bo-trial-intro",
+      "slovik_pose": "wave",
+      "scene_image": "/static/early/letters/scene-gate.jpg",
+      "video": {
+        "type": "html5",
+        "src": "/static/early/video/bo-trial-intro.mp4",
+        "poster": "/static/early/letters/scene-gate.jpg",
+        "title": "Словик и пропавшие звуки"
+      },
+      "cta_label": "Начать приключение",
+      "spark": false
+    },
+    {
+      "id": "meet_a",
+      "title": "Буква А",
+      "chapter": "На поляне",
+      "kind": "meet_letter",
+      "slovik_line": "Ты на поляне страны звуков. Вот познакомься с буквой А. Она говорит: а-а-а.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-missing.jpg",
+      "audio": "vo-meet",
+      "sound": "snd-a",
+      "letter": "А",
+      "letter_image": "/static/early/letters/letter-a-hero.png",
+      "hint": "Нажми на букву — услышишь звук.",
+      "coach_success": "Это А! Пойдём искать, куда делись звуки.",
+      "success_audio": "vo-meet-a",
+      "tech_msg": "Вперёд к приключениям!",
       "spark": false
     },
     {
       "id": "whispers",
       "title": "Поляна шёпотов",
-      "kind": "listen_pick",
-      "slovik_line": "Послушай и угадай звук.",
-      "audio": "bo-s1-enter",
-      "spark": true,
-      "rounds": [
-        {
-          "prompt_audio": "bo-s1-q1",
-          "sound": "bo-s1-rain",
-          "correct": "rain",
-          "options": [
-            {
-              "id": "rain",
-              "label": "Дождь",
-              "image": "/static/early/letters/rain.png"
-            },
-            {
-              "id": "ball",
-              "label": "Мяч",
-              "image": "/static/early/letters/ball.png"
-            },
-            {
-              "id": "house",
-              "label": "Дом",
-              "image": "/static/early/letters/house.png"
-            }
-          ]
-        },
-        {
-          "prompt_audio": "bo-s1-q1",
-          "sound": "bo-s1-motor",
-          "correct": "motor",
-          "options": [
-            {
-              "id": "motor",
-              "label": "Мотор",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "bird",
-              "label": "Птица",
-              "image": "/static/early/letters/bird.png"
-            },
-            {
-              "id": "cup",
-              "label": "Чашка",
-              "image": "/static/early/letters/cup.png"
-            }
-          ]
-        },
-        {
-          "prompt_audio": "bo-s1-q1",
-          "sound": "bo-s1-snake",
-          "correct": "snake",
-          "options": [
-            {
-              "id": "snake",
-              "label": "Змейка",
-              "image": "/static/early/letters/snake.png"
-            },
-            {
-              "id": "drum",
-              "label": "Барабан",
-              "image": "/static/early/letters/drum.png"
-            },
-            {
-              "id": "tree",
-              "label": "Дерево",
-              "image": "/static/early/letters/tree.png"
-            }
-          ]
-        }
-      ]
+      "chapter": "Искорка 1 · Звук",
+      "kind": "scene_hunt",
+      "slovik_line": "Найди на поляне то, что шумит!",
+      "slovik_pose": "listen",
+      "scene_image": "/static/early/letters/scene-missing.jpg",
+      "audio": "vo-whispers",
+      "success_msg": "Звуки нашлись! Теперь — в пещеру эха.",
+      "captions": false,
+      "layout": "grid",
+      "grid_cols": 3,
+      "wrong_msg": "Это тихое. Ищи то, что шумит!",
+      "hint": "Выбери всё, что шумит!",
+      "correct_ids": ["rain", "motor", "bell", "drum"],
+      "hotspots": [
+        { "id": "rain", "label": "Дождь", "image": "/static/early/letters/rain.png", "x": 20, "y": 22 },
+        { "id": "bird", "label": "Птица", "image": "/static/early/letters/bird.png", "x": 50, "y": 22 },
+        { "id": "house", "label": "Дом", "image": "/static/early/letters/house.png", "x": 80, "y": 22 },
+        { "id": "ball", "label": "Мяч", "image": "/static/early/letters/ball.png", "x": 20, "y": 50 },
+        { "id": "motor", "label": "Мотор", "image": "/static/early/letters/motor.png", "x": 50, "y": 50 },
+        { "id": "arbuz", "label": "Арбуз", "image": "/static/early/letters/arbuz.png", "x": 80, "y": 50 },
+        { "id": "drum", "label": "Барабан", "image": "/static/early/letters/drum.png", "x": 20, "y": 78 },
+        { "id": "cup", "label": "Чашка", "image": "/static/early/letters/cup.png", "x": 50, "y": 78 },
+        { "id": "bell", "label": "Колокольчик", "image": "/static/early/letters/bell.png", "x": 80, "y": 78 }
+      ],
+      "spark": false,
+      "spark_group": "sound"
     },
     {
       "id": "echo",
       "title": "Пещера эха",
-      "kind": "repeat_sound",
-      "slovik_line": "Повтори: а-а-а.",
-      "audio": "bo-s2-enter",
-      "sound": "bo-s2-sound-a",
-      "spark": false
+      "chapter": "Искорка 1 · Звук",
+      "kind": "catch_letter",
+      "slovik_line": "Пещера эха. Здесь пропал звук а-а-а. Лови только букву А — три раза!",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "vo-echo",
+      "letter": "А",
+      "letters": ["А", "О", "И", "У"],
+      "letter_sounds": {
+        "А": "snd-a",
+        "О": "snd-o",
+        "И": "snd-i",
+        "У": "snd-u"
+      },
+      "catches": 3,
+      "spark": true,
+      "spark_kind": "sound",
+      "spark_group": "sound"
     },
     {
       "id": "workshop",
       "title": "Мастерская буквы",
-      "kind": "trace",
-      "slovik_line": "Обведи букву пальчиком.",
-      "audio": "bo-s3-enter",
-      "letter": "А",
-      "spark": false
+      "chapter": "Искорка 2 · Буква",
+      "kind": "letter_puzzle",
+      "slovik_line": "Найди три буквы А среди других букв.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "vo-workshop",
+      "slots": 3,
+      "pieces": [
+        { "id": "a1", "label": "А", "correct": true },
+        { "id": "o1", "label": "О", "correct": false },
+        { "id": "a2", "label": "А", "correct": true },
+        { "id": "m1", "label": "М", "correct": false },
+        { "id": "a3", "label": "А", "correct": true },
+        { "id": "u1", "label": "У", "correct": false },
+        { "id": "i1", "label": "И", "correct": false },
+        { "id": "s1", "label": "С", "correct": false },
+        { "id": "t1", "label": "Т", "correct": false }
+      ],
+      "piece_spots": [
+        { "x": 10, "y": 34 },
+        { "x": 90, "y": 32 },
+        { "x": 12, "y": 56 },
+        { "x": 88, "y": 54 },
+        { "x": 18, "y": 78 },
+        { "x": 50, "y": 86 },
+        { "x": 82, "y": 78 },
+        { "x": 28, "y": 44 },
+        { "x": 72, "y": 42 }
+      ],
+      "spark": false,
+      "spark_group": "letter"
     },
     {
       "id": "hunt",
-      "title": "Охота на А",
-      "kind": "find",
-      "slovik_line": "Найди букву со звуком а-а-а.",
-      "audio": "bo-s4-enter",
+      "title": "Собери букву",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "build_letter",
+      "slovik_line": "Собери большую печатную А. Две наклонные ножки и одна перекладина посередине.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "vo-build",
+      "letter": "А",
+      "hint": "Нажми на часть, потом на её место на букве.",
+      "success_msg": "Буква А собралась!",
+      "wrong_msg": "Эта часть сюда не подходит. Попробуй другое место.",
       "spark": false,
-      "rounds": [
-        {
-          "correct": "A",
-          "options": [
-            "A",
-            "O",
-            "M",
-            "U"
-          ]
-        },
-        {
-          "correct": "A",
-          "options": [
-            "M",
-            "A",
-            "C",
-            "O"
-          ]
-        }
-      ]
+      "spark_group": "letter"
+    },
+    {
+      "id": "hunt_tiny",
+      "title": "Большая и маленькая",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "sort_two",
+      "slovik_line": "Большая А и маленькая а — это одна буква. Разложи: большие налево, маленькие направо.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-sort",
+      "pick_hint": "Сначала нажми на букву внизу.",
+      "wrong_left": "Сюда только большая А.",
+      "wrong_right": "Сюда только маленькая а.",
+      "next_msg": "Есть! Возьми следующую.",
+      "success_msg": "Верно! Большая А и маленькая а — одна буква.",
+      "left": { "label": "А", "correct": ["A1", "A2", "A3"] },
+      "right": { "label": "а", "correct": ["a1", "a2", "a3"] },
+      "options": [
+        { "id": "A1", "label": "А" },
+        { "id": "a1", "label": "а" },
+        { "id": "A2", "label": "А" },
+        { "id": "a2", "label": "а" },
+        { "id": "A3", "label": "А" },
+        { "id": "a3", "label": "а" }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "hunt_lookalikes",
+      "title": "Большая А и маленькая а",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "scene_hunt",
+      "slovik_line": "Теперь поймай их на поляне. Найди большую А и маленькую а. Не спутай с другими буквами.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "vo-catch",
+      "moving": true,
+      "move_speed": 5,
+      "success_msg": "Поймал и А, и маленькую а!",
+      "wrong_msg": "Это не А и не а. Ищи дальше.",
+      "correct_ids": ["A1", "a1", "A2", "a2", "A3"],
+      "hotspots": [
+        { "id": "A1", "label": "А", "x": 14, "y": 10 },
+        { "id": "M1", "label": "М", "x": 34, "y": 8 },
+        { "id": "U1", "label": "У", "x": 54, "y": 12 },
+        { "id": "D1", "label": "Д", "x": 74, "y": 9 },
+        { "id": "a1", "label": "а", "x": 91, "y": 20, "size": "sm" },
+        { "id": "P1", "label": "П", "x": 10, "y": 42 },
+        { "id": "M2", "label": "М", "x": 90, "y": 46 },
+        { "id": "A2", "label": "А", "x": 12, "y": 78 },
+        { "id": "a2", "label": "а", "x": 48, "y": 86, "size": "sm" },
+        { "id": "U2", "label": "У", "x": 88, "y": 82 },
+        { "id": "A3", "label": "А", "x": 30, "y": 90 }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "maze",
+      "title": "Лабиринт из А",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "letter_maze",
+      "slovik_line": "Пройди лабиринт только по буквам А. Чужие буквы — стена.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "vo-maze",
+      "letter": "А",
+      "start": [0, 0],
+      "end": [3, 3],
+      "grid": [
+        ["А", "О", "М", "У"],
+        ["А", "М", "О", "А"],
+        ["А", "А", "А", "А"],
+        ["О", "М", "У", "А"]
+      ],
+      "spark": true,
+      "spark_kind": "letter",
+      "spark_group": "letter"
     },
     {
       "id": "basket",
-      "title": "Корзина слов",
-      "kind": "listen_pick",
-      "slovik_line": "Где живёт звук а-а-а?",
-      "audio": "bo-s5-enter",
-      "spark": true,
-      "multi": true,
-      "rounds": [
-        {
-          "prompt_audio": "bo-s5-enter",
-          "correct": [
-            "aist",
-            "arbuz"
-          ],
-          "pick": 2,
-          "options": [
-            {
-              "id": "aist",
-              "label": "Аист",
-              "image": "/static/early/letters/aist.png",
-              "word_audio": "bo-s5-word-aist"
-            },
-            {
-              "id": "arbuz",
-              "label": "Арбуз",
-              "image": "/static/early/letters/arbuz.png",
-              "word_audio": "bo-s5-word-arbuz"
-            },
-            {
-              "id": "myach",
-              "label": "Мяч",
-              "image": "/static/early/letters/ball.png",
-              "word_audio": "bo-s5-word-myach"
-            },
-            {
-              "id": "dom",
-              "label": "Дом",
-              "image": "/static/early/letters/house.png",
-              "word_audio": "bo-s5-word-dom"
-            }
-          ]
-        }
-      ]
+      "title": "Слова на А",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "scene_hunt",
+      "slovik_line": "Найди слова на букву А. Другие выбирать не надо.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "vo-words",
+      "success_msg": "Нашёл слова на А!",
+      "wrong_msg": "Это не на А. Ищи другое слово.",
+      "captions": true,
+      "layout": "grid",
+      "grid_cols": 3,
+      "correct_ids": ["aist", "arbuz"],
+      "hotspots": [
+        { "id": "aist", "label": "Аист", "image": "/static/early/letters/aist.png", "x": 20, "y": 28 },
+        { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png", "x": 50, "y": 28 },
+        { "id": "myach", "label": "Мяч", "image": "/static/early/letters/ball.png", "x": 80, "y": 28 },
+        { "id": "cup", "label": "Чашка", "image": "/static/early/letters/cup.png", "x": 20, "y": 72 },
+        { "id": "arbuz", "label": "Арбуз", "image": "/static/early/letters/arbuz.png", "x": 50, "y": 72 },
+        { "id": "dom", "label": "Дом", "image": "/static/early/letters/house.png", "x": 80, "y": 72 }
+      ],
+      "spark": false,
+      "spark_group": "syllable"
     },
     {
       "id": "bridge",
       "title": "Мост дружбы",
-      "kind": "drag_join",
-      "slovik_line": "Веди м-м-м к а-а-а.",
-      "audio": "bo-s6-enter",
-      "spark": true,
-      "left": {
-        "id": "M",
-        "label": "М",
-        "sound": "bo-s6-sound-m"
-      },
-      "right": {
-        "id": "A",
-        "label": "А",
-        "sound": "bo-s6-sound-a"
-      },
-      "result": {
-        "label": "МА",
-        "sound": "bo-s6-syllable-ma"
-      }
-    },
-    {
-      "id": "grass",
-      "title": "Пауза в траве",
-      "kind": "break",
-      "slovik_line": "Отойдём от экрана на минутку.",
-      "audio": "bo-s7-enter",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Собери слог: сначала м-м-м, потом а-а-а. Рядом другие буквы — не попадись!",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-bridge",
+      "result_sound": "snd-ma",
+      "targets": ["М", "А"],
+      "options": ["О", "М", "У", "А"],
+      "result_label": "МА",
+      "result_image": "/static/early/letters/mama.png",
       "spark": false,
-      "hint": "Встань, скажи а-а-а. Найди дома предмет и скажи первый звук взрослому."
+      "spark_group": "syllable"
     },
     {
       "id": "chest",
-      "title": "Финишный сундук",
+      "title": "Слог МА",
+      "chapter": "Искорка 3 · Слог",
       "kind": "mini_quest",
-      "slovik_line": "Быстрый квест!",
-      "audio": "bo-s8-enter",
-      "spark": false,
+      "slovik_line": "Где картинка со слогом ма? Выбери слог МА, не АМ.",
+      "slovik_pose": "joy",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-chest",
+      "spark": true,
+      "spark_kind": "syllable",
+      "spark_group": "syllable",
+      "show_all_steps": true,
+      "hint": "Сначала выбери картинку «Мама» и слог МА.",
+      "success_msg": "Слог МА найден!",
       "steps": [
         {
-          "kind": "listen_pick",
-          "sound": "bo-s2-sound-a",
-          "correct": "a_sound",
+          "kind": "find",
+          "prompt": "Картинка",
+          "correct": "mama",
           "options": [
-            {
-              "id": "a_sound",
-              "label": "а-а-а"
-            },
-            {
-              "id": "m_sound",
-              "label": "м-м-м"
-            }
+            { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png" },
+            { "id": "myach", "label": "Мяч", "image": "/static/early/letters/ball.png" },
+            { "id": "kot", "label": "Кот", "image": "/static/early/letters/kot.png" },
+            { "id": "syr", "label": "Сыр", "image": "/static/early/letters/syr.png" }
           ]
         },
         {
           "kind": "find",
-          "correct": "A",
-          "options": [
-            "A",
-            "M",
-            "O"
-          ]
-        },
-        {
-          "kind": "find",
-          "correct": "MA",
-          "options": [
-            "MA",
-            "SA",
-            "MO"
-          ]
+          "prompt": "Слог",
+          "correct": "МА",
+          "options": ["АМ", "МО", "МА", "СА"]
         }
       ]
     },
     {
       "id": "reward",
       "title": "Награда Словика",
+      "chapter": "Три искорки",
+      "slovik_line": "Пошли со мной в сундук за наградой!",
       "kind": "reward",
-      "slovik_line": "Ты вернул звуки!",
-      "audio": "bo-s9-reward",
+      "slovik_pose": "chest",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "spark_image": "/static/early/letters/spark.png",
+      "audio": "vo-chest-invite",
+      "fail_audio": "vo-retry",
       "spark": false,
-      "parent_note": "Понравилось? В модуле 1 — 8 таких маршрутов. Дома: скажите «ма» и найдите А в имени ребёнка."
+      "fail_title": "Ещё чуть-чуть",
+      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_pose": "worry",
+      "retry_cta": "Попробовать ещё раз",
+      "parent_note": "Продолжайте занятия: в модуле — 8 таких маршрутов.",
+      "module_url": "https://chitatelstvo.ru/#programs",
+      "module_cta": "О модуле и записи",
+      "chest_cta": "Открыть сундук"
     }
   ],
   "quest": {

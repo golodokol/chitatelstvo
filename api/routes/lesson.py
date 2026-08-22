@@ -321,6 +321,7 @@ def tale_rating(
 
 class QuestCompleteBody(LessonAuth):
     sparks: int = Field(default=0, ge=0, le=20)
+    passed_stations: list[str] = Field(default_factory=list, max_length=40)
 
 
 @router.post("/api/lesson/{slug}/quest-complete")
@@ -338,6 +339,7 @@ def quest_complete(
         child_id=child_id,
         slug=slug,
         sparks=body.sparks,
+        passed_stations=body.passed_stations,
         test_key=body.test_key,
     )
 

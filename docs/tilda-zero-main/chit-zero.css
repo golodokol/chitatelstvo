@@ -436,7 +436,7 @@
       align-self: center;
       align-items: center;
       text-align: center;
-      margin: 0 0 6px;
+      margin: 0 0 14px;
       padding: 0 !important;
       width: 100%;
       max-width: none;
@@ -453,9 +453,9 @@
       letter-spacing: 0.01em;
     }
     .hero--premium .hero__badge-line--title em {
-      font-size: clamp(32px, 5vw, 52px);
-      letter-spacing: 0.06em;
-      line-height: 1.15;
+      font-size: clamp(36px, 4.6vw, 46px);
+      letter-spacing: 0.05em;
+      line-height: 1.1;
       font-weight: 800;
     }
     .hero--premium h1 {
@@ -611,6 +611,10 @@
       #chit-main .hero--premium .hero__badge--hero-top {
         align-items: center;
         text-align: center;
+      }
+      .hero--premium .hero__badge-line--title em {
+        font-size: clamp(28px, 7.5vw, 34px);
+        letter-spacing: 0.04em;
       }
       .hero--premium h1 { max-width: 100%; text-align: center; font-size: clamp(24px, 7vw, 30px); }
       .hero__cta { align-items: stretch; max-width: 100%; width: 100%; }
@@ -1466,6 +1470,59 @@
     .enroll-panel__lead {
       text-align: center; color: var(--muted); margin: 0 0 28px; font-size: 16px;
     }
+    .enroll-course-lock {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 0 28px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, #fff 0%, #F0F5FA 100%);
+    }
+    .enroll-course-lock[hidden] { display: none !important; }
+    .enroll-course-lock__label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .enroll-course-lock__title {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .enroll-course-lock__meta {
+      display: block;
+      margin-top: 4px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .enroll-course-lock__change {
+      flex-shrink: 0;
+      border: none;
+      background: transparent;
+      color: var(--blue);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 8px 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .enroll-course-lock__change:hover { color: var(--accent); }
+    #chit-main.is-course-locked #chit-step-group { display: none; }
+    @media (max-width: 600px) {
+      .enroll-course-lock { flex-direction: column; gap: 10px; padding: 16px; }
+      .enroll-course-lock__title { font-size: 19px; }
+    }
 
     /* Бесплатные пробные уроки — отдельный вход, не путать с тарифом «Разовое» */
     .enroll-trial {
@@ -1494,6 +1551,10 @@
     }
     @media (max-width: 640px) {
       .enroll-trial__cards { grid-template-columns: 1fr; }
+    }
+    .enroll-trial__card--early {
+      border-color: #D4C4A8;
+      background: linear-gradient(180deg, #FFFBF5 0%, #fff 70%);
     }
     .enroll-trial__card {
       display: flex; flex-direction: column; gap: 4px;
@@ -1565,7 +1626,81 @@
     .pill:disabled {
       opacity: 0.45;
       cursor: not-allowed;
-      pointer-events: none;
+    }
+
+    /* Шаг 1 записи: три дорожки вместо россыпи пилюль */
+    .enroll-tracks {
+      display: grid;
+      gap: 14px;
+    }
+    .enroll-track {
+      padding: 18px 18px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      box-shadow: 0 1px 0 rgba(61, 82, 102, 0.04);
+    }
+    .enroll-track__head { margin-bottom: 14px; }
+    .enroll-track__title {
+      margin: 0 0 4px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .enroll-track__sub {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+    .enroll-track__opts.pills {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    #chit-groups-basic.enroll-track__opts {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .enroll-opt.pill {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      width: 100%;
+      margin: 0;
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      text-align: left;
+      min-height: 64px;
+    }
+    .enroll-opt__name {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.25;
+      color: inherit;
+    }
+    .enroll-opt__meta {
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0.72;
+      color: inherit;
+    }
+    .enroll-opt.pill.is-active {
+      box-shadow: 0 6px 18px rgba(91, 127, 166, 0.22);
+    }
+    @media (max-width: 720px) {
+      .enroll-track__opts.pills,
+      #chit-groups-basic.enroll-track__opts {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 420px) {
+      .enroll-track { padding: 16px 14px 14px; }
+      .enroll-track__opts.pills,
+      #chit-groups-basic.enroll-track__opts {
+        grid-template-columns: 1fr;
+      }
     }
     /* Старт 15 июля скрыт для тарифа «С преподавателем» (и через класс, и через :has — без JS) */
     #chit-main.is-with-teacher-stage1-closed #chit-stages [data-stage="1"],
@@ -3008,6 +3143,12 @@
   margin-top: auto;
   padding-top: 8px;
 }
+#chit-main .course-card__actions--early {
+  grid-template-columns: 1fr 1.2fr;
+}
+#chit-main .course-card__actions--early .course-card__btn--trial {
+  grid-column: 1 / -1;
+}
 #chit-main .course-card__btn {
   display: inline-flex;
   align-items: center;
@@ -3021,11 +3162,18 @@
   font-size: 14px;
   font-weight: 800;
   text-align: center;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 #chit-main .course-card__btn--ghost {
   background: transparent;
   color: var(--blue) !important;
   border: 1.5px solid #C5D9ED;
+}
+#chit-main .course-card__btn--trial {
+  background: #8F7DA3;
+  color: #fff !important;
 }
 #chit-main .course-card__btn:hover { filter: brightness(0.96); }
 #chit-main .course-card > .course-card__badge { margin-top: 0; }
@@ -3273,6 +3421,8 @@
   background:
     linear-gradient(135deg, #E8F1F8 0%, #EBE6F3 100%);
   position: relative;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
 }
 #chit-main .course-card__media::after {
   content: '';
@@ -3291,13 +3441,69 @@
 #chit-main .course-card--upcoming .course-card__media {
   background: linear-gradient(135deg, #F8EFE3 0%, #E8F1F8 100%);
 }
+#chit-main .course-card[data-group="early-letters"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-letters.jpg") center 42% / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="early-stories"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-stories.jpg") center 48% / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="early-letters"] .course-card__media::after,
+#chit-main .course-card[data-group="early-stories"] .course-card__media::after,
+#chit-main .course-card[data-group="grade-1"] .course-card__media::after,
+#chit-main .course-card[data-group="grade-2"] .course-card__media::after,
+#chit-main .course-card[data-group="grade-3"] .course-card__media::after,
+#chit-main .course-card[data-group="grade-4"] .course-card__media::after,
+#chit-main .course-card[data-group="extra-6-8"] .course-card__media::after,
+#chit-main .course-card[data-group="extra-9-11"] .course-card__media::after,
+#chit-main .course-card[data-cover] .course-card__media::after,
+#chit-main .course-card[data-course-title="Ветер в ивах"] .course-card__media::after,
+#chit-main .course-card[data-course-title="Таинственный сад"] .course-card__media::after,
+#chit-main .course-card[data-course-title="Русские сказки"] .course-card__media::after {
+  display: none !important;
+}
+#chit-main .course-card[data-group="grade-1"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-1.jpg") center 40% / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="grade-2"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-2.jpg") center 42% / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="grade-3"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-3.jpg") center 42% / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="grade-4"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-4.jpg") center 42% / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="extra-6-8"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-extra-6-8.jpg") center 45% / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="extra-9-11"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-extra-9-11.jpg") center 45% / cover no-repeat !important;
+}
+#chit-main .course-card[data-cover="wind"] .course-card__media,
+#chit-main .course-card[data-course-title="Ветер в ивах"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-wind.jpg") center 48% / cover no-repeat !important;
+}
+#chit-main .course-card[data-cover="garden"] .course-card__media,
+#chit-main .course-card[data-course-title="Таинственный сад"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-garden.jpg") center 45% / cover no-repeat !important;
+}
+#chit-main .course-card[data-cover="rus-6-9"] .course-card__media,
+#chit-main .course-card[data-course-title="Русские сказки"][data-course-meta="6–9 лет · старт в октябре"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-rus-6-9.jpg") center 48% / cover no-repeat !important;
+}
+#chit-main .course-card[data-cover="rus-10-12"] .course-card__media,
+#chit-main .course-card[data-course-title="Русские сказки"][data-course-meta="10–12 лет · старт в октябре"] .course-card__media {
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-rus-10-12.jpg") center 42% / cover no-repeat !important;
+}
 #chit-main .course-card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 45%;
   display: block;
   position: relative;
   z-index: 1;
+  border-radius: 12px 12px 0 0;
 }
 #chit-main .course-card__media:has(img)::after { display: none; }
 #chit-main .course-card > :not(.course-card__media):not(.course-card__body) {
@@ -3397,6 +3603,26 @@
   gap: 14px;
   margin-top: 20px;
   align-items: stretch;
+}
+#chit-main #tariffs .fare-track {
+  padding-top: 10px;
+}
+#chit-main #tariffs .fare-card__radio {
+  display: none;
+}
+#chit-main #tariffs .fare-card--rec {
+  padding-top: 22px;
+  border-color: #B8D4BE;
+}
+#chit-main #tariffs .fare-card__badge {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 5px 12px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  box-shadow: 0 1px 3px rgba(47, 107, 58, 0.12);
 }
 #chit-main .fare-card,
 .fare-modal .fare-card {
