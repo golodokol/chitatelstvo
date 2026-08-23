@@ -3,16 +3,45 @@
     radial-gradient(ellipse 120% 80% at 10% 0%, #efe6d8 0%, transparent 55%),
     radial-gradient(ellipse 90% 70% at 90% 20%, #e4ece6 0%, transparent 50%),
     linear-gradient(180deg, #f3eee6 0%, #ebe4d8 45%, #e7e0d4 100%);
-  min-height: 100vh;
-  overflow-x: clip;
+  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   width: 100%;
   max-width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .chit-quest-page .chit-wrap,
 .quest-wrap {
   max-width: 1080px;
   width: 100%;
   box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.chit-quest-page:has(.quest-board--intro) .chit-back {
+  display: none;
+}
+.chit-quest-page #quest-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.chit-quest-page .quest-stage {
+  min-height: 0;
+  overflow: hidden;
+}
+.chit-quest-page .quest-coach {
+  flex-shrink: 0;
+}
+.chit-quest-page .quest-playfield {
+  flex: 1;
+  min-height: 0;
 }
 .chit-quest-page .chit-back {
   position: relative;
@@ -31,6 +60,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   max-width: 100%;
   background:
     linear-gradient(180deg, rgba(255, 252, 247, 0.96) 0%, rgba(247, 241, 232, 0.96) 100%);
@@ -46,6 +77,7 @@
   align-items: center;
   margin: 0;
   padding: 12px 18px 6px;
+  flex-shrink: 0;
 }
 .quest-sparks-hud {
   display: flex;
@@ -122,6 +154,7 @@
 .quest-progress {
   margin: 0;
   padding: 0 18px 6px;
+  flex-shrink: 0;
 }
 .quest-progress__label {
   margin: 8px 0 0;
@@ -254,7 +287,7 @@
   min-height: var(--quest-play-min-h);
   border-radius: 28px;
   overflow: hidden;
-  margin: 0 12px;
+  margin: 0 12px 8px;
   background:
     linear-gradient(165deg, rgba(255, 250, 242, 0.7) 0%, rgba(236, 228, 214, 0.55) 48%, rgba(222, 231, 224, 0.6) 100%);
   isolation: isolate;
@@ -266,12 +299,15 @@
 .quest-playfield__canvas {
   position: relative;
   z-index: 1;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   width: 100%;
-  min-height: var(--quest-play-min-h);
+  min-height: 0;
   background-size: cover;
   background-position: center;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .quest-playfield--has-scene .quest-playfield__canvas {
   aspect-ratio: 16 / 9;
@@ -305,9 +341,14 @@
   align-items: stretch;
   justify-content: center;
   gap: 12px;
-  min-height: min(42vh, 380px);
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 12px;
   box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 .quest-playfield--has-scene .quest-playfield__surface {
   min-height: 100%;
@@ -333,6 +374,40 @@
   width: 100%;
   max-width: min(100%, 560px);
   flex-shrink: 0;
+}
+/* Сцена с кликабельными целями — фиксированная высота поля */
+.quest-playfield--scene-app .quest-playfield__surface {
+  overflow: hidden;
+}
+/* Задания со списком/сеткой под сценой — прокрутка внутри поля */
+.quest-playfield--stacked .quest-playfield__canvas {
+  aspect-ratio: unset;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+.quest-playfield--stacked .quest-playfield__surface {
+  justify-content: flex-start;
+  min-height: 0;
+  height: auto;
+  flex: 1 1 auto;
+}
+.quest-playfield--stacked.quest-playfield--has-scene .quest-playfield__canvas {
+  background-size: cover;
+  background-position: center 58%;
+}
+.quest-playfield--catch .quest-catch {
+  flex-shrink: 0;
+  width: 100%;
+}
+.quest-playfield--catch .quest-catch__letter {
+  min-width: 64px;
+  min-height: 64px;
+  font-size: 2.15rem;
+}
+.quest-playfield--maze .quest-maze {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
 }
 /* Дорисовка экрана: размытый дубль сцены под кнопками */
 .quest-playfield__dock {
@@ -2049,7 +2124,10 @@
 
 .quest-board--intro {
   position: relative;
+  flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
   background: #f3e2b8;
 }
 .quest-board--intro .quest-head,
@@ -2059,14 +2137,20 @@
   display: none;
 }
 .quest-board--intro #quest-body {
+  flex: 1;
+  min-height: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 .quest-intro {
   position: relative;
+  flex: 1;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  max-height: min(78vh, 720px);
-  margin: 0 auto;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: auto;
+  margin: 0;
   overflow: hidden;
   background: #f3e2b8;
   border-radius: 0;
@@ -3235,34 +3319,40 @@
     gap: 6px;
   }
   .quest-coach__img {
-    width: 96px;
-    height: 96px;
-    border-radius: 18px;
+    width: 72px;
+    height: 72px;
+    flex: 0 0 72px;
+    border-radius: 14px;
   }
   .quest-coach__bubble {
-    font-size: 0.92rem;
-    padding: 10px 12px 12px;
+    font-size: 0.88rem;
+    padding: 8px 10px 10px;
     min-height: 0;
-    border-radius: 20px;
+    border-radius: 18px;
+    max-height: 5.2em;
+    overflow: auto;
   }
   .quest-playfield {
-    margin: 0 8px;
-    border-radius: 22px;
-    min-height: var(--quest-play-min-h);
+    margin: 0 4px 4px;
+    border-radius: 16px;
+    min-height: 0;
+    flex: 1;
   }
   .quest-playfield__surface {
-    min-height: var(--quest-play-min-h);
+    min-height: 0;
     padding: 8px;
   }
   .quest-playfield--has-scene .quest-playfield__canvas {
-    aspect-ratio: 4 / 3;
-    min-height: var(--quest-play-min-h);
+    aspect-ratio: unset;
+    min-height: 0;
     height: auto;
+    flex: 1 1 auto;
   }
   .quest-playfield--reward .quest-playfield__canvas,
   .quest-playfield--has-scene.quest-playfield--reward .quest-playfield__canvas {
-    aspect-ratio: 4 / 3;
-    min-height: var(--quest-play-min-h);
+    aspect-ratio: unset;
+    min-height: 0;
+    flex: 1 1 auto;
   }
   .quest-playfield--reward .quest-playfield__surface,
   .quest-playfield--has-scene.quest-playfield--reward .quest-playfield__surface {
@@ -3270,6 +3360,12 @@
     height: 100%;
   }
   .quest-playfield--has-scene .quest-playfield__surface {
+    min-height: 0;
+    height: auto;
+    flex: 1 1 auto;
+    padding: 8px;
+  }
+  .quest-playfield--scene-app .quest-playfield__surface {
     min-height: 100%;
     height: 100%;
     padding: 0;
@@ -3585,36 +3681,45 @@
     border-radius: 16px;
     width: auto;
     max-width: calc(100% - 8px);
-    min-height: var(--quest-play-min-h);
+    min-height: 0;
+    flex: 1;
   }
-  /* Сцена целиком в кадре — без жёсткой обрезки cover */
   .quest-playfield--has-scene .quest-playfield__canvas {
-    aspect-ratio: 5 / 4;
-    min-height: var(--quest-play-min-h);
+    aspect-ratio: unset;
+    min-height: 0;
+    flex: 1 1 auto;
     max-height: none;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
-    background-position: center bottom;
+    background-position: center 58%;
     background-color: #e6dcc8;
-    overflow: visible;
+    overflow: hidden;
+  }
+  .quest-playfield--scene-app .quest-playfield__canvas {
+    background-size: cover;
+    background-position: center 58%;
+  }
+  .quest-playfield--stacked .quest-playfield__canvas,
+  .quest-playfield--build .quest-playfield__canvas,
+  .quest-playfield--build.quest-playfield--has-scene .quest-playfield__canvas {
+    aspect-ratio: unset;
+    min-height: 0;
+    max-height: none;
+    flex: 1 1 auto;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center 55%;
   }
   .quest-playfield--reward .quest-playfield__canvas,
   .quest-playfield--has-scene.quest-playfield--reward .quest-playfield__canvas {
-    aspect-ratio: 5 / 4;
-    min-height: var(--quest-play-min-h);
+    aspect-ratio: unset;
+    min-height: 0;
+    flex: 1 1 auto;
     background-size: cover;
     background-position: center;
   }
-  .quest-playfield--build .quest-playfield__canvas,
-  .quest-playfield--build.quest-playfield--has-scene .quest-playfield__canvas {
-    aspect-ratio: 5 / 4;
-    min-height: min(46dvh, 360px);
-    overflow: visible;
-    background-size: contain;
-    background-position: center center;
-  }
   .quest-playfield--build .quest-playfield__surface {
-    overflow: visible;
+    overflow-y: auto;
     padding: 4px 4px 8px;
     min-height: 0;
     height: auto;
@@ -3622,7 +3727,12 @@
   .quest-playfield--has-scene .quest-playfield__surface {
     min-height: 0;
     height: auto;
-    overflow: visible;
+    flex: 1 1 auto;
+  }
+  .quest-playfield--scene-app .quest-playfield__surface {
+    min-height: 100%;
+    height: 100%;
+    overflow: hidden;
   }
   .quest-playfield--reward .quest-playfield__surface,
   .quest-playfield--has-scene.quest-playfield--reward .quest-playfield__surface {
@@ -3631,8 +3741,22 @@
     overflow: hidden;
   }
   .quest-build__letter {
-    width: min(58vw, 240px);
-    height: min(calc(58vw * 1.15), 276px);
+    width: min(52vw, 210px);
+    height: min(calc(52vw * 1.12), 235px);
+  }
+  .quest-build__parts {
+    gap: 8px;
+    width: 100%;
+  }
+  .quest-build__part {
+    min-height: 92px;
+    padding: 8px 4px 6px;
+  }
+  .quest-build__preview {
+    height: 52px;
+  }
+  .quest-build__part img {
+    height: 58px;
   }
   .quest-playfield__dock {
     min-height: 0;
@@ -3715,19 +3839,19 @@
   .quest-playfield--has-scene .quest-playfield__canvas,
   .quest-playfield--build .quest-playfield__canvas,
   .quest-playfield--build.quest-playfield--has-scene .quest-playfield__canvas {
-    aspect-ratio: auto;
-    min-height: min(52dvh, calc(100dvh - 168px));
-    max-height: calc(100dvh - 148px);
-    height: min(52dvh, calc(100dvh - 168px));
-    background-size: contain;
-    background-repeat: no-repeat;
+    aspect-ratio: unset;
+    min-height: 0;
+    max-height: none;
+    height: auto;
+    flex: 1 1 auto;
+    background-size: cover;
     background-position: center center;
-    overflow: visible;
+    overflow: hidden;
   }
   .quest-playfield__surface {
     min-height: 0;
-    max-height: 100%;
-    overflow: auto;
+    max-height: none;
+    overflow-y: auto;
   }
   .quest-build__letter {
     width: min(34vh, 200px);
@@ -3768,8 +3892,9 @@
   }
   .quest-playfield--has-scene .quest-playfield__canvas,
   .quest-playfield--build .quest-playfield__canvas {
-    min-height: calc(100dvh - 132px);
-    max-height: calc(100dvh - 120px);
-    height: calc(100dvh - 132px);
+    min-height: 0;
+    max-height: none;
+    height: auto;
+    flex: 1 1 auto;
   }
 }

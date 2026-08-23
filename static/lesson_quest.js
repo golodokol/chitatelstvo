@@ -35,6 +35,7 @@
   var gameTimer = null;
   var gameRaf = null;
   var coachStation = null;
+  var currentLayoutKind = "";
 
   var elTitle = document.getElementById("quest-station-title");
   var elLine = document.getElementById("quest-slovik-line");
@@ -47,6 +48,7 @@
   var btnAudio = document.getElementById("quest-btn-audio");
   var miniSkip = null;
   var retryMode = false;
+  var currentLayoutKind = "";
 
   function authBody(extra) {
     var body = {
@@ -815,6 +817,45 @@
     return "";
   }
 
+  function applyPlayfieldLayout(field, kind) {
+    if (!field) return;
+    field.classList.remove(
+      "quest-playfield--stacked",
+      "quest-playfield--scene-app",
+      "quest-playfield--catch",
+      "quest-playfield--maze"
+    );
+    var stacked = {
+      build_letter: 1,
+      letter_maze: 1,
+      catch_letter: 1,
+      sort_two: 1,
+      drag_basket: 1,
+      slot_build: 1,
+      letter_puzzle: 1,
+      match_pairs: 1,
+      drag_join: 1,
+      trace: 1,
+      listen_pick: 1,
+      find: 1,
+      word_picture: 1,
+      phrase_picture: 1,
+      shape_rebus: 1,
+      path_word: 1,
+      mini_quest: 1,
+      meet_letter: 1,
+      repeat_sound: 1,
+      enter: 1,
+      book_page: 1,
+      reward: 1,
+      break: 1
+    };
+    if (stacked[kind]) field.classList.add("quest-playfield--stacked");
+    if (kind === "scene_hunt") field.classList.add("quest-playfield--scene-app");
+    if (kind === "catch_letter") field.classList.add("quest-playfield--catch");
+    if (kind === "letter_maze") field.classList.add("quest-playfield--maze");
+  }
+
   function openPlayfield(station) {
     clearQuestTimers();
     parkFooter();
@@ -853,6 +894,7 @@
 
     elBody.appendChild(field);
     mountFooterOnPlayfield(field);
+    applyPlayfieldLayout(field, currentLayoutKind);
     contentRoot = surface;
     speakTask(station);
     return surface;
@@ -3156,6 +3198,7 @@
     if (elLine) elLine.textContent = "";
 
     var kind = station.kind || "find";
+    currentLayoutKind = kind;
     var playView = kind === "reward" ? rewardSpeakView(station) : station;
     if (playView.slovik_pose) setSlovikPose(playView.slovik_pose);
     var board = document.querySelector(".quest-board");
