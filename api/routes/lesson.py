@@ -160,6 +160,7 @@ def lesson_page(
             "step_labels": lesson_step_labels_payload(),
             "step_badges": lesson_step_badges_for_lesson(payload["lesson"]),
             "assets_base": payload.get("assets_base") or "",
+            "lesson_links": payload.get("lesson_links") or {},
         },
     )
 

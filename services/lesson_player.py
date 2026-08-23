@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
 from api.event_types import MANUAL_MARK_ONLY
-from api.lesson_signing import build_lesson_url, sign_quest_next_paths
+from api.lesson_signing import build_lesson_url, build_quest_lesson_links, sign_quest_next_paths
 from api.test_lesson_auth import verify_test_lesson_key
 from catalog.loader import get_module
 from config.settings import (
@@ -502,6 +502,7 @@ def build_lesson_json(
         "can_rate": can_rate,
         "progress": progress,
         "lesson_url": build_lesson_url(child.id, slug),
+        "lesson_links": build_quest_lesson_links(lesson, child.id),
         "manual_mark_types": list(MANUAL_MARK_ONLY),
         "assets_base": PUBLIC_BASE_URL,
         "step_labels": lesson_step_labels_payload(),

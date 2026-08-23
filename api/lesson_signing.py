@@ -64,3 +64,15 @@ def sign_quest_next_paths(lesson: dict[str, Any], child_id: str | uuid.UUID) -> 
                 row["url"] = build_lesson_url(child_id, slug)
             signed.append(row)
         station["next_paths"] = signed
+
+
+def build_quest_lesson_links(lesson: dict[str, Any], child_id: str | uuid.UUID) -> dict[str, str]:
+    links: dict[str, str] = {}
+    for station in (lesson or {}).get("stations") or []:
+        for item in station.get("next_paths") or []:
+            if not isinstance(item, dict):
+                continue
+            slug = str(item.get("slug") or "").strip() or lesson_slug_from_path(str(item.get("url") or ""))
+            if slug and slug not in links:
+                links[slug] = build_lesson_url(child_id, slug)
+    return links

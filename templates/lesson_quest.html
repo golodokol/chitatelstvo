@@ -6,7 +6,7 @@
   {% include "_favicon.html" %}
   <title>Читательство · {{ lesson.title }}</title>
   <link rel="stylesheet" href="/static/chit-student.css?v=20260731a">
-  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260823c">
+  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260823e">
 </head>
 <body class="chit-student chit-lesson-page chit-quest-page">
   <div class="chit-wrap quest-wrap">
@@ -60,10 +60,11 @@
       chestUrl: {{ chest_url|tojson }},
       taleSlug: {{ (lesson.tale_slug or slug)|tojson }},
       assetsBase: {{ (assets_base or '')|tojson }},
+      lessonLinks: {{ (lesson_links or {})|tojson }},
       slovikUrl: {{ slovik.initial_url|tojson }},
       childName: {{ child_name|tojson }}
     };
   </script>
-  <script src="/static/lesson_quest.js?v=20260823c"></script>
+  <script src="/static/lesson_quest.js?v=20260823e"></script>
 </body>
 </html>

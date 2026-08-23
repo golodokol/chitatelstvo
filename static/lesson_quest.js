@@ -82,6 +82,20 @@
     return urls.length ? urls[0] : "";
   }
 
+  function resolveLessonLink(item) {
+    if (!item) return "";
+    var links = cfg.lessonLinks || {};
+    var url = String(item.url || "").trim();
+    var slug = String(item.slug || "").trim();
+    if (!slug && url.indexOf("/lesson/") >= 0) {
+      slug = url.split("/lesson/")[1].split("?")[0].split("#")[0];
+    }
+    if (slug && links[slug]) return links[slug];
+    if (url && url.indexOf("http") === 0) return url;
+    if (url && url.indexOf("/lesson/") === 0 && slug && links[slug]) return links[slug];
+    return url;
+  }
+
   function playOnEl(el, urls, onFail) {
     var idx = 0;
     function tryNext() {
@@ -2788,6 +2802,8 @@
     heading.className = "quest-reward__next-title";
     heading.textContent = "Куда дальше?";
     wrap.appendChild(heading);
+    var row = document.createElement("div");
+    row.className = "quest-reward__next-row";
     paths.forEach(function (item) {
       if (!item) return;
       var card = document.createElement("div");
@@ -2804,15 +2820,19 @@
         text.textContent = item.text;
         card.appendChild(text);
       }
-      if (item.url && item.cta) {
-        var link = document.createElement("a");
-        link.className = "quest-reward__link quest-reward__link--next";
-        link.href = item.url;
-        link.textContent = item.cta;
-        card.appendChild(link);
+      if (item.cta) {
+        var href = resolveLessonLink(item);
+        if (href) {
+          var link = document.createElement("a");
+          link.className = "quest-reward__link quest-reward__link--next";
+          link.href = href;
+          link.textContent = item.cta;
+          card.appendChild(link);
+        }
       }
-      wrap.appendChild(card);
+      row.appendChild(card);
     });
+    wrap.appendChild(row);
     box.appendChild(wrap);
   }
 
