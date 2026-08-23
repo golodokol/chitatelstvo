@@ -674,6 +674,13 @@
     }
   }
 
+  function resolveSceneImage(obj) {
+    if (!obj) return "";
+    if (obj.scene_image) return obj.scene_image;
+    if (obj.prompt_as_scene) return obj.prompt_image || obj.image || "";
+    return "";
+  }
+
   function openPlayfield(station) {
     clearQuestTimers();
     parkFooter();
@@ -681,7 +688,7 @@
     appendCoach(station);
     var field = document.createElement("div");
     field.className = "quest-playfield";
-    var scene = station && station.scene_image;
+    var scene = resolveSceneImage(station);
     var hasVideo = !!videoSrc(station);
     var sceneUrl = (scene && !hasVideo) ? assetUrl(scene) : "";
 
@@ -751,7 +758,7 @@
 
   function appendPromptPic(obj) {
     var src = obj && (obj.prompt_image || obj.image);
-    if (!src) return;
+    if (!src || (obj && obj.prompt_as_scene)) return;
     var pic = document.createElement("img");
     pic.className = "quest-prompt-pic";
     pic.src = assetUrl(src);
@@ -2538,7 +2545,7 @@
       var view = {
         slovik_line: together ? station.slovik_line : (step.slovik_line || station.slovik_line),
         slovik_pose: station.slovik_pose,
-        scene_image: station.scene_image,
+        scene_image: resolveSceneImage(step) || station.scene_image,
         audio: stepAudio
       };
       openPlayfield(view);

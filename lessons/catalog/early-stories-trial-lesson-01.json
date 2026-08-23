@@ -836,7 +836,8 @@
               "label": "МАМА СПИТ"
             }
           ],
-          "audio": "ph-vo-phrase-build"
+          "audio": "ph-vo-phrase-build",
+          "prompt_as_scene": true
         },
         {
           "kind": "phrase_picture",
