@@ -138,26 +138,6 @@
               "label": "МЯЧ"
             }
           ]
-        },
-        {
-          "slovik_line": "Кто это? Выбери слово.",
-          "prompt_image": "/static/early/letters/mama.png",
-          "prompt_alt": "Мама",
-          "correct": "mama",
-          "options": [
-            {
-              "id": "mama",
-              "label": "МАМА"
-            },
-            {
-              "id": "dom",
-              "label": "ДОМ"
-            },
-            {
-              "id": "kot",
-              "label": "КОТ"
-            }
-          ]
         }
       ]
     },
