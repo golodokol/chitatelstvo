@@ -193,6 +193,10 @@ def _merge_with_rules(llm: GamificationResponse, req: GamificationRequest) -> Ga
             level = rules["level_change"]
 
     points = llm.points if llm.points >= 0 else rules["points"]
+    if req.event_type == "lesson_complete" and rules["points"] != EVENT_RULES.get(
+        req.event_type, {}
+    ).get("points"):
+        points = rules["points"]
 
     return GamificationResponse(
         reward_type=llm.reward_type or rules["reward_type"],

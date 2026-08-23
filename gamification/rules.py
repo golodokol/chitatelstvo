@@ -16,6 +16,9 @@ LEVELS = [
 # Мастер слова ~4 сказки, Литературный детектив ~8 сказок.
 LEVEL_SLOVIK_THRESHOLDS = [0, 4, 10, 40, 70]
 
+# За полный early-квест («Буквы» / «Первые истории»).
+EARLY_QUEST_COMPLETE_POINTS = 3
+
 
 def level_from_points(points: int) -> str:
     """Уровень по накопленным Словикам — единый источник для UI и БД."""
@@ -161,6 +164,11 @@ def is_early_stories_title(tale_title: str | None) -> bool:
     return any(m in title for m in markers)
 
 
+def is_early_quest_title(tale_title: str | None) -> bool:
+    """Пробный или модульный квест «Буквы оживают» / «Первые истории»."""
+    return is_early_letters_title(tale_title) or is_early_stories_title(tale_title)
+
+
 def apply_badge_rules(
     event_type: str,
     current_badges: list[str],
@@ -174,11 +182,15 @@ def apply_badge_rules(
         raise ValueError(f"Неизвестный тип события: {event_type}")
 
     badge = rule["badge"]
-    # «Читатель» — только после истории, не после урока звуков/букв.
+    # «Читатель» — только после первой истории, не после урока звуков/букв.
     if badge == "Читатель" and is_early_letters_title(tale_title):
         badge = None
     if badge and badge in current_badges:
         badge = None
+
+    points = rule["points"]
+    if event_type == "lesson_complete" and is_early_quest_title(tale_title):
+        points = EARLY_QUEST_COMPLETE_POINTS
 
     level_change = rule["level"]
     if level_change:
@@ -198,7 +210,7 @@ def apply_badge_rules(
 
     return {
         "reward_type": reward_type,
-        "points": rule["points"],
+        "points": points,
         "badge_name": badge,
         "level_change": level_change,
         "next_action": rule["next_action"],

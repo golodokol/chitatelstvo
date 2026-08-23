@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from gamification.badge_assets import BADGE_ASSET_FILES
-from gamification.rules import EVENT_RULES
+from gamification.rules import EVENT_RULES, apply_badge_rules
 from lessons.step_labels import LESSON_STEP_LABELS
 
 STATIC_PREFIX = "/static/sloviki"
@@ -152,10 +152,15 @@ def companion_key(
     return "reads"
 
 
-def event_toast_message(event_type: str) -> str:
-    rule = EVENT_RULES.get(event_type, {})
-    pts = rule.get("points") or 0
-    badge = rule.get("badge")
+def event_toast_message(event_type: str, *, tale_title: str | None = None) -> str:
+    reward = apply_badge_rules(
+        event_type,
+        [],
+        "Старт",
+        tale_title=tale_title,
+    )
+    pts = reward.get("points") or 0
+    badge = reward.get("badge_name")
     if badge and pts:
         return f"+{pts} Словиков · бейдж «{badge}»"
     if pts:
@@ -219,13 +224,17 @@ def recent_event_slovik(events: list[Any]) -> dict[str, Any] | None:
         return None
     ev = events[0]
     et = getattr(ev, "event_type", "") or ""
-    rule = EVENT_RULES.get(et, {})
-    if not rule.get("points") and not rule.get("badge"):
+    tale_title = getattr(ev, "tale_title", None)
+    try:
+        reward = apply_badge_rules(et, [], "Старт", tale_title=tale_title)
+    except ValueError:
+        return None
+    if not reward.get("points") and not reward.get("badge_name"):
         return None
     key = event_slovik_key(et, big=et in BIG_EVENT_SLOVIK)
     created = getattr(ev, "created_at", None)
-    badge = rule.get("badge")
-    pts = int(rule.get("points") or 0)
+    badge = reward.get("badge_name")
+    pts = int(reward.get("points") or 0)
     badge_image = None
     if badge:
         filename = BADGE_ASSET_FILES.get(badge)
@@ -235,7 +244,7 @@ def recent_event_slovik(events: list[Any]) -> dict[str, Any] | None:
         "key": key,
         "url": slovik_url(key),
         "event_type": et,
-        "message": event_toast_message(et),
+        "message": event_toast_message(et, tale_title=tale_title),
         "toast_id": f"{et}-{created.isoformat() if created else '0'}",
         "points": pts,
         "badge": badge,

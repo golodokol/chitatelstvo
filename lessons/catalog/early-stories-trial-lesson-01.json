@@ -15,7 +15,7 @@
   "module_week": 1,
   "meeting_number": 0,
   "badge": "Первый шаг",
-  "points": 2,
+  "points": 3,
   "active": true,
   "status": "тест",
   "note": "Пробный квест: слова и фразы из истории «Вот мой дом…» → первая книжка. Задание можно пропустить.",
@@ -950,7 +950,11 @@
   "quest": {
     "goal_label": "искорки",
     "goal_count": 3,
-    "spark_order": ["word", "phrase", "meaning"],
+    "spark_order": [
+      "word",
+      "phrase",
+      "meaning"
+    ],
     "spark_labels": {
       "word": "Слово",
       "phrase": "Фраза",
