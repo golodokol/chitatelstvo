@@ -2054,9 +2054,6 @@
 .quest-intro.is-playing .quest-intro__video,
 .quest-intro.is-ended .quest-intro__video {
   opacity: 1;
-  /* Crop baked-in pillarboxes that object-fit alone cannot remove */
-  transform: scale(1.65);
-  transform-origin: center center;
 }
 .quest-intro__hello {
   position: absolute;
