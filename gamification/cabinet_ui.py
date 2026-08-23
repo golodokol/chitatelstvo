@@ -200,6 +200,75 @@ EARLY_MODULE_LESSON_TITLES: dict[str, list[str]] = {
     ],
 }
 
+# Полка книжек модуля 1 «Первые истории» (без оценок — только сбор).
+# Урок 4 («Словик проверяет память») книжку на полку не даёт.
+STORIES_SHELF_BOOKS: tuple[dict[str, Any], ...] = (
+    {
+        "slot": 1,
+        "book_title": "Дома",
+        "tale_slug": "early-stories-stage1-tale-00",
+        "lesson_titles": ("Спаси первую историю", "Дома"),
+        "cover_url": "/static/early/stories/book-home-01.jpg",
+        "tone": "amber",
+    },
+    {
+        "slot": 2,
+        "book_title": "Кот и коробка",
+        "tale_slug": "early-stories-stage1-tale-01",
+        "lesson_titles": ("Кот и коробка",),
+        "cover_url": "/static/early/stories/scene-path.jpg",
+        "tone": "coral",
+    },
+    {
+        "slot": 3,
+        "book_title": "Дождь за окном",
+        "tale_slug": "early-stories-stage1-tale-02",
+        "lesson_titles": ("Дождь за окном",),
+        "cover_url": "/static/early/stories/scene-night.jpg",
+        "tone": "blue",
+    },
+    {
+        "slot": 4,
+        "book_title": "Где мяч?",
+        "tale_slug": "early-stories-stage1-tale-03",
+        "lesson_titles": ("Где мяч?",),
+        "cover_url": "/static/early/stories/scene-trail.jpg",
+        "tone": "green",
+    },
+    {
+        "slot": 5,
+        "book_title": "Мокрый кот",
+        "tale_slug": "early-stories-stage1-tale-05",
+        "lesson_titles": ("Мокрый кот",),
+        "cover_url": "/static/early/stories/scene-lesson.jpg",
+        "tone": "teal",
+    },
+    {
+        "slot": 6,
+        "book_title": "Кот и плед",
+        "tale_slug": "early-stories-stage1-tale-06",
+        "lesson_titles": ("Кот и плед",),
+        "cover_url": "/static/early/stories/scene-night-sleep.jpg",
+        "tone": "violet",
+    },
+    {
+        "slot": 7,
+        "book_title": "Словик пришёл",
+        "tale_slug": "early-stories-stage1-tale-07",
+        "lesson_titles": ("Словик пришёл",),
+        "cover_url": "/static/early/stories/scene-invite.jpg",
+        "tone": "gold",
+    },
+    {
+        "slot": 8,
+        "book_title": "Словик дома",
+        "tale_slug": "early-stories-stage1-tale-08",
+        "lesson_titles": ("Словик дома",),
+        "cover_url": "/static/early/stories/scene-book.jpg",
+        "tone": "brown",
+    },
+)
+
 
 def is_chest_step_done(step: str, done: set[str]) -> bool:
     """Шаг «видео»: засчитывается и 3 мин (video_unlock), и досмотр (lesson_complete)."""
@@ -1138,6 +1207,91 @@ def _reading_diary(ratings: list[Any], lesson_links: list[dict]) -> list[dict[st
     return entries
 
 
+def _completed_story_keys(events: list[Any] | None) -> set[str]:
+    """Ключи пройденных уроков историй: нормализованный title + tale_slug."""
+    keys: set[str] = set()
+    for event in events or []:
+        if getattr(event, "event_type", "") != "lesson_complete":
+            continue
+        title = str(getattr(event, "tale_title", "") or "").strip().casefold()
+        if title:
+            keys.add(title)
+        payload = getattr(event, "payload", None) or {}
+        for raw in (
+            payload.get("tale_slug"),
+            payload.get("slug"),
+            payload.get("lesson_slug"),
+            getattr(event, "tale_slug", None),
+        ):
+            slug = canonical_tale_slug(str(raw or "").strip())
+            if slug:
+                keys.add(slug)
+    return keys
+
+
+def _stories_book_unlocked(book: dict[str, Any], completed: set[str]) -> bool:
+    slug = canonical_tale_slug(str(book.get("tale_slug") or ""))
+    if slug and slug in completed:
+        return True
+    for title in book.get("lesson_titles") or ():
+        if str(title).strip().casefold() in completed:
+            return True
+    book_title = str(book.get("book_title") or "").strip().casefold()
+    return bool(book_title and book_title in completed)
+
+
+def _has_early_stories_track(tracks: list[dict[str, Any]] | None, lesson_links: list[dict]) -> bool:
+    for track in tracks or []:
+        group = str(track.get("group_code") or "")
+        if group.startswith("early-stories") or "истори" in str(track.get("group_label") or "").lower():
+            return True
+        for les in track.get("lesson_links") or []:
+            if str(les.get("group_code") or "").startswith("early-stories"):
+                return True
+    for les in lesson_links or []:
+        if str(les.get("group_code") or "").startswith("early-stories"):
+            return True
+        slug = str(les.get("slug") or les.get("tale_slug") or "")
+        if "early-stories" in slug:
+            return True
+    return False
+
+
+def _stories_book_shelf(
+    events: list[Any] | None,
+    *,
+    assets_base: str = "",
+) -> dict[str, Any]:
+    """Мини-полка: 8 мест модуля 1. Книжка появляется после прохождения урока."""
+    completed = _completed_story_keys(events)
+    slots: list[dict[str, Any]] = []
+    unlocked_n = 0
+    for book in STORIES_SHELF_BOOKS:
+        unlocked = _stories_book_unlocked(book, completed)
+        if unlocked:
+            unlocked_n += 1
+        cover = str(book.get("cover_url") or "")
+        slots.append(
+            {
+                "slot": book["slot"],
+                "book_title": book["book_title"],
+                "tale_slug": book["tale_slug"],
+                "unlocked": unlocked,
+                "cover_url": cover if unlocked else "",
+                "tone": book.get("tone") or "amber",
+                "slot_label": f"место {book['slot']}",
+            }
+        )
+    return {
+        "title": "Полка книжек",
+        "subtitle": "Прочитал урок — книжка встаёт на полку. Собери все 8 книжек модуля.",
+        "slots": slots,
+        "collected": unlocked_n,
+        "total": len(STORIES_SHELF_BOOKS),
+        "empty_hint": "Пройди вводный урок — первая книжка «Дома» займёт место 1.",
+    }
+
+
 def _treasury_row(
     *,
     tale_title: str,
@@ -1448,6 +1602,14 @@ def build_child_cabinet(
     cabinet_mode = resolve_cabinet_mode(tracks)
     early_mode = cabinet_mode in ("trial_early", "paid_early")
     show_reading_diary = cabinet_mode == "full"
+    show_book_shelf = early_mode and _has_early_stories_track(tracks, lesson_links)
+    book_shelf = _stories_book_shelf(events, assets_base=assets_base) if show_book_shelf else None
+    if not show_book_shelf and early_mode:
+        # Урок историй пройден, даже если в tracks сейчас другой early-курс.
+        completed = _completed_story_keys(events)
+        if any(_stories_book_unlocked(book, completed) for book in STORIES_SHELF_BOOKS):
+            show_book_shelf = True
+            book_shelf = _stories_book_shelf(events, assets_base=assets_base)
 
     track_sections: list[dict[str, Any]] = []
     if tracks:
@@ -1616,6 +1778,8 @@ def build_child_cabinet(
         "cabinet_mode": cabinet_mode,
         "is_early": early_mode,
         "show_reading_diary": show_reading_diary,
+        "show_book_shelf": show_book_shelf,
+        "book_shelf": book_shelf,
         "level": display_level,
         "level_image": _asset_url(assets_base, LEVEL_IMAGES.get(display_level)),
         "points": points,
@@ -1640,7 +1804,19 @@ def build_child_cabinet(
             _reading_diary(tale_ratings or [], lesson_links) if show_reading_diary else []
         ),
         "treasury": _treasury(claims),
-        "collection": _collection(events, earned_badges, points, early=early_mode),
+        "collection": (
+            {
+                **_collection(events, earned_badges, points, early=early_mode),
+                **(
+                    {
+                        "stories_count": book_shelf["collected"],
+                        "stories_label": "книжек",
+                    }
+                    if show_book_shelf and book_shelf
+                    else {}
+                ),
+            }
+        ),
         "parent": parent,
         "companion": companion,
         "recent_toast": recent_toast,

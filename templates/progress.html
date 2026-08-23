@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260823b">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260823c">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -146,11 +146,11 @@
           {% endif %}
         </section>
 
-        {% if cab.path_hint and cab.path_hint['items'] %}
+        {% if cab.path_hint and cab.path_hint.items %}
         <section class="chit-panel chit-panel--path-hint">
           <h2 class="chit-section-title">{{ cab.path_hint.title or 'Куда дальше?' }}</h2>
           <div class="chit-path-hint">
-            {% for item in cab.path_hint['items'] %}
+            {% for item in cab.path_hint.items %}
             <article class="chit-path-hint__card">
               {% if item.eyebrow %}<p class="chit-path-hint__eye">{{ item.eyebrow }}</p>{% endif %}
               {% if item.text %}<p class="chit-path-hint__text">{{ item.text }}</p>{% endif %}
@@ -594,6 +594,40 @@
         </section>
         {% endif %}
 
+        {% if cab.show_book_shelf and cab.book_shelf %}
+        <section class="chit-panel chit-panel--book-shelf" id="book-shelf">
+          <h2 class="chit-section-title">{{ cab.book_shelf.title }}</h2>
+          <p class="chit-section-sub">{{ cab.book_shelf.subtitle }}</p>
+          <p class="chit-book-shelf__count">{{ cab.book_shelf.collected }} из {{ cab.book_shelf.total }}</p>
+          <div class="chit-book-shelf" role="list">
+            {% for slot in cab.book_shelf.slots %}
+            <article class="chit-book-shelf__slot chit-book-shelf__slot--{{ slot.tone }}{% if slot.unlocked %} is-unlocked{% else %} is-empty{% endif %}" role="listitem" aria-label="{% if slot.unlocked %}{{ slot.book_title }}{% else %}{{ slot.slot_label }}{% endif %}">
+              {% if slot.unlocked %}
+              <div class="chit-book-shelf__cover-wrap">
+                {% if slot.cover_url %}
+                <img class="chit-book-shelf__cover" src="{{ slot.cover_url }}" alt="" loading="lazy">
+                {% else %}
+                <div class="chit-book-shelf__cover chit-book-shelf__cover--plain" aria-hidden="true"></div>
+                {% endif %}
+                <span class="chit-book-shelf__badge">{{ slot.slot }}</span>
+              </div>
+              <h3 class="chit-book-shelf__title">{{ slot.book_title }}</h3>
+              {% else %}
+              <div class="chit-book-shelf__sticker" aria-hidden="true">
+                <span class="chit-book-shelf__sticker-num">{{ slot.slot }}</span>
+                <span class="chit-book-shelf__sticker-label">место</span>
+              </div>
+              <p class="chit-book-shelf__wait">{{ slot.slot_label }}</p>
+              {% endif %}
+            </article>
+            {% endfor %}
+          </div>
+          {% if cab.book_shelf.collected == 0 %}
+          <p class="chit-book-shelf__hint">{{ cab.book_shelf.empty_hint }}</p>
+          {% endif %}
+        </section>
+        {% endif %}
+
         {% if cab.show_reading_diary %}
         <section class="chit-panel chit-panel--diary">
           <h2 class="chit-section-title">Читательский дневник</h2>
@@ -905,7 +939,7 @@
   </div>
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
-  <script src="/static/chest_reveal.js?v=20260823ab"></script>
+  <script src="/static/chest_reveal.js?v=20260819c"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
   <script src="/static/progress_cabinet.js?v=20260823d"></script>
 </body>

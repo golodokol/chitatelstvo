@@ -2870,6 +2870,170 @@ a.chit-lesson-card__cover-link:focus-visible {
     radial-gradient(ellipse at 50% 0%, rgba(255, 252, 245, 0.95) 0%, rgba(245, 232, 210, 0.35) 58%, transparent 100%);
 }
 
+/* Мини-полка «Первые истории»: сбор книжек без оценок */
+.chit-panel--book-shelf {
+  overflow: visible;
+}
+.chit-book-shelf__count {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #8a5a18;
+}
+.chit-book-shelf {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 12px;
+  margin-top: 6px;
+  padding: 18px 14px 22px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.9) 0%, rgba(236, 214, 180, 0.55) 72%, rgba(176, 132, 78, 0.35) 100%);
+  box-shadow:
+    inset 0 -10px 0 rgba(140, 96, 48, 0.22),
+    0 10px 24px rgba(92, 72, 48, 0.08);
+}
+.chit-book-shelf__slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.chit-book-shelf__cover-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 92px;
+  aspect-ratio: 3 / 4;
+  border-radius: 4px 9px 9px 4px;
+  overflow: hidden;
+  background: #f7f2ea;
+  box-shadow:
+    0 10px 16px rgba(61, 82, 102, 0.16),
+    -3px 0 6px rgba(61, 82, 102, 0.1);
+  transform: perspective(700px) rotateY(-5deg);
+}
+.chit-book-shelf__cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.chit-book-shelf__cover--plain {
+  background:
+    linear-gradient(160deg, #fff8ee 0%, #f0d7a8 100%);
+}
+.chit-book-shelf__badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #5a3a12;
+  background: rgba(255, 248, 230, 0.92);
+  box-shadow: 0 2px 6px rgba(42, 38, 34, 0.14);
+}
+.chit-book-shelf__title {
+  margin: 0;
+  max-width: 100%;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  color: #3a342c;
+}
+.chit-book-shelf__sticker {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background:
+    radial-gradient(circle at 35% 30%, #fff9ef 0%, #f3dfb4 55%, #e2c07a 100%);
+  border: 2px dashed rgba(140, 96, 48, 0.35);
+  box-shadow: 0 6px 14px rgba(92, 72, 48, 0.1);
+}
+.chit-book-shelf__sticker-num {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #8a5a18;
+}
+.chit-book-shelf__sticker-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #9a7340;
+}
+.chit-book-shelf__wait {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9a7340;
+  text-align: center;
+}
+.chit-book-shelf__hint {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted, #6a5f52);
+  text-align: center;
+}
+.chit-book-shelf__slot--coral .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #fff4ef 0%, #f5c4b0 60%, #e89a7a 100%);
+}
+.chit-book-shelf__slot--blue .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f2f7ff 0%, #c5d8f2 60%, #8fb0d8 100%);
+}
+.chit-book-shelf__slot--green .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f3faf2 0%, #c7e4c0 60%, #8fbc84 100%);
+}
+.chit-book-shelf__slot--teal .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f0faf8 0%, #b9e0d8 60%, #78b8ac 100%);
+}
+.chit-book-shelf__slot--violet .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f7f2ff 0%, #d5c4ef 60%, #a88fd0 100%);
+}
+.chit-book-shelf__slot--gold .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #fff9e8 0%, #f0d78a 60%, #d4b04a 100%);
+}
+.chit-book-shelf__slot--brown .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #faf3ea 0%, #e2c8a4 60%, #c49a68 100%);
+}
+
+@media (max-width: 640px) {
+  .chit-book-shelf {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px 6px;
+    padding: 14px 8px 18px;
+  }
+  .chit-book-shelf__cover-wrap {
+    max-width: 68px;
+  }
+  .chit-book-shelf__sticker {
+    width: 56px;
+    height: 56px;
+  }
+  .chit-book-shelf__sticker-num {
+    font-size: 1.1rem;
+  }
+  .chit-book-shelf__title {
+    font-size: 0.68rem;
+  }
+}
+
 .chit-diary-shelf__books {
   display: flex;
   flex-wrap: wrap;
