@@ -48,6 +48,7 @@
       "audio": "ph-vo-meet",
       "letter": "ДОМ",
       "letter_image": "/static/early/letters/house.png",
+      "show_word": true,
       "hint": "Прочитай сам. Потом нажми.",
       "tech_msg": "Вперёд к словам истории!",
       "spark": false,

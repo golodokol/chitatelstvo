@@ -852,8 +852,10 @@
     var letter = document.createElement("button");
     letter.type = "button";
     letter.className = "quest-meet__letter";
-    var word = String(station.letter || "А");
-    if (word.length > 1) letter.classList.add("is-word");
+    var word = String(station.letter || station.word || "А").trim();
+    if (word.length > 1 || station.show_word || station.spark_group === "word") {
+      letter.classList.add("is-word");
+    }
     letter.setAttribute("aria-label", word);
     if (station.letter_image) {
       var art = document.createElement("img");
@@ -866,11 +868,12 @@
         }
       });
       letter.classList.add("has-art");
-      letter.appendChild(art);
+      // Word first: child must read the text, picture is a hint.
       var wordEl = document.createElement("span");
       wordEl.className = "quest-meet__word";
       wordEl.textContent = word;
       letter.appendChild(wordEl);
+      letter.appendChild(art);
     } else {
       letter.textContent = word;
     }
