@@ -774,7 +774,7 @@
       "steps": [
         {
           "kind": "find",
-          "slovik_line": "Фраза «вот мой дом». Какое слово сюда не подходит?",
+          "slovik_line": "Фраза «Вот мой дом». Какое слово лишнее?",
           "prompt_image": "/static/early/letters/house.png",
           "prompt_alt": "Дом",
           "correct": "ball",
@@ -796,8 +796,8 @@
               "label": "МЯЧ"
             }
           ],
-          "audio": "",
-          "prompt_text": "Фраза: вот мой дом. Какое слово сюда не подходит?"
+          "audio": "ph-vo-phrase-home",
+          "prompt_text": "Фраза Вот мой дом.\nкакое слово лишнее?"
         },
         {
           "kind": "phrase_picture",

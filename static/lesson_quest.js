@@ -92,7 +92,7 @@
 
   // Skip .ogg: many early files were saved as M4A under a .ogg name and break playback fallback.
   var AUDIO_EXTS = [".mp3", ".MP3", ".m4a", ".wav"];
-  var AUDIO_VER = "20260823e";
+  var AUDIO_VER = "20260823f";
 
   function audioCandidates(id) {
     if (!id) return [];
