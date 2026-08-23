@@ -781,7 +781,7 @@
       "title": "Ключ от книжки",
       "chapter": "Искорка 3 · Смысл",
       "kind": "mini_quest",
-      "slovik_line": "Ключ от книжки: слово, фраза, история. Читай сам.",
+      "slovik_line": "Ключ от книжки — три шага. Начнём со слова.",
       "slovik_pose": "joy",
       "scene_image": "/static/early/stories/scene-lesson.jpg",
       "audio": "ph-vo-key",
@@ -791,7 +791,7 @@
       "steps": [
         {
           "kind": "find",
-          "slovik_line": "Ключ от книжки: слово, фраза, история. Читай сам.",
+          "slovik_line": "Фраза «вот мой дом». Какое слово сюда не подходит?",
           "prompt_image": "/static/early/letters/house.png",
           "prompt_alt": "Дом",
           "correct": "ball",
@@ -813,7 +813,7 @@
               "label": "МЯЧ"
             }
           ],
-          "audio": "ph-vo-key",
+          "audio": "",
           "prompt_text": "Фраза: вот мой дом. Какое слово сюда не подходит?"
         },
         {
