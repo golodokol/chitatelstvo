@@ -1754,12 +1754,21 @@
     var rounds = station.rounds || [station];
     var roundIdx = 0;
     function showRound() {
-      openPlayfield(station);
+      var r = rounds[roundIdx] || {};
+      var view = {
+        // Keep the station coach line; only the first round plays audio.
+        slovik_line: station.slovik_line || r.slovik_line || "",
+        slovik_pose: station.slovik_pose,
+        scene_image: r.scene_image || station.scene_image,
+        audio: roundIdx === 0 ? (r.audio || station.audio || "") : "",
+        tech_msg: roundIdx === 0 ? station.tech_msg : undefined
+      };
+      openPlayfield(view);
       selected = [];
       enableNext(false);
-      var r = rounds[roundIdx];
       if (r.sound) playId(r.sound);
       if (r.prompt_audio) playId(r.prompt_audio);
+      appendPromptLine(r);
       appendPromptPic(r);
       root().appendChild(renderOptions(r.options || [], function (id, btn) {
         var ok = String(id) === String(r.correct);
