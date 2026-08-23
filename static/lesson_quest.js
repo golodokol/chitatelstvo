@@ -760,6 +760,15 @@
     root().appendChild(pic);
   }
 
+  function appendPromptLine(obj) {
+    var text = obj && (obj.prompt_text || obj.phrase);
+    if (!text) return;
+    var line = document.createElement("p");
+    line.className = "quest-prompt-line";
+    line.textContent = text;
+    root().appendChild(line);
+  }
+
   function renderOptions(options, onPick, multi, flags) {
     flags = flags || {};
     var grid = document.createElement("div");
@@ -1614,6 +1623,7 @@
       play.addEventListener("click", function () { playId(r.sound); });
       root().appendChild(play);
     }
+    appendPromptLine(r);
     appendPromptPic(r);
     root().appendChild(renderOptions(r.options || [], function (id, btn, multi) {
       if (multi || station.multi || (r.correct && Array.isArray(r.correct))) {

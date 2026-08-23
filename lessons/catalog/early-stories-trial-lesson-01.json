@@ -716,6 +716,7 @@
       "spark_group": "meaning",
       "rounds": [
         {
+          "prompt_text": "НОЧЬ, КОТ СПИТ",
           "prompt_alt": "Кот спит ночью",
           "correct": "kot",
           "options": [
@@ -751,6 +752,7 @@
       "spark_group": "meaning",
       "rounds": [
         {
+          "prompt_text": "КОТ ЕСТ СЫР",
           "prompt_image": "/static/early/stories/kot-eat.png",
           "prompt_alt": "Кот ест сыр",
           "correct": "syr",
