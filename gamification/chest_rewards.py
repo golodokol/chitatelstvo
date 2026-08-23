@@ -81,8 +81,53 @@ TREASURY_KINDS = frozenset({BONUS_KIND, COLORING_KIND, STICKER_KIND})
 
 # Состав сундука для отдельных сказок (если задан — вместо CHEST_CONTENTS)
 TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
-    # Подарки пробного урока историй пока не загружены — без заглушек Словика.
-    "early-stories-stage1-tale-00": [],
+    # Пробный урок историй: картинки из книжки «Дома» (пока без отдельных PDF).
+    "early-stories-stage1-tale-00": [
+        {
+            "kind": "creative_1",
+            "label": "Картинка «Вот мой дом»",
+            "description": "Разворот из первой книжки — сохрани в сокровищницу",
+            "preview_files": ("gift-1.jpg", "gift-1.png"),
+            "download_files": ("gift-1.jpg", "gift-1.png"),
+            "download_name": "Читательство Вот мой дом.jpg",
+            "fallback_image": "/static/early/stories/book-home-01.jpg",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Картинка «Вот мой кот»",
+            "description": "Разворот из первой книжки — сохрани в сокровищницу",
+            "preview_files": ("gift-2.jpg", "gift-2.png"),
+            "download_files": ("gift-2.jpg", "gift-2.png"),
+            "download_name": "Читательство Вот мой кот.jpg",
+            "fallback_image": "/static/early/stories/book-home-02.jpg",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Картинка «Кот ест сыр»",
+            "description": "Разворот из первой книжки — сохрани в сокровищницу",
+            "preview_files": ("gift-3.jpg", "gift-3.png"),
+            "download_files": ("gift-3.jpg", "gift-3.png"),
+            "download_name": "Читательство Кот ест сыр.jpg",
+            "fallback_image": "/static/early/stories/book-home-03.jpg",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_4",
+            "label": "Картинка «Конец»",
+            "description": "Финальный разворот первой истории",
+            "preview_files": ("gift-4.jpg", "gift-4.png"),
+            "download_files": ("gift-4.jpg", "gift-4.png"),
+            "download_name": "Читательство Конец истории.jpg",
+            "fallback_image": "/static/early/stories/book-home-06.jpg",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
     "early-letters-stage1-tale-00": [
         {
             "kind": "creative_1",
@@ -473,7 +518,11 @@ def rewards_for_tale(tale_slug: str, tale_title: str) -> list[dict[str, Any]]:
     """Все предметы сундука для показа при открытии (включая письмо)."""
     slug = canonical_tale_slug((tale_slug or "").strip())
     title = (tale_title or "").strip() or "Сказка недели"
-    entries = TALE_CHEST_ITEMS.get(slug) or CHEST_CONTENTS
+    # Пустой список в TALE_CHEST_ITEMS — осознанно «пока без подарков», не fallback на CHEST_CONTENTS.
+    if slug in TALE_CHEST_ITEMS:
+        entries = TALE_CHEST_ITEMS[slug]
+    else:
+        entries = CHEST_CONTENTS
     return [_build_item(entry, slug, title) for entry in entries]
 
 

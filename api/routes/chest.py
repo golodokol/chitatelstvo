@@ -71,9 +71,14 @@ def claim_chest(
         }
 
     if not _chest_ready_for_tale(db, child.id, lesson):
+        early = str(lesson.get("group_code") or "").startswith("early") or lesson.get("lesson_format") == "quest"
         raise HTTPException(
             400,
-            "Сундук ещё не готов — посмотрите начало видео, пройдите мини-тест и блок заданий",
+            (
+                "Сундук ещё не готов — сначала собери все искорки в квесте"
+                if early
+                else "Сундук ещё не готов — посмотрите начало видео, пройдите мини-тест и блок заданий"
+            ),
         )
 
     all_items = rewards_for_tale(reward_slug, lesson.get("title", ""))

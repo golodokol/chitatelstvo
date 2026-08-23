@@ -121,14 +121,8 @@
   }
 
   function whenQuestSaved() {
+    if (completeSent) return Promise.resolve();
     return completeLesson();
-  }
-
-  function navigateAfterQuestSave(url) {
-    if (!url) return;
-    whenQuestSaved().finally(function () {
-      window.location.href = url;
-    });
   }
 
   function bindRewardNav(el, url, item) {
@@ -598,12 +592,8 @@
   }
 
   function completeLesson() {
+    if (completeSent) return Promise.resolve();
     if (completePromise) return completePromise;
-    if (completeSent) {
-      completePromise = Promise.resolve();
-      return completePromise;
-    }
-    completeSent = true;
     completePromise = fetch("/api/lesson/" + encodeURIComponent(cfg.slug) + "/quest-complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -612,14 +602,37 @@
         passed_stations: passedStations
       })),
     })
-      .then(function (r) { return r.json().catch(function () { return {}; }); })
-      .then(function () {
-        bindFinishButton();
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (data) {
+          if (!r.ok) {
+            var detail = data && data.detail;
+            var msg = "Не удалось сохранить прогресс урока";
+            if (typeof detail === "string" && detail) msg = detail;
+            else if (Array.isArray(detail) && detail[0] && detail[0].msg) msg = detail[0].msg;
+            throw new Error(msg);
+          }
+          completeSent = true;
+          bindFinishButton();
+          return data;
+        });
       })
-      .catch(function () {
+      .catch(function (err) {
+        completePromise = null;
         bindFinishButton();
+        throw err;
       });
     return completePromise;
+  }
+
+  function navigateAfterQuestSave(url) {
+    if (!url) return;
+    whenQuestSaved()
+      .then(function () {
+        window.location.href = url;
+      })
+      .catch(function (err) {
+        showMsg((err && err.message) || "Не удалось сохранить прогресс. Попробуй ещё раз.", false);
+      });
   }
 
   function goNext() {
