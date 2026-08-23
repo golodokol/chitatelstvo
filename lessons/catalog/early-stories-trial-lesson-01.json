@@ -892,6 +892,11 @@
           "spread_image": "/static/early/stories/book-home-05.jpg",
           "image": "/static/early/stories/mama.png",
           "alt": "Мама"
+        },
+        {
+          "text": "КОНЕЦ",
+          "spread_image": "/static/early/stories/book-home-06.jpg",
+          "alt": "Конец истории: дом вечером"
         }
       ],
       "finale": "Ура, история прочитана!",
