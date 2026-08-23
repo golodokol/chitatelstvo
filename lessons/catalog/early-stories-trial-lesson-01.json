@@ -944,6 +944,7 @@
   "quest": {
     "goal_label": "искорки",
     "goal_count": 3,
+    "spark_order": ["word", "phrase", "meaning"],
     "spark_labels": {
       "word": "Слово",
       "phrase": "Фраза",

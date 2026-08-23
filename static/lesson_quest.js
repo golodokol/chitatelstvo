@@ -8,13 +8,37 @@
     letter: "Буква",
     syllable: "Слог"
   };
+  // Prefer explicit order: Jinja tojson may sort object keys alphabetically
+  // (meaning/phrase/word), which reverses the curriculum sequence.
+  var SPARK_ORDER = ["word", "phrase", "meaning", "sound", "letter", "syllable"];
+  function orderedSparkKeys(labels) {
+    var keys = Object.keys(labels || {});
+    var preferred = (cfg.quest && Array.isArray(cfg.quest.spark_order) && cfg.quest.spark_order.length)
+      ? cfg.quest.spark_order
+      : SPARK_ORDER;
+    var seen = {};
+    var out = [];
+    preferred.forEach(function (k) {
+      if (labels && Object.prototype.hasOwnProperty.call(labels, k) && !seen[k]) {
+        seen[k] = true;
+        out.push(k);
+      }
+    });
+    keys.forEach(function (k) {
+      if (!seen[k]) {
+        seen[k] = true;
+        out.push(k);
+      }
+    });
+    return out;
+  }
   var sparkKinds = {};
-  Object.keys(sparkLabels).forEach(function (k) { sparkKinds[k] = false; });
+  orderedSparkKeys(sparkLabels).forEach(function (k) { sparkKinds[k] = false; });
   (function paintSparkHud() {
     var hud = document.getElementById("quest-sparks-hud");
     if (!hud) return;
     hud.innerHTML = "";
-    Object.keys(sparkLabels).forEach(function (k) {
+    orderedSparkKeys(sparkLabels).forEach(function (k) {
       var chip = document.createElement("span");
       chip.className = "quest-spark-chip";
       chip.setAttribute("data-spark", k);
