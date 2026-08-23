@@ -66,8 +66,8 @@
   }
 
   // Skip .ogg: many early files were saved as M4A under a .ogg name and break playback fallback.
-  var AUDIO_EXTS = [".mp3", ".m4a", ".wav"];
-  var AUDIO_VER = "20260822q";
+  var AUDIO_EXTS = [".mp3", ".MP3", ".m4a", ".wav"];
+  var AUDIO_VER = "20260823c";
 
   function audioCandidates(id) {
     if (!id) return [];
@@ -252,7 +252,7 @@
     var base = (cfg.assetsBase || "").replace(/\/$/, "");
     var url = base + path;
     if (/\.(png|jpe?g|webp)$/i.test(path) && url.indexOf("?") < 0) {
-      url += "?v=20260823a";
+      url += "?v=20260823c";
     }
     return url;
   }
@@ -853,11 +853,6 @@
       });
       letter.classList.add("has-art");
       letter.appendChild(art);
-      // С картинкой всё равно показываем слово — иначе «прочитай» не к чему
-      var wordEl = document.createElement("span");
-      wordEl.className = "quest-meet__word";
-      wordEl.textContent = word;
-      letter.appendChild(wordEl);
     } else {
       letter.textContent = word;
     }

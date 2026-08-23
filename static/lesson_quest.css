@@ -1652,14 +1652,14 @@
   animation: quest-pop 0.35s ease;
 }
 .quest-playfield--build {
-  aspect-ratio: auto;
-  min-height: min(72vh, 580px);
+  /* same footprint as other stations */
 }
 .quest-playfield--build .quest-playfield__canvas,
 .quest-playfield--build.quest-playfield--has-scene .quest-playfield__canvas {
-  aspect-ratio: auto;
-  min-height: min(58vh, 480px);
-  overflow: visible;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
 }
 .quest-playfield--build .quest-playfield__surface {
   justify-content: flex-start;
@@ -2916,7 +2916,7 @@
     font-size: 0.92rem;
   }
   .quest-playfield--build {
-    min-height: min(62vh, 480px);
+    min-height: 0;
   }
   .quest-build {
     width: 100%;
