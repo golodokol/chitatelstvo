@@ -2909,21 +2909,6 @@
     nav.appendChild(nextBtn);
     book.appendChild(nav);
 
-    var dots = document.createElement("div");
-    dots.className = "quest-book__dots";
-    lines.forEach(function (_, i) {
-      var dot = document.createElement("button");
-      dot.type = "button";
-      dot.className = "quest-book__dot";
-      dot.setAttribute("aria-label", "Страница " + (i + 1));
-      dot.addEventListener("click", function () {
-        if (flipping || i === pageIdx) return;
-        goTo(i, i > pageIdx ? 1 : -1);
-      });
-      dots.appendChild(dot);
-    });
-    book.appendChild(dots);
-
     var foot = document.createElement("div");
     foot.className = "quest-book__foot";
     var hint = document.createElement("p");
@@ -2976,10 +2961,6 @@
       nextBtn.disabled = idx >= lines.length - 1;
       edgePrev.disabled = idx <= 0;
       edgeNext.disabled = idx >= lines.length - 1;
-      Array.prototype.forEach.call(dots.children, function (dot, i) {
-        dot.classList.toggle("is-active", i === idx);
-        dot.classList.toggle("is-done", i < idx);
-      });
       if (idx >= lines.length - 1) {
         cta.disabled = false;
         // One finale line only — don't mirror it in the hint.
