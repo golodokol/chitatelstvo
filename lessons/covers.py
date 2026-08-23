@@ -21,7 +21,7 @@ COVER_FILENAME_RE = re.compile(
     re.IGNORECASE,
 )
 
-EARLY_ASSETS_VERSION = "20260822n"
+EARLY_ASSETS_VERSION = "20260822q"
 
 # Подсказка из имени файла → фрагменты в title урока
 HINT_ALIASES: dict[str, tuple[str, ...]] = {
@@ -246,6 +246,10 @@ def enrich_lesson_link(link: dict) -> dict:
         early_covers = {
             "early-letters": "course-cover-letters.jpg",
             "early-stories": "course-cover-stories.jpg",
+            "wind": "course-cover-wind.jpg",
+            "garden": "course-cover-garden.jpg",
+            "rus-6-9": "course-cover-rus-6-9.jpg",
+            "rus-10-12": "course-cover-rus-10-12.jpg",
         }
         filename = early_covers.get(group)
         if filename:

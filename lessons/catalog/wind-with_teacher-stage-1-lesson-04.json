@@ -1,0 +1,20 @@
+{
+  "slug": "wind-with_teacher-stage-1-lesson-04",
+  "title": "Итог модуля",
+  "tale_title": "Итог модуля",
+  "module_id": 30,
+  "group_code": "wind",
+  "group_label": "Ветер в ивах",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 4,
+  "tale_number": 4,
+  "tale_slug": "wind-stage1-tale-04",
+  "module_week": 4,
+  "meeting_number": 4,
+  "active": false,
+  "status": "черновик",
+  "note": "Заглушка: контент урока в разработке. Доступ по расписанию."
+}

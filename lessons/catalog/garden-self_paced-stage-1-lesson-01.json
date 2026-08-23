@@ -1,0 +1,20 @@
+{
+  "slug": "garden-self_paced-stage-1-lesson-01",
+  "title": "Знакомство с книгой",
+  "tale_title": "Знакомство с книгой",
+  "module_id": 32,
+  "group_code": "garden",
+  "group_label": "Таинственный сад",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 1,
+  "tale_number": 1,
+  "tale_slug": "garden-stage1-tale-01",
+  "module_week": 1,
+  "meeting_number": 0,
+  "active": false,
+  "status": "черновик",
+  "note": "Заглушка: контент урока в разработке. Доступ по расписанию."
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "rus-10-12-with_teacher-stage-1-lesson-02",
+  "title": "Урок 2",
+  "tale_title": "Урок 2",
+  "module_id": 39,
+  "group_code": "rus-10-12",
+  "group_label": "Русские сказки",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 2,
+  "tale_number": 2,
+  "tale_slug": "rus-10-12-stage1-tale-02",
+  "module_week": 2,
+  "meeting_number": 2,
+  "active": false,
+  "status": "черновик",
+  "note": "Заглушка: контент урока в разработке. Доступ по расписанию."
+}

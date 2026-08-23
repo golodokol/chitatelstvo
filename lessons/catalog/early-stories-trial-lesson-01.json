@@ -27,11 +27,11 @@
       "kind": "intro_video",
       "slovik_line": "Помоги спасти первую историю!",
       "slovik_pose": "wave",
-      "scene_image": "/static/early/stories/scene-path.jpg",
+      "scene_image": "/static/early/stories/scene-book.jpg",
       "video": {
         "type": "html5",
         "src": "/static/early/video/ph-trial-intro.mp4",
-        "poster": "/static/early/stories/scene-path.jpg",
+        "poster": "/static/early/stories/scene-book.jpg",
         "title": "Спаси первую историю"
       },
       "cta_label": "Спасти историю",
@@ -70,9 +70,18 @@
           "prompt_alt": "Дом",
           "correct": "dom",
           "options": [
-            { "id": "dym", "label": "ДЫМ" },
-            { "id": "dom", "label": "ДОМ" },
-            { "id": "kom", "label": "КОМ" }
+            {
+              "id": "dym",
+              "label": "ДЫМ"
+            },
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "kom",
+              "label": "КОМ"
+            }
           ]
         }
       ]
@@ -95,9 +104,18 @@
           "prompt_alt": "Кот",
           "correct": "kot",
           "options": [
-            { "id": "rot", "label": "РОТ" },
-            { "id": "kot", "label": "КОТ" },
-            { "id": "tok", "label": "ТОК" }
+            {
+              "id": "rot",
+              "label": "РОТ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "tok",
+              "label": "ТОК"
+            }
           ]
         },
         {
@@ -106,9 +124,18 @@
           "prompt_alt": "Сыр",
           "correct": "syr",
           "options": [
-            { "id": "sor", "label": "СОР" },
-            { "id": "syr", "label": "СЫР" },
-            { "id": "myach", "label": "МЯЧ" }
+            {
+              "id": "sor",
+              "label": "СОР"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            }
           ]
         },
         {
@@ -117,9 +144,18 @@
           "prompt_alt": "Мама",
           "correct": "mama",
           "options": [
-            { "id": "mama", "label": "МАМА" },
-            { "id": "dom", "label": "ДОМ" },
-            { "id": "kot", "label": "КОТ" }
+            {
+              "id": "mama",
+              "label": "МАМА"
+            },
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            }
           ]
         }
       ]
@@ -137,10 +173,26 @@
       "spark_group": "word",
       "hint": "Нажми на слово, потом на картинку.",
       "pairs": [
-        { "id": "dom", "label": "ДОМ", "image": "/static/early/letters/house.png" },
-        { "id": "kot", "label": "КОТ", "image": "/static/early/letters/kot.png" },
-        { "id": "syr", "label": "СЫР", "image": "/static/early/letters/syr.png" },
-        { "id": "mama", "label": "МАМА", "image": "/static/early/letters/mama.png" }
+        {
+          "id": "dom",
+          "label": "ДОМ",
+          "image": "/static/early/letters/house.png"
+        },
+        {
+          "id": "kot",
+          "label": "КОТ",
+          "image": "/static/early/letters/kot.png"
+        },
+        {
+          "id": "syr",
+          "label": "СЫР",
+          "image": "/static/early/letters/syr.png"
+        },
+        {
+          "id": "mama",
+          "label": "МАМА",
+          "image": "/static/early/letters/mama.png"
+        }
       ]
     },
     {
@@ -151,76 +203,201 @@
       "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/stories/scene-path.jpg",
+      "audio": "ph-vo-key",
       "spark": false,
       "spark_group": "word",
       "hint": "Ключ: фигура = буква. Расшифруй и выбери слово.",
       "legend": [
-        { "shape": "diamond", "tone": "red", "letter": "К" },
-        { "shape": "circle", "tone": "violet", "letter": "О" },
-        { "shape": "hourglass", "tone": "blue", "letter": "Т" },
-        { "shape": "house", "tone": "green", "letter": "Д" },
-        { "shape": "pill", "tone": "green", "letter": "М" },
-        { "shape": "star", "tone": "red", "letter": "С" },
-        { "shape": "triangle", "tone": "blue", "letter": "Ы" },
-        { "shape": "square", "tone": "violet", "letter": "Р" },
-        { "shape": "circle", "tone": "red", "letter": "А" }
+        {
+          "shape": "diamond",
+          "tone": "red",
+          "letter": "К"
+        },
+        {
+          "shape": "circle",
+          "tone": "violet",
+          "letter": "О"
+        },
+        {
+          "shape": "hourglass",
+          "tone": "blue",
+          "letter": "Т"
+        },
+        {
+          "shape": "house",
+          "tone": "green",
+          "letter": "Д"
+        },
+        {
+          "shape": "pill",
+          "tone": "green",
+          "letter": "М"
+        },
+        {
+          "shape": "star",
+          "tone": "red",
+          "letter": "С"
+        },
+        {
+          "shape": "triangle",
+          "tone": "blue",
+          "letter": "Ы"
+        },
+        {
+          "shape": "square",
+          "tone": "violet",
+          "letter": "Р"
+        },
+        {
+          "shape": "circle",
+          "tone": "red",
+          "letter": "А"
+        }
       ],
       "rounds": [
         {
           "prompt_text": "Какое это слово?",
           "cipher": [
-            { "shape": "house", "tone": "green", "letter": "Д" },
-            { "shape": "circle", "tone": "violet", "letter": "О" },
-            { "shape": "pill", "tone": "green", "letter": "М" }
+            {
+              "shape": "house",
+              "tone": "green",
+              "letter": "Д"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "pill",
+              "tone": "green",
+              "letter": "М"
+            }
           ],
           "correct": "dom",
           "options": [
-            { "id": "kot", "label": "КОТ" },
-            { "id": "dom", "label": "ДОМ" },
-            { "id": "dym", "label": "ДЫМ" }
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "dym",
+              "label": "ДЫМ"
+            }
           ]
         },
         {
           "prompt_text": "Какое это слово?",
           "cipher": [
-            { "shape": "diamond", "tone": "red", "letter": "К" },
-            { "shape": "circle", "tone": "violet", "letter": "О" },
-            { "shape": "hourglass", "tone": "blue", "letter": "Т" }
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "К"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "hourglass",
+              "tone": "blue",
+              "letter": "Т"
+            }
           ],
           "correct": "kot",
           "options": [
-            { "id": "dom", "label": "ДОМ" },
-            { "id": "syr", "label": "СЫР" },
-            { "id": "kot", "label": "КОТ" }
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            }
           ]
         },
         {
           "prompt_text": "Какое это слово?",
           "cipher": [
-            { "shape": "star", "tone": "red", "letter": "С" },
-            { "shape": "triangle", "tone": "blue", "letter": "Ы" },
-            { "shape": "square", "tone": "violet", "letter": "Р" }
+            {
+              "shape": "star",
+              "tone": "red",
+              "letter": "С"
+            },
+            {
+              "shape": "triangle",
+              "tone": "blue",
+              "letter": "Ы"
+            },
+            {
+              "shape": "square",
+              "tone": "violet",
+              "letter": "Р"
+            }
           ],
           "correct": "syr",
           "options": [
-            { "id": "syr", "label": "СЫР" },
-            { "id": "sor", "label": "СОР" },
-            { "id": "mama", "label": "МАМА" }
+            {
+              "id": "syr",
+              "label": "СЫР"
+            },
+            {
+              "id": "sor",
+              "label": "СОР"
+            },
+            {
+              "id": "mama",
+              "label": "МАМА"
+            }
           ]
         },
         {
           "prompt_text": "Какое это слово?",
           "cipher": [
-            { "shape": "pill", "tone": "green", "letter": "М" },
-            { "shape": "circle", "tone": "red", "letter": "А" },
-            { "shape": "pill", "tone": "green", "letter": "М" },
-            { "shape": "circle", "tone": "red", "letter": "А" }
+            {
+              "shape": "pill",
+              "tone": "green",
+              "letter": "М"
+            },
+            {
+              "shape": "circle",
+              "tone": "red",
+              "letter": "А"
+            },
+            {
+              "shape": "pill",
+              "tone": "green",
+              "letter": "М"
+            },
+            {
+              "shape": "circle",
+              "tone": "red",
+              "letter": "А"
+            }
           ],
           "correct": "mama",
           "options": [
-            { "id": "mama", "label": "МАМА" },
-            { "id": "kot", "label": "КОТ" },
-            { "id": "dom", "label": "ДОМ" }
+            {
+              "id": "mama",
+              "label": "МАМА"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            }
           ]
         }
       ]
@@ -233,25 +410,62 @@
       "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова из двух слогов.",
       "slovik_pose": "talk",
       "scene_image": "/static/early/stories/scene-path.jpg",
+      "audio": "ph-vo-stones",
       "spark": false,
       "spark_group": "word",
       "hint": "Слева слог + справа слог. Все слова из двух слогов.",
       "rounds": [
         {
           "prompt_text": "Какие три слова получились?",
-          "left": ["МА", "ДО", "КО"],
-          "right": ["МА", "МИК", "ТИК"],
-          "pairs": [
-            { "from": 0, "to": 0, "color": "#6b4ea3" },
-            { "from": 1, "to": 1, "color": "#e06a2f" },
-            { "from": 2, "to": 2, "color": "#3f8f4a" }
+          "left": [
+            "МА",
+            "ДО",
+            "КО"
           ],
-          "correct": ["mama", "domik", "kotik"],
+          "right": [
+            "ТИК",
+            "МА",
+            "МИК"
+          ],
+          "pairs": [
+            {
+              "from": 0,
+              "to": 1,
+              "color": "#6b4ea3"
+            },
+            {
+              "from": 1,
+              "to": 2,
+              "color": "#e06a2f"
+            },
+            {
+              "from": 2,
+              "to": 0,
+              "color": "#3f8f4a"
+            }
+          ],
+          "correct": [
+            "mama",
+            "domik",
+            "kotik"
+          ],
           "options": [
-            { "id": "mama", "label": "МАМА" },
-            { "id": "domik", "label": "ДОМИК" },
-            { "id": "kotik", "label": "КОТИК" },
-            { "id": "sova", "label": "СОВА" }
+            {
+              "id": "mama",
+              "label": "МАМА"
+            },
+            {
+              "id": "domik",
+              "label": "ДОМИК"
+            },
+            {
+              "id": "kotik",
+              "label": "КОТИК"
+            },
+            {
+              "id": "sova",
+              "label": "СОВА"
+            }
           ]
         }
       ]
@@ -274,36 +488,84 @@
           "word": "ДОМ",
           "correct": "house",
           "options": [
-            { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png" },
-            { "id": "house", "label": "Дом", "image": "/static/early/letters/house.png" },
-            { "id": "ball", "label": "Мяч", "image": "/static/early/letters/ball.png" }
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "house",
+              "label": "Дом",
+              "image": "/static/early/letters/house.png"
+            },
+            {
+              "id": "ball",
+              "label": "Мяч",
+              "image": "/static/early/letters/ball.png"
+            }
           ]
         },
         {
           "word": "КОТ",
           "correct": "kot",
           "options": [
-            { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png" },
-            { "id": "kot", "label": "Кот", "image": "/static/early/letters/kot.png" },
-            { "id": "syr", "label": "Сыр", "image": "/static/early/letters/syr.png" }
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            },
+            {
+              "id": "syr",
+              "label": "Сыр",
+              "image": "/static/early/letters/syr.png"
+            }
           ]
         },
         {
           "word": "СЫР",
           "correct": "syr",
           "options": [
-            { "id": "syr", "label": "Сыр", "image": "/static/early/letters/syr.png" },
-            { "id": "ball", "label": "Мяч", "image": "/static/early/letters/ball.png" },
-            { "id": "kot", "label": "Кот", "image": "/static/early/letters/kot.png" }
+            {
+              "id": "syr",
+              "label": "Сыр",
+              "image": "/static/early/letters/syr.png"
+            },
+            {
+              "id": "ball",
+              "label": "Мяч",
+              "image": "/static/early/letters/ball.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            }
           ]
         },
         {
           "word": "МАМА",
           "correct": "mama",
           "options": [
-            { "id": "house", "label": "Дом", "image": "/static/early/letters/house.png" },
-            { "id": "syr", "label": "Сыр", "image": "/static/early/letters/syr.png" },
-            { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png" }
+            {
+              "id": "house",
+              "label": "Дом",
+              "image": "/static/early/letters/house.png"
+            },
+            {
+              "id": "syr",
+              "label": "Сыр",
+              "image": "/static/early/letters/syr.png"
+            },
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/letters/mama.png"
+            }
           ]
         }
       ]
@@ -323,9 +585,24 @@
       "spark": false,
       "spark_group": "phrase",
       "options": [
-        { "id": "kot", "label": "Кот", "image": "/static/early/letters/kot.png", "hide_label": true },
-        { "id": "house", "label": "Дом", "image": "/static/early/letters/house.png", "hide_label": true },
-        { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png", "hide_label": true }
+        {
+          "id": "kot",
+          "label": "Кот",
+          "image": "/static/early/letters/kot.png",
+          "hide_label": true
+        },
+        {
+          "id": "house",
+          "label": "Дом",
+          "image": "/static/early/letters/house.png",
+          "hide_label": true
+        },
+        {
+          "id": "mama",
+          "label": "Мама",
+          "image": "/static/early/letters/mama.png",
+          "hide_label": true
+        }
       ]
     },
     {
@@ -344,9 +621,18 @@
       "spark": false,
       "spark_group": "phrase",
       "options": [
-        { "id": "home", "label": "ВОТ МОЙ ДОМ" },
-        { "id": "cat", "label": "ВОТ МОЙ КОТ" },
-        { "id": "eat", "label": "КОТ ЕСТ СЫР" }
+        {
+          "id": "home",
+          "label": "ВОТ МОЙ ДОМ"
+        },
+        {
+          "id": "cat",
+          "label": "ВОТ МОЙ КОТ"
+        },
+        {
+          "id": "eat",
+          "label": "КОТ ЕСТ СЫР"
+        }
       ]
     },
     {
@@ -357,45 +643,53 @@
       "slovik_line": "Собери фразу: сначала кот, потом ест, потом сыр.",
       "slovik_pose": "talk",
       "scene_image": "/static/early/stories/scene-path.jpg",
+      "prompt_image": "/static/early/stories/kot-eat.png",
+      "prompt_alt": "Кот ест сыр",
       "audio": "ph-vo-build",
-      "targets": ["КОТ", "ЕСТ", "СЫР"],
-      "options": ["СПИТ", "КОТ", "НОЧЬ", "ЕСТ", "МАМА", "СЫР"],
+      "targets": [
+        "КОТ",
+        "ЕСТ",
+        "СЫР"
+      ],
+      "options": [
+        "СПИТ",
+        "КОТ",
+        "НОЧЬ",
+        "ЕСТ",
+        "МАМА",
+        "СЫР"
+      ],
       "piece_spots": [
-        { "x": 12, "y": 34 },
-        { "x": 88, "y": 32 },
-        { "x": 14, "y": 58 },
-        { "x": 86, "y": 56 },
-        { "x": 18, "y": 84 },
-        { "x": 82, "y": 82 }
+        {
+          "x": 12,
+          "y": 34
+        },
+        {
+          "x": 88,
+          "y": 32
+        },
+        {
+          "x": 14,
+          "y": 58
+        },
+        {
+          "x": 86,
+          "y": 56
+        },
+        {
+          "x": 18,
+          "y": 84
+        },
+        {
+          "x": 82,
+          "y": 82
+        }
       ],
       "result_label": "КОТ ЕСТ СЫР",
       "success_msg": "Получилась фраза про кота!",
       "spark": true,
       "spark_kind": "phrase",
       "spark_group": "phrase"
-    },
-    {
-      "id": "meaning_night",
-      "title": "Ночь, кот спит",
-      "chapter": "Искорка 3 · Смысл",
-      "kind": "listen_pick",
-      "slovik_line": "Ночь, кот спит. Кто спит?",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/stories/scene-night-sleep.jpg",
-      "audio": "ph-vo-who",
-      "spark": false,
-      "spark_group": "meaning",
-      "rounds": [
-        {
-          "prompt_alt": "Кот спит ночью",
-          "correct": "kot",
-          "options": [
-            { "id": "mama", "label": "МАМА", "image": "/static/early/letters/mama.png" },
-            { "id": "kot", "label": "КОТ", "image": "/static/early/letters/kot.png" },
-            { "id": "syr", "label": "СЫР", "image": "/static/early/letters/syr.png" }
-          ]
-        }
-      ]
     },
     {
       "id": "meaning_night_word",
@@ -413,9 +707,18 @@
           "prompt_alt": "Ночь, кот спит",
           "correct": "noch",
           "options": [
-            { "id": "den", "label": "ДЕНЬ" },
-            { "id": "noch", "label": "НОЧЬ" },
-            { "id": "utro", "label": "УТРО" }
+            {
+              "id": "den",
+              "label": "ДЕНЬ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "utro",
+              "label": "УТРО"
+            }
           ]
         },
         {
@@ -423,9 +726,53 @@
           "prompt_alt": "Ночь, кот спит",
           "correct": "noch",
           "options": [
-            { "id": "kot", "label": "КОТ" },
-            { "id": "spit", "label": "СПИТ" },
-            { "id": "noch", "label": "НОЧЬ" }
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "spit",
+              "label": "СПИТ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meaning_night",
+      "title": "Ночь, кот спит",
+      "chapter": "Искорка 3 · Смысл",
+      "kind": "listen_pick",
+      "slovik_line": "Ночь, кот спит. Кто спит?",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/stories/scene-night-sleep.jpg",
+      "audio": "ph-vo-who",
+      "spark": false,
+      "spark_group": "meaning",
+      "rounds": [
+        {
+          "prompt_alt": "Кот спит ночью",
+          "correct": "kot",
+          "options": [
+            {
+              "id": "mama",
+              "label": "МАМА",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ",
+              "image": "/static/early/letters/kot.png"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР",
+              "image": "/static/early/letters/syr.png"
+            }
           ]
         }
       ]
@@ -447,9 +794,21 @@
           "prompt_alt": "Кот ест сыр",
           "correct": "syr",
           "options": [
-            { "id": "ball", "label": "МЯЧ", "image": "/static/early/letters/ball.png" },
-            { "id": "house", "label": "ДОМ", "image": "/static/early/letters/house.png" },
-            { "id": "syr", "label": "СЫР", "image": "/static/early/letters/syr.png" }
+            {
+              "id": "ball",
+              "label": "МЯЧ",
+              "image": "/static/early/letters/ball.png"
+            },
+            {
+              "id": "house",
+              "label": "ДОМ",
+              "image": "/static/early/letters/house.png"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР",
+              "image": "/static/early/letters/syr.png"
+            }
           ]
         }
       ]
@@ -469,42 +828,79 @@
       "steps": [
         {
           "kind": "find",
-          "slovik_line": "Фраза: вот мой дом. Какое слово сюда не подходит?",
+          "slovik_line": "Ключ от книжки: слово, фраза, история. Читай сам.",
           "prompt_image": "/static/early/letters/house.png",
           "prompt_alt": "Дом",
           "correct": "ball",
           "options": [
-            { "id": "vot", "label": "ВОТ" },
-            { "id": "moy", "label": "МОЙ" },
-            { "id": "dom", "label": "ДОМ" },
-            { "id": "ball", "label": "МЯЧ" }
-          ]
+            {
+              "id": "vot",
+              "label": "ВОТ"
+            },
+            {
+              "id": "moy",
+              "label": "МОЙ"
+            },
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "ball",
+              "label": "МЯЧ"
+            }
+          ],
+          "audio": "ph-vo-key",
+          "prompt_text": "Фраза: вот мой дом. Какое слово сюда не подходит?"
         },
         {
           "kind": "phrase_picture",
-          "slovik_line": "Какая фраза подходит к картинке?",
+          "slovik_line": "Посмотри на картинку. Выбери фразу, которая про неё.",
           "phrase": "?",
           "prompt_image": "/static/early/stories/scene-night-sleep.jpg",
           "correct": "sleep",
           "options": [
-            { "id": "sleep", "label": "НОЧЬ, КОТ СПИТ" },
-            { "id": "eat", "label": "КОТ ЕСТ СЫР" },
-            { "id": "mama", "label": "МАМА СПИТ" }
-          ]
+            {
+              "id": "sleep",
+              "label": "НОЧЬ, КОТ СПИТ"
+            },
+            {
+              "id": "eat",
+              "label": "КОТ ЕСТ СЫР"
+            },
+            {
+              "id": "mama",
+              "label": "МАМА СПИТ"
+            }
+          ],
+          "audio": "ph-vo-phrase-build"
         },
         {
           "kind": "phrase_picture",
-          "slovik_line": "Посмотри на картинку. Какая фраза из нашей истории?",
+          "slovik_line": "Посмотри на картинку. Выбери фразу, которая про неё.",
           "phrase": "?",
           "prompt_image": "/static/early/stories/kot-eat.png",
           "prompt_alt": "Кот ест сыр",
           "correct": "eat",
           "options": [
-            { "id": "sleep", "label": "НОЧЬ, КОТ СПИТ" },
-            { "id": "home", "label": "ВОТ МОЙ ДОМ" },
-            { "id": "eat", "label": "КОТ ЕСТ СЫР" },
-            { "id": "mama", "label": "МАМА СПИТ" }
-          ]
+            {
+              "id": "sleep",
+              "label": "НОЧЬ, КОТ СПИТ"
+            },
+            {
+              "id": "home",
+              "label": "ВОТ МОЙ ДОМ"
+            },
+            {
+              "id": "eat",
+              "label": "КОТ ЕСТ СЫР"
+            },
+            {
+              "id": "mama",
+              "label": "МАМА СПИТ"
+            }
+          ],
+          "audio": "ph-vo-phrase-build"
         }
       ]
     },
@@ -523,26 +919,31 @@
       "lines": [
         {
           "text": "ВОТ МОЙ ДОМ.",
+          "spread_image": "/static/early/stories/book-home-01.jpg",
           "image": "/static/early/letters/house.png",
           "alt": "Дом"
         },
         {
           "text": "ВОТ МОЙ КОТ.",
+          "spread_image": "/static/early/stories/book-home-02.jpg",
           "image": "/static/early/letters/kot.png",
           "alt": "Кот"
         },
         {
           "text": "КОТ ЕСТ СЫР.",
+          "spread_image": "/static/early/stories/book-home-03.jpg",
           "image": "/static/early/stories/kot-eat.png",
           "alt": "Кот ест сыр"
         },
         {
           "text": "НОЧЬ, КОТ СПИТ.",
+          "spread_image": "/static/early/stories/book-home-04.jpg",
           "image": "/static/early/stories/scene-night-sleep.jpg",
           "alt": "Кот спит ночью"
         },
         {
           "text": "МАМА СПИТ.",
+          "spread_image": "/static/early/stories/book-home-05.jpg",
           "image": "/static/early/stories/mama.png",
           "alt": "Мама"
         }
@@ -573,7 +974,21 @@
       "parent_note": "Дома вместе перечитайте первую книжку: ВОТ МОЙ ДОМ. ВОТ МОЙ КОТ. КОТ ЕСТ СЫР. НОЧЬ, КОТ СПИТ. МАМА СПИТ. В модуле — 8 таких маршрутов посложнее.",
       "module_url": "https://chitatelstvo.ru/#programs",
       "module_cta": "О модуле и записи",
-      "chest_cta": "Открыть сундук"
+      "chest_cta": "Открыть сундук",
+      "next_paths": [
+        {
+          "eyebrow": "Если было сложно",
+          "text": "Пройдите сначала курс по звукам:",
+          "cta": "Буквы оживают — вводный урок",
+          "url": "/lesson/early-letters-trial-lesson-01"
+        },
+        {
+          "eyebrow": "Если было легко",
+          "text": "Вы готовы к нашему первому курсу по сказкам:",
+          "cta": "Царевна-лягушка — пробный урок",
+          "url": "/lesson/tsarevna-lyagushka"
+        }
+      ]
     }
   ],
   "quest": {

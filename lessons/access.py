@@ -25,6 +25,21 @@ SCHEDULE_SHIFT_DATE = date(2026, 7, 10)
 EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
 EARLY_MODULE_START = date(2026, 9, 1)  # вторник
 
+# Новые когорты: фиксированный старт, уроки по понедельникам.
+COHORT_GROUPS = frozenset({"wind", "garden", "rus-6-9", "rus-10-12"})
+COHORT_MODULE_START: dict[str, date] = {
+    "wind": date(2026, 9, 7),
+    "garden": date(2026, 9, 7),
+    "rus-6-9": date(2026, 10, 5),
+    "rus-10-12": date(2026, 10, 5),
+}
+
+
+def cohort_lesson_opens_on(group_code: str, module_week: int) -> date:
+    start = COHORT_MODULE_START[group_code]
+    week = max(1, int(module_week or 1))
+    return start + timedelta(days=7 * (week - 1))
+
 
 def early_lesson_opens_on(module_week: int) -> date:
     """Открытие уроков early-модуля: вт / чт / вт / чт …
@@ -164,6 +179,12 @@ def is_lesson_unlocked(
         admin_weeks = _admin_unlocked_weeks(child)
         return admin_weeks > 0 and lesson_week <= admin_weeks
 
+    if group_code in COHORT_GROUPS:
+        if today >= cohort_lesson_opens_on(group_code, lesson_week):
+            return True
+        admin_weeks = _admin_unlocked_weeks(child)
+        return admin_weeks > 0 and lesson_week <= admin_weeks
+
     if today >= lesson_opens_on(lesson_week):
         return True
 
@@ -192,6 +213,8 @@ def unlock_date_for_week(
     """Календарная дата открытия недели."""
     if group_code in EARLY_GROUPS:
         return early_lesson_opens_on(week)
+    if group_code in COHORT_GROUPS:
+        return cohort_lesson_opens_on(group_code, week)
     return lesson_opens_on(week)
 
 
@@ -218,6 +241,17 @@ def lesson_access_info(
     if group_code in EARLY_GROUPS:
         opens = early_lesson_opens_on(week)
         info: dict[str, Any] = {
+            "module_week": week,
+            "week_in_stage": week,
+            "stage": "stage-1",
+            "unlocked": unlocked,
+            "opens_on": opens.strftime("%d.%m.%Y"),
+            "opens_on_label": format_date_ru(opens, weekday=weekday_ru(opens)),
+            "opens_on_iso": opens.isoformat(),
+        }
+    elif group_code in COHORT_GROUPS:
+        opens = cohort_lesson_opens_on(group_code, week)
+        info = {
             "module_week": week,
             "week_in_stage": week,
             "stage": "stage-1",

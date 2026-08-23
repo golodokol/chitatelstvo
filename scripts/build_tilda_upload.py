@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260819b"
+VERSION = "20260822k"
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'
@@ -77,6 +77,15 @@ CHIT_BTN_FIX = (
     '{display:none!important;visibility:hidden!important;pointer-events:none!important;'
     'position:absolute!important;width:0!important;height:0!important;overflow:hidden!important;'
     'margin:0!important;padding:0!important;border:0!important}'
+    '</style>'
+)
+
+CHIT_FARE_MODAL_CRITICAL = (
+    '<style id="chit-fare-modal-critical">'
+    '.fare-modal:not(.is-open){position:fixed!important;inset:0!important;z-index:10050!important;'
+    'display:flex!important;align-items:center!important;justify-content:center!important;'
+    'opacity:0!important;visibility:hidden!important;pointer-events:none!important}'
+    '.fare-modal.is-open{opacity:1!important;visibility:visible!important;pointer-events:auto!important}'
     '</style>'
 )
 
@@ -178,6 +187,9 @@ def patch_head_styles(head: str) -> str:
     head = re.sub(r'<style id="chit-qz-launcher-critical">[\s\S]*?</style>', CHIT_QZ_LAUNCHER, head)
     head = re.sub(r'<style id="chit-qz-critical">[\s\S]*?</style>', CHIT_QZ_CRITICAL, head)
     head = re.sub(r'<style id="chit-qz-close">[\s\S]*?</style>', CHIT_QZ_CLOSE, head)
+    head = re.sub(r'<style id="chit-fare-modal-critical">[\s\S]*?</style>', CHIT_FARE_MODAL_CRITICAL, head)
+    if 'chit-fare-modal-critical' not in head:
+        head = head.replace(CHIT_QZ_CLOSE, CHIT_QZ_CLOSE + CHIT_FARE_MODAL_CRITICAL, 1)
     head = re.sub(r'<style id="chit-gamify-path">[\s\S]*?</style>', CHIT_GAMIFY_PATH, head)
     head = head.replace(
         '#chit-main .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;text-decoration:none;border:none;cursor:pointer}',

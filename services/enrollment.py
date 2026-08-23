@@ -15,6 +15,16 @@ from lessons.schedule import meeting_still_bookable
 # Набор на этап 1 (старт 15 июля) с преподавателем закрыт.
 WITH_TEACHER_STAGE1_CLOSED = True
 
+COHORT_GROUPS = frozenset({"wind", "garden", "rus-6-9", "rus-10-12"})
+NO_WITH_TEACHER_GROUPS = frozenset({
+    "grade-1",
+    "grade-2",
+    "grade-3",
+    "grade-4",
+    "extra-6-8",
+    "extra-9-11",
+})
+
 
 def validate_registration_module(body: RegisterWebhook) -> dict | None:
     if body.module_id is None:
@@ -49,6 +59,23 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
 
     if module["tariff_code"] == "trial":
         # Бесплатный пробный: всегда stage-1, без выбора сказки
+        return {
+            "module": module,
+            "chosen_stage": "stage-1",
+            "chosen_tale_number": None,
+            "chosen_tale_slug": None,
+            "chosen_tale_title": None,
+        }
+
+    group_code = module.get("group_code") or ""
+    if group_code in NO_WITH_TEACHER_GROUPS and module["tariff_code"] == "with_teacher":
+        raise HTTPException(
+            400,
+            "Тариф «С преподавателем» для этой программы временно недоступен. "
+            "Выберите «Разовое» или «Индивидуальное».",
+        )
+
+    if group_code in COHORT_GROUPS and module["tariff_code"] != "single":
         return {
             "module": module,
             "chosen_stage": "stage-1",
@@ -120,6 +147,7 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
         and module["tariff_code"] == "with_teacher"
         and stage == "stage-1"
         and module.get("group_code") not in ("early-letters", "early-stories")
+        and module.get("group_code") not in COHORT_GROUPS
     ):
         raise HTTPException(
             400,

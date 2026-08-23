@@ -50,7 +50,7 @@
       "letter": "А",
       "letter_image": "/static/early/letters/letter-a-hero.png",
       "hint": "Нажми на букву — услышишь звук.",
-      "coach_success": "Это А! Пойдём искать, куда делись звуки.",
+      "coach_success": "Это А! Пойдём искать, куда пропали звуки.",
       "success_audio": "vo-meet-a",
       "tech_msg": "Вперёд к приключениям!",
       "spark": false
@@ -319,7 +319,7 @@
       "id": "reward",
       "title": "Награда Словика",
       "chapter": "Три искорки",
-      "slovik_line": "Пошли со мной в сундук за наградой!",
+      "slovik_line": "Пойдём со мной в сундук за наградой!",
       "kind": "reward",
       "slovik_pose": "chest",
       "scene_image": "/static/early/letters/scene-invite.jpg",
@@ -335,7 +335,15 @@
       "parent_note": "Продолжайте занятия: в модуле — 8 таких маршрутов.",
       "module_url": "https://chitatelstvo.ru/#programs",
       "module_cta": "О модуле и записи",
-      "chest_cta": "Открыть сундук"
+      "chest_cta": "Открыть сундук",
+      "next_paths": [
+        {
+          "eyebrow": "Если эти задания показались слишком простыми",
+          "text": "Попробуйте прочитать первую историю в нашем другом уроке:",
+          "cta": "Первые истории — вводный урок",
+          "url": "/lesson/early-stories-trial-lesson-01"
+        }
+      ]
     }
   ],
   "quest": {

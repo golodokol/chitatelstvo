@@ -1,0 +1,20 @@
+{
+  "slug": "rus-6-9-self_paced-stage-1-lesson-02",
+  "title": "Урок 2",
+  "tale_title": "Урок 2",
+  "module_id": 35,
+  "group_code": "rus-6-9",
+  "group_label": "Русские сказки",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 2,
+  "tale_number": 2,
+  "tale_slug": "rus-6-9-stage1-tale-02",
+  "module_week": 2,
+  "meeting_number": 0,
+  "active": false,
+  "status": "черновик",
+  "note": "Заглушка: контент урока в разработке. Доступ по расписанию."
+}

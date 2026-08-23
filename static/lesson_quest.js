@@ -65,14 +65,16 @@
     elMsg.textContent = text;
   }
 
-  var AUDIO_EXTS = [".ogg", ".m4a", ".mp3", ".wav"];
+  // Skip .ogg: many early files were saved as M4A under a .ogg name and break playback fallback.
+  var AUDIO_EXTS = [".mp3", ".m4a", ".wav"];
+  var AUDIO_VER = "20260822q";
 
   function audioCandidates(id) {
     if (!id) return [];
     if (String(id).indexOf("/") === 0 || String(id).indexOf("http") === 0) return [id];
     var base = (cfg.assetsBase || "").replace(/\/$/, "");
     var stem = base + "/static/early/audio/" + id;
-    return AUDIO_EXTS.map(function (ext) { return stem + ext; });
+    return AUDIO_EXTS.map(function (ext) { return stem + ext + "?v=" + AUDIO_VER; });
   }
 
   function audioUrl(id) {
@@ -109,7 +111,12 @@
         el.oncanplay = null;
         var p = el.play();
         if (p && p.then) {
-          p.then(ok).catch(function () {
+          p.then(ok).catch(function (err) {
+            // Autoplay blocked: don't fall through to other formats; wait for «Послушать».
+            if (err && err.name === "NotAllowedError") {
+              ok();
+              return;
+            }
             if (el.paused && !settled) fail();
             else ok();
           });
@@ -132,6 +139,7 @@
   var instructionPlaying = false;
   var pendingVoiceCb = null;
   var playGen = 0;
+  var audioToken = 0;
 
   function finishVoiceWait() {
     instructionPlaying = false;
@@ -155,10 +163,12 @@
   function playId(id, onEnded) {
     var urls = audioCandidates(id);
     var finished = false;
+    var token = ++audioToken;
     function finish() {
       if (finished) return;
       finished = true;
       try { audio.onended = null; } catch (e) {}
+      if (token !== audioToken) return;
       if (typeof onEnded === "function") onEnded();
     }
     if (!urls.length) {
@@ -174,11 +184,17 @@
         finish();
       });
       if (onEnded) {
-        setTimeout(finish, 15000);
+        setTimeout(function () {
+          if (token === audioToken) finish();
+        }, 15000);
         audio.addEventListener("loadedmetadata", function meta() {
           audio.removeEventListener("loadedmetadata", meta);
           var d = audio.duration;
-          if (isFinite(d) && d > 0) setTimeout(finish, Math.ceil(d * 1000) + 350);
+          if (isFinite(d) && d > 0) {
+            setTimeout(function () {
+              if (token === audioToken) finish();
+            }, Math.ceil(d * 1000) + 350);
+          }
         });
       }
     } catch (e) {
@@ -224,7 +240,7 @@
     var urls = audioCandidates(id);
     if (!urls.length) return;
     try {
-      audio.pause();
+      // Never pause `audio` here — letter beeps were cutting off Slovik's line.
       sfx.pause();
       playOnEl(sfx, urls);
     } catch (e) {}
@@ -236,7 +252,7 @@
     var base = (cfg.assetsBase || "").replace(/\/$/, "");
     var url = base + path;
     if (/\.(png|jpe?g|webp)$/i.test(path) && url.indexOf("?") < 0) {
-      url += "?v=20260822n";
+      url += "?v=20260823a";
     }
     return url;
   }
@@ -1144,6 +1160,18 @@
     var layer = document.createElement("div");
     layer.className = "quest-scene__hotspots";
     var wanderers = [];
+    var count = null;
+    if (need.length > 1) {
+      count = document.createElement("p");
+      count.className = "quest-echo__count quest-scene__count";
+      count.textContent = "0 / " + need.length;
+      scene.appendChild(count);
+    }
+    function refreshCount() {
+      if (!count) return;
+      var got = need.filter(function (c) { return found[c]; }).length;
+      count.textContent = got + " / " + need.length;
+    }
     hotspots.forEach(function (hs, i) {
       var btn = document.createElement("button");
       btn.type = "button";
@@ -1174,6 +1202,7 @@
           if (found[id]) return;
           found[id] = true;
           btn.classList.add("is-correct");
+          refreshCount();
           var left = need.filter(function (c) { return !found[c]; });
           if (!left.length) {
             if (gameRaf) {
@@ -1466,6 +1495,7 @@
   function renderSlotBuild(station) {
     var field = elBody.querySelector(".quest-playfield");
     if (field) field.classList.add("quest-playfield--around");
+    appendPromptPic(station);
     var targets = station.targets || ["М", "А"];
     var spots = station.piece_spots || [
       { x: 12, y: 28 },
@@ -2173,7 +2203,7 @@
           }
         }
       }, true);
-      opts.classList.add("quest-grid--scatter");
+      opts.classList.add("quest-grid--pathword-opts");
       root().appendChild(opts);
     }
 
@@ -2458,23 +2488,21 @@
       else setTimeout(showStep, ok ? 400 : 0);
     }
 
-    if (together) {
-      miniSkip = function () {
-        showMsg(station.hint || "Сначала выбери картинку и слог.", false);
-      };
-    } else {
-      miniSkip = function () {
-        nextStep(false);
-      };
-    }
+    // Trial / early quests: «Дальше» always lets the child skip without a correct answer.
+    miniSkip = function () {
+      finishMini(false);
+    };
 
     function showStep() {
       var step = steps[stepIdx] || {};
+      var stepAudio = Object.prototype.hasOwnProperty.call(step, "audio")
+        ? (step.audio || "")
+        : (together || stepIdx === 0 ? (station.audio || "") : "");
       var view = {
         slovik_line: together ? station.slovik_line : (step.slovik_line || station.slovik_line),
         slovik_pose: station.slovik_pose,
         scene_image: station.scene_image,
-        audio: together || stepIdx === 0 ? (station.audio || step.audio || "") : ""
+        audio: stepAudio
       };
       openPlayfield(view);
       enableNext(false);
@@ -2522,6 +2550,12 @@
       }
       else {
         // "find" and unknown steps: show image + options grid (not scattered)
+        if (step.prompt_text) {
+          var findPrompt = document.createElement("p");
+          findPrompt.className = "quest-prompt-line";
+          findPrompt.textContent = step.prompt_text;
+          root().appendChild(findPrompt);
+        }
         appendPromptPic(step);
         var grid = renderOptions(step.options || [], function (id, btn) {
           if (String(id) === String(step.correct)) {
@@ -2557,6 +2591,7 @@
     var lines = station.lines || [];
     var pageIdx = 0;
     var flipping = false;
+    var FLIP_MS = 780;
 
     var book = document.createElement("div");
     book.className = "quest-book quest-book--flip";
@@ -2565,6 +2600,9 @@
 
     var stage = document.createElement("div");
     stage.className = "quest-book__stage";
+
+    var cover = document.createElement("div");
+    cover.className = "quest-book__cover";
 
     var spread = document.createElement("div");
     spread.className = "quest-book__spread";
@@ -2594,9 +2632,27 @@
     sentence.className = "quest-book__sentence";
     pageText.appendChild(sentence);
 
+    var fullFrame = document.createElement("figure");
+    fullFrame.className = "quest-book__full";
+    fullFrame.hidden = true;
+    var fullImg = document.createElement("img");
+    fullImg.className = "quest-book__full-img";
+    fullImg.alt = "";
+    fullFrame.appendChild(fullImg);
+
+    var leaf = document.createElement("div");
+    leaf.className = "quest-book__leaf";
+    leaf.setAttribute("aria-hidden", "true");
+    var leafFace = document.createElement("div");
+    leafFace.className = "quest-book__leaf-face";
+    leaf.appendChild(leafFace);
+
     spread.appendChild(pageArt);
     spread.appendChild(pageText);
-    stage.appendChild(spread);
+    spread.appendChild(fullFrame);
+    spread.appendChild(leaf);
+    cover.appendChild(spread);
+    stage.appendChild(cover);
     book.appendChild(stage);
 
     var nav = document.createElement("div");
@@ -2663,12 +2719,23 @@
 
     function paint(idx) {
       var line = lines[idx] || {};
-      artImg.src = line.image ? assetUrl(line.image) : "";
-      artImg.alt = line.alt || line.text || "";
-      artImg.style.display = line.image ? "" : "none";
+      var spreadSrc = line.spread_image || line.full_image || "";
+      var isFull = !!spreadSrc;
+      spread.classList.toggle("is-full-spread", isFull);
+      fullFrame.hidden = !isFull;
+      pageArt.hidden = isFull;
+      pageText.hidden = isFull;
+      if (isFull) {
+        fullImg.src = assetUrl(spreadSrc);
+        fullImg.alt = line.alt || line.text || station.book_title || "";
+      } else {
+        artImg.src = line.image ? assetUrl(line.image) : "";
+        artImg.alt = line.alt || line.text || "";
+        artImg.style.display = line.image ? "" : "none";
+        sentence.textContent = line.text || line || "";
+      }
       eyebrow.textContent =
         (station.book_label || "Книжка") + " · " + (idx + 1) + " / " + Math.max(lines.length, 1);
-      sentence.textContent = line.text || line || "";
       pager.textContent = (idx + 1) + " из " + Math.max(lines.length, 1);
       prevBtn.disabled = idx <= 0;
       nextBtn.disabled = idx >= lines.length - 1;
@@ -2694,15 +2761,17 @@
       idx = Math.max(0, Math.min(lines.length - 1, idx));
       if (idx === pageIdx) return;
       flipping = true;
-      spread.classList.remove("is-flip-next", "is-flip-prev");
-      void spread.offsetWidth;
-      spread.classList.add(dir >= 0 ? "is-flip-next" : "is-flip-prev");
+      leaf.classList.remove("is-turn-next", "is-turn-prev");
+      void leaf.offsetWidth;
+      leaf.classList.add(dir >= 0 ? "is-turn-next" : "is-turn-prev");
       setTimeout(function () {
         pageIdx = idx;
         paint(pageIdx);
-        spread.classList.remove("is-flip-next", "is-flip-prev");
+      }, Math.floor(FLIP_MS * 0.45));
+      setTimeout(function () {
+        leaf.classList.remove("is-turn-next", "is-turn-prev");
         flipping = false;
-      }, 320);
+      }, FLIP_MS);
     }
 
     prevBtn.addEventListener("click", function () {
@@ -2714,6 +2783,42 @@
 
     paint(0);
     root().appendChild(book);
+  }
+
+  function appendNextPaths(box, paths) {
+    if (!paths || !paths.length) return;
+    var wrap = document.createElement("div");
+    wrap.className = "quest-reward__next";
+    var heading = document.createElement("p");
+    heading.className = "quest-reward__next-title";
+    heading.textContent = "Куда дальше?";
+    wrap.appendChild(heading);
+    paths.forEach(function (item) {
+      if (!item) return;
+      var card = document.createElement("div");
+      card.className = "quest-reward__next-card";
+      if (item.eyebrow) {
+        var eye = document.createElement("p");
+        eye.className = "quest-reward__next-eye";
+        eye.textContent = item.eyebrow;
+        card.appendChild(eye);
+      }
+      if (item.text) {
+        var text = document.createElement("p");
+        text.className = "quest-reward__next-text";
+        text.textContent = item.text;
+        card.appendChild(text);
+      }
+      if (item.url && item.cta) {
+        var link = document.createElement("a");
+        link.className = "quest-reward__link quest-reward__link--next";
+        link.href = item.url;
+        link.textContent = item.cta;
+        card.appendChild(link);
+      }
+      wrap.appendChild(card);
+    });
+    box.appendChild(wrap);
   }
 
   function renderReward(station) {
@@ -2778,6 +2883,7 @@
       links.appendChild(moduleLink);
     }
     if (links.childNodes.length) box.appendChild(links);
+    if (earned) appendNextPaths(box, station.next_paths || []);
     root().appendChild(box);
     if (btnNext) btnNext.hidden = true;
     if (btnAudio) btnAudio.hidden = true;

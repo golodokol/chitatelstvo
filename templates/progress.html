@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260822c">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260822v">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -146,6 +146,23 @@
           {% endif %}
         </section>
 
+        {% if cab.path_hint and cab.path_hint.items %}
+        <section class="chit-panel chit-panel--path-hint">
+          <h2 class="chit-section-title">{{ cab.path_hint.title or 'Куда дальше?' }}</h2>
+          <div class="chit-path-hint">
+            {% for item in cab.path_hint.items %}
+            <article class="chit-path-hint__card">
+              {% if item.eyebrow %}<p class="chit-path-hint__eye">{{ item.eyebrow }}</p>{% endif %}
+              {% if item.text %}<p class="chit-path-hint__text">{{ item.text }}</p>{% endif %}
+              {% if item.url and item.cta %}
+              <a class="chit-btn chit-btn--secondary chit-path-hint__cta" href="{{ item.url }}">{{ item.cta }}</a>
+              {% endif %}
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
         <section class="chit-panel chit-panel--hero-path">
           <h2 class="chit-section-title chit-section-title--hero">Путь героя</h2>
           <p class="chit-section-sub chit-section-sub--hero">Словики открывают новые ступени — от Старта до Литературного детектива</p>
@@ -171,8 +188,8 @@
           <div class="chit-badge-grid">
             {% for b in cab.badges %}
             <button type="button" class="chit-badge-card chit-badge-card--{{ b.status }}{% if b.name_lines[0]|length > 12 %} chit-badge-card--wide-label{% endif %}" data-badge-name="{{ b.name }}" data-badge-condition="{{ b.condition }}"{% if b.image %} data-badge-image="{{ b.image }}"{% endif %}>
-              <div class="chit-badge-card__img">
-                {% if b.image %}<img src="{{ b.image }}" alt="" width="64" height="64">{% else %}🏅{% endif %}
+              <div class="chit-badge-card__img{% if not b.image %} chit-badge-card__img--empty{% endif %}">
+                {% if b.image %}<img src="{{ b.image }}" alt="" width="64" height="64">{% else %}<span aria-hidden="true">✨</span>{% endif %}
               </div>
               <span class="chit-badge-card__name">
                 {% for line in b.name_lines %}
@@ -198,9 +215,6 @@
           data-chest-claimed="{{ '1' if track.chest.claimed else '0' }}"
           data-auto-open="{{ '1' if track.chest.ready and not track.chest.claimed and ((chest_tale and track.chest.tale_slug == chest_tale) or (open_chest and not chest_tale and loop_index == 1)) else '0' }}">
           <script type="application/json" class="chit-chest-data">{{ {"items": track.chest["items"], "tale_title": track.missions_subtitle or track.chest["title"]} | tojson }}</script>
-          {% if track.group_label %}
-          <p class="chit-section-sub chit-section-sub--track">{{ track.group_label }}</p>
-          {% endif %}
           <div class="chit-chest">
             <div class="chit-chest__visual" aria-hidden="true">
               <img class="chit-chest__box" src="{{ track.chest.image_url }}" alt="" width="112" height="112" data-chest-img>
@@ -261,7 +275,7 @@
             </nav>
           </div>
           {% else %}
-          <p class="chit-treasury-empty">Открой сундук выше — награды появятся здесь.</p>
+          <p class="chit-treasury-empty">Открой сундук ниже — награды появятся здесь.</p>
           {% endif %}
         </section>
         {% endif %}
@@ -270,7 +284,7 @@
         {% macro render_weekly_lessons(track) %}
         {% if track.weekly_lessons %}
         <section class="chit-panel chit-panel--mission">
-          <h2 class="chit-section-title">{{ track.weekly_lessons_label or 'Сказка этой недели' }}</h2>
+          <h2 class="chit-section-title">{{ track.weekly_lessons_label or 'Урок этой недели' }}</h2>
           {% if track.group_label %}
           <p class="chit-section-sub">{{ track.group_label }}</p>
           {% endif %}
@@ -318,11 +332,10 @@
         {% endmacro %}
 
         {% if cab.tracks %}
-          {% set multi_track_treasury = cab.tracks|length > 1 and cab.treasury %}
-          {% if multi_track_treasury %}
           <section class="chit-panel chit-panel--treasury" id="treasury-all">
             <h2 class="chit-section-title">Моя сокровищница</h2>
-            <p class="chit-section-sub">Творческие задания из всех открытых сундуков — можно скачать снова.</p>
+            <p class="chit-section-sub">Единая копилка наград из всех уроков — можно скачать снова.</p>
+            {% if cab.treasury %}
             <div class="chit-treasury" data-treasury>
               <div class="chit-treasury-grid">
                 {% for item in cab.treasury %}
@@ -349,14 +362,26 @@
                 <button type="button" class="chit-treasury-pager__btn" data-treasury-next aria-label="Следующая страница">›</button>
               </nav>
             </div>
+            {% else %}
+            <p class="chit-treasury-empty">Открой сундук ниже — награды появятся здесь.</p>
+            {% endif %}
+          </section>
+          {% for track in cab.tracks %}
+          {% set current_lesson = track.weekly_lessons[0] if track.weekly_lessons else none %}
+          {% if current_lesson and (current_lesson.headline or current_lesson.title) %}
+          <section class="chit-current-lesson">
+            {% if track.group_label %}
+            <p class="chit-section-sub chit-section-sub--track">{{ track.group_label }}</p>
+            {% endif %}
+            <h2 class="chit-current-lesson__title">{{ current_lesson.headline or current_lesson.title }}</h2>
+          </section>
+          {% elif track.group_label %}
+          <section class="chit-current-lesson">
+            <h2 class="chit-current-lesson__title">{{ track.group_label }}</h2>
           </section>
           {% endif %}
-          {% for track in cab.tracks %}
-          {{ render_chest(track, child, loop.index, '#treasury-all' if multi_track_treasury else none) }}
+          {{ render_chest(track, child, loop.index, '#treasury-all') }}
           {{ render_weekly_lessons(track) }}
-          {% if not multi_track_treasury %}
-          {{ render_treasury(track, loop.index) }}
-          {% endif %}
           {% if track.upcoming_lessons %}
           <section class="chit-panel chit-panel--stories chit-panel--upcoming">
             <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
@@ -470,9 +495,43 @@
           'missions_subtitle': cab.missions_subtitle,
           'group_label': ''
         } %}
+        <section class="chit-panel chit-panel--treasury" id="treasury-all">
+          <h2 class="chit-section-title">Моя сокровищница</h2>
+          <p class="chit-section-sub">Единая копилка наград из всех уроков — можно скачать снова.</p>
+          {% if cab.treasury and cab.chest.claimed %}
+          <div class="chit-treasury" data-treasury>
+            <div class="chit-treasury-grid">
+              {% for item in cab.treasury %}
+              <article class="chit-treasury-item"
+                role="button"
+                tabindex="0"
+                data-treasury-preview
+                data-label="{{ item.label }}"
+                data-caption="{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}"
+                data-image="{{ item.image_url or '' }}"
+                data-download="{{ item.download_url if item.downloadable and item.download_url else '' }}"
+                data-download-name="{{ item.download_name or '' }}"
+                data-kind="{{ item.kind or '' }}"
+                data-tale-slug="{{ item.tale_slug or '' }}">
+                {% if item.image_url %}<img src="{{ item.image_url }}" alt="" loading="lazy">{% endif %}
+                <strong>{{ item.label }}</strong>
+                <span>{{ item.lesson_caption or ('Урок «' ~ item.tale_title ~ '»') }}</span>
+              </article>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
+          <p class="chit-treasury-empty">Открой сундук ниже — награды появятся здесь.</p>
+          {% endif %}
+        </section>
+        {% set legacy_lesson = legacy_track.weekly_lessons[0] if legacy_track.weekly_lessons else none %}
+        {% if legacy_lesson and (legacy_lesson.headline or legacy_lesson.title) %}
+        <section class="chit-current-lesson">
+          <h2 class="chit-current-lesson__title">{{ legacy_lesson.headline or legacy_lesson.title }}</h2>
+        </section>
+        {% endif %}
+        {{ render_chest(legacy_track, child, 1, '#treasury-all') }}
         {{ render_weekly_lessons(legacy_track) }}
-        {{ render_chest(legacy_track, child, loop.index) }}
-        {{ render_treasury(legacy_track, loop.index) }}
         {% if cab.story_stages %}
         <section class="chit-panel chit-panel--stories">
           <h2 class="chit-section-title">{% if cab.is_early %}Мои уроки{% else %}Мои сказки{% endif %}</h2>

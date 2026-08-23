@@ -1,0 +1,20 @@
+{
+  "slug": "rus-10-12-self_paced-stage-1-lesson-01",
+  "title": "Урок 1",
+  "tale_title": "Урок 1",
+  "module_id": 38,
+  "group_code": "rus-10-12",
+  "group_label": "Русские сказки",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 1,
+  "tale_number": 1,
+  "tale_slug": "rus-10-12-stage1-tale-01",
+  "module_week": 1,
+  "meeting_number": 0,
+  "active": false,
+  "status": "черновик",
+  "note": "Заглушка: контент урока в разработке. Доступ по расписанию."
+}

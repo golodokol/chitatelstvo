@@ -54,6 +54,7 @@ STAGE_2_MEETINGS = (
 
 # Early-курсы (Буквы оживают / Первые истории), модуль 1 — встречи по четвергам
 EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
+COHORT_GROUPS = frozenset({"wind", "garden", "rus-6-9", "rus-10-12"})
 EARLY_MEETINGS = (
     date(2026, 9, 3),
     date(2026, 9, 10),

@@ -1,70 +1,45 @@
-# Страницы-редиректы в Tilda
+# Страницы курсов в Tilda (Zero Block)
 
-Готовый HTML для блока **T123** на `chitatelstvo.ru`.  
-Версия лендингов на API: **20260710c** (цены от **990 ₽**).
+**Версия ассетов:** `20260822l`
 
-## Органический поток
+Это уже **не редиректы** на API. Вставляете HTML в Zero Block — лендинг открывается на `chitatelstvo.ru/...`.
 
-```
-Главная chitatelstvo.ru
-  → «Смотреть программы» или «Подробнее о курсе»
-  → chitatelstvo.ru/1-klass … (эти страницы)
-  → лендинг на API
-  → «Записаться»
-  → chitatelstvo.ru/oplata
-```
+## Как поставить / обновить страницу
 
-Главную Zero Block **перевставлять не нужно**, если на сайте подключён `chit-zero.js` с API.
+1. **Страницы** → нужная страница (или **+ Новая**)
+2. SEO: заголовок и **slug** из таблицы
+3. Снять «Показывать в меню» (по желанию)
+4. **+ Блок** → **Zero Block** (T123) → HTML-элемент на всю ширину
+5. Артборд: ширина **1200**, высота **авто**, выравнивание **сверху**
+6. Ctrl+A → вставить **весь** файл из этой папки → **Опубликовать**
 
----
+## Таблица
 
-## Создать страницу в Tilda (~5 минут)
+| Файл | Slug | Тип |
+|------|------|-----|
+| `bukvy-ozhivayut.html` | `bukvy-ozhivayut` | lite |
+| `pervye-istorii.html` | `pervye-istorii` | lite |
+| `1-klass.html` | `1-klass` | полный |
+| `2-klass.html` | `2-klass` | полный |
+| `3-klass.html` | `3-klass` | полный |
+| `4-klass.html` | `4-klass` | полный |
+| `6-8-let.html` | `6-8-let` | полный |
+| `9-11-let.html` | `9-11-let` | полный |
+| `veter-v-ivah.html` | `veter-v-ivah` | lite |
+| `tainstvenny-sad.html` | `tainstvenny-sad` | lite |
+| `russkie-skazki-6-9.html` | `russkie-skazki-6-9` | lite |
+| `russkie-skazki-10-12.html` | `russkie-skazki-10-12` | lite |
+| `programmy.html` | `programmy` | хаб |
 
-1. **Страницы** → **+ Новая страница** → пустая
-2. **Настройки страницы** → SEO:
-   - **Заголовок** — из таблицы ниже
-   - **URL страницы (slug)** — из таблицы
-3. Снять **«Показывать в меню»** (или добавить в меню позже)
-4. **+ Блок** → **Другое** → **T123 HTML**
-5. Скопировать **весь** файл из этой папки и вставить в блок
-6. **Опубликовать**
+## Если страница уже была редиректом
 
----
+Откройте Zero Block → замените старый HTML на новый файл целиком → Опубликовать.  
+URL (`/1-klass` и т.д.) не меняется.
 
-## Таблица страниц
+## Проверка
 
-| Файл | Slug в Tilda | Заголовок страницы | Итоговый URL |
-|------|--------------|-------------------|--------------|
-| `1-klass.html` | `1-klass` | Летний курс · 1 класс | https://chitatelstvo.ru/1-klass |
-| `2-klass.html` | `2-klass` | Летний курс · 2 класс | https://chitatelstvo.ru/2-klass |
-| `3-klass.html` | `3-klass` | Летний курс · 3 класс | https://chitatelstvo.ru/3-klass |
-| `4-klass.html` | `4-klass` | Летний курс · 4 класс | https://chitatelstvo.ru/4-klass |
-| `6-8-let.html` | `6-8-let` | Внеклассное чтение · 6–8 лет | https://chitatelstvo.ru/6-8-let |
-| `9-11-let.html` | `9-11-let` | Внеклассное чтение · 9–11 лет | https://chitatelstvo.ru/9-11-let |
-| `programmy.html` | `programmy` | Программы по возрастам | https://chitatelstvo.ru/programmy |
+1. `https://chitatelstvo.ru/1-klass` — полный лендинг **на домене сайта** (адрес в браузере не прыгает на api…)
+2. Главная → **Подробнее** → та же страница
+3. **Записаться** → `/oplata` с нужным `module_id`
 
----
-
-## Проверка после публикации
-
-1. `https://chitatelstvo.ru/1-klass` — не 404, открывается лендинг 1 класса
-2. `https://chitatelstvo.ru/programmy` — хаб с карточками **от 990 ₽**
-3. Главная → аккордеон «1 класс» → **Подробнее о курсе** → тот же лендинг
-4. Лендинг → **Записаться** → `chitatelstvo.ru/oplata` с правильной суммой
-
-**Прямые ссылки на API** (если редирект ещё не создан):
-
-- https://api.chitatelstvo.ru/assets/course-pages/index.html
-- https://api.chitatelstvo.ru/assets/course-pages/grade-1.html
-
----
-
-## Цены (должны совпадать с каталогом Tilda)
-
-| Тариф | Цена |
-|-------|------|
-| Разовое | 990 ₽ |
-| Индивидуальное | 1 990 ₽ |
-| С преподавателем | 4 990 ₽ |
-
-Подробнее: `INSTALL-TILDA.md`
+CSS/JS лежат на `api.chitatelstvo.ru/assets/course-pages/` — после правок контента их нужно задеплоить на сервер.

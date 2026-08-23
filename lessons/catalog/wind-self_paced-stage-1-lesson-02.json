@@ -1,0 +1,20 @@
+{
+  "slug": "wind-self_paced-stage-1-lesson-02",
+  "title": "Читаем дальше",
+  "tale_title": "Читаем дальше",
+  "module_id": 29,
+  "group_code": "wind",
+  "group_label": "Ветер в ивах",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 2,
+  "tale_number": 2,
+  "tale_slug": "wind-stage1-tale-02",
+  "module_week": 2,
+  "meeting_number": 0,
+  "active": false,
+  "status": "черновик",
+  "note": "Заглушка: контент урока в разработке. Доступ по расписанию."
+}

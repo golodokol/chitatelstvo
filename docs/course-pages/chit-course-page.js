@@ -2,21 +2,35 @@
   var D = window.CHIT_COURSE;
   if (!D) return;
 
-  var group = document.body.getAttribute('data-group');
-  var isHub = document.body.getAttribute('data-page') === 'hub';
+  var pageRoot = document.getElementById('chit-course-root') || document.body;
+  var group = pageRoot.getAttribute('data-group') || document.body.getAttribute('data-group');
+  var isHub = pageRoot.getAttribute('data-page') === 'hub' || document.body.getAttribute('data-page') === 'hub';
+  var HOME_URL = 'https://chitatelstvo.ru/';
 
   if (isHub) {
     renderHub();
     return;
   }
   if (!group || !D.META[group]) {
-    document.getElementById('chit-course').innerHTML = '<p style="padding:40px;text-align:center">Страница не найдена</p>';
+    var missing = document.getElementById('chit-course');
+    if (missing) missing.innerHTML = '<p style="padding:40px;text-align:center">Страница не найдена</p>';
     return;
   }
 
   var meta = D.META[group];
   var program = D.PROGRAMS[group];
+  var withTeacherClosed = !!(D.NO_WITH_TEACHER_GROUPS && D.NO_WITH_TEACHER_GROUPS.indexOf(group) >= 0);
   document.title = meta.h1 + ' — Читательство';
+
+  function waitlistHref() {
+    var label = (D.MODULES[group] && D.MODULES[group].label) || group;
+    return 'mailto:info@chitatelstvo.ru?subject=' +
+      encodeURIComponent('Жду тариф «С преподавателем» · ' + label) +
+      '&body=' + encodeURIComponent(
+        'Здравствуйте!\n\nХочу узнать, когда откроется тариф «С преподавателем» для курса «' +
+        label + '».\n\nИмя:\nТелефон / Telegram:\n'
+      );
+  }
 
   renderPage();
   initEnrollment();
@@ -39,9 +53,24 @@
 
   function renderHub() {
     var root = document.getElementById('chit-course');
+    var TILDA = {
+      'grade-1': 'https://chitatelstvo.ru/1-klass',
+      'grade-2': 'https://chitatelstvo.ru/2-klass',
+      'grade-3': 'https://chitatelstvo.ru/3-klass',
+      'grade-4': 'https://chitatelstvo.ru/4-klass',
+      'extra-6-8': 'https://chitatelstvo.ru/6-8-let',
+      'extra-9-11': 'https://chitatelstvo.ru/9-11-let',
+      'early-letters': 'https://chitatelstvo.ru/bukvy-ozhivayut',
+      'early-stories': 'https://chitatelstvo.ru/pervye-istorii',
+      'wind': 'https://chitatelstvo.ru/veter-v-ivah',
+      'garden': 'https://chitatelstvo.ru/tainstvenny-sad',
+      'rus-6-9': 'https://chitatelstvo.ru/russkie-skazki-6-9',
+      'rus-10-12': 'https://chitatelstvo.ru/russkie-skazki-10-12'
+    };
     var cards = Object.keys(D.META).map(function (g) {
       var m = D.META[g];
-      return '<a class="cc-hub-card" href="' + esc(m.file) + '">' +
+      var href = TILDA[g] || m.file;
+      return '<a class="cc-hub-card" href="' + esc(href) + '">' +
         '<span class="cc-badge">' + esc(m.badge) + '</span>' +
         '<h3>' + esc(m.h1) + '</h3>' +
         '<p>' + esc(m.age) + ' · 8 сказок · от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</p>' +
@@ -49,8 +78,8 @@
     }).join('');
     root.innerHTML =
       '<header class="cc-header"><div class="cc-header__inner">' +
-        '<a class="cc-logo" href="index.html"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство"></a>' +
-        '<a class="cc-header-cta" href="https://chitatelstvo.ru">На главную</a>' +
+        '<a class="cc-logo" href="' + HOME_URL + '"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство"></a>' +
+        '<a class="cc-header-cta" href="' + HOME_URL + '">На главную</a>' +
       '</div></header>' +
       '<section class="cc-hero"><div class="cc-hero__grid" style="grid-template-columns:1fr">' +
         '<div><span class="cc-badge">Программы по возрастам</span>' +
@@ -239,7 +268,9 @@
     var formats = [
       '<strong>Разовое</strong> — 1 сказка на платформе, без встречи в цене (799 ₽)',
       '<strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч',
-      '<strong>С преподавателем</strong> — 4 сказки и 4 встречи в мини-группе'
+      withTeacherClosed
+        ? '<strong>С преподавателем</strong> — пока недоступно, можно подписаться на обновления'
+        : '<strong>С преподавателем</strong> — 4 сказки и 4 встречи в мини-группе'
     ];
     return '<section class="cc-strip cc-strip--what-how" id="what">' +
       '<div class="cc-strip__inner">' +
@@ -291,6 +322,21 @@
           }).join('') +
         '</div>' +
       '</div></section>';
+  }
+
+  function outcomeHtml() {
+    var items = meta.outcome || [];
+    if (!items.length) return '';
+    return '<section class="cc-section cc-section--outcome" id="outcome">' +
+      '<div class="cc-section__inner">' +
+        '<span class="cc-chapter"><em>итог</em></span>' +
+        '<h2>' + esc(meta.outcomeTitle || 'После курса') + '</h2>' +
+        '<p class="cc-section__lead">' + esc(meta.outcomeLead || '') + '</p>' +
+        '<ul class="cc-outcome-list">' +
+          items.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') +
+        '</ul>' +
+      '</div>' +
+    '</section>';
   }
 
   function compareTableHtml() {
@@ -429,10 +475,11 @@
 
     root.innerHTML =
       '<header class="cc-header"><div class="cc-header__inner">' +
-        '<a class="cc-logo" href="index.html"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство"></a>' +
+        '<a class="cc-logo" href="' + HOME_URL + '"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство"></a>' +
         '<nav class="cc-nav" aria-label="Разделы">' +
           '<a href="#about">О курсе</a>' +
           '<a href="#program-list">Программа</a>' +
+          '<a href="#outcome">После курса</a>' +
           '<a href="#tariffs">Тарифы</a>' +
           '<a href="#enroll">Запись</a>' +
         '</nav>' +
@@ -461,7 +508,7 @@
       '</section>' +
 
       lessonFlowHtml() +
-
+      outcomeHtml() +
       reviewsStripHtml() +
 
       '<section class="cc-section cc-section--white" id="tariffs">' +
@@ -479,6 +526,9 @@
               ['4 сказки на платформе', 'Видео и задания на смысл', 'Личная страница прогресса', 'Блок из 4 сказок', 'Живые встречи'],
               true) +
           '</div>' +
+          (withTeacherClosed
+            ? '<p class="cc-tariff-waitnote">Тариф «С преподавателем» для этой программы сейчас закрыт. Можно оставить заявку — напишем, когда набор откроется.</p>'
+            : '') +
           '<details class="cc-compare-details">' +
             '<summary>Сравнить тарифы в таблице</summary>' +
             compareTableHtml() +
@@ -547,8 +597,10 @@
           '<div class="cc-faq" id="cc-faq">' +
             faqItem('Когда можно начать?', 'В любой день. В программе 8 сказок (2 блока по 4). Можно взять одну сказку, блок или всю программу.') +
             faqItem('Что будет после оплаты?', 'На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс.') +
-            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене. Живые занятия — на тарифе «С преподавателем».') +
-            faqItem('Чем отличаются тарифы?', 'Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи по четвергам (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').') +
+            faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене.' + (withTeacherClosed ? '' : ' Живые занятия — на тарифе «С преподавателем».')) +
+            faqItem('Чем отличаются тарифы?', withTeacherClosed
+              ? ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). Тариф «С преподавателем» для этой программы пока недоступен — можно подписаться на обновления.')
+              : ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи по четвергам (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').')) +
           '</div>' +
         '</div>' +
       '</section>' +
@@ -565,21 +617,34 @@
   }
 
   function tariffCard(key, name, mood, items, meet, featured) {
+    var closed = key === 'with_teacher' && withTeacherClosed;
     var meetHtml = meet
-      ? '<div class="cc-tariff__meet">' + esc(typeof meet === 'string' ? meet : 'Встречи по четвергам') + '</div>'
+      ? '<div class="cc-tariff__meet">' + esc(typeof meet === 'string' ? meet : (closed ? 'Набор временно закрыт' : 'Встречи по четвергам')) + '</div>'
       : '<div class="cc-tariff__meet cc-tariff__meet--empty" aria-hidden="true"></div>';
-    return '<article class="cc-tariff' + (featured ? ' cc-tariff--featured' : '') + '">' +
+    var cta = closed
+      ? '<a class="cc-btn cc-btn--block cc-btn--waitlist" href="' + waitlistHref() + '">Пока недоступно · подписаться</a>'
+      : '<a class="cc-btn cc-btn--block" href="#enroll" data-tariff-jump="' + key + '">Выбрать</a>';
+    return '<article class="cc-tariff' + (featured ? ' cc-tariff--featured' : '') + (closed ? ' cc-tariff--closed' : '') + '">' +
+      (closed ? '<span class="cc-tariff__closed-badge">Набор закрыт</span>' : '') +
       '<h3 class="cc-tariff__name">' + esc(name) + '</h3>' +
       '<p class="cc-tariff__mood">' + esc(mood) + '</p>' +
       '<ul class="cc-tariff__list">' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>' +
       meetHtml +
       '<div class="cc-tariff__price">' + D.formatPrice(D.TARIFF_PRICE[key]) + '</div>' +
       '<div class="cc-tariff__note">' + (key === 'single' ? (D.TARIFF_COPY.single.priceNote || 'за 1 занятие') : 'за блок из 4 сказок') + '</div>' +
-      '<a class="cc-btn cc-btn--block" href="#enroll" data-tariff-jump="' + key + '">Выбрать</a>' +
+      cta +
       '</article>';
   }
 
   function pickCard(key, tag, name, price, hint) {
+    var closed = key === 'with_teacher' && withTeacherClosed;
+    if (closed) {
+      return '<a class="cc-pick-card cc-pick-card--closed" href="' + waitlistHref() + '" data-tariff="' + key + '" aria-disabled="true">' +
+        '<div class="cc-pick-card__tag">Пока недоступно</div>' +
+        '<div class="cc-pick-card__name">' + esc(name) + '</div>' +
+        '<div class="cc-pick-card__price">' + D.formatPrice(price) + '</div>' +
+        '<div class="cc-pick-card__hint">Подписаться на обновления</div></a>';
+    }
     return '<button type="button" class="cc-pick-card" data-tariff="' + key + '">' +
       '<div class="cc-pick-card__tag">' + esc(tag) + '</div>' +
       '<div class="cc-pick-card__name">' + esc(name) + '</div>' +
@@ -769,7 +834,12 @@
     document.getElementById('cc-tariffs').onclick = function (e) {
       var card = e.target.closest('[data-tariff]');
       if (!card) return;
+      if (card.classList.contains('cc-pick-card--closed') || card.getAttribute('aria-disabled') === 'true') {
+        return;
+      }
+      e.preventDefault();
       state.tariff = card.getAttribute('data-tariff');
+      if (state.tariff === 'with_teacher' && withTeacherClosed) return;
       if (state.tariff !== 'single') state.taleNum = 0;
       else if (state.stage && !state.taleNum) state.taleNum = 1;
       document.querySelectorAll('#cc-tariffs .cc-pick-card').forEach(function (c) {
@@ -821,8 +891,9 @@
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         var tariff = btn.getAttribute('data-tariff-jump');
+        if (tariff === 'with_teacher' && withTeacherClosed) return;
         var card = document.querySelector('#cc-tariffs [data-tariff="' + tariff + '"]');
-        if (card) card.click();
+        if (card && !card.classList.contains('cc-pick-card--closed')) card.click();
         document.getElementById('enroll').scrollIntoView({ behavior: 'smooth' });
       });
     });

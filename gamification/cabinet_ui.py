@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
-from gamification.badge_assets import BADGE_ASSET_FILES
+from gamification.badge_assets import BADGE_ASSET_FILES, badge_image_filename
 from gamification.chest_rewards import (
     CHEST_IMAGES,
     CHEST_REWARD_SUMMARY,
@@ -18,6 +18,7 @@ from gamification.chest_rewards import (
     rewards_for_tale,
 )
 from gamification.rules import EVENT_RULES, LEVELS, LEVEL_SLOVIK_THRESHOLDS, level_from_points
+from lessons.access import EARLY_MODULE_START, early_lesson_opens_on
 from lessons.step_labels import LESSON_STEP_LABELS, event_type_label
 from gamification.sloviki import (
     COMPANION_HINTS,
@@ -123,25 +124,17 @@ BADGE_CATALOG: list[dict[str, str]] = [
     {"name": "Путешественник по сказке", "condition": "Все 4 сказки модуля пройдены"},
 ]
 
-# Пробные early-уроки: короткий набор. «Читатель» — только после первой истории.
-# image_key — откуда взять картинку, если у бейджа ещё нет своего файла.
+# Пробные early-уроки: короткий набор + закрытые тизеры полного модуля.
+# Картинки для новых бейджей — docs/early-courses/12-trophy-badge-prompts.md
 TRIAL_BADGE_CATALOG: list[dict[str, str]] = [
     {"name": "Первый шаг", "condition": "Первое задание в школе"},
-    {
-        "name": "Искатель искорок",
-        "condition": "Собрал все искорки квеста",
-        "image_key": "Следопыт",
-    },
-    {
-        "name": "Хранитель сундука",
-        "condition": "Открыл сундук урока",
-        "image_key": "Исследователь сказки",
-    },
-    {
-        "name": "Читатель",
-        "condition": "Пройдена первая история",
-        "image_key": "Читатель",
-    },
+    {"name": "Искатель искорок", "condition": "Собрал все искорки квеста"},
+    {"name": "Хранитель сундука", "condition": "Открыл сундук урока"},
+    {"name": "Слоговик", "condition": "Прочитал слог МА в квесте «Буквы»"},
+    {"name": "Читатель", "condition": "Пройдена первая история"},
+    {"name": "Знаю букву М", "condition": "Полный модуль «Буквы оживают»"},
+    {"name": "Словарик", "condition": "Полный модуль «Первые истории»"},
+    {"name": "Друг Словика", "condition": "Пройден весь модуль курса"},
 ]
 
 BADGES_TOTAL = len(BADGE_CATALOG)
@@ -150,11 +143,20 @@ CHEST_STEPS = ("video_unlock", "comprehension", "meaning_analysis")
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260822n"
+EARLY_ASSETS_VERSION = "20260822g"
+
+INTRO_TRIAL_COVERS: dict[str, str] = {
+    "early-letters": "course-cover-letters-intro.jpg",
+    "early-stories": "course-cover-stories-intro.jpg",
+}
 
 EARLY_COURSE_COVERS: dict[str, str] = {
     "early-letters": "course-cover-letters.jpg",
     "early-stories": "course-cover-stories.jpg",
+    "wind": "course-cover-wind.jpg",
+    "garden": "course-cover-garden.jpg",
+    "rus-6-9": "course-cover-rus-6-9.jpg",
+    "rus-10-12": "course-cover-rus-10-12.jpg",
 }
 
 EARLY_BUY_URLS: dict[str, str] = {
@@ -177,24 +179,24 @@ EARLY_MODULE_OPEN_LABELS: list[str] = [
 # Названия 8 уроков модуля — для сетки «Скоро» у пробных (пока уроки в кабинете ещё не открыты).
 EARLY_MODULE_LESSON_TITLES: dict[str, list[str]] = {
     "early-letters": [
-        "Мир звуков",
-        "Первый звук слова",
-        "Буква А — голос открывается",
-        "Буква М — звук мотора",
-        "Буква С — звук змейки",
-        "Буквы дружат",
-        "Буквы в моём мире",
-        "Буквенный праздник",
+        "Мотор на поляне",
+        "Поющая У",
+        "Круглая О",
+        "Змейка: с-с-с!",
+        "Рычит буква Р",
+        "Слоги дружат",
+        "Первые слова",
+        "Праздник у Словика",
     ],
     "early-stories": [
-        "Как буквы становятся слогом",
-        "Читаем слог без остановки",
-        "Из слогов — слова",
-        "Слово находит картинку",
-        "Слова строят фразу",
-        "Что случилось сначала?",
-        "Герой, место, действие",
-        "Моя первая история",
+        "Кот и коробка",
+        "Дождь за окном",
+        "Где мяч?",
+        "Словик проверяет память",
+        "Мокрый кот",
+        "Кот и плед",
+        "Словик пришёл",
+        "Словик дома",
     ],
 }
 
@@ -301,6 +303,11 @@ def _badge_name_lines(name: str) -> list[str]:
         return ["Искатель", "искорок"]
     if name == "Хранитель сундука":
         return ["Хранитель", "сундука"]
+    if name == "Друг Словика":
+        return ["Друг", "Словика"]
+    if name.startswith("Знаю букву "):
+        letter = name.replace("Знаю букву ", "").strip()
+        return ["Знаю букву", letter]
     parts = name.split()
     if len(parts) <= 1:
         return [name]
@@ -309,11 +316,18 @@ def _badge_name_lines(name: str) -> list[str]:
     return [parts[0], " ".join(parts[1:])]
 
 
+COHORT_GROUPS = frozenset({"wind", "garden", "rus-6-9", "rus-10-12"})
+
+
+def _is_trial_or_cohort_only_group(group: str) -> bool:
+    return group.startswith("early-") or group in COHORT_GROUPS
+
+
 def resolve_cabinet_mode(tracks: list[dict[str, Any]] | None) -> str:
     """
     Режим комнаты ребёнка:
     - trial_early — только пробные early-уроки
-    - paid_early — куплен early-модуль/разовое (дневник сказок ещё скрыт)
+    - paid_early — куплен early/новинка или разовое (дневник сказок ещё скрыт)
     - full — есть сказочный/grade-модуль или смешанный доступ
     """
     rows = [t for t in (tracks or []) if t]
@@ -321,8 +335,7 @@ def resolve_cabinet_mode(tracks: list[dict[str, Any]] | None) -> str:
         return "full"
     groups = [str(t.get("group_code") or "") for t in rows]
     tariffs = [str(t.get("tariff_code") or "") for t in rows]
-    all_early = all(g.startswith("early-") for g in groups)
-    if not all_early:
+    if not all(_is_trial_or_cohort_only_group(g) for g in groups):
         return "full"
     if any(t in PAID_TARIFF_CODES for t in tariffs):
         return "paid_early"
@@ -334,6 +347,93 @@ def _course_cover_url(assets_base: str, group_code: str) -> str | None:
     if not filename:
         return None
     return f"{assets_base.rstrip('/')}/assets/{filename}?v={EARLY_ASSETS_VERSION}"
+
+
+def _intro_trial_cover_url(assets_base: str, group_code: str) -> str | None:
+    filename = INTRO_TRIAL_COVERS.get(group_code)
+    if not filename:
+        return _course_cover_url(assets_base, group_code)
+    return f"{assets_base.rstrip('/')}/assets/{filename}?v={EARLY_ASSETS_VERSION}"
+
+
+def _is_intro_trial_lesson(lesson: dict | None) -> bool:
+    if not lesson:
+        return False
+    if str(lesson.get("tariff_code") or "") == "trial":
+        return True
+    slug = str(lesson.get("slug") or "")
+    return "trial-lesson" in slug
+
+
+def _completed_lesson_slugs(events: list[Any]) -> set[str]:
+    done: set[str] = set()
+    for event in events or []:
+        if getattr(event, "event_type", "") != "lesson_complete":
+            continue
+        slug = canonical_tale_slug(getattr(event, "tale_slug", "") or "")
+        if slug:
+            done.add(slug)
+    return done
+
+
+def _lesson_is_completed(lesson: dict, completed_slugs: set[str]) -> bool:
+    slug = canonical_tale_slug(lesson.get("tale_slug") or lesson.get("slug") or "")
+    return bool(slug and slug in completed_slugs)
+
+
+def _decorate_intro_trial_lesson(
+    lesson: dict,
+    *,
+    assets_base: str,
+    group_code: str,
+) -> dict:
+    row = dict(lesson)
+    row["is_intro_trial"] = True
+    row["cover_url"] = _intro_trial_cover_url(assets_base, group_code) or lesson.get("cover_url")
+    row["cover_state"] = "open" if lesson.get("url") else lesson.get("cover_state", "locked")
+    return row
+
+
+def _weekly_lessons_early(
+    lesson_links: list[dict],
+    *,
+    events: list[Any],
+    group_code: str,
+    assets_base: str,
+) -> tuple[list[dict], str]:
+    """Пробный early: до 1 сентября — вводный; после — ближайший модульный урок."""
+    label = "Урок этой недели"
+    completed = _completed_lesson_slugs(events)
+    intro = next((les for les in lesson_links if _is_intro_trial_lesson(les)), None)
+    module_lessons = [
+        les
+        for les in lesson_links
+        if _uses_lesson_labels(les) and not _is_intro_trial_lesson(les)
+    ]
+    module_lessons = sort_lessons_by_access(module_lessons)
+    today = date.today()
+
+    if today >= EARLY_MODULE_START and module_lessons:
+        for les in module_lessons:
+            if les.get("url") and not _lesson_is_completed(les, completed):
+                return [les], label
+        playable = [les for les in module_lessons if les.get("url")]
+        if playable:
+            return [sort_lessons_by_access(playable)[0]], label
+
+    if intro and intro.get("url"):
+        return [
+            _decorate_intro_trial_lesson(
+                intro,
+                assets_base=assets_base,
+                group_code=group_code,
+            )
+        ], label
+
+    available = [les for les in lesson_links if les.get("url")]
+    if available:
+        return sort_lessons_by_access(available)[:1], label
+    return sort_lessons_by_access(lesson_links)[:1], "Будет доступно позже"
 
 
 def _buy_url_for_group(group_code: str) -> str:
@@ -384,6 +484,10 @@ def _trial_soft_earned_badges(
     for les in lesson_links:
         if _is_early_lesson(les) and quest_chest_earned(events, les):
             soft.add("Искатель искорок")
+            break
+    for les in lesson_links:
+        if str(les.get("group_code") or "") == "early-letters" and quest_chest_earned(events, les):
+            soft.add("Слоговик")
             break
     if claims:
         soft.add("Хранитель сундука")
@@ -437,7 +541,7 @@ def _build_badges_ui(
                 "name_lines": _badge_name_lines(name),
                 "condition": badge["condition"],
                 "earned": earned,
-                "image": _asset_url(assets_base, BADGE_IMAGES.get(image_name)),
+                "image": _asset_url(assets_base, badge_image_filename(image_name)),
                 "status": "earned" if earned else ("next" if name == next_badge else "locked"),
             }
         )
@@ -451,7 +555,7 @@ def _build_badges_ui(
                 "name_lines": _badge_name_lines(name),
                 "condition": "Уже получен",
                 "earned": True,
-                "image": _asset_url(assets_base, BADGE_IMAGES.get(name)),
+                "image": _asset_url(assets_base, badge_image_filename(name)),
                 "status": "earned",
             }
         )
@@ -549,19 +653,36 @@ def _is_early_lesson(lesson: dict | None) -> bool:
     return group.startswith("early-") or str(lesson.get("lesson_format") or "") == "quest"
 
 
+def _uses_lesson_labels(lesson: dict | None) -> bool:
+    if not lesson:
+        return False
+    group = str(lesson.get("group_code") or "")
+    return group.startswith("early-") or group in COHORT_GROUPS or _is_early_lesson(lesson)
+
+
 def _is_early_links(lesson_links: list[dict]) -> bool:
-    return any(_is_early_lesson(les) for les in lesson_links)
+    return any(_uses_lesson_labels(les) for les in lesson_links)
 
 
 def _weekly_lessons(
     lesson_links: list[dict],
     *,
     early: bool | None = None,
+    events: list[Any] | None = None,
+    group_code: str = "",
+    assets_base: str = "",
 ) -> tuple[list[dict], str]:
     if not lesson_links:
         return [], "Будет доступно позже"
     if early is None:
         early = _is_early_links(lesson_links)
+    if early and group_code.startswith("early-") and assets_base:
+        return _weekly_lessons_early(
+            lesson_links,
+            events=events or [],
+            group_code=group_code,
+            assets_base=assets_base,
+        )
     # Доступные уроки сверху; закрытые — ниже, по дате открытия.
     available = [les for les in lesson_links if les.get("url")]
     if available:
@@ -579,10 +700,40 @@ def _weekly_lessons(
 def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
     cards: list[dict[str, Any]] = []
     for lesson in sort_lessons_by_access(lessons):
-        early = _is_early_lesson(lesson)
+        early = _uses_lesson_labels(lesson)
         num = lesson.get("week_in_stage") or lesson.get("module_week") or 1
         title = lesson.get("title", "Урок")
         group = str(lesson.get("group_code") or "")
+        if lesson.get("is_intro_trial") or _is_intro_trial_lesson(lesson):
+            if group == "early-stories" or "истори" in title.lower():
+                goal = (
+                    "Короткий квест со Словиком: слово, фраза и смысл. "
+                    "Собери искорки и спаси первую историю."
+                )
+            else:
+                goal = (
+                    "Короткий квест со Словиком: станции со звуками, буквами и слогами. "
+                    "Собери искорки и помоги вернуть звуки."
+                )
+            cards.append(
+                {
+                    "title": title,
+                    "headline": "Вводный урок",
+                    "goal": goal,
+                    "duration": "≈ 15–20 мин",
+                    "reward_pts": 3,
+                    "reward_label": "искорки",
+                    "url": lesson.get("url"),
+                    "unlocked": bool(lesson.get("url")),
+                    "opens_on_label": lesson.get("opens_on_label"),
+                    "cover_url": lesson.get("cover_url"),
+                    "cover_state": lesson.get("cover_state", "locked"),
+                    "week_in_stage": num,
+                    "is_early": True,
+                    "group_code": group,
+                }
+            )
+            continue
         if early:
             if group == "early-stories" or "истори" in title.lower():
                 goal = (
@@ -1069,9 +1220,15 @@ def _build_track_section(
     cabinet_mode: str,
 ) -> dict[str, Any]:
     lesson_links = track.get("lesson_links") or []
+    group_code = str(track.get("group_code") or "")
     lesson = _current_lesson(lesson_links)
-    weekly_source, weekly_label = _weekly_lessons(lesson_links)
-    early = _is_early_links(lesson_links) or str(track.get("group_code") or "").startswith("early-")
+    weekly_source, weekly_label = _weekly_lessons(
+        lesson_links,
+        events=events,
+        group_code=group_code,
+        assets_base=assets_base,
+    )
+    early = _is_early_links(lesson_links) or group_code.startswith("early-") or group_code in COHORT_GROUPS
     tale_slug = canonical_tale_slug((lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or "")
     current_claim = (
         next(
@@ -1089,7 +1246,6 @@ def _build_track_section(
     chest["slovik_url"] = slovik_url(chest["slovik_key"])
 
     missions = _missions(events, lesson, points, chest)
-    group_code = str(track.get("group_code") or "")
     is_trial_track = cabinet_mode == "trial_early" or str(track.get("tariff_code") or "") == "trial"
     if is_trial_track and early:
         story_stages: list[dict] = []
@@ -1138,6 +1294,129 @@ def _build_track_section(
         ),
         "continue_url": lesson.get("url") if lesson and lesson.get("url") else None,
     }
+
+
+def _lesson_url_by_slug(lesson_links: list[dict], slug: str) -> str:
+    needle = str(slug or "").strip()
+    if not needle:
+        return ""
+    for les in lesson_links or []:
+        if str(les.get("slug") or "") == needle and les.get("url"):
+            return str(les.get("url"))
+    return f"/lesson/{needle}"
+
+
+def _event_time(event: Any) -> float:
+    for attr in ("created_at", "ts", "timestamp"):
+        val = getattr(event, attr, None)
+        if val is None:
+            continue
+        try:
+            return float(val.timestamp())  # type: ignore[union-attr]
+        except Exception:
+            try:
+                return float(val)
+            except Exception:
+                continue
+    return 0.0
+
+
+def _last_early_path_key(
+    events: list[Any] | None,
+    tracks: list[dict[str, Any]] | None,
+    lesson_links: list[dict],
+) -> str | None:
+    """Какой early-курс привёл в сундук последним: early-letters | early-stories."""
+    slug_to_key: dict[str, str] = {}
+    title_to_key: dict[str, str] = {}
+    for les in lesson_links or []:
+        slug = str(les.get("slug") or "")
+        group = str(les.get("group_code") or "")
+        title = str(les.get("title") or "").strip().lower()
+        key = None
+        if "early-letters" in group or "early-letters" in slug or "букв" in title:
+            key = "early-letters"
+        elif "early-stories" in group or "early-stories" in slug or "истори" in title:
+            key = "early-stories"
+        if not key:
+            continue
+        if slug:
+            slug_to_key[slug] = key
+        if title:
+            title_to_key[title] = key
+
+    # Prefer a track whose chest is ready / just opened.
+    for track in tracks or []:
+        group = str(track.get("group_code") or track.get("code") or "")
+        chest = track.get("chest") or {}
+        if not (chest.get("ready") or chest.get("claimed")):
+            continue
+        if group.startswith("early-letters"):
+            return "early-letters"
+        if group.startswith("early-stories"):
+            return "early-stories"
+
+    ranked = sorted(events or [], key=_event_time, reverse=True)
+    for event in ranked:
+        if getattr(event, "event_type", "") != "lesson_complete":
+            continue
+        payload = getattr(event, "payload", None) or {}
+        slug = str(payload.get("lesson_slug") or payload.get("slug") or "").strip()
+        if slug in slug_to_key:
+            return slug_to_key[slug]
+        title = str(getattr(event, "tale_title", "") or "").strip().lower()
+        if title in title_to_key:
+            return title_to_key[title]
+        if "букв" in title or "звук" in title:
+            return "early-letters"
+        if "истори" in title:
+            return "early-stories"
+    return None
+
+
+def _build_path_hint(
+    *,
+    events: list[Any] | None,
+    tracks: list[dict[str, Any]] | None,
+    lesson_links: list[dict],
+    cabinet_mode: str,
+) -> dict[str, Any] | None:
+    if cabinet_mode not in ("trial_early", "paid_early"):
+        return None
+    key = _last_early_path_key(events, tracks, lesson_links)
+    if key == "early-letters":
+        return {
+            "title": "Куда дальше?",
+            "source": key,
+            "items": [
+                {
+                    "eyebrow": "Если эти задания показались слишком простыми",
+                    "text": "Попробуйте прочитать первую историю в нашем другом уроке:",
+                    "cta": "Первые истории — вводный урок",
+                    "url": _lesson_url_by_slug(lesson_links, "early-stories-trial-lesson-01"),
+                }
+            ],
+        }
+    if key == "early-stories":
+        return {
+            "title": "Куда дальше?",
+            "source": key,
+            "items": [
+                {
+                    "eyebrow": "Если было сложно",
+                    "text": "Пройдите сначала курс по звукам:",
+                    "cta": "Буквы оживают — вводный урок",
+                    "url": _lesson_url_by_slug(lesson_links, "early-letters-trial-lesson-01"),
+                },
+                {
+                    "eyebrow": "Если было легко",
+                    "text": "Вы готовы к нашему первому курсу по сказкам:",
+                    "cta": "Царевна-лягушка — пробный урок",
+                    "url": _lesson_url_by_slug(lesson_links, "tsarevna-lyagushka"),
+                },
+            ],
+        }
+    return None
 
 
 def build_child_cabinet(
@@ -1211,7 +1490,13 @@ def build_child_cabinet(
         chest = _chest_state(events, lesson, claim=current_claim, reward_items=reward_items)
         chest["slovik_key"] = chest_slovik_key(chest)
         chest["slovik_url"] = slovik_url(chest["slovik_key"])
-        weekly_source, weekly_label = _weekly_lessons(lesson_links)
+        legacy_group = str((lesson_links[0] or {}).get("group_code") or "") if lesson_links else ""
+        weekly_source, weekly_label = _weekly_lessons(
+            lesson_links,
+            events=events,
+            group_code=legacy_group,
+            assets_base=assets_base,
+        )
         weekly_lessons = _weekly_lesson_cards(weekly_source)
         daily = weekly_lessons[0] if weekly_lessons else None
         missions = _missions(events, lesson, points, chest)
@@ -1289,6 +1574,35 @@ def build_child_cabinet(
         "lesson_url": continue_url,
     }
     recent_toast = recent_event_slovik(events)
+    path_hint = _build_path_hint(
+        events=events,
+        tracks=track_sections,
+        lesson_links=lesson_links,
+        cabinet_mode=cabinet_mode,
+    )
+    if path_hint and track_sections:
+        src = str(path_hint.get("source") or "")
+        track_sections.sort(
+            key=lambda t: 0 if str(t.get("group_code") or "").startswith(src) else 1
+        )
+        primary = track_sections[0]
+        chest = primary["chest"]
+        primary_chest = chest
+        ready_chest = next((t["chest"] for t in track_sections if t["chest"].get("ready")), None)
+        if ready_chest:
+            primary_chest = ready_chest
+        daily = primary.get("daily_lesson")
+        weekly_lessons = primary.get("weekly_lessons") or []
+        weekly_label = primary.get("weekly_lessons_label") or weekly_label
+        missions = primary["missions"]
+        missions_title = primary["missions_title"]
+        missions_subtitle = primary["missions_subtitle"]
+        story_stages = primary["story_stages"]
+        continue_url = next(
+            (t["continue_url"] for t in track_sections if t.get("continue_url")),
+            continue_url,
+        )
+        companion["lesson_url"] = continue_url
 
     return {
         "name": name,
@@ -1324,6 +1638,7 @@ def build_child_cabinet(
         "companion": companion,
         "recent_toast": recent_toast,
         "continue_url": continue_url,
+        "path_hint": path_hint,
         "slovik_main_url": slovik_url("main"),
         "slovik_preparing_url": slovik_url(POINTS_COUNTER_SLOVIK),
     }

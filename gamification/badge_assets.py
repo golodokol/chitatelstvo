@@ -21,6 +21,12 @@ BADGE_ASSET_FILES: dict[str, str] = {
     "Исследователь сказки": "gamify-badge-module-explorer.png",
     "Непрерывная серия": "gamify-badge-streak.png",
     "Путешественник по сказке": "gamify-badge-tale-traveler.png",
+    "Искатель искорок": "gamify-badge-spark-hunter.png",
+    "Хранитель сундука": "gamify-badge-chest-keeper.png",
+    "Слоговик": "gamify-badge-syllable-master.png",
+    "Знаю букву М": "gamify-badge-letter-m.png",
+    "Словарик": "gamify-badge-word-book.png",
+    "Друг Словика": "gamify-badge-slovik-friend.png",
 }
 
 # Исходники от дизайнера (docs/images)
@@ -50,6 +56,16 @@ def _resolve_source(name: str) -> Path | None:
     for candidate in IMAGES_DIR.iterdir():
         if candidate.is_file() and candidate.name.lower() == target:
             return candidate
+    return None
+
+
+def badge_image_filename(name: str) -> str | None:
+    """Имя файла на CDN только если PNG уже лежит в docs/images."""
+    filename = BADGE_ASSET_FILES.get(name)
+    if not filename:
+        return None
+    if (IMAGES_DIR / filename).is_file():
+        return filename
     return None
 
 

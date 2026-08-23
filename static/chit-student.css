@@ -2142,6 +2142,69 @@ a.chit-room__helper:focus-visible {
   overflow: visible;
 }
 
+.chit-panel--path-hint {
+  background: linear-gradient(180deg, #fffdf8 0%, #fff4e4 100%);
+  border: 1.5px solid rgba(180, 120, 30, 0.22);
+}
+.chit-path-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.chit-path-hint__card {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid rgba(80, 55, 20, 0.1);
+  box-shadow: 0 4px 14px rgba(80, 55, 20, 0.06);
+}
+.chit-path-hint__eye {
+  margin: 0 0 4px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #9a7a48;
+}
+.chit-path-hint__text {
+  margin: 0 0 10px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #3a342c;
+}
+.chit-path-hint__cta {
+  width: 100%;
+  text-align: center;
+}
+
+.chit-current-lesson {
+  margin: 0 0 10px;
+  padding: 0 4px;
+}
+.chit-section-sub--track {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #9a8a78;
+}
+.chit-current-lesson__title {
+  margin: 0;
+  font-family: 'Literata', Georgia, serif;
+  font-size: 1.45rem;
+  line-height: 1.25;
+  color: var(--text-warm);
+}
+.chit-panel--treasury + .chit-current-lesson {
+  margin-top: 4px;
+}
+.chit-current-lesson + .chit-panel--chest {
+  margin-top: 0;
+}
+
 .chit-panel--trophies {
   background: linear-gradient(180deg, var(--white) 0%, var(--cream-warm) 100%);
   border-color: var(--accent-pale);
@@ -3090,6 +3153,12 @@ a.chit-lesson-card__cover-link:focus-visible {
   justify-content: center;
 }
 .chit-badge-card__img img { width: 62px; height: 62px; object-fit: contain; }
+.chit-badge-card__img--empty {
+  background: linear-gradient(145deg, #fff9ee 0%, #f3e4c4 100%);
+  border: 1.5px dashed rgba(201, 160, 48, 0.38);
+  color: #c9a030;
+  font-size: 1.45rem;
+}
 .chit-badge-card__name {
   display: block;
   width: 100%;

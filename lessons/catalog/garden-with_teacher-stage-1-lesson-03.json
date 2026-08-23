@@ -1,0 +1,20 @@
+{
+  "slug": "garden-with_teacher-stage-1-lesson-03",
+  "title": "Тайна сада",
+  "tale_title": "Тайна сада",
+  "module_id": 33,
+  "group_code": "garden",
+  "group_label": "Таинственный сад",
+  "tariff_code": "with_teacher",
+  "tariff_label": "Модуль с преподавателем",
+  "stage": "stage-1",
+  "stage_label": "Модуль 1",
+  "lesson_number": 3,
+  "tale_number": 3,
+  "tale_slug": "garden-stage1-tale-03",
+  "module_week": 3,
+  "meeting_number": 3,
+  "active": false,
+  "status": "черновик",
+  "note": "Заглушка: контент урока в разработке. Доступ по расписанию."
+}

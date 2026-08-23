@@ -1704,7 +1704,9 @@
     }
     /* Старт 15 июля скрыт для тарифа «С преподавателем» (и через класс, и через :has — без JS) */
     #chit-main.is-with-teacher-stage1-closed #chit-stages [data-stage="1"],
-    #chit-main:has(#chit-tariffs .pick-card[data-tariff="with_teacher"].is-active) #chit-stages [data-stage="1"] {
+    #chit-main.is-cohort-course #chit-stages [data-stage="2"],
+    #chit-main.is-early-course #chit-stages [data-stage="2"],
+    #chit-main:has(#chit-tariffs .pick-card[data-tariff="with_teacher"].is-active:not(.is-disabled)) #chit-stages [data-stage="1"] {
       display: none !important;
       visibility: hidden !important;
       pointer-events: none !important;
@@ -1727,6 +1729,14 @@
     }
     .pick-card:hover { border-color: var(--blue-light); transform: translateY(-4px); box-shadow: var(--shadow); }
     .pick-card.is-active { border-color: var(--blue); background: var(--blue-pale); }
+    .pick-card.is-disabled {
+      opacity: 0.45;
+      pointer-events: none;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .pick-card.is-disabled:hover { border-color: var(--border); transform: none; box-shadow: none; }
     .pick-card__tag { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
     .pick-card__name { font-size: 16px; font-weight: 800; color: var(--blue); margin: 6px 0; }
     .pick-card__price { font-size: 20px; font-weight: 800; color: var(--text); }
@@ -3149,6 +3159,9 @@
 #chit-main .course-card__actions--early .course-card__btn--trial {
   grid-column: 1 / -1;
 }
+#chit-main .course-card__actions--trial .course-card__btn--trial {
+  grid-column: 1 / -1;
+}
 #chit-main .course-card__btn {
   display: inline-flex;
   align-items: center;
@@ -3442,10 +3455,14 @@
   background: linear-gradient(135deg, #F8EFE3 0%, #E8F1F8 100%);
 }
 #chit-main .course-card[data-group="early-letters"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-letters.jpg") center 42% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-letters.jpg?v=20260822g") center center / cover no-repeat !important;
 }
 #chit-main .course-card[data-group="early-stories"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-stories.jpg") center 48% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-stories.jpg?v=20260822g") center center / cover no-repeat !important;
+}
+#chit-main .course-card[data-group="early-letters"] .course-card__media img,
+#chit-main .course-card[data-group="early-stories"] .course-card__media img {
+  object-position: center center !important;
 }
 #chit-main .course-card[data-group="early-letters"] .course-card__media::after,
 #chit-main .course-card[data-group="early-stories"] .course-card__media::after,
@@ -3611,13 +3628,13 @@
   display: none;
 }
 #chit-main #tariffs .fare-card--rec {
-  padding-top: 22px;
+  padding-top: 36px;
   border-color: #B8D4BE;
 }
 #chit-main #tariffs .fare-card__badge {
-  top: 0;
+  top: 10px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   padding: 5px 12px;
   font-size: 11px;
   letter-spacing: 0.02em;
@@ -3654,18 +3671,26 @@
   box-shadow: 0 0 0 1px var(--accent);
 }
 #chit-main .fare-card--rec,
-.fare-modal .fare-card--rec { padding-top: 28px; }
+.fare-modal .fare-card--rec { padding-top: 36px; }
 #chit-main .fare-card__badge,
 .fare-modal .fare-card__badge {
   position: absolute;
-  top: -11px;
-  left: 16px;
-  padding: 4px 10px;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 5px 12px;
   border-radius: 999px;
   background: #E6F4EA;
   color: #2F6B3A;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(47, 107, 58, 0.12);
+  pointer-events: none;
 }
 #chit-main .fare-card__radio,
 .fare-modal .fare-card__radio {
@@ -3802,6 +3827,18 @@
 #chit-main .course-card { cursor: pointer; }
 #chit-main .course-card a[data-course-detail] { cursor: pointer; }
 
+.fare-modal .fare-card.is-disabled {
+  opacity: 0.42;
+  pointer-events: none;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.fare-modal .fare-card.is-disabled:hover {
+  border-color: var(--border);
+  transform: none;
+  box-shadow: none;
+}
 .fare-modal {
   position: fixed;
   inset: 0;
@@ -3911,8 +3948,15 @@
   grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding: 4px 2px 4px;
   -webkit-overflow-scrolling: touch;
+}
+.fare-modal .fare-card--rec { padding-top: 36px; }
+.fare-modal .fare-card__badge {
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 .fare-modal__foot {
   margin-top: 18px;
