@@ -2017,7 +2017,8 @@
     function showItem() {
       var item = items[itemIdx];
       var view = {
-        slovik_line: itemIdx === 0 ? (station.slovik_line || "") : (item.slovik_line || ""),
+        // Keep Slovik's text on every word; speak only on the first item.
+        slovik_line: item.slovik_line || station.slovik_line || "",
         slovik_pose: station.slovik_pose,
         scene_image: station.scene_image,
         audio: itemIdx === 0 ? (station.audio || "") : (item.audio || ""),
