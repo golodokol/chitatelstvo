@@ -773,7 +773,11 @@
     flags = flags || {};
     var grid = document.createElement("div");
     var hasImg = (options || []).some(function (opt) { return opt && opt.image; });
-    grid.className = "quest-grid" + (hasImg ? " quest-grid--rich" : " quest-grid--choice");
+    grid.className = "quest-grid" + (hasImg ? " quest-grid--rich quest-answers-row" : " quest-grid--choice");
+    if (hasImg) {
+      // Inline row so a narrow parent / cached CSS cannot collapse answers into a column.
+      grid.style.cssText = "display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;justify-content:center!important;align-items:stretch!important;gap:12px;width:100%;max-width:560px;margin:0 auto;box-sizing:border-box;";
+    }
     (options || []).forEach(function (opt) {
       var id = typeof opt === "string" ? opt : opt.id;
       var label = typeof opt === "string" ? opt : (opt.label || opt.id);
