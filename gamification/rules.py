@@ -147,6 +147,7 @@ def is_early_letters_title(tale_title: str | None) -> bool:
         "пропавшие звуки",
         "словик и пропавшие",
         "буквы оживают",
+        "первые звуки",
     )
     return any(m in title for m in markers)
 

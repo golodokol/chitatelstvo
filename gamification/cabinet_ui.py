@@ -143,7 +143,7 @@ CHEST_STEPS = ("video_unlock", "comprehension", "meaning_analysis")
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260823b"
+EARLY_ASSETS_VERSION = "20260823c"
 
 INTRO_TRIAL_COVERS: dict[str, str] = {
     "early-letters": "course-cover-letters-intro.jpg",
@@ -208,7 +208,7 @@ STORIES_SHELF_BOOKS: tuple[dict[str, Any], ...] = (
         "book_title": "Дома",
         "tale_slug": "early-stories-stage1-tale-00",
         "lesson_titles": ("Спаси первую историю", "Дома"),
-        "cover_url": "/static/early/stories/book-home-01.jpg",
+        "cover_url": "/static/early/stories/book-cover-home.png",
         "tone": "amber",
     },
     {
@@ -548,39 +548,88 @@ def _upcoming_module_lessons(
     return rows
 
 
+def _early_quest_chest_ready_in_events(events: list[Any] | None) -> bool:
+    """Есть lesson_complete early-квеста с готовым сундуком (без привязки к lesson_links)."""
+    from gamification.rules import is_early_quest_title
+
+    for event in events or []:
+        if getattr(event, "event_type", "") != "lesson_complete":
+            continue
+        if not is_early_quest_title(getattr(event, "tale_title", None)):
+            continue
+        payload = getattr(event, "payload", None) or {}
+        if payload.get("chest_ready") is True:
+            return True
+        try:
+            sparks = int(payload.get("sparks") or 0)
+        except (TypeError, ValueError):
+            sparks = 0
+        if sparks >= 3:
+            return True
+    return False
+
+
+def _has_early_stories_complete(events: list[Any] | None) -> bool:
+    from gamification.rules import is_early_stories_title
+
+    for event in events or []:
+        if getattr(event, "event_type", "") != "lesson_complete":
+            continue
+        if is_early_stories_title(getattr(event, "tale_title", None)):
+            return True
+    return False
+
+
 def _trial_soft_earned_badges(
     events: list[Any],
     claims: list[Any],
     lesson_links: list[dict],
 ) -> set[str]:
     """Визуальные «получено» для пробных бейджей без отдельной записи в БД."""
-    from gamification.rules import is_early_stories_title
-
     soft: set[str] = set()
+    chest_ready = _early_quest_chest_ready_in_events(events)
     for les in lesson_links:
         if _is_early_lesson(les) and quest_chest_earned(events, les):
-            soft.add("Искатель искорок")
+            chest_ready = True
             break
+    if chest_ready:
+        soft.add("Искатель искорок")
+    letters_done = False
     for les in lesson_links:
-        if str(les.get("group_code") or "") == "early-letters" and quest_chest_earned(events, les):
-            soft.add("Слоговик")
+        if str(les.get("group_code") or "") == "early-letters" and (
+            quest_chest_earned(events, les) or chest_ready
+        ):
+            letters_done = True
             break
+    if not letters_done:
+        from gamification.rules import is_early_letters_title
+
+        for event in events or []:
+            if getattr(event, "event_type", "") != "lesson_complete":
+                continue
+            if is_early_letters_title(getattr(event, "tale_title", None)):
+                letters_done = True
+                break
+    if letters_done and chest_ready:
+        soft.add("Слоговик")
     if claims:
         soft.add("Хранитель сундука")
-    # «Читатель» в пробном кабинете — только если пройдена история (не буквы).
-    for event in events or []:
-        if getattr(event, "event_type", "") != "lesson_complete":
-            continue
-        if is_early_stories_title(getattr(event, "tale_title", None)):
-            soft.add("Читатель")
-            break
+    # «Читатель» — только после первой истории, не после урока звуков/букв.
+    if _has_early_stories_complete(events):
+        soft.add("Читатель")
     return soft
 
 
-def _filter_trial_earned_badges(earned: set[str], soft_earned: set[str]) -> set[str]:
+def _filter_trial_earned_badges(
+    earned: set[str],
+    soft_earned: set[str],
+    events: list[Any] | None = None,
+) -> set[str]:
     """В пробном режиме «Читатель» не показываем, пока не пройдена история."""
     out = set(earned)
-    if "Читатель" in out and "Читатель" not in soft_earned:
+    if "Читатель" in out and (
+        "Читатель" not in soft_earned or not _has_early_stories_complete(events)
+    ):
         out.discard("Читатель")
     # «Непрерывная серия» убрали из пробного каталога — не тащим в UI.
     out.discard("Непрерывная серия")
@@ -1711,7 +1760,7 @@ def build_child_cabinet(
         else set()
     )
     if cabinet_mode == "trial_early":
-        earned_set = _filter_trial_earned_badges(earned_set, soft_earned)
+        earned_set = _filter_trial_earned_badges(earned_set, soft_earned, events)
     badge_catalog = _badge_catalog_for_mode(cabinet_mode)
     badges_ui, badges_earned_count = _build_badges_ui(
         earned_set=earned_set,

@@ -3316,7 +3316,13 @@ a.chit-lesson-card__cover-link:focus-visible {
   display: flex;
   justify-content: center;
 }
-.chit-badge-card__img img { width: 62px; height: 62px; object-fit: contain; }
+.chit-badge-card__img img {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: transparent;
+}
 .chit-badge-card__img--empty {
   background: linear-gradient(145deg, #fff9ee 0%, #f3e4c4 100%);
   border: 1.5px dashed rgba(201, 160, 48, 0.38);

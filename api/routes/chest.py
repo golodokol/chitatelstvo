@@ -86,10 +86,26 @@ def claim_chest(
         module_week=lesson.get("module_week"),
         items=treasury_items,
     )
+    # Пробный early: бейдж «Хранитель сундука» при открытии сундука.
+    from gamification.bonus_badges import check_chest_keeper_badge
+
+    chest_badge = check_chest_keeper_badge(
+        child_name=child.name,
+        current_badges=[b.badge_name for b in child.badges],
+        tale_title=lesson.get("title"),
+    )
+    if chest_badge:
+        repo.grant_bonus_badge(
+            db,
+            child,
+            badge_name=chest_badge.badge_name,
+            level_change=chest_badge.level_change,
+        )
     return {
         "status": "claimed",
         "message": "Награда сохранена в сокровищнице",
         "items": row.items,
         "letter_shown": True,
         "claimed_at": row.claimed_at.isoformat() if row.claimed_at else None,
+        "badge_name": chest_badge.badge_name if chest_badge else None,
     }

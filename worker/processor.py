@@ -62,6 +62,7 @@ def process_event(event_id: str) -> None:
             current_badges=[b.badge_name for b in child.badges],
             event_type=event.event_type,
             tale_title=event.tale_title,
+            payload=event.payload if isinstance(event.payload, dict) else None,
         ):
             if repo.grant_bonus_badge(
                 db,

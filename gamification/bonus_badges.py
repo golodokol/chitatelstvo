@@ -8,13 +8,23 @@ from dataclasses import dataclass
 from sqlalchemy.orm import Session
 
 from db import repository as repo
-from gamification.rules import LEVELS
+from gamification.rules import (
+    LEVELS,
+    is_early_letters_title,
+    is_early_quest_title,
+    is_early_stories_title,
+)
 from gamification.streak_badges import STREAK_META_EVENTS
 
 FIRST_STEP_BADGE = "Первый шаг"
 TALE_TRAVELER_BADGE = "Путешественник по сказке"
 TALE_TRAVELER_MIN_TALES = 4
 TALE_TRAVELER_LEVEL = "Литературный детектив"
+
+# Пробные early-бейджи (реальная запись в БД + soft в кабинете)
+SPARK_HUNTER_BADGE = "Искатель искорок"
+CHEST_KEEPER_BADGE = "Хранитель сундука"
+SYLLABLE_BADGE = "Слоговик"
 
 # Любая учебная активность = «уже сделал первый шаг в школе»
 FIRST_STEP_EVENT_TYPES = frozenset(
@@ -114,6 +124,81 @@ def check_tale_traveler_badge(
     )
 
 
+def check_early_quest_badges(
+    *,
+    child_name: str,
+    current_badges: list[str],
+    event_type: str,
+    tale_title: str | None,
+    payload: dict | None = None,
+) -> list[BonusBadgeGrant]:
+    """Искорки / слоговик после early-квеста; Читатель — только после истории."""
+    if event_type != "lesson_complete":
+        return []
+    if not is_early_quest_title(tale_title):
+        return []
+
+    data = payload or {}
+    chest_ready = data.get("chest_ready") is True
+    try:
+        sparks = int(data.get("sparks") or 0)
+    except (TypeError, ValueError):
+        sparks = 0
+    if not chest_ready and sparks < 3:
+        return []
+
+    name = child_name.strip() or "Читатель"
+    grants: list[BonusBadgeGrant] = []
+    owned = set(current_badges)
+
+    if SPARK_HUNTER_BADGE not in owned:
+        grants.append(
+            BonusBadgeGrant(
+                badge_name=SPARK_HUNTER_BADGE,
+                level_change=None,
+                child_message=f"{name}, ты собрал(а) все искорки — бейдж «{SPARK_HUNTER_BADGE}»!",
+                parent_message=f"{name} собрал(а) все искорки квеста — бейдж «{SPARK_HUNTER_BADGE}».",
+            )
+        )
+        owned.add(SPARK_HUNTER_BADGE)
+
+    if is_early_letters_title(tale_title) and SYLLABLE_BADGE not in owned:
+        grants.append(
+            BonusBadgeGrant(
+                badge_name=SYLLABLE_BADGE,
+                level_change=None,
+                child_message=f"{name}, слог прочитан — бейдж «{SYLLABLE_BADGE}» твой!",
+                parent_message=f"{name} прочитал(а) слог в квесте «Буквы» — бейдж «{SYLLABLE_BADGE}».",
+            )
+        )
+
+    return grants
+
+
+def check_chest_keeper_badge(
+    *,
+    child_name: str,
+    current_badges: list[str],
+    tale_title: str | None = None,
+) -> BonusBadgeGrant | None:
+    """Бейдж «Хранитель сундука» при открытии сундука early-урока."""
+    if CHEST_KEEPER_BADGE in current_badges:
+        return None
+    if tale_title and not (
+        is_early_quest_title(tale_title)
+        or is_early_letters_title(tale_title)
+        or is_early_stories_title(tale_title)
+    ):
+        return None
+    name = child_name.strip() or "Читатель"
+    return BonusBadgeGrant(
+        badge_name=CHEST_KEEPER_BADGE,
+        level_change=None,
+        child_message=f"{name}, сундук открыт — бейдж «{CHEST_KEEPER_BADGE}»!",
+        parent_message=f"{name} открыл(а) сундук урока — бейдж «{CHEST_KEEPER_BADGE}».",
+    )
+
+
 def bonus_badges_for_event(
     db: Session,
     *,
@@ -123,6 +208,7 @@ def bonus_badges_for_event(
     current_badges: list[str],
     event_type: str,
     tale_title: str | None,
+    payload: dict | None = None,
 ) -> list[BonusBadgeGrant]:
     grants: list[BonusBadgeGrant] = []
     first = check_first_step_badge(
@@ -133,6 +219,15 @@ def bonus_badges_for_event(
     if first:
         grants.append(first)
         current_badges = [*current_badges, first.badge_name]
+    for early in check_early_quest_badges(
+        child_name=child_name,
+        current_badges=current_badges,
+        event_type=event_type,
+        tale_title=tale_title,
+        payload=payload,
+    ):
+        grants.append(early)
+        current_badges = [*current_badges, early.badge_name]
     traveler = check_tale_traveler_badge(
         db,
         child_id=child_id,
