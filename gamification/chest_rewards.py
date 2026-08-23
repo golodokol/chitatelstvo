@@ -126,6 +126,17 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
             "downloadable": True,
             "in_treasury": True,
         },
+        {
+            "kind": "creative_5",
+            "label": "Раскрась Словика",
+            "description": "Задание из сундука пробного урока — скачай и распечатай",
+            "preview_files": ("gift-5.jpg", "gift-5.png"),
+            "download_files": ("gift-5.pdf", "gift-5.jpg"),
+            "download_name": "Читательство Раскрась Словика.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
     ],
     "early-letters-stage1-tale-00": [
         {
@@ -480,8 +491,18 @@ def _first_existing(base: Path, names: tuple[str, ...]) -> Path | None:
     return None
 
 
-def _static_url(tale_slug: str, filename: str) -> str:
-    return f"/static/chest/rewards/{tale_slug}/{filename}"
+def _static_url(tale_slug: str, filename: str, *, version: int | None = None) -> str:
+    url = f"/static/chest/rewards/{tale_slug}/{filename}"
+    if version is not None:
+        return f"{url}?v={version}"
+    return url
+
+
+def _file_version(path: Path) -> int:
+    try:
+        return int(path.stat().st_mtime)
+    except OSError:
+        return 0
 
 
 def _build_item(entry: dict[str, Any], tale_slug: str, tale_title: str) -> dict[str, Any]:
@@ -490,11 +511,15 @@ def _build_item(entry: dict[str, Any], tale_slug: str, tale_title: str) -> dict[
     download = _first_existing(folder, entry["download_files"])
 
     image_url = (
-        _static_url(tale_slug, preview.name)
+        _static_url(tale_slug, preview.name, version=_file_version(preview))
         if preview
         else entry["fallback_image"]
     )
-    download_url = _static_url(tale_slug, download.name) if download else None
+    download_url = (
+        _static_url(tale_slug, download.name, version=_file_version(download))
+        if download
+        else None
+    )
 
     item: dict[str, Any] = {
         "kind": entry["kind"],
