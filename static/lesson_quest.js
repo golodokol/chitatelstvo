@@ -1899,9 +1899,16 @@
     var items = station.items || [station];
     var itemIdx = 0;
     function showItem() {
-      openPlayfield(station);
-      enableNext(false);
       var item = items[itemIdx];
+      var view = {
+        slovik_line: itemIdx === 0 ? (station.slovik_line || "") : (item.slovik_line || ""),
+        slovik_pose: station.slovik_pose,
+        scene_image: station.scene_image,
+        audio: itemIdx === 0 ? (station.audio || "") : (item.audio || ""),
+        tech_msg: itemIdx === 0 ? station.tech_msg : undefined
+      };
+      openPlayfield(view);
+      enableNext(false);
       var word = document.createElement("p");
       word.className = "quest-letter quest-letter--chip";
       word.textContent = item.word || station.word || "";

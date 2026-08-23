@@ -475,7 +475,7 @@
       "title": "Домик слов",
       "chapter": "Искорка 1 · Слово",
       "kind": "word_picture",
-      "slovik_line": "Прочитай слово и найди картинку.",
+      "slovik_line": "Прочитай слово и найди картинку. Потом — ещё два слова.",
       "slovik_pose": "invite",
       "scene_image": "/static/early/stories/scene-path.jpg",
       "audio": "ph-vo-house",
