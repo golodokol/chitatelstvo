@@ -247,13 +247,22 @@
 
   function afterStationVoice(fn) {
     var gen = playGen;
+    function runWhenQuiet() {
+      if (gen !== playGen) return;
+      // Wait until Slovik's line is fully done (flag + actual audio element).
+      if (instructionPlaying || (audio && !audio.paused && !audio.ended && audio.currentTime > 0)) {
+        setTimeout(runWhenQuiet, 200);
+        return;
+      }
+      fn();
+    }
     pendingVoiceCb = function () {
       if (gen !== playGen) return;
-      fn();
+      runWhenQuiet();
     };
     if (!instructionPlaying) {
       pendingVoiceCb = null;
-      if (gen === playGen) fn();
+      runWhenQuiet();
     }
   }
 
@@ -261,41 +270,49 @@
     var urls = audioCandidates(id);
     var finished = false;
     var token = ++audioToken;
-    function finish() {
+    function finish(force) {
       if (finished) return;
+      // Duration/safety timeouts must not cut off a still-playing instruction
+      // (that used to start letter SFX while Slovik was still speaking).
+      if (!force && typeof onEnded === "function" && audio && !audio.paused && !audio.ended) {
+        setTimeout(function () {
+          if (token === audioToken) finish(false);
+        }, 250);
+        return;
+      }
       finished = true;
       try { audio.onended = null; } catch (e) {}
       if (token !== audioToken) return;
       if (typeof onEnded === "function") onEnded();
     }
     if (!urls.length) {
-      finish();
+      finish(true);
       return;
     }
     try {
       hushVoice();
       sfx.pause();
       audio.pause();
-      audio.onended = finish;
+      audio.onended = function () { finish(true); };
       playOnEl(audio, urls, function () {
-        finish();
+        finish(true);
       });
       if (onEnded) {
         setTimeout(function () {
-          if (token === audioToken) finish();
-        }, 15000);
+          if (token === audioToken) finish(true);
+        }, 20000);
         audio.addEventListener("loadedmetadata", function meta() {
           audio.removeEventListener("loadedmetadata", meta);
           var d = audio.duration;
           if (isFinite(d) && d > 0) {
             setTimeout(function () {
-              if (token === audioToken) finish();
-            }, Math.ceil(d * 1000) + 350);
+              if (token === audioToken) finish(false);
+            }, Math.ceil(d * 1000) + 500);
           }
         });
       }
     } catch (e) {
-      finish();
+      finish(true);
     }
   }
 
@@ -333,6 +350,7 @@
 
   function playSfx(id) {
     if (instructionPlaying) return;
+    if (audio && !audio.paused && !audio.ended && audio.currentTime > 0) return;
     hushVoice();
     var urls = audioCandidates(id);
     if (!urls.length) return;
@@ -651,6 +669,10 @@
       sfx.removeAttribute("src");
       sfx.load();
     } catch (e) {}
+    try {
+      audio.pause();
+      audio.onended = null;
+    } catch (e2) {}
   }
 
   function coachSay(text, speed) {
@@ -1248,7 +1270,11 @@
     wrap.appendChild(count);
     root().appendChild(wrap);
     afterStationVoice(function () {
-      if (alive()) scheduleFlash();
+      if (!alive()) return;
+      // Small beat after Slovik finishes, so letter sounds never overlap the line.
+      gameTimer = setTimeout(function () {
+        if (alive()) scheduleFlash();
+      }, 450);
     });
   }
 
