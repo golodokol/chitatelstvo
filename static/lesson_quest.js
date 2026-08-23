@@ -867,6 +867,10 @@
       });
       letter.classList.add("has-art");
       letter.appendChild(art);
+      var wordEl = document.createElement("span");
+      wordEl.className = "quest-meet__word";
+      wordEl.textContent = word;
+      letter.appendChild(wordEl);
     } else {
       letter.textContent = word;
     }
