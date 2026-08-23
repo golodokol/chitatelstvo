@@ -2815,10 +2815,11 @@
       if (!item) return;
       var card = document.createElement("div");
       card.className = "quest-reward__next-card";
-      if (item.eyebrow) {
+      var eyeText = item.eyebrow || item.eyebrow;
+      if (eyeText) {
         var eye = document.createElement("p");
         eye.className = "quest-reward__next-eye";
-        eye.textContent = item.eyebrow;
+        eye.textContent = eyeText;
         card.appendChild(eye);
       }
       if (item.text) {
@@ -2852,9 +2853,10 @@
     spark.src = assetUrl(station.spark_image || "/static/early/letters/spark.png");
     spark.alt = "Искорка";
     var box = document.createElement("div");
-    box.className = "quest-reward";
+    box.className = "quest-reward" + (earned ? " quest-reward--success" : " quest-reward--retry");
     box.appendChild(spark);
     var title = document.createElement("strong");
+    title.className = "quest-reward__title";
     title.textContent = earned ? "Ура!" : (station.fail_title || "Ещё чуть-чуть");
     box.appendChild(title);
     if (!earned) {
@@ -2870,7 +2872,7 @@
       box.appendChild(note);
     }
     var links = document.createElement("div");
-    links.className = "quest-reward__links";
+    links.className = "quest-reward__links" + (earned ? " quest-reward__links--stack" : "");
     var chestHref = cfg.chestUrl || "";
     if (!chestHref && cfg.progressUrl) {
       chestHref = cfg.progressUrl + (String(cfg.progressUrl).indexOf("?") >= 0 ? "&" : "?") + "chest=" + encodeURIComponent(cfg.taleSlug || cfg.slug || "");

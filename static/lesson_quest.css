@@ -2264,10 +2264,16 @@
 }
 .quest-reward {
   text-align: center;
-  padding: 14px 16px 16px;
-  border-radius: 22px;
-  background: rgba(255, 250, 242, 0.96);
-  box-shadow: 0 10px 24px rgba(80, 55, 20, 0.08);
+  padding: 22px 22px 20px;
+  border-radius: 28px;
+  background:
+    linear-gradient(165deg, rgba(255, 252, 246, 0.94) 0%, rgba(255, 246, 230, 0.9) 100%);
+  border: 1px solid rgba(214, 168, 96, 0.28);
+  box-shadow:
+    0 18px 40px rgba(72, 42, 12, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   position: relative;
   z-index: 2;
 }
@@ -2644,77 +2650,90 @@
 
 .quest-playfield--reward .quest-playfield__surface {
   justify-content: center;
-  padding: 12px 10px;
+  padding: 16px 12px;
 }
 .quest-playfield--reward .quest-reward {
   margin: 0 auto;
-  width: min(100%, 760px);
+  width: min(100%, 440px);
   position: relative;
   z-index: 2;
 }
 .quest-playfield--reward .quest-spark-fly {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 6px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
 }
+.quest-reward__title,
 .quest-reward strong {
   display: block;
-  font-size: 1.45rem;
-  color: #3d3428;
-  margin: 0 0 6px;
+  font-size: clamp(1.55rem, 4vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #3f2f1f;
+  margin: 0 0 8px;
 }
 .quest-reward__lead {
-  margin: 0 0 10px;
+  margin: 0 0 14px;
   font-size: 1rem;
-  font-weight: 700;
-  color: #5a4a38;
-  line-height: 1.35;
+  font-weight: 600;
+  color: #5c4a36;
+  line-height: 1.4;
 }
 .quest-reward__note {
-  margin: 0 0 12px;
-  font-size: 0.82rem;
+  margin: 0 auto 16px;
+  max-width: 28em;
+  font-size: 0.92rem;
   font-weight: 600;
-  color: #8a7a68;
-  line-height: 1.4;
+  color: #7a6650;
+  line-height: 1.45;
 }
 .quest-reward__links {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: stretch;
   justify-content: center;
   gap: 10px;
-  margin-top: 4px;
+  margin-top: 2px;
+}
+.quest-reward__links--stack {
+  gap: 12px;
 }
 .quest-reward__link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 8px 14px;
-  border-radius: 14px;
+  min-height: 46px;
+  padding: 10px 18px;
+  border-radius: 16px;
   font: inherit;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   text-decoration: none;
   cursor: pointer;
   color: #4a3a28 !important;
   background: transparent;
   border: 0;
+  transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease, color 0.14s ease;
 }
 .quest-reward__link--quiet {
+  order: 2;
+  align-self: center;
   background: transparent;
-  color: #7a6a58 !important;
+  color: #8a7358 !important;
   border: 0;
-  min-height: 36px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
   box-shadow: none;
+  opacity: 0.88;
 }
 .quest-reward__link--quiet:hover {
-  color: #5a4a38 !important;
+  color: #5c4630 !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 1;
 }
 .quest-reward__link--retry {
   flex: none;
@@ -2745,92 +2764,100 @@
   border: 1.5px solid rgba(150, 98, 28, 0.28);
 }
 .quest-reward__link--chest {
-  flex: 1 1 240px;
-  width: auto;
+  order: 1;
+  width: 100%;
   max-width: 100%;
-  min-height: 54px;
-  padding: 10px 18px;
-  font-size: 1.05rem;
+  min-height: 56px;
+  padding: 12px 20px;
+  font-size: 1.08rem;
   gap: 10px;
-  background: linear-gradient(180deg, #f3c56a 0%, #e8a83a 100%);
-  color: #3d2808 !important;
-  border: 1.5px solid rgba(180, 120, 30, 0.35);
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(180, 110, 20, 0.22);
+  background: linear-gradient(180deg, #f6ce78 0%, #e9a93c 55%, #df9630 100%);
+  color: #3a2508 !important;
+  border: 1.5px solid rgba(168, 108, 28, 0.32);
+  border-radius: 18px;
+  box-shadow:
+    0 8px 18px rgba(170, 100, 18, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
   text-decoration: none;
 }
 .quest-reward__link--chest:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(180, 110, 20, 0.28);
+  box-shadow:
+    0 10px 22px rgba(170, 100, 18, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 .quest-reward__chest-icon {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   flex-shrink: 0;
+  filter: drop-shadow(0 2px 3px rgba(90, 50, 10, 0.18));
 }
 .quest-reward__next {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(80, 55, 20, 0.12);
-  text-align: left;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(160, 120, 70, 0.18);
+  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 .quest-reward__next-row {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: stretch;
-  justify-content: center;
   gap: 10px;
 }
 .quest-reward__next-title {
   margin: 0;
   text-align: center;
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: #5a4a38;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9a7d58;
 }
 .quest-reward__next-card {
-  flex: 1 1 240px;
-  min-width: min(240px, 100%);
-  max-width: 100%;
-  padding: 10px 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1.5px solid rgba(80, 55, 20, 0.1);
-  box-shadow: 0 4px 12px rgba(80, 55, 20, 0.06);
+  width: 100%;
+  padding: 14px 16px 14px;
+  border-radius: 18px;
+  background: rgba(255, 250, 240, 0.55);
+  border: 1px solid rgba(190, 148, 88, 0.16);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  text-align: center;
 }
 .quest-reward__next-eye {
-  margin: 0 0 4px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: #9a7a48;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #a07a48;
+  line-height: 1.35;
 }
 .quest-reward__next-text {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 0.9rem;
   font-weight: 600;
-  line-height: 1.35;
-  color: #4a3a28;
+  line-height: 1.4;
+  color: #5a4634;
 }
 .quest-reward__link--next {
   width: 100%;
-  margin-top: auto;
-  min-height: 42px;
-  background: #fff8ee;
-  border: 1.5px solid rgba(180, 120, 30, 0.28);
+  margin-top: 2px;
+  min-height: 46px;
+  background: linear-gradient(180deg, #fff9ef 0%, #f7e8c8 100%);
+  border: 1.5px solid rgba(190, 140, 70, 0.28);
   color: #3d2808 !important;
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(120, 80, 30, 0.05);
 }
 .quest-reward__link--next:hover {
-  background: #fff1d8;
+  background: linear-gradient(180deg, #fff6e4 0%, #f3dfb8 100%);
+  border-color: rgba(190, 140, 70, 0.42);
 }
 .quest-board--reward .quest-footer {
   display: none;
@@ -2842,19 +2869,13 @@
 @media (max-width: 640px) {
   .quest-playfield--reward .quest-reward {
     width: min(100%, 100%);
-  }
-  .quest-reward__links {
-    flex-direction: column;
+    padding: 18px 16px 16px;
+    border-radius: 24px;
   }
   .quest-reward__link--chest {
-    flex: 1 1 auto;
     width: 100%;
   }
-  .quest-reward__next-row {
-    flex-direction: column;
-  }
   .quest-reward__next-card {
-    flex: 1 1 auto;
     min-width: 0;
   }
 }
