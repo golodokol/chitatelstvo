@@ -13,6 +13,7 @@ from config.settings import CONTACT_EMAIL, PUBLIC_BASE_URL, ROOT
 from db import repository as repo
 from db.session import get_db
 from notifications.email_channel import send_email
+from gamification.chest_rewards import canonical_tale_slug
 from services.cabinet import build_family_cabinet
 
 router = APIRouter(tags=["progress"])
@@ -41,7 +42,7 @@ def family_progress(
         {
             "progress_token": token,
             "open_chest": request.query_params.get("open_chest") == "1",
-            "chest_tale": (request.query_params.get("chest") or "").strip(),
+            "chest_tale": canonical_tale_slug(request.query_params.get("chest") or ""),
             "parent_name": payload["parent_name"],
             "assets_url": PUBLIC_BASE_URL,
             "logo_url": f"{PUBLIC_BASE_URL}/assets/logo-chitatelstvo.png",

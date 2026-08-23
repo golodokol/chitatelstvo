@@ -213,7 +213,7 @@
           data-chest-open="{{ track.chest.image_open }}"
           data-chest-ready="{{ '1' if track.chest.ready else '0' }}"
           data-chest-claimed="{{ '1' if track.chest.claimed else '0' }}"
-          data-auto-open="{{ '1' if track.chest.ready and not track.chest.claimed and ((chest_tale and track.chest.tale_slug == chest_tale) or (open_chest and not chest_tale and loop_index == 1)) else '0' }}">
+          data-auto-open="{{ '1' if track.chest.ready and not track.chest.claimed and ((chest_tale and track.chest.tale_slug == chest_tale) or (open_chest and (not chest_tale or track.chest.tale_slug == chest_tale) and loop_index == 1)) else '0' }}">
           <script type="application/json" class="chit-chest-data">{{ {"items": track.chest["items"], "tale_title": track.missions_subtitle or track.chest["title"]} | tojson }}</script>
           <div class="chit-chest">
             <div class="chit-chest__visual" aria-hidden="true">
@@ -907,6 +907,6 @@
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
   <script src="/static/chest_reveal.js?v=20260819c"></script>
   <script src="/static/lesson_slovik.js?v=20260708e"></script>
-  <script src="/static/progress_cabinet.js?v=20260822c"></script>
+  <script src="/static/progress_cabinet.js?v=20260823d"></script>
 </body>
 </html>

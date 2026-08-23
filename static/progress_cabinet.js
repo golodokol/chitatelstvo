@@ -28,11 +28,32 @@
     showTab('parent');
   }
 
+  function focusChestPanel(panel) {
+    if (!panel) return;
+    try {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (e) {
+      panel.scrollIntoView(true);
+    }
+    panel.classList.add('is-focus');
+    setTimeout(function () { panel.classList.remove('is-focus'); }, 2400);
+  }
+
+  var chestAutoOpened = false;
+  function tryAutoOpenChest(panel) {
+    if (!panel || chestAutoOpened) return;
+    if (panel.getAttribute('data-chest-ready') !== '1') return;
+    if (panel.getAttribute('data-chest-claimed') === '1') return;
+    if (!window.ChitChest || !window.ChitChest.openFromPanel) return;
+    chestAutoOpened = true;
+    window.ChitChest.openFromPanel(panel);
+  }
+
   function focusChestFromUrl() {
     var hash = (location.hash || '').replace(/^#/, '');
     var panel = null;
     if (hash && hash.indexOf('chest-') === 0) {
-      panel = document.getElementById(hash);
+      panel = document.getElementById(hash.split(/[^\w-]/)[0]);
     }
     if (!panel) {
       try {
@@ -48,13 +69,8 @@
       } catch (e) {}
     }
     if (!panel) return;
-    try {
-      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } catch (e) {
-      panel.scrollIntoView(true);
-    }
-    panel.classList.add('is-focus');
-    setTimeout(function () { panel.classList.remove('is-focus'); }, 2400);
+    focusChestPanel(panel);
+    setTimeout(function () { tryAutoOpenChest(panel); }, 420);
   }
 
   // После урока (?chest=…#chest-N) сразу показываем сундук, не верх карточки.
@@ -140,9 +156,8 @@
   });
 
   document.querySelectorAll('.chit-panel--chest[data-auto-open="1"]').forEach(function (panel) {
-    if (window.ChitChest) {
-      setTimeout(function () { window.ChitChest.openFromPanel(panel); }, 400);
-    }
+    focusChestPanel(panel);
+    setTimeout(function () { tryAutoOpenChest(panel); }, 420);
   });
 
   var TREASURY_MAX_ROWS = 3;

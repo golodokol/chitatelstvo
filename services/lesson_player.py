@@ -24,7 +24,8 @@ from config.settings import (
 )
 from db import repository as repo
 from db.models import Child, Enrollment, Event
-from gamification.cabinet_ui import quest_spark_station_ids
+from gamification.cabinet_ui import quest_goal_count, quest_spark_station_ids
+from gamification.chest_rewards import canonical_tale_slug
 from gamification.chest_rewards import canonical_tale_slug
 from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from lessons.access import is_lesson_unlocked
@@ -126,11 +127,11 @@ def build_lesson_nav_urls(db: Session, child: Child, lesson: dict[str, Any]) -> 
     progress_url = f"{PUBLIC_BASE_URL.rstrip('/')}/progress/{family.progress_token}"
     child_payload = build_child_payload(db, child)
     chest_idx = _chest_track_index(child_payload, lesson)
-    tale_slug = (lesson.get("tale_slug") or lesson.get("slug") or "").strip()
+    tale_slug = canonical_tale_slug((lesson.get("tale_slug") or lesson.get("slug") or "").strip())
 
     chest_url = progress_url
     if tale_slug:
-        chest_url += f"?chest={tale_slug}"
+        chest_url += f"?chest={tale_slug}&open_chest=1"
     if chest_idx:
         chest_url += f"#chest-{chest_idx}"
 
@@ -935,7 +936,12 @@ def handle_quest_complete(
         if str(sid).strip() in valid_ids
     ]
     sparks_earned = sum(1 for sid in spark_ids if sid in passed)
-    chest_ok = bool(spark_ids) and set(spark_ids) <= set(passed)
+    goal = quest_goal_count(lesson)
+    chest_ok = (
+        (bool(spark_ids) and set(spark_ids) <= set(passed))
+        or sparks_earned >= goal
+        or int(sparks or 0) >= goal
+    )
     payload = {
         "sparks": sparks_earned,
         "format": "quest",
