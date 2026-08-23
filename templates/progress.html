@@ -146,11 +146,11 @@
           {% endif %}
         </section>
 
-        {% if cab.path_hint and cab.path_hint.items %}
+        {% if cab.path_hint and cab.path_hint['items'] %}
         <section class="chit-panel chit-panel--path-hint">
           <h2 class="chit-section-title">{{ cab.path_hint.title or 'Куда дальше?' }}</h2>
           <div class="chit-path-hint">
-            {% for item in cab.path_hint.items %}
+            {% for item in cab.path_hint['items'] %}
             <article class="chit-path-hint__card">
               {% if item.eyebrow %}<p class="chit-path-hint__eye">{{ item.eyebrow }}</p>{% endif %}
               {% if item.text %}<p class="chit-path-hint__text">{{ item.text }}</p>{% endif %}
