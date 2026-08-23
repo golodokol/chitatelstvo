@@ -368,8 +368,8 @@
   pointer-events: auto;
 }
 .quest-playfield__surface > .quest-hint {
-  background: rgba(255, 252, 247, 0.88);
-  backdrop-filter: blur(4px);
+  background: transparent;
+  backdrop-filter: none;
 }
 .quest-playfield .quest-grid,
 .quest-playfield .quest-basket-wrap,
@@ -906,13 +906,14 @@
   width: fit-content;
   max-width: min(100%, 420px);
   border-radius: 16px;
-  background: rgba(255, 252, 247, 0.96);
-  border: 1.5px solid rgba(42, 38, 34, 0.1);
-  box-shadow: 0 6px 14px rgba(42, 38, 34, 0.08);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   font-size: clamp(1.15rem, 4.5vw, 1.55rem);
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #1f4e86;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(0, 0, 0, 0.45);
   text-align: center;
   box-sizing: border-box;
 }
@@ -1394,7 +1395,8 @@
   text-align: center;
   font-size: 0.86rem;
   font-weight: 800;
-  color: var(--text-warm, #3a342c);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(0, 0, 0, 0.45);
 }
 @media (max-width: 560px) {
   .quest-match {
@@ -1690,10 +1692,11 @@
   margin: 0;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(255, 252, 247, 0.9);
+  background: transparent;
   font-size: 0.92rem;
   font-weight: 800;
-  color: var(--text-warm, #3a342c);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(0, 0, 0, 0.45);
 }
 .quest-meet__tap {
   transition: opacity 0.2s ease;
@@ -2212,8 +2215,9 @@
 .quest-hint {
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 248, 238, 0.92);
-  color: var(--text-warm);
+  background: transparent;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(0, 0, 0, 0.45);
   margin: 0;
 }
 .quest-footer {
