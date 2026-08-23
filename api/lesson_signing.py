@@ -4,10 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import re
 import time
 import uuid
+from typing import Any
 
 from config.settings import LESSON_LINK_TTL_SECONDS, LESSON_SIGNING_SECRET, PUBLIC_BASE_URL
+
+_LESSON_PATH_RE = re.compile(r"/lesson/([^/?#]+)")
 
 
 def _secret() -> bytes:
@@ -36,3 +40,27 @@ def build_lesson_url(child_id: str | uuid.UUID, slug: str) -> str:
     exp, sig = sign_lesson_access(child_id, slug)
     cid = str(child_id)
     return f"{PUBLIC_BASE_URL}/lesson/{slug}?child={cid}&exp={exp}&sig={sig}"
+
+
+def lesson_slug_from_path(url: str) -> str | None:
+    match = _LESSON_PATH_RE.search((url or "").strip())
+    return match.group(1) if match else None
+
+
+def sign_quest_next_paths(lesson: dict[str, Any], child_id: str | uuid.UUID) -> None:
+    """Replace /lesson/{slug} paths in reward next_paths with signed URLs."""
+    stations = lesson.get("stations") or []
+    for station in stations:
+        paths = station.get("next_paths")
+        if not paths:
+            continue
+        signed: list[dict[str, Any]] = []
+        for item in paths:
+            if not isinstance(item, dict):
+                continue
+            row = dict(item)
+            slug = str(row.get("slug") or "").strip() or lesson_slug_from_path(str(row.get("url") or ""))
+            if slug:
+                row["url"] = build_lesson_url(child_id, slug)
+            signed.append(row)
+        station["next_paths"] = signed

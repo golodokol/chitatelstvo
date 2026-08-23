@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
 from api.event_types import MANUAL_MARK_ONLY
-from api.lesson_signing import build_lesson_url
+from api.lesson_signing import build_lesson_url, sign_quest_next_paths
 from api.test_lesson_auth import verify_test_lesson_key
 from catalog.loader import get_module
 from config.settings import (
@@ -43,6 +43,7 @@ from lessons.step_labels import lesson_step_labels_payload
 from lessons.schedule import effective_module_week, meeting_date_label, meeting_still_bookable
 from lessons.single_content import merge_single_lesson_content
 from services.cabinet import build_child_payload
+from services.early_trial import ensure_sibling_early_trial
 from services.events import submit_learning_event
 from storage.yandex import resolve_video_src
 
@@ -64,6 +65,8 @@ def require_lesson_unlocked(
     if bypass:
         return get_child_or_404(db, child_id)
 
+    child = get_child_or_404(db, child_id)
+    ensure_sibling_early_trial(db, child=child, lesson_slug=str(lesson.get("slug") or ""))
     child = get_child_or_404(db, child_id)
     enrollment = find_enrollment_for_lesson(child, lesson)
     if not child_can_access_lesson(child, lesson, enrollment):
@@ -404,6 +407,7 @@ def build_lesson_json(
     test_bypass: bool = False,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(db, child.id, slug, bypass=test_bypass)
+    sign_quest_next_paths(lesson, child.id)
     raw = get_lesson(slug)
     enrollment = find_enrollment_for_lesson(child, raw) if raw else None
 

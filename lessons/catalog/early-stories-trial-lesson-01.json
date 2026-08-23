@@ -980,13 +980,13 @@
           "eyebrow": "Если было сложно",
           "text": "Пройдите сначала курс по звукам:",
           "cta": "Буквы оживают — вводный урок",
-          "url": "/lesson/early-letters-trial-lesson-01"
+          "slug": "early-letters-trial-lesson-01"
         },
         {
           "eyebrow": "Если было легко",
           "text": "Вы готовы к нашему первому курсу по сказкам:",
           "cta": "Царевна-лягушка — пробный урок",
-          "url": "/lesson/tsarevna-lyagushka"
+          "slug": "tsarevna-lyagushka"
         }
       ]
     }

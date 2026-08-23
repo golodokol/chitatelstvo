@@ -12,7 +12,7 @@ from api.schemas import RegisterWebhook
 from catalog.loader import get_module
 from config.settings import PUBLIC_BASE_URL
 from db import repository as repo
-from lessons.enrollment_access import get_active_enrollments, list_lessons_for_enrollment
+from lessons.enrollment_access import find_enrollment_for_lesson, get_active_enrollments, list_lessons_for_enrollment
 from lessons.loader import get_lesson
 from services.enrollment import create_enrollment_from_registration
 
@@ -143,3 +143,38 @@ def grant_early_trial(
         "child_id": str(child.id),
         "family_id": str(family.id),
     }
+
+
+def ensure_sibling_early_trial(
+    db: Session,
+    *,
+    child,
+    lesson_slug: str,
+) -> None:
+    """Grant the other early trial module when a child follows a cross-promo link."""
+    module_id = resolve_trial_module_id(trial_slug=lesson_slug)
+    if module_id is None:
+        return
+    lesson = get_lesson(lesson_slug)
+    if lesson and find_enrollment_for_lesson(child, lesson):
+        return
+    family = child.family
+    if not family:
+        return
+    has_early = False
+    for enrollment in get_active_enrollments(child):
+        mod = get_module(enrollment.module_id)
+        if mod and mod.get("group_code") in {"early-letters", "early-stories"}:
+            has_early = True
+            break
+    if not has_early:
+        return
+    grant_early_trial(
+        db,
+        parent_name=family.parent_name or "",
+        parent_email=family.parent_email or "",
+        child_name=child.name,
+        child_age=child.age,
+        trial_slug=lesson_slug,
+    )
+    db.refresh(child)
