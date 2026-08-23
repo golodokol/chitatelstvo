@@ -2699,18 +2699,24 @@
   gap: 8px;
   margin-top: 0;
   flex: 0 0 auto;
-  padding: 8px 10px 6px;
+  width: fit-content;
+  max-width: min(100%, 300px);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 8px 14px 8px;
   border-radius: 16px;
   background: rgba(255, 252, 247, 0.94);
   border: 1px solid rgba(120, 90, 50, 0.12);
   box-shadow: 0 6px 14px rgba(40, 24, 10, 0.1);
+  box-sizing: border-box;
 }
 .quest-book__hint {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #4a3a28;
   line-height: 1.35;
+  text-align: center;
 }
 .quest-book__finale {
   margin: 0;
@@ -2718,6 +2724,7 @@
   font-weight: 800;
   color: #8a5a18;
   line-height: 1.35;
+  text-align: center;
 }
 .quest-book__cta {
   min-width: 180px;

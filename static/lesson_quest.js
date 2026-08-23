@@ -2929,11 +2929,18 @@
       });
       if (idx >= lines.length - 1) {
         cta.disabled = false;
-        hint.textContent = station.finale || "Ура, история прочитана!";
+        // One finale line only — don't mirror it in the hint.
+        hint.hidden = true;
         var finaleEl = foot.querySelector(".quest-book__finale");
-        if (finaleEl) finaleEl.hidden = false;
+        if (finaleEl) {
+          finaleEl.hidden = false;
+        } else {
+          hint.hidden = false;
+          hint.textContent = station.finale || "Ура, история прочитана!";
+        }
       } else {
         cta.disabled = lines.length > 1;
+        hint.hidden = false;
         hint.textContent = station.read_hint || "Листай страницы и прочитай каждое предложение.";
         var finaleHide = foot.querySelector(".quest-book__finale");
         if (finaleHide) finaleHide.hidden = true;
