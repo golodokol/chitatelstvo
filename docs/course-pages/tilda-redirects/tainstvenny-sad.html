@@ -1,13 +1,154 @@
 <!-- Читательство · страница курса для Zero Block
      Вставить целиком в HTML-элемент Zero Block → Опубликовать.
      Ширина артборда: 1200, высота: авто, выравнивание: сверху.
+     SEO: текст ниже виден поисковикам; после загрузки JS — интерактив.
 -->
-<script>(function(){function f(){var m=document.getElementById("chit-course-root")||document.getElementById("chit-course-lite");if(!m)return;var w=m.closest(".t396");if(w){w.style.setProperty("display","block","important");w.style.setProperty("position","relative","important");w.style.setProperty("width","100%","important");w.style.setProperty("max-width","100%","important");w.style.setProperty("left","0","important");w.style.setProperty("transform","none","important");w.style.setProperty("overflow","visible","important");}var a=m.closest(".t396__artboard");if(a){a.style.setProperty("width","100%","important");a.style.setProperty("max-width","100%","important");a.style.setProperty("height","auto","important");a.style.setProperty("left","0","important");a.style.setProperty("transform","none","important");a.style.setProperty("overflow","visible","important");}var el=m.closest(".tn-elem");if(el){el.style.setProperty("display","block","important");el.style.setProperty("position","relative","important");el.style.setProperty("left","0","important");el.style.setProperty("top","0","important");el.style.setProperty("width","100%","important");el.style.setProperty("max-width","100%","important");el.style.setProperty("height","auto","important");el.style.setProperty("transform","none","important");el.style.setProperty("margin","0","important");}var atom=m.closest(".tn-atom");if(atom){atom.style.setProperty("width","100%","important");atom.style.setProperty("max-width","100%","important");atom.style.setProperty("height","auto","important");}}f();setTimeout(f,120);setTimeout(f,400);window.addEventListener("load",f);})();</script>
-<style id="chit-course-tilda">#chit-course-root,#chit-course-lite{width:100%!important;max-width:100%!important;box-sizing:border-box;margin:0;padding:0;font-family:Manrope,Nunito,system-ui,sans-serif;color:#2E2A38;background:#fff;line-height:1.65;font-size:17px}#chit-course-root *,#chit-course-lite *,#chit-course-root *::before,#chit-course-lite *::before,#chit-course-root *::after,#chit-course-lite *::after{box-sizing:border-box}.tn-atom__html #chit-course-root,.tn-atom__html #chit-course-lite{display:block!important;width:100%!important}</style>
+<script>(function () {
+  var ROOT_IDS = ['chit-course-root', 'chit-course-lite'];
+
+  function getRoot() {
+    for (var i = 0; i < ROOT_IDS.length; i++) {
+      var el = document.getElementById(ROOT_IDS[i]);
+      if (el) return el;
+    }
+    return null;
+  }
+
+  function setImp(el, props) {
+    if (!el) return;
+    Object.keys(props).forEach(function (k) {
+      if (props[k] != null) el.style.setProperty(k, props[k], 'important');
+    });
+  }
+
+  function patchRecStyles(rec) {
+    if (!rec) return;
+    rec.querySelectorAll('style').forEach(function (s) {
+      var t = s.textContent || '';
+      if (t.indexOf('t396__artboard') < 0 && t.indexOf('tn-elem') < 0) return;
+      var n = t
+        .replace(/left:\s*calc\([^)]+\)/gi, 'left:0')
+        .replace(/width:\s*(?:1200|960|640|480|320)px/gi, 'width:100%')
+        .replace(/height:\s*35000px/gi, 'height:auto')
+        .replace(/height:\s*100vh/gi, 'height:auto')
+        .replace(/display:\s*table/gi, 'display:block');
+      if (n !== t) s.textContent = n;
+    });
+  }
+
+  function syncTildaLayout() {
+    var m = getRoot();
+    if (!m) return;
+
+    var rec = m.closest('.t-rec');
+    patchRecStyles(rec);
+
+    if (rec) {
+      setImp(rec, {
+        width: '100%',
+        'max-width': '100%',
+        height: 'auto',
+        'max-height': 'none',
+        overflow: 'visible',
+        'padding-top': '0',
+        'margin-top': '0'
+      });
+    }
+
+    var chain = [
+      m.closest('.t396'),
+      m.closest('.t396__artboard'),
+      m.closest('.tn-elem'),
+      m.closest('.tn-atom'),
+      m.closest('.tn-atom__html'),
+      m
+    ];
+
+    chain.forEach(function (el) {
+      if (!el) return;
+      setImp(el, {
+        display: 'block',
+        position: 'relative',
+        left: '0',
+        top: '0',
+        width: '100%',
+        'max-width': '100%',
+        'min-width': '0',
+        transform: 'none',
+        'min-height': '0',
+        'max-height': 'none',
+        overflow: 'visible',
+        height: 'auto'
+      });
+    });
+
+    ['.t396__carrier', '.t396__filter'].forEach(function (sel) {
+      var el = rec && rec.querySelector(sel);
+      if (!el) return;
+      setImp(el, {
+        height: '0',
+        'max-height': '0',
+        overflow: 'hidden',
+        position: 'absolute',
+        left: '0',
+        top: '0',
+        width: '100%',
+        'pointer-events': 'none'
+      });
+    });
+
+    var h = Math.ceil(m.getBoundingClientRect().height);
+    if (h > 0) {
+      var ab = m.closest('.t396__artboard');
+      if (ab) {
+        setImp(ab, { height: h + 'px' });
+        ab.setAttribute('data-artboard-height', String(h));
+      }
+    }
+  }
+
+  window.chitSyncTildaLayout = syncTildaLayout;
+
+  function hookT396() {
+    if (window._chitCourseT396Hook) return;
+    var orig = window.t396_init;
+    if (typeof orig !== 'function') return;
+    window._chitCourseT396Hook = 1;
+    window.t396_init = function () {
+      var out = orig.apply(this, arguments);
+      syncTildaLayout();
+      setTimeout(syncTildaLayout, 50);
+      return out;
+    };
+  }
+
+  syncTildaLayout();
+  hookT396();
+  setTimeout(syncTildaLayout, 80);
+  setTimeout(syncTildaLayout, 300);
+  setTimeout(syncTildaLayout, 1200);
+  window.addEventListener('load', syncTildaLayout);
+
+  var n = 0;
+  var poll = setInterval(function () {
+    syncTildaLayout();
+    hookT396();
+    if (++n > 80) clearInterval(poll);
+  }, 250);
+
+  var root = getRoot();
+  if (root && window.ResizeObserver) {
+    new ResizeObserver(syncTildaLayout).observe(root);
+  }
+})();</script>
+<style id="chit-course-tilda">.t-rec:has(#chit-course-root),.t-rec:has(#chit-course-lite){height:auto!important;max-height:none!important;overflow:visible!important;padding-top:0!important}.t-rec:has(#chit-course-root) .t396,.t-rec:has(#chit-course-lite) .t396{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;overflow:visible!important;left:0!important;transform:none!important}.t-rec:has(#chit-course-root) .t396__artboard,.t-rec:has(#chit-course-lite) .t396__artboard,.t-rec:has(#chit-course-root) .tn-elem[data-elem-type="html"],.t-rec:has(#chit-course-lite) .tn-elem[data-elem-type="html"],.t-rec:has(#chit-course-root) .tn-atom,.t-rec:has(#chit-course-lite) .tn-atom,.t-rec:has(#chit-course-root) .tn-atom__html,.t-rec:has(#chit-course-lite) .tn-atom__html{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;width:100%!important;max-width:100%!important;left:0!important;top:0!important;transform:none!important}.t-rec:has(#chit-course-root) .t396__carrier,.t-rec:has(#chit-course-root) .t396__filter,.t-rec:has(#chit-course-lite) .t396__carrier,.t-rec:has(#chit-course-lite) .t396__filter{height:0!important;max-height:0!important;overflow:hidden!important;position:absolute!important;pointer-events:none!important}#chit-course-root,#chit-course-lite{width:100%!important;max-width:100%!important;box-sizing:border-box;margin:0;padding:0;font-family:Manrope,Nunito,system-ui,sans-serif;color:#2E2A38;background:#fff;line-height:1.65;font-size:17px}#chit-course-root *,#chit-course-lite *,#chit-course-root *::before,#chit-course-lite *::before,#chit-course-root *::after,#chit-course-lite *::after{box-sizing:border-box}.tn-atom__html #chit-course-root,.tn-atom__html #chit-course-lite{display:block!important;width:100%!important}#chit-course-app[hidden],#chit-course-lite-app[hidden],#chit-course-static[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/course-pages/course-lite.css?v=20260822l">
-<div id="chit-course-lite" data-group="garden"></div>
-<script src="https://api.chitatelstvo.ru/assets/course-pages/course-lite-data.js?v=20260822l"></script>
-<script src="https://api.chitatelstvo.ru/assets/course-pages/course-lite.js?v=20260822l"></script>
-<!-- Таинственный сад -->
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/course-pages/course-lite.css?v=20260823g">
+<div id="chit-course-lite" data-group="garden">
+<article id="chit-course-static" class="ccl-static" itemscope itemtype="https://schema.org/Course"><meta itemprop="name" content="Таинственный сад"><meta itemprop="description" content="Медленное чтение «Тайного сада» для детей 10–12 лет — четыре занятия, школа Читательство."><link itemprop="url" href="https://chitatelstvo.ru/tainstvenny-sad"><header class="ccl-header"><div class="ccl-header__inner"><a class="ccl-logo" href="https://chitatelstvo.ru"><img src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство"></a><nav class="ccl-nav" aria-label="Разделы"><a href="#program">Программа</a><a href="#outcome">После курса</a><a href="#enroll">Запись</a></nav><a class="ccl-header-cta" href="https://chitatelstvo.ru/#program">Записаться</a></div></header><section class="ccl-hero" id="about"><div class="ccl-hero__grid"><div class="ccl-hero__copy"><span class="ccl-badge">Медленное чтение</span> <span class="ccl-age">10–12 лет</span><h1 itemprop="headline">Таинственный сад</h1><p class="ccl-lead">Медленное чтение «Тайного сада» — четыре занятия, старт 7 сентября.</p><p class="ccl-intro">Работа с большим текстом: сюжет, характеры, авторский замысел.</p><div class="ccl-chips"><span class="ccl-chip">4 занятия · старт 7 сентября</span><span class="ccl-chip">скидка 10% на предзапись</span></div></div></div></section><section class="ccl-program" id="program"><div class="ccl-program__inner"><h2>Что будем проходить</h2><ol class="ccl-lessons"><li><span class="ccl-lesson__n">1</span> Знакомство с книгой</li><li><span class="ccl-lesson__n">2</span> Читаем дальше</li><li><span class="ccl-lesson__n">3</span> Тайна сада</li><li><span class="ccl-lesson__n">4</span> Итог модуля</li></ol></div></section><section class="ccl-outcome" id="outcome"><div class="ccl-outcome__inner"><h2>После модуля</h2><p class="ccl-outcome__lead">Финал модуля — собранный смысл большой книги, а не пересказ «по пунктам».</p><ul class="ccl-outcome__list"><li>Дочитал «Тайный сад» и держит сюжет целиком</li><li>Видит, как меняются герои и почему сад становится «таинственным»</li><li>Умеет говорить о замысле автора своими словами</li><li>Получил опыт медленного чтения объёмного текста без спешки</li></ul></div></section><section class="ccl-enroll" id="enroll"><div class="ccl-enroll__inner"><h2>Выберите тариф и запишитесь</h2><p>Разовое — 799 ₽ · Индивидуальное — 1 990 ₽ (499 ₽ за сказку) · С преподавателем — 4 990 ₽ (1 248 ₽ за сказку).</p><p><a class="ccl-btn ccl-btn--primary" href="https://chitatelstvo.ru/#program">Записаться на курс</a></p></div></section><footer class="ccl-footer"><div class="ccl-footer__inner"><img class="ccl-footer__logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="180" height="48"><p class="ccl-footer__warm">С теплом, команда Читательство</p><nav class="ccl-footer__legal" aria-label="Юридическая информация"><a href="https://api.chitatelstvo.ru/legal/politika">Политика</a><a href="https://api.chitatelstvo.ru/legal/oferta">Оферта</a><a href="https://api.chitatelstvo.ru/legal/rekvizity">Реквизиты</a></nav><p class="ccl-footer__contact"><a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> · <a href="https://chitatelstvo.ru">chitatelstvo.ru</a></p><p class="ccl-footer__seller">ИП Рощина Ольга Владимировна · ИНН 231150315327</p><p class="ccl-footer__copy">© Читательство</p></div></footer></article><script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"Таинственный сад","description":"Медленное чтение «Тайного сада» для детей 10–12 лет — четыре занятия, школа Читательство.","provider":{"@type":"Organization","name":"Читательство","url":"https://chitatelstvo.ru"},"url":"https://chitatelstvo.ru/tainstvenny-sad","inLanguage":"ru","audience":{"@type":"EducationalAudience","audienceType":"10–12 лет"}}</script>
+  <div id="chit-course-lite-app" hidden></div>
+</div>
+<script src="https://api.chitatelstvo.ru/assets/course-pages/course-lite-data.js?v=20260823g"></script>
+<script src="https://api.chitatelstvo.ru/assets/course-pages/course-lite.js?v=20260823g"></script>
+<!-- Таинственный сад · SEO static + interactive app -->

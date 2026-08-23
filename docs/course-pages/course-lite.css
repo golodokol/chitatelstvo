@@ -249,6 +249,13 @@
 .ccl-footer__contact { margin: 0 0 10px; }
 .ccl-footer__seller { margin: 0 0 8px; font-size: 13px; }
 .ccl-footer__copy { margin: 0; font-size: 13px; }
+.ccl-static a { color: #5B7FA6; }
+.ccl-static ol,
+.ccl-static ul { margin: 0 0 16px; padding-left: 22px; }
+#chit-course-static[hidden],
+#chit-course-lite-app[hidden] {
+  display: none !important;
+}
 @media (max-width: 860px) {
   .ccl-nav { display: none; }
   .ccl-hero__grid { grid-template-columns: 1fr; }

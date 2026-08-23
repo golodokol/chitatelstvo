@@ -68,7 +68,7 @@
 
   // Skip .ogg: many early files were saved as M4A under a .ogg name and break playback fallback.
   var AUDIO_EXTS = [".mp3", ".MP3", ".m4a", ".wav"];
-  var AUDIO_VER = "20260823c";
+  var AUDIO_VER = "20260823d";
 
   function audioCandidates(id) {
     if (!id) return [];
@@ -349,11 +349,21 @@
     return VO_LINE[kind] || "";
   }
 
-  var VO_SILENT = { yes: true, more: true };
+  var VO_SILENT = { more: true };
+  var SUCCESS_VO = ["ok", "yes", "good"];
+  var successVoIdx = 0;
+
+  function nextSuccessVo() {
+    var kind = SUCCESS_VO[successVoIdx % SUCCESS_VO.length];
+    successVoIdx += 1;
+    return kind;
+  }
 
   function coachReact(kind, ok) {
-    var line = voLine(kind);
-    if (kind && !VO_SILENT[kind]) playId(voPrefix() + kind);
+    var successKind = kind === "ok" || kind === "yes" || kind === "good" || kind === "found";
+    var voKind = (ok === true || successKind) ? nextSuccessVo() : kind;
+    var line = voLine(voKind);
+    if (voKind && !VO_SILENT[voKind]) playId(voPrefix() + voKind);
     if (typeof ok === "boolean") {
       showMsg(line || voLine(ok ? "ok" : "try"), ok);
     }
@@ -881,6 +891,25 @@
     pic.alt = (obj && (obj.prompt_alt || obj.word || obj.phrase)) || "";
     pic.onerror = function () { pic.style.display = "none"; };
     root().appendChild(pic);
+  }
+
+  function appendPhraseChip(text) {
+    if (!text || text === "?" || text === "؟") return null;
+    var word = document.createElement("p");
+    word.className = "quest-letter quest-letter--chip";
+    word.style.fontSize = "1.55rem";
+    word.textContent = text;
+    root().appendChild(word);
+    return word;
+  }
+
+  function appendPromptQuestion(text) {
+    if (!text) return null;
+    var q = document.createElement("p");
+    q.className = "quest-prompt-ask";
+    q.textContent = text;
+    root().appendChild(q);
+    return q;
   }
 
   function appendPromptLine(obj) {
@@ -2096,11 +2125,7 @@
   function renderPhrase(station) {
     appendPromptPic(station);
     if (station.phrase && station.phrase !== "?") {
-      var word = document.createElement("p");
-      word.className = "quest-letter quest-letter--chip";
-      word.style.fontSize = "1.55rem";
-      word.textContent = station.phrase;
-      root().appendChild(word);
+      appendPhraseChip(station.phrase);
     }
     if (station.phrase_audio) {
       var b = document.createElement("button");
@@ -2216,7 +2241,15 @@
     }
 
     function showRound() {
-      openPlayfield(station);
+      var view = {
+        slovik_line: station.slovik_line || "",
+        slovik_pose: station.slovik_pose,
+        scene_image: station.scene_image,
+        // Instruction VO only on the first word; later rounds keep the text bubble.
+        audio: roundIdx === 0 ? (station.audio || "") : "",
+        tech_msg: roundIdx === 0 ? station.tech_msg : undefined
+      };
+      openPlayfield(view);
       var field = elBody.querySelector(".quest-playfield");
       if (field) field.classList.add("quest-playfield--rebus");
       enableNext(false);
@@ -2336,7 +2369,14 @@
     }
 
     function showRound() {
-      openPlayfield(station);
+      var view = {
+        slovik_line: station.slovik_line || "",
+        slovik_pose: station.slovik_pose,
+        scene_image: station.scene_image,
+        audio: roundIdx === 0 ? (station.audio || "") : "",
+        tech_msg: roundIdx === 0 ? station.tech_msg : undefined
+      };
+      openPlayfield(view);
       var field = elBody.querySelector(".quest-playfield");
       if (field) field.classList.add("quest-playfield--pathword");
       enableNext(false);
@@ -2344,7 +2384,7 @@
       var r = rounds[roundIdx];
       if (r.prompt_text) {
         var prompt = document.createElement("p");
-        prompt.className = "quest-hint quest-pathword__prompt";
+        prompt.className = "quest-pathword__prompt";
         prompt.textContent = r.prompt_text;
         root().appendChild(prompt);
       }
@@ -2718,11 +2758,18 @@
       }
       else {
         // "find" and unknown steps: show image + options grid (not scattered)
+        if (step.phrase && step.phrase !== "?") {
+          appendPhraseChip(step.phrase);
+        }
         if (step.prompt_text) {
-          var findPrompt = document.createElement("p");
-          findPrompt.className = "quest-prompt-line";
-          findPrompt.textContent = step.prompt_text;
-          root().appendChild(findPrompt);
+          if (step.phrase && step.phrase !== "?") {
+            appendPromptQuestion(step.prompt_text);
+          } else {
+            var findPrompt = document.createElement("p");
+            findPrompt.className = "quest-prompt-line";
+            findPrompt.textContent = step.prompt_text;
+            root().appendChild(findPrompt);
+          }
         }
         appendPromptPic(step);
         var grid = renderOptions(step.options || [], function (id, btn) {
@@ -2856,34 +2903,12 @@
     nav.appendChild(nextBtn);
     book.appendChild(nav);
 
-    var dots = document.createElement("div");
-    dots.className = "quest-book__dots";
-    lines.forEach(function (_, i) {
-      var dot = document.createElement("button");
-      dot.type = "button";
-      dot.className = "quest-book__dot";
-      dot.setAttribute("aria-label", "Страница " + (i + 1));
-      dot.addEventListener("click", function () {
-        if (flipping || i === pageIdx) return;
-        goTo(i, i > pageIdx ? 1 : -1);
-      });
-      dots.appendChild(dot);
-    });
-    book.appendChild(dots);
-
     var foot = document.createElement("div");
     foot.className = "quest-book__foot";
     var hint = document.createElement("p");
     hint.className = "quest-book__hint";
     hint.textContent = station.read_hint || "Листай страницы и прочитай каждое предложение.";
     foot.appendChild(hint);
-    if (station.finale) {
-      var finale = document.createElement("p");
-      finale.className = "quest-book__finale";
-      finale.hidden = true;
-      finale.textContent = station.finale;
-      foot.appendChild(finale);
-    }
     var cta = document.createElement("button");
     cta.type = "button";
     cta.className = "chit-btn chit-btn--primary quest-book__cta";
@@ -2893,7 +2918,9 @@
       if (cta.disabled) return;
       cta.disabled = true;
       book.classList.add("is-read");
-      if (!station.success_msg) coachReact("good", true);
+      var cheer = station.finale_audio || station.success_audio || "";
+      if (cheer) playId(cheer);
+      else if (!station.success_msg) coachReact("good", true);
       enableNext(true);
     });
     foot.appendChild(cta);
@@ -2923,20 +2950,14 @@
       nextBtn.disabled = idx >= lines.length - 1;
       edgePrev.disabled = idx <= 0;
       edgeNext.disabled = idx >= lines.length - 1;
-      Array.prototype.forEach.call(dots.children, function (dot, i) {
-        dot.classList.toggle("is-active", i === idx);
-        dot.classList.toggle("is-done", i < idx);
-      });
       if (idx >= lines.length - 1) {
         cta.disabled = false;
         hint.textContent = station.finale || "Ура, история прочитана!";
-        var finaleEl = foot.querySelector(".quest-book__finale");
-        if (finaleEl) finaleEl.hidden = false;
+        hint.classList.add("is-finale");
       } else {
         cta.disabled = lines.length > 1;
         hint.textContent = station.read_hint || "Листай страницы и прочитай каждое предложение.";
-        var finaleHide = foot.querySelector(".quest-book__finale");
-        if (finaleHide) finaleHide.hidden = true;
+        hint.classList.remove("is-finale");
       }
     }
 
@@ -3144,6 +3165,10 @@
       renderWordPicture(station);
     } else if (kind === "mini_quest") {
       renderMiniQuest(station);
+    } else if (kind === "shape_rebus") {
+      renderShapeRebus(station);
+    } else if (kind === "path_word") {
+      renderPathWord(station);
     } else if (kind === "listen_pick" && station.rounds && station.rounds.length > 1) {
       renderListenRounds(station);
     } else if (kind !== "intro_video") {
@@ -3188,10 +3213,6 @@
         renderMatchPairs(station);
       } else if (kind === "phrase_picture") {
         renderPhrase(station);
-      } else if (kind === "shape_rebus") {
-        renderShapeRebus(station);
-      } else if (kind === "path_word") {
-        renderPathWord(station);
       } else if (kind === "book_page") {
         renderBookPage(station);
       } else {

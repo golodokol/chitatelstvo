@@ -8,7 +8,9 @@ from typing import Any
 from config.settings import MODULE_START_DATE
 from db.models import Child, Enrollment
 from lessons.schedule import (
+    COHORT_GROUPS,
     LEGACY_MODULE_START,
+    cohort_lesson_opens_on,
     effective_module_week,
     format_date_ru,
     lesson_opens_on,
@@ -24,21 +26,6 @@ SCHEDULE_SHIFT_DATE = date(2026, 7, 10)
 
 EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
 EARLY_MODULE_START = date(2026, 9, 1)  # вторник
-
-# Новые когорты: фиксированный старт, уроки по понедельникам.
-COHORT_GROUPS = frozenset({"wind", "garden", "rus-6-9", "rus-10-12"})
-COHORT_MODULE_START: dict[str, date] = {
-    "wind": date(2026, 9, 7),
-    "garden": date(2026, 9, 7),
-    "rus-6-9": date(2026, 10, 5),
-    "rus-10-12": date(2026, 10, 5),
-}
-
-
-def cohort_lesson_opens_on(group_code: str, module_week: int) -> date:
-    start = COHORT_MODULE_START[group_code]
-    week = max(1, int(module_week or 1))
-    return start + timedelta(days=7 * (week - 1))
 
 
 def early_lesson_opens_on(module_week: int) -> date:
@@ -185,7 +172,7 @@ def is_lesson_unlocked(
         admin_weeks = _admin_unlocked_weeks(child)
         return admin_weeks > 0 and lesson_week <= admin_weeks
 
-    if today >= lesson_opens_on(lesson_week):
+    if today >= lesson_opens_on(lesson_week, group_code=group_code):
         return True
 
     admin_weeks = _admin_unlocked_weeks(child)
@@ -261,7 +248,7 @@ def lesson_access_info(
             "opens_on_iso": opens.isoformat(),
         }
     else:
-        opens = lesson_opens_on(week)
+        opens = lesson_opens_on(week, group_code=group_code)
         info = {
             "module_week": week,
             "week_in_stage": week_in_stage(week),

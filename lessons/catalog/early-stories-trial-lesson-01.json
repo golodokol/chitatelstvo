@@ -50,6 +50,8 @@
       "letter_image": "/static/early/letters/house.png",
       "show_word": true,
       "hint": "Прочитай сам. Потом нажми.",
+      "sound": "ph-vo-this-word-dom",
+      "coach_success": "Это слово ДОМ!",
       "tech_msg": "Вперёд к словам истории!",
       "spark": false,
       "spark_group": "word"
@@ -774,7 +776,7 @@
       "steps": [
         {
           "kind": "find",
-          "slovik_line": "Фраза «Вот мой дом». Какое слово лишнее?",
+          "slovik_line": "Вот мой дом. Какое слово сюда не подходит?",
           "prompt_image": "/static/early/letters/house.png",
           "prompt_alt": "Дом",
           "correct": "ball",
@@ -797,7 +799,8 @@
             }
           ],
           "audio": "ph-vo-phrase-home",
-          "prompt_text": "Фраза Вот мой дом.\nкакое слово лишнее?"
+          "phrase": "ВОТ МОЙ ДОМ",
+          "prompt_text": "Какое слово сюда не подходит?"
         },
         {
           "kind": "phrase_picture",
@@ -902,9 +905,9 @@
       ],
       "finale": "Ура, история прочитана!",
       "cta_label": "Я прочитал!",
-      "success_msg": "Ура, история прочитана!",
       "spark": false,
-      "spark_group": "meaning"
+      "spark_group": "meaning",
+      "finale_audio": "ph-vo-first-book"
     },
     {
       "id": "reward",

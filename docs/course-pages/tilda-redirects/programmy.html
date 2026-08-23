@@ -1,14 +1,176 @@
 <!-- Читательство · страница курса для Zero Block
      Вставить целиком в HTML-элемент Zero Block → Опубликовать.
      Ширина артборда: 1200, высота: авто, выравнивание: сверху.
+     SEO: текст ниже виден поисковикам; после загрузки JS — интерактив.
 -->
-<script>(function(){function f(){var m=document.getElementById("chit-course-root")||document.getElementById("chit-course-lite");if(!m)return;var w=m.closest(".t396");if(w){w.style.setProperty("display","block","important");w.style.setProperty("position","relative","important");w.style.setProperty("width","100%","important");w.style.setProperty("max-width","100%","important");w.style.setProperty("left","0","important");w.style.setProperty("transform","none","important");w.style.setProperty("overflow","visible","important");}var a=m.closest(".t396__artboard");if(a){a.style.setProperty("width","100%","important");a.style.setProperty("max-width","100%","important");a.style.setProperty("height","auto","important");a.style.setProperty("left","0","important");a.style.setProperty("transform","none","important");a.style.setProperty("overflow","visible","important");}var el=m.closest(".tn-elem");if(el){el.style.setProperty("display","block","important");el.style.setProperty("position","relative","important");el.style.setProperty("left","0","important");el.style.setProperty("top","0","important");el.style.setProperty("width","100%","important");el.style.setProperty("max-width","100%","important");el.style.setProperty("height","auto","important");el.style.setProperty("transform","none","important");el.style.setProperty("margin","0","important");}var atom=m.closest(".tn-atom");if(atom){atom.style.setProperty("width","100%","important");atom.style.setProperty("max-width","100%","important");atom.style.setProperty("height","auto","important");}}f();setTimeout(f,120);setTimeout(f,400);window.addEventListener("load",f);})();</script>
-<style id="chit-course-tilda">#chit-course-root,#chit-course-lite{width:100%!important;max-width:100%!important;box-sizing:border-box;margin:0;padding:0;font-family:Manrope,Nunito,system-ui,sans-serif;color:#2E2A38;background:#fff;line-height:1.65;font-size:17px}#chit-course-root *,#chit-course-lite *,#chit-course-root *::before,#chit-course-lite *::before,#chit-course-root *::after,#chit-course-lite *::after{box-sizing:border-box}.tn-atom__html #chit-course-root,.tn-atom__html #chit-course-lite{display:block!important;width:100%!important}</style>
+<script>(function () {
+  var ROOT_IDS = ['chit-course-root', 'chit-course-lite'];
+
+  function getRoot() {
+    for (var i = 0; i < ROOT_IDS.length; i++) {
+      var el = document.getElementById(ROOT_IDS[i]);
+      if (el) return el;
+    }
+    return null;
+  }
+
+  function setImp(el, props) {
+    if (!el) return;
+    Object.keys(props).forEach(function (k) {
+      if (props[k] != null) el.style.setProperty(k, props[k], 'important');
+    });
+  }
+
+  function patchRecStyles(rec) {
+    if (!rec) return;
+    rec.querySelectorAll('style').forEach(function (s) {
+      var t = s.textContent || '';
+      if (t.indexOf('t396__artboard') < 0 && t.indexOf('tn-elem') < 0) return;
+      var n = t
+        .replace(/left:\s*calc\([^)]+\)/gi, 'left:0')
+        .replace(/width:\s*(?:1200|960|640|480|320)px/gi, 'width:100%')
+        .replace(/height:\s*35000px/gi, 'height:auto')
+        .replace(/height:\s*100vh/gi, 'height:auto')
+        .replace(/display:\s*table/gi, 'display:block');
+      if (n !== t) s.textContent = n;
+    });
+  }
+
+  function syncTildaLayout() {
+    var m = getRoot();
+    if (!m) return;
+
+    var rec = m.closest('.t-rec');
+    patchRecStyles(rec);
+
+    if (rec) {
+      setImp(rec, {
+        width: '100%',
+        'max-width': '100%',
+        height: 'auto',
+        'max-height': 'none',
+        overflow: 'visible',
+        'padding-top': '0',
+        'margin-top': '0'
+      });
+    }
+
+    var chain = [
+      m.closest('.t396'),
+      m.closest('.t396__artboard'),
+      m.closest('.tn-elem'),
+      m.closest('.tn-atom'),
+      m.closest('.tn-atom__html'),
+      m
+    ];
+
+    chain.forEach(function (el) {
+      if (!el) return;
+      setImp(el, {
+        display: 'block',
+        position: 'relative',
+        left: '0',
+        top: '0',
+        width: '100%',
+        'max-width': '100%',
+        'min-width': '0',
+        transform: 'none',
+        'min-height': '0',
+        'max-height': 'none',
+        overflow: 'visible',
+        height: 'auto'
+      });
+    });
+
+    ['.t396__carrier', '.t396__filter'].forEach(function (sel) {
+      var el = rec && rec.querySelector(sel);
+      if (!el) return;
+      setImp(el, {
+        height: '0',
+        'max-height': '0',
+        overflow: 'hidden',
+        position: 'absolute',
+        left: '0',
+        top: '0',
+        width: '100%',
+        'pointer-events': 'none'
+      });
+    });
+
+    var h = Math.ceil(m.getBoundingClientRect().height);
+    if (h > 0) {
+      var ab = m.closest('.t396__artboard');
+      if (ab) {
+        setImp(ab, { height: h + 'px' });
+        ab.setAttribute('data-artboard-height', String(h));
+      }
+    }
+  }
+
+  window.chitSyncTildaLayout = syncTildaLayout;
+
+  function hookT396() {
+    if (window._chitCourseT396Hook) return;
+    var orig = window.t396_init;
+    if (typeof orig !== 'function') return;
+    window._chitCourseT396Hook = 1;
+    window.t396_init = function () {
+      var out = orig.apply(this, arguments);
+      syncTildaLayout();
+      setTimeout(syncTildaLayout, 50);
+      return out;
+    };
+  }
+
+  syncTildaLayout();
+  hookT396();
+  setTimeout(syncTildaLayout, 80);
+  setTimeout(syncTildaLayout, 300);
+  setTimeout(syncTildaLayout, 1200);
+  window.addEventListener('load', syncTildaLayout);
+
+  var n = 0;
+  var poll = setInterval(function () {
+    syncTildaLayout();
+    hookT396();
+    if (++n > 80) clearInterval(poll);
+  }, 250);
+
+  var root = getRoot();
+  if (root && window.ResizeObserver) {
+    new ResizeObserver(syncTildaLayout).observe(root);
+  }
+})();</script>
+<style id="chit-course-tilda">.t-rec:has(#chit-course-root),.t-rec:has(#chit-course-lite){height:auto!important;max-height:none!important;overflow:visible!important;padding-top:0!important}.t-rec:has(#chit-course-root) .t396,.t-rec:has(#chit-course-lite) .t396{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;overflow:visible!important;left:0!important;transform:none!important}.t-rec:has(#chit-course-root) .t396__artboard,.t-rec:has(#chit-course-lite) .t396__artboard,.t-rec:has(#chit-course-root) .tn-elem[data-elem-type="html"],.t-rec:has(#chit-course-lite) .tn-elem[data-elem-type="html"],.t-rec:has(#chit-course-root) .tn-atom,.t-rec:has(#chit-course-lite) .tn-atom,.t-rec:has(#chit-course-root) .tn-atom__html,.t-rec:has(#chit-course-lite) .tn-atom__html{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;width:100%!important;max-width:100%!important;left:0!important;top:0!important;transform:none!important}.t-rec:has(#chit-course-root) .t396__carrier,.t-rec:has(#chit-course-root) .t396__filter,.t-rec:has(#chit-course-lite) .t396__carrier,.t-rec:has(#chit-course-lite) .t396__filter{height:0!important;max-height:0!important;overflow:hidden!important;position:absolute!important;pointer-events:none!important}#chit-course-root,#chit-course-lite{width:100%!important;max-width:100%!important;box-sizing:border-box;margin:0;padding:0;font-family:Manrope,Nunito,system-ui,sans-serif;color:#2E2A38;background:#fff;line-height:1.65;font-size:17px}#chit-course-root *,#chit-course-lite *,#chit-course-root *::before,#chit-course-lite *::before,#chit-course-root *::after,#chit-course-lite *::after{box-sizing:border-box}.tn-atom__html #chit-course-root,.tn-atom__html #chit-course-lite{display:block!important;width:100%!important}#chit-course-app[hidden],#chit-course-lite-app[hidden],#chit-course-static[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.css?v=20260822l">
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.css?v=20260823g">
 <div id="chit-course-root" class="chit-course-page" data-page="hub">
-  <div id="chit-course"></div>
+  <article id="chit-course-static" class="cc-static">
+    <header class="cc-header"><div class="cc-header__inner">
+      <a class="cc-logo" href="https://chitatelstvo.ru"><img src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство"></a>
+      <a class="cc-header-cta" href="https://chitatelstvo.ru">На главную</a>
+    </div></header>
+    <section class="cc-section"><div class="cc-section__inner">
+      <h1>Программы Читательства по возрастам</h1>
+      <p>Курсы для 1–4 класса, внеклассное чтение, ранние программы и медленное чтение.</p>
+      <ul>
+        <li><a href="https://chitatelstvo.ru/1-klass">1 класс</a></li>
+        <li><a href="https://chitatelstvo.ru/2-klass">2 класс</a></li>
+        <li><a href="https://chitatelstvo.ru/3-klass">3 класс</a></li>
+        <li><a href="https://chitatelstvo.ru/4-klass">4 класс</a></li>
+        <li><a href="https://chitatelstvo.ru/6-8-let">Внеклассное чтение 6–8 лет</a></li>
+        <li><a href="https://chitatelstvo.ru/9-11-let">Внеклассное чтение 9–11 лет</a></li>
+        <li><a href="https://chitatelstvo.ru/bukvy-ozhivayut">Буквы оживают</a></li>
+        <li><a href="https://chitatelstvo.ru/pervye-istorii">Первые истории</a></li>
+        <li><a href="https://chitatelstvo.ru/veter-v-ivah">Ветер в ивах</a></li>
+        <li><a href="https://chitatelstvo.ru/tainstvenny-sad">Таинственный сад</a></li>
+        <li><a href="https://chitatelstvo.ru/russkie-skazki-6-9">Русские сказки 6–9 лет</a></li>
+        <li><a href="https://chitatelstvo.ru/russkie-skazki-10-12">Русские сказки 10–12 лет</a></li>
+      </ul>
+    </div></section>
+  </article>
+  <div id="chit-course-app" hidden><div id="chit-course"></div></div>
 </div>
-<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-data.js?v=20260822l"></script>
-<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.js?v=20260822l"></script>
+<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-data.js?v=20260823g"></script>
+<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.js?v=20260823g"></script>

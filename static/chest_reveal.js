@@ -313,25 +313,17 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ child_id: childId, tale_slug: taleSlug }),
       });
-      var data = await res.json().catch(function () { return {}; });
-      if (!res.ok) {
-        var detail = data && data.detail;
-        var msg = 'Не удалось сохранить награду';
-        if (typeof detail === 'string' && detail) msg = detail;
-        else if (Array.isArray(detail) && detail[0] && detail[0].msg) msg = detail[0].msg;
-        throw new Error(msg);
-      }
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Ошибка');
       claimDone = true;
       markPanelClaimed(activePanel);
       var treasuryItems = data.items && data.items.length ? data.items : activeItems;
       claimedTreasurySection = addItemsToTreasury(activePanel, treasuryItems);
-      if (titleEl) titleEl.textContent = treasuryItems && treasuryItems.length ? 'Награды в сокровищнице!' : 'Сундук открыт!';
+      if (titleEl) titleEl.textContent = 'Награды в сокровищнице!';
       if (subEl) {
-        subEl.textContent = treasuryItems && treasuryItems.length
-          ? 'Сначала ты увидел награды здесь — теперь они лежат в сокровищнице под сундуком.'
-          : 'Награды скоро появятся здесь. А пока можно вернуться к урокам.';
+        subEl.textContent = 'Сначала ты увидел награды здесь — теперь они лежат в сокровищнице под сундуком.';
       }
-      claimBtn.textContent = treasuryItems && treasuryItems.length ? 'Смотреть сокровищницу' : 'Закрыть';
+      claimBtn.textContent = 'Смотреть сокровищницу';
       claimBtn.disabled = false;
     } catch (err) {
       claimBtn.disabled = false;

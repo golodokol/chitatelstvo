@@ -23,17 +23,19 @@ window.CHIT_COURSE = (function () {
 
   var SINGLE_MEETINGS_ISO = {
     '1': ['2026-07-16', '2026-07-23', '2026-07-30', '2026-08-06'],
-    '2': ['2026-08-13', '2026-08-20', '2026-08-27', '2026-09-03']
+    '2': ['2026-09-10', '2026-09-17', '2026-09-24', '2026-10-01']
   };
 
   var LESSON_OPENS_ISO = {
-    '1': ['2026-07-15', '2026-08-03', '2026-08-05', '2026-08-06'],
-    '2': ['2026-08-15', '2026-08-17', '2026-08-24', '2026-08-31']
+    '1': ['2026-07-15', '2026-08-03', '2026-08-31', '2026-08-31'],
+    '2': ['2026-09-07', '2026-09-07', '2026-09-14', '2026-09-14']
   };
+
+  var RONI_LESSON_OPEN_ISO = '2026-08-27';
 
   var WITH_TEACHER_STAGE1_CLOSED = true;
   var NO_WITH_TEACHER_GROUPS = ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11'];
-  var PAGES_VERSION = '20260822l';
+  var PAGES_VERSION = '20260823g';
 
   function todayIsoLocal() {
     var d = new Date();
@@ -67,8 +69,8 @@ window.CHIT_COURSE = (function () {
   };
 
   var SCHEDULE = {
-    '1': { lessons: ['15 июля', '3 августа', '5 августа', '6 августа'], weekdays: ['среда', 'понедельник', 'среда', 'четверг'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] },
-    '2': { lessons: ['15 августа', '17 августа', '24 августа', '31 августа'], weekdays: ['суббота', 'понедельник', 'понедельник', 'понедельник'], meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] }
+    '1': { lessons: ['15 июля', '3 августа', '31 августа', '31 августа'], weekdays: ['среда', 'понедельник', 'воскресенье', 'воскресенье'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] },
+    '2': { lessons: ['7 сентября', '7 сентября', '14 сентября', '14 сентября'], weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'], meetings: ['10 сентября', '17 сентября', '24 сентября', '1 октября'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] }
   };
 
   var DIARY_SLUGS = {
@@ -356,27 +358,33 @@ window.CHIT_COURSE = (function () {
     return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
   }
 
-  function lessonIsOpen(stage, taleNum) {
+  function lessonOpenDateIso(stage, taleNum, group) {
+    if (group === 'extra-9-11' && String(stage) === '1' && Number(taleNum) === 2) {
+      return RONI_LESSON_OPEN_ISO;
+    }
     var dates = LESSON_OPENS_ISO[String(stage)];
-    if (!dates || !taleNum) return false;
-    var open = dates[Number(taleNum) - 1];
+    if (!dates || !taleNum) return null;
+    return dates[Number(taleNum) - 1] || null;
+  }
+
+  function lessonIsOpen(stage, taleNum, group) {
+    var open = lessonOpenDateIso(stage, taleNum, group);
     return !!(open && open <= todayIsoLocal());
   }
 
-  function lessonOpenLabel(stage, index) {
+  function lessonOpenLabel(stage, index, group) {
     var s = SCHEDULE[String(stage)];
     if (!s || index < 0) return '';
-    if (lessonIsOpen(stage, index + 1)) return 'Уже доступен для прохождения';
+    if (lessonIsOpen(stage, index + 1, group)) return 'Уже доступен для прохождения';
+    if (group === 'extra-9-11' && String(stage) === '1' && index === 1) {
+      return 'Урок откроется: четверг, 27 августа';
+    }
     var wd = s.weekdays && s.weekdays[index] ? s.weekdays[index] + ', ' : '';
     return 'Урок откроется: ' + wd + s.lessons[index];
   }
 
   function singleMeetingAddonAvailable(stage, taleNum) {
-    if (String(stage) === '1') return false;
-    var dates = SINGLE_MEETINGS_ISO[String(stage)];
-    if (!dates || !taleNum) return false;
-    var meet = dates[Number(taleNum) - 1];
-    return !!(meet && meet > todayIsoLocal());
+    return false;
   }
 
   function singleMeetingUnavailableLabel(stage) {
@@ -400,10 +408,13 @@ window.CHIT_COURSE = (function () {
     return singleMeetingUnavailableLabel(stage);
   }
 
-  function singleTaleBadgeHtml(stage, taleNum) {
-    var open = lessonIsOpen(stage, taleNum);
+  function singleTaleBadgeHtml(stage, taleNum, group) {
+    var open = lessonIsOpen(stage, taleNum, group);
     if (open) {
       return '<span class="cc-tale-badge cc-tale-badge--open">Уже доступен</span>';
+    }
+    if (group === 'extra-9-11' && String(stage) === '1' && Number(taleNum) === 2) {
+      return '<span class="cc-tale-badge cc-tale-badge--online">Откроется четверг, 27 августа</span>';
     }
     var sched = SCHEDULE[String(stage)];
     var idx = Number(taleNum) - 1;

@@ -340,27 +340,27 @@ function getTaleInfo(title) {
 
 var CHIT_SCHEDULE = {
   '1': {
-    lessons: ['15 июля', '3 августа', '5 августа', '6 августа'],
-    weekdays: ['среда', 'понедельник', 'среда', 'четверг'],
+    lessons: ['15 июля', '3 августа', '31 августа', '31 августа'],
+    weekdays: ['среда', 'понедельник', 'понедельник', 'понедельник'],
     meetings: ['16 июля', '23 июля', '30 июля', '6 августа'],
     meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
   },
   '2': {
-    lessons: ['15 августа', '17 августа', '24 августа', '31 августа'],
-    weekdays: ['суббота', 'понедельник', 'понедельник', 'понедельник'],
-    meetings: ['13 августа', '20 августа', '27 августа', '3 сентября'],
+    lessons: ['7 сентября', '7 сентября', '14 сентября', '14 сентября'],
+    weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'],
+    meetings: ['10 сентября', '17 сентября', '24 сентября', '1 октября'],
     meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
   }
 };
 
 var CHIT_SINGLE_MEETINGS_ISO = {
   '1': ['2026-07-16', '2026-07-23', '2026-07-30', '2026-08-06'],
-  '2': ['2026-08-13', '2026-08-20', '2026-08-27', '2026-09-03']
+  '2': ['2026-09-10', '2026-09-17', '2026-09-24', '2026-10-01']
 };
 
 var CHIT_LESSON_OPENS_ISO = {
-  '1': ['2026-07-15', '2026-08-03', '2026-08-05', '2026-08-06'],
-  '2': ['2026-08-15', '2026-08-17', '2026-08-24', '2026-08-31']
+  '1': ['2026-07-15', '2026-08-03', '2026-08-31', '2026-08-31'],
+  '2': ['2026-09-07', '2026-09-07', '2026-09-14', '2026-09-14']
 };
 
 /** Early-курсы (Буквы / Истории), модуль 1: 4 встречи по четвергам */
@@ -2564,6 +2564,104 @@ if (faqList) {
     if (!form) return;
     var note = document.getElementById('chit-lead-note');
     var API_BASE = (window.CHIT_API_BASE || 'https://api.chitatelstvo.ru').replace(/\/$/, '');
+    var LEAD_FORM_NAME = 'Консультация';
+
+    function setLeadNote(text, ok) {
+      if (!note) return;
+      note.hidden = !text;
+      note.textContent = text || '';
+      if (ok) note.classList.add('is-ok');
+      else note.classList.remove('is-ok');
+    }
+
+    function findLeadTildaForm() {
+      var forms = document.querySelectorAll('form.js-form-proccess, form.t-form');
+      var i;
+      var formEl;
+      var nameInp;
+      var fname;
+      var needle = LEAD_FORM_NAME.toLowerCase();
+      for (i = 0; i < forms.length; i++) {
+        formEl = forms[i];
+        if (formEl.closest('.t706') || formEl.closest('.t-store') || formEl.id === 'chit-lead-form') continue;
+        nameInp = formEl.querySelector('input[name="tildaspec-formname"]');
+        fname = (nameInp && nameInp.value ? nameInp.value : '').trim();
+        if (!fname) continue;
+        var low = fname.toLowerCase();
+        if (fname === LEAD_FORM_NAME || low === needle ||
+            low.indexOf('консультац') >= 0 || low.indexOf('подобрать') >= 0 ||
+            low.indexOf('lead') >= 0) {
+          return formEl;
+        }
+      }
+      return null;
+    }
+
+    function setTildaField(tildaForm, names, value) {
+      names.forEach(function (name) {
+        tildaForm.querySelectorAll('[name="' + name + '"]').forEach(function (el) {
+          if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'submit' || el.type === 'button') return;
+          if (el.type === 'hidden' && (el.name === 'formservices[]' || /^tildaspec/.test(el.name))) return;
+          el.value = value;
+          try {
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          } catch (err) {}
+        });
+      });
+    }
+
+    function submitLeadViaTilda(payload) {
+      var tildaForm = findLeadTildaForm();
+      if (!tildaForm) return Promise.reject(new Error('no-tilda-form'));
+
+      setTildaField(tildaForm, ['Name', 'name', 'Input', 'parent_name'], payload.name);
+      setTildaField(tildaForm, ['Email', 'email', 'parent_email', 'E-mail'], payload.email);
+      setTildaField(tildaForm, ['Phone', 'phone', 'tel', 'Telegram', 'parent_phone'], payload.phone);
+      setTildaField(tildaForm, ['Input_2', 'Input2', 'age', 'Age', 'child_age'], payload.age);
+      var comment = payload.comment || '';
+      setTildaField(tildaForm, [
+        'Textarea', 'Comments', 'Comment', 'comment', 'Message', 'message', 'course', 'Course'
+      ], comment);
+      var areas = tildaForm.querySelectorAll('textarea');
+      if (areas.length && comment) {
+        areas[0].value = comment;
+        try { areas[0].dispatchEvent(new Event('input', { bubbles: true })); } catch (err) {}
+      }
+
+      return new Promise(function (resolve, reject) {
+        var done = false;
+        var timer;
+        function finish(ok, err) {
+          if (done) return;
+          done = true;
+          clearTimeout(timer);
+          tildaForm.removeEventListener('tildaform:aftersuccess', onOk);
+          if (ok) resolve();
+          else reject(err || new Error('tilda-fail'));
+        }
+        function onOk() { finish(true); }
+        tildaForm.addEventListener('tildaform:aftersuccess', onOk);
+        timer = setTimeout(function () {
+          var success = tildaForm.querySelector('.js-successbox');
+          var successVisible = success && success.offsetParent !== null &&
+            window.getComputedStyle(success).display !== 'none';
+          if (successVisible || tildaForm.classList.contains('js-send-form-success')) finish(true);
+          else finish(false, new Error('tilda-timeout'));
+        }, 8000);
+        var btn = tildaForm.querySelector(
+          'button[type="submit"], .t-submit, input[type="submit"], .t-btnflex_type_submit'
+        );
+        try {
+          if (btn) btn.click();
+          else if (typeof tildaForm.requestSubmit === 'function') tildaForm.requestSubmit();
+          else tildaForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        } catch (err) {
+          finish(false, err);
+        }
+      });
+    }
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       var name = (form.querySelector('#lead_parent_name') || {}).value || '';
@@ -2623,18 +2721,28 @@ if (faqList) {
           (saved.meta ? ' (' + saved.meta + ')' : '') +
           (saved.tariff ? '\nТариф: ' + saved.tariff : '') + '\n';
       }
-      var body =
+      var comment =
+        'Консультация / помощь с выбором курса\n' +
         courseLine +
         'Имя родителя: ' + name + '\n' +
         'Email: ' + email + '\n' +
         'Телефон: ' + phone + '\n' +
         'Возраст ребёнка: ' + age + '\n';
-      var mailto =
-        'mailto:info@chitatelstvo.ru' +
-        '?subject=' + encodeURIComponent('Консультация · Читательство') +
-        '&body=' + encodeURIComponent(body);
-      if (note) note.hidden = false;
-      window.location.href = mailto;
+
+      setLeadNote('Отправляем…', false);
+      submitLeadViaTilda({ name: name, email: email, phone: phone, age: age, comment: comment })
+        .then(function () {
+          setLeadNote('Спасибо! Заявка отправлена — ответим на email или телефон.', true);
+          form.reset();
+        })
+        .catch(function () {
+          var mailto =
+            'mailto:info@chitatelstvo.ru' +
+            '?subject=' + encodeURIComponent('Консультация · Читательство') +
+            '&body=' + encodeURIComponent(comment);
+          setLeadNote('Откроется письмо — или напишите на info@chitatelstvo.ru.', false);
+          window.location.href = mailto;
+        });
     });
   })();
 

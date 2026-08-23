@@ -5,13 +5,24 @@
   var group = document.body.getAttribute('data-group')
     || (document.getElementById('chit-course-lite') && document.getElementById('chit-course-lite').getAttribute('data-group'));
   var course = group && D.courses[group];
-  var root = document.getElementById('chit-course-lite');
+  var rootHost = document.getElementById('chit-course-lite');
+  var root = document.getElementById('chit-course-lite-app') || rootHost;
   if (!course || !root) {
     if (root) root.innerHTML = '<p style="padding:40px;text-align:center">Страница не найдена</p>';
     return;
   }
 
   document.title = course.h1 + ' — Читательство';
+
+  function activateLiteApp() {
+    var staticEl = document.getElementById('chit-course-static');
+    var appWrap = document.getElementById('chit-course-lite-app');
+    if (staticEl) {
+      staticEl.setAttribute('hidden', '');
+      staticEl.setAttribute('aria-hidden', 'true');
+    }
+    if (appWrap) appWrap.removeAttribute('hidden');
+  }
 
   function esc(s) {
     return String(s)
@@ -123,4 +134,6 @@
       try { sessionStorage.setItem('chit_enroll_group', course.group); } catch (e) {}
     });
   });
+
+  activateLiteApp();
 })();

@@ -7,13 +7,25 @@
   var isHub = pageRoot.getAttribute('data-page') === 'hub' || document.body.getAttribute('data-page') === 'hub';
   var HOME_URL = 'https://chitatelstvo.ru/';
 
+  function activateApp() {
+    var staticEl = document.getElementById('chit-course-static');
+    var appWrap = document.getElementById('chit-course-app');
+    if (staticEl) {
+      staticEl.setAttribute('hidden', '');
+      staticEl.setAttribute('aria-hidden', 'true');
+    }
+    if (appWrap) appWrap.removeAttribute('hidden');
+  }
+
   if (isHub) {
     renderHub();
+    activateApp();
     return;
   }
   if (!group || !D.META[group]) {
     var missing = document.getElementById('chit-course');
     if (missing) missing.innerHTML = '<p style="padding:40px;text-align:center">Страница не найдена</p>';
+    activateApp();
     return;
   }
 
@@ -22,21 +34,20 @@
   var withTeacherClosed = !!(D.NO_WITH_TEACHER_GROUPS && D.NO_WITH_TEACHER_GROUPS.indexOf(group) >= 0);
   document.title = meta.h1 + ' — Читательство';
 
-  function waitlistHref() {
-    var label = (D.MODULES[group] && D.MODULES[group].label) || group;
-    return 'mailto:info@chitatelstvo.ru?subject=' +
-      encodeURIComponent('Жду тариф «С преподавателем» · ' + label) +
-      '&body=' + encodeURIComponent(
-        'Здравствуйте!\n\nХочу узнать, когда откроется тариф «С преподавателем» для курса «' +
-        label + '».\n\nИмя:\nТелефон / Telegram:\n'
-      );
+  /** Имя формы Tilda (tildaspec-formname), на которую уходят заявки «жду с преподавателем». */
+  var WAITLIST_FORM_NAME = 'Жду с преподавателем';
+
+  function courseLabel() {
+    return (D.MODULES[group] && D.MODULES[group].label) || meta.h1 || group;
   }
 
   renderPage();
+  activateApp();
   initEnrollment();
   initFaq();
   initLessonDemoToggle();
   initMobileCta();
+  if (withTeacherClosed) initTeacherWaitlistModal();
 
   function esc(s) {
     return String(s)
@@ -90,6 +101,11 @@
         '<div class="cc-hub-grid">' + cards + '</div>' +
       '</div></section>' +
       footerHtml();
+    if (typeof window.chitSyncTildaLayout === 'function') {
+      window.chitSyncTildaLayout();
+      requestAnimationFrame(window.chitSyncTildaLayout);
+      setTimeout(window.chitSyncTildaLayout, 100);
+    }
   }
 
   function taleAnchorId(stageNum, taleIndex) {
@@ -124,8 +140,11 @@
 
   function formatProgramDate(sched, index, stageKey) {
     if (!sched || !sched.lessons[index]) return '';
-    if (stageKey && D.lessonIsOpen(stageKey, index + 1)) {
+    if (stageKey && D.lessonIsOpen(stageKey, index + 1, group)) {
       return 'Уже доступен для прохождения';
+    }
+    if (group === 'extra-9-11' && String(stageKey) === '1' && index === 1) {
+      return '27 АВГУСТА';
     }
     var raw = sched.lessons[index];
     var parts = raw.trim().split(/\s+/);
@@ -154,9 +173,10 @@
           '</div></article>';
       }
       var quoteHtml = info.quote ? '<p class="cc-tale-row__quote">' + guillemets(info.quote) + '</p>' : '';
-      var open = D.lessonIsOpen(stageKey, i + 1);
+      var open = D.lessonIsOpen(stageKey, i + 1, group);
+      var openLabel = open ? 'Уже доступен для прохождения' : D.lessonOpenLabel(stageKey, i, group);
       var dateBlock = sched
-        ? '<div class="cc-tale-row__date">' + esc(open ? 'Уже доступен для прохождения' : ('Урок откроется: ' + (sched.weekdays[i] || 'пн') + ' ' + sched.lessons[i])) + '</div>'
+        ? '<div class="cc-tale-row__date">' + esc(openLabel) + '</div>'
         : '';
       return '<article class="cc-tale-row" id="' + esc(anchorId) + '">' +
         bookCoverHtml(row[1], stageNum, i + 1) +
@@ -324,21 +344,6 @@
       '</div></section>';
   }
 
-  function outcomeHtml() {
-    var items = meta.outcome || [];
-    if (!items.length) return '';
-    return '<section class="cc-section cc-section--outcome" id="outcome">' +
-      '<div class="cc-section__inner">' +
-        '<span class="cc-chapter"><em>итог</em></span>' +
-        '<h2>' + esc(meta.outcomeTitle || 'После курса') + '</h2>' +
-        '<p class="cc-section__lead">' + esc(meta.outcomeLead || '') + '</p>' +
-        '<ul class="cc-outcome-list">' +
-          items.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') +
-        '</ul>' +
-      '</div>' +
-    '</section>';
-  }
-
   function compareTableHtml() {
     return '<div class="cc-compare"><table>' +
       '<thead><tr><th></th><th>Разовое</th><th>Индивидуальное</th><th>С преподавателем</th></tr></thead>' +
@@ -479,7 +484,6 @@
         '<nav class="cc-nav" aria-label="Разделы">' +
           '<a href="#about">О курсе</a>' +
           '<a href="#program-list">Программа</a>' +
-          '<a href="#outcome">После курса</a>' +
           '<a href="#tariffs">Тарифы</a>' +
           '<a href="#enroll">Запись</a>' +
         '</nav>' +
@@ -508,7 +512,6 @@
       '</section>' +
 
       lessonFlowHtml() +
-      outcomeHtml() +
       reviewsStripHtml() +
 
       '<section class="cc-section cc-section--white" id="tariffs">' +
@@ -527,7 +530,7 @@
               true) +
           '</div>' +
           (withTeacherClosed
-            ? '<p class="cc-tariff-waitnote">Тариф «С преподавателем» для этой программы сейчас закрыт. Можно оставить заявку — напишем, когда набор откроется.</p>'
+            ? '<p class="cc-tariff-waitnote">Тариф «С преподавателем» для этой программы сейчас закрыт. Оставьте телефон и email — напишем, когда набор откроется.</p>'
             : '') +
           '<details class="cc-compare-details">' +
             '<summary>Сравнить тарифы в таблице</summary>' +
@@ -599,7 +602,7 @@
             faqItem('Что будет после оплаты?', 'На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс.') +
             faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене.' + (withTeacherClosed ? '' : ' Живые занятия — на тарифе «С преподавателем».')) +
             faqItem('Чем отличаются тарифы?', withTeacherClosed
-              ? ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). Тариф «С преподавателем» для этой программы пока недоступен — можно подписаться на обновления.')
+              ? ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). Тариф «С преподавателем» для этой программы пока недоступен — можно оставить контакты, и мы напишем, когда набор откроется.')
               : ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи по четвергам (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').')) +
           '</div>' +
         '</div>' +
@@ -610,6 +613,12 @@
       '</div>' +
 
       footerHtml();
+    if (typeof window.chitSyncTildaLayout === 'function') {
+      window.chitSyncTildaLayout();
+      requestAnimationFrame(window.chitSyncTildaLayout);
+      setTimeout(window.chitSyncTildaLayout, 100);
+      setTimeout(window.chitSyncTildaLayout, 600);
+    }
   }
 
   function forWhomFromMeta() {
@@ -622,7 +631,7 @@
       ? '<div class="cc-tariff__meet">' + esc(typeof meet === 'string' ? meet : (closed ? 'Набор временно закрыт' : 'Встречи по четвергам')) + '</div>'
       : '<div class="cc-tariff__meet cc-tariff__meet--empty" aria-hidden="true"></div>';
     var cta = closed
-      ? '<a class="cc-btn cc-btn--block cc-btn--waitlist" href="' + waitlistHref() + '">Пока недоступно · подписаться</a>'
+      ? '<button type="button" class="cc-btn cc-btn--block cc-btn--waitlist" data-waitlist-open>Пока недоступно · оставить контакты</button>'
       : '<a class="cc-btn cc-btn--block" href="#enroll" data-tariff-jump="' + key + '">Выбрать</a>';
     return '<article class="cc-tariff' + (featured ? ' cc-tariff--featured' : '') + (closed ? ' cc-tariff--closed' : '') + '">' +
       (closed ? '<span class="cc-tariff__closed-badge">Набор закрыт</span>' : '') +
@@ -639,11 +648,11 @@
   function pickCard(key, tag, name, price, hint) {
     var closed = key === 'with_teacher' && withTeacherClosed;
     if (closed) {
-      return '<a class="cc-pick-card cc-pick-card--closed" href="' + waitlistHref() + '" data-tariff="' + key + '" aria-disabled="true">' +
+      return '<button type="button" class="cc-pick-card cc-pick-card--closed" data-tariff="' + key + '" data-waitlist-open aria-disabled="true">' +
         '<div class="cc-pick-card__tag">Пока недоступно</div>' +
         '<div class="cc-pick-card__name">' + esc(name) + '</div>' +
         '<div class="cc-pick-card__price">' + D.formatPrice(price) + '</div>' +
-        '<div class="cc-pick-card__hint">Подписаться на обновления</div></a>';
+        '<div class="cc-pick-card__hint">Оставить контакты</div></button>';
     }
     return '<button type="button" class="cc-pick-card" data-tariff="' + key + '">' +
       '<div class="cc-pick-card__tag">' + esc(tag) + '</div>' +
@@ -784,12 +793,12 @@
       var mwd = s.meetingWeekdays && s.meetingWeekdays[index] ? s.meetingWeekdays[index] + ' ' : 'чт ';
       var html = '<span style="font-size:13px;color:var(--muted)">';
       if (tariff === 'single') {
-        html += esc(D.lessonOpenLabel(stage, index));
+        html += esc(D.lessonOpenLabel(stage, index, group));
       } else if (tariff === 'with_teacher') {
         html += 'Встреча: ' + mwd + s.meetings[index] + '<br>';
-        html += esc(D.lessonOpenLabel(stage, index));
+        html += esc(D.lessonOpenLabel(stage, index, group));
       } else {
-        html += esc(D.lessonOpenLabel(stage, index));
+        html += esc(D.lessonOpenLabel(stage, index, group));
       }
       html += '</span>';
       return html;
@@ -834,7 +843,7 @@
     document.getElementById('cc-tariffs').onclick = function (e) {
       var card = e.target.closest('[data-tariff]');
       if (!card) return;
-      if (card.classList.contains('cc-pick-card--closed') || card.getAttribute('aria-disabled') === 'true') {
+      if (card.classList.contains('cc-pick-card--closed') || card.getAttribute('aria-disabled') === 'true' || card.hasAttribute('data-waitlist-open')) {
         return;
       }
       e.preventDefault();
@@ -987,5 +996,266 @@
     refreshStageAvailability();
     renderTales();
     syncHidden();
+  }
+
+  function initTeacherWaitlistModal() {
+    if (document.getElementById('cc-waitlist-modal')) return;
+
+    var wrap = document.createElement('div');
+    wrap.id = 'cc-waitlist-modal';
+    wrap.className = 'cc-waitlist';
+    wrap.setAttribute('hidden', '');
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.innerHTML =
+      '<div class="cc-waitlist__backdrop" data-waitlist-close tabindex="-1"></div>' +
+      '<div class="cc-waitlist__dialog" role="dialog" aria-modal="true" aria-labelledby="cc-waitlist-title">' +
+        '<button type="button" class="cc-waitlist__close" data-waitlist-close aria-label="Закрыть">' +
+          '<span class="cc-waitlist__close-icon" aria-hidden="true"></span>' +
+        '</button>' +
+        '<p class="cc-waitlist__eyebrow">обратная связь</p>' +
+        '<h2 class="cc-waitlist__title" id="cc-waitlist-title">Набор с преподавателем закрыт</h2>' +
+        '<p class="cc-waitlist__lead">Оставьте телефон и email — напишем, когда откроется тариф «С преподавателем» для курса «' +
+          esc(courseLabel()) + '».</p>' +
+        '<form class="cc-waitlist__form" id="cc-waitlist-form" novalidate>' +
+          '<div class="cc-form-field">' +
+            '<label for="cc_waitlist_email">Email</label>' +
+            '<input type="email" id="cc_waitlist_email" name="email" required autocomplete="email" placeholder="you@email.com">' +
+          '</div>' +
+          '<div class="cc-form-field">' +
+            '<label for="cc_waitlist_phone">Телефон</label>' +
+            '<input type="tel" id="cc_waitlist_phone" name="phone" required autocomplete="tel" placeholder="+7 …">' +
+          '</div>' +
+          '<button type="submit" class="cc-btn cc-btn--block" id="cc-waitlist-submit">Отправить</button>' +
+          '<p class="cc-waitlist__note" id="cc-waitlist-note" hidden></p>' +
+          '<p class="cc-form-consent">Отправляя заявку, вы соглашаетесь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">политикой конфиденциальности</a>.</p>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(wrap);
+
+    var form = document.getElementById('cc-waitlist-form');
+    var note = document.getElementById('cc-waitlist-note');
+    var submitBtn = document.getElementById('cc-waitlist-submit');
+    var emailEl = document.getElementById('cc_waitlist_email');
+    var phoneEl = document.getElementById('cc_waitlist_phone');
+    var busy = false;
+
+    function setNote(text, ok) {
+      if (!note) return;
+      note.hidden = !text;
+      note.textContent = text || '';
+      note.classList.toggle('is-ok', !!ok);
+      note.classList.toggle('is-err', !!text && !ok);
+    }
+
+    function openModal() {
+      wrap.removeAttribute('hidden');
+      wrap.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('cc-waitlist-open');
+      setNote('', false);
+      if (emailEl) {
+        setTimeout(function () { emailEl.focus(); }, 40);
+      }
+      if (typeof window.chitSyncTildaLayout === 'function') window.chitSyncTildaLayout();
+    }
+
+    function closeModal() {
+      wrap.setAttribute('hidden', '');
+      wrap.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('cc-waitlist-open');
+    }
+
+    document.addEventListener('click', function (e) {
+      var openBtn = e.target.closest('[data-waitlist-open]');
+      if (openBtn) {
+        e.preventDefault();
+        openModal();
+        return;
+      }
+      if (e.target.closest('[data-waitlist-close]')) {
+        e.preventDefault();
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !wrap.hasAttribute('hidden')) closeModal();
+    });
+
+    function findWaitlistForm() {
+      var forms = document.querySelectorAll('form.js-form-proccess, form.t-form');
+      var i;
+      var formEl;
+      var nameInp;
+      var fname;
+      var needle = WAITLIST_FORM_NAME.toLowerCase();
+      for (i = 0; i < forms.length; i++) {
+        formEl = forms[i];
+        if (formEl.closest('.t706') || formEl.closest('.t-store') || formEl.closest('#cc-waitlist-modal')) continue;
+        nameInp = formEl.querySelector('input[name="tildaspec-formname"]');
+        fname = (nameInp && nameInp.value ? nameInp.value : '').trim();
+        if (!fname) continue;
+        var low = fname.toLowerCase();
+        if (fname === WAITLIST_FORM_NAME || low === needle ||
+            low.indexOf('преподавател') >= 0 || low.indexOf('waitlist') >= 0 ||
+            low.indexOf('жду') >= 0) {
+          return formEl;
+        }
+      }
+      for (i = 0; i < forms.length; i++) {
+        formEl = forms[i];
+        if (formEl.closest('.t706') || formEl.closest('.t-store') || formEl.closest('#cc-waitlist-modal')) continue;
+        nameInp = formEl.querySelector('input[name="tildaspec-formname"]');
+        fname = (nameInp && nameInp.value ? nameInp.value : '').trim();
+        if (fname === 'Cart' || fname === 'Order') continue;
+        if (formEl.querySelector('[name="Email"], [name="email"], input[type="email"]') &&
+            formEl.querySelector('[name="Phone"], [name="phone"], input[type="tel"]')) {
+          return formEl;
+        }
+      }
+      return null;
+    }
+
+    function setTildaField(tildaForm, names, value) {
+      var set = false;
+      names.forEach(function (name) {
+        tildaForm.querySelectorAll('[name="' + name + '"]').forEach(function (el) {
+          if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'submit' || el.type === 'button') {
+            return;
+          }
+          if (el.type === 'hidden' && (el.name === 'formservices[]' || /^tildaspec/.test(el.name))) {
+            return;
+          }
+          el.value = value;
+          try {
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          } catch (err) {}
+          set = true;
+        });
+      });
+      return set;
+    }
+
+    function fillTildaForm(tildaForm, email, phone) {
+      var label = courseLabel();
+      var comment = 'Жду тариф «С преподавателем» · ' + label + ' (' + group + ')';
+      setTildaField(tildaForm, ['Email', 'email', 'parent_email', 'E-mail'], email);
+      setTildaField(tildaForm, ['Phone', 'phone', 'tel', 'Telegram', 'parent_phone', 'parent_telegram'], phone);
+      setTildaField(tildaForm, ['Name', 'name', 'Input', 'parent_name'], label);
+      setTildaField(tildaForm, [
+        'course', 'Course', 'program', 'Program', 'Textarea', 'Comments', 'Comment',
+        'comment', 'Message', 'message', 'Input_2', 'Input2'
+      ], comment);
+      var namedCourse = tildaForm.querySelector('[name="course"], [name="Course"], [name="program"]');
+      if (!namedCourse) {
+        var areas = tildaForm.querySelectorAll('textarea');
+        if (areas.length) {
+          areas[0].value = comment;
+          try {
+            areas[0].dispatchEvent(new Event('input', { bubbles: true }));
+          } catch (err) {}
+        }
+      }
+    }
+
+    function submitViaTilda(email, phone) {
+      var tildaForm = findWaitlistForm();
+      if (!tildaForm) {
+        return Promise.reject(new Error('no-tilda-form'));
+      }
+      fillTildaForm(tildaForm, email, phone);
+
+      return new Promise(function (resolve, reject) {
+        var done = false;
+        var timer;
+
+        function finish(ok, err) {
+          if (done) return;
+          done = true;
+          clearTimeout(timer);
+          tildaForm.removeEventListener('tildaform:aftersuccess', onOk);
+          if (ok) resolve();
+          else reject(err || new Error('tilda-fail'));
+        }
+
+        function onOk() { finish(true); }
+
+        tildaForm.addEventListener('tildaform:aftersuccess', onOk);
+        timer = setTimeout(function () {
+          var success = tildaForm.querySelector('.js-successbox');
+          var successVisible = success && success.offsetParent !== null &&
+            window.getComputedStyle(success).display !== 'none';
+          if (successVisible || tildaForm.classList.contains('js-send-form-success')) {
+            finish(true);
+          } else {
+            finish(false, new Error('tilda-timeout'));
+          }
+        }, 8000);
+
+        var btn = tildaForm.querySelector(
+          'button[type="submit"], .t-submit, input[type="submit"], .t-btnflex_type_submit'
+        );
+        try {
+          if (btn) btn.click();
+          else if (typeof tildaForm.requestSubmit === 'function') tildaForm.requestSubmit();
+          else tildaForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        } catch (err) {
+          finish(false, err);
+        }
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (busy) return;
+      var email = String(emailEl && emailEl.value || '').trim();
+      var phone = String(phoneEl && phoneEl.value || '').trim();
+      if (!email || email.indexOf('@') < 0) {
+        setNote('Укажите корректный email.', false);
+        if (emailEl) emailEl.focus();
+        return;
+      }
+      if (!phone || phone.replace(/\D/g, '').length < 10) {
+        setNote('Укажите телефон (не меньше 10 цифр).', false);
+        if (phoneEl) phoneEl.focus();
+        return;
+      }
+
+      busy = true;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Отправляем…';
+      }
+      setNote('', false);
+
+      submitViaTilda(email, phone)
+        .then(function () {
+          setNote('Спасибо! Заявка отправлена — напишем, когда набор откроется.', true);
+          form.reset();
+          setTimeout(closeModal, 1800);
+        })
+        .catch(function (err) {
+          var mailto =
+            'mailto:info@chitatelstvo.ru?subject=' +
+            encodeURIComponent('Жду тариф «С преподавателем» · ' + courseLabel()) +
+            '&body=' + encodeURIComponent(
+              'Здравствуйте!\n\nХочу узнать, когда откроется тариф «С преподавателем» для курса «' +
+              courseLabel() + '».\n\nEmail: ' + email + '\nТелефон: ' + phone + '\n'
+            );
+          if (err && err.message === 'no-tilda-form') {
+            setNote('Форма Tilda ещё не подключена на странице. Откроется письмо — или напишите на info@chitatelstvo.ru.', false);
+          } else {
+            setNote('Не удалось отправить через сайт. Можно написать на info@chitatelstvo.ru.', false);
+          }
+          setTimeout(function () { window.location.href = mailto; }, 600);
+        })
+        .then(function () {
+          busy = false;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Отправить';
+          }
+        });
+    });
   }
 })();

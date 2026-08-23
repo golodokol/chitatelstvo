@@ -1,16 +1,155 @@
 <!-- Читательство · страница курса для Zero Block
      Вставить целиком в HTML-элемент Zero Block → Опубликовать.
      Ширина артборда: 1200, высота: авто, выравнивание: сверху.
+     SEO: текст ниже виден поисковикам; после загрузки JS — интерактив.
 -->
-<script>(function(){function f(){var m=document.getElementById("chit-course-root")||document.getElementById("chit-course-lite");if(!m)return;var w=m.closest(".t396");if(w){w.style.setProperty("display","block","important");w.style.setProperty("position","relative","important");w.style.setProperty("width","100%","important");w.style.setProperty("max-width","100%","important");w.style.setProperty("left","0","important");w.style.setProperty("transform","none","important");w.style.setProperty("overflow","visible","important");}var a=m.closest(".t396__artboard");if(a){a.style.setProperty("width","100%","important");a.style.setProperty("max-width","100%","important");a.style.setProperty("height","auto","important");a.style.setProperty("left","0","important");a.style.setProperty("transform","none","important");a.style.setProperty("overflow","visible","important");}var el=m.closest(".tn-elem");if(el){el.style.setProperty("display","block","important");el.style.setProperty("position","relative","important");el.style.setProperty("left","0","important");el.style.setProperty("top","0","important");el.style.setProperty("width","100%","important");el.style.setProperty("max-width","100%","important");el.style.setProperty("height","auto","important");el.style.setProperty("transform","none","important");el.style.setProperty("margin","0","important");}var atom=m.closest(".tn-atom");if(atom){atom.style.setProperty("width","100%","important");atom.style.setProperty("max-width","100%","important");atom.style.setProperty("height","auto","important");}}f();setTimeout(f,120);setTimeout(f,400);window.addEventListener("load",f);})();</script>
-<style id="chit-course-tilda">#chit-course-root,#chit-course-lite{width:100%!important;max-width:100%!important;box-sizing:border-box;margin:0;padding:0;font-family:Manrope,Nunito,system-ui,sans-serif;color:#2E2A38;background:#fff;line-height:1.65;font-size:17px}#chit-course-root *,#chit-course-lite *,#chit-course-root *::before,#chit-course-lite *::before,#chit-course-root *::after,#chit-course-lite *::after{box-sizing:border-box}.tn-atom__html #chit-course-root,.tn-atom__html #chit-course-lite{display:block!important;width:100%!important}</style>
+<script>(function () {
+  var ROOT_IDS = ['chit-course-root', 'chit-course-lite'];
+
+  function getRoot() {
+    for (var i = 0; i < ROOT_IDS.length; i++) {
+      var el = document.getElementById(ROOT_IDS[i]);
+      if (el) return el;
+    }
+    return null;
+  }
+
+  function setImp(el, props) {
+    if (!el) return;
+    Object.keys(props).forEach(function (k) {
+      if (props[k] != null) el.style.setProperty(k, props[k], 'important');
+    });
+  }
+
+  function patchRecStyles(rec) {
+    if (!rec) return;
+    rec.querySelectorAll('style').forEach(function (s) {
+      var t = s.textContent || '';
+      if (t.indexOf('t396__artboard') < 0 && t.indexOf('tn-elem') < 0) return;
+      var n = t
+        .replace(/left:\s*calc\([^)]+\)/gi, 'left:0')
+        .replace(/width:\s*(?:1200|960|640|480|320)px/gi, 'width:100%')
+        .replace(/height:\s*35000px/gi, 'height:auto')
+        .replace(/height:\s*100vh/gi, 'height:auto')
+        .replace(/display:\s*table/gi, 'display:block');
+      if (n !== t) s.textContent = n;
+    });
+  }
+
+  function syncTildaLayout() {
+    var m = getRoot();
+    if (!m) return;
+
+    var rec = m.closest('.t-rec');
+    patchRecStyles(rec);
+
+    if (rec) {
+      setImp(rec, {
+        width: '100%',
+        'max-width': '100%',
+        height: 'auto',
+        'max-height': 'none',
+        overflow: 'visible',
+        'padding-top': '0',
+        'margin-top': '0'
+      });
+    }
+
+    var chain = [
+      m.closest('.t396'),
+      m.closest('.t396__artboard'),
+      m.closest('.tn-elem'),
+      m.closest('.tn-atom'),
+      m.closest('.tn-atom__html'),
+      m
+    ];
+
+    chain.forEach(function (el) {
+      if (!el) return;
+      setImp(el, {
+        display: 'block',
+        position: 'relative',
+        left: '0',
+        top: '0',
+        width: '100%',
+        'max-width': '100%',
+        'min-width': '0',
+        transform: 'none',
+        'min-height': '0',
+        'max-height': 'none',
+        overflow: 'visible',
+        height: 'auto'
+      });
+    });
+
+    ['.t396__carrier', '.t396__filter'].forEach(function (sel) {
+      var el = rec && rec.querySelector(sel);
+      if (!el) return;
+      setImp(el, {
+        height: '0',
+        'max-height': '0',
+        overflow: 'hidden',
+        position: 'absolute',
+        left: '0',
+        top: '0',
+        width: '100%',
+        'pointer-events': 'none'
+      });
+    });
+
+    var h = Math.ceil(m.getBoundingClientRect().height);
+    if (h > 0) {
+      var ab = m.closest('.t396__artboard');
+      if (ab) {
+        setImp(ab, { height: h + 'px' });
+        ab.setAttribute('data-artboard-height', String(h));
+      }
+    }
+  }
+
+  window.chitSyncTildaLayout = syncTildaLayout;
+
+  function hookT396() {
+    if (window._chitCourseT396Hook) return;
+    var orig = window.t396_init;
+    if (typeof orig !== 'function') return;
+    window._chitCourseT396Hook = 1;
+    window.t396_init = function () {
+      var out = orig.apply(this, arguments);
+      syncTildaLayout();
+      setTimeout(syncTildaLayout, 50);
+      return out;
+    };
+  }
+
+  syncTildaLayout();
+  hookT396();
+  setTimeout(syncTildaLayout, 80);
+  setTimeout(syncTildaLayout, 300);
+  setTimeout(syncTildaLayout, 1200);
+  window.addEventListener('load', syncTildaLayout);
+
+  var n = 0;
+  var poll = setInterval(function () {
+    syncTildaLayout();
+    hookT396();
+    if (++n > 80) clearInterval(poll);
+  }, 250);
+
+  var root = getRoot();
+  if (root && window.ResizeObserver) {
+    new ResizeObserver(syncTildaLayout).observe(root);
+  }
+})();</script>
+<style id="chit-course-tilda">.t-rec:has(#chit-course-root),.t-rec:has(#chit-course-lite){height:auto!important;max-height:none!important;overflow:visible!important;padding-top:0!important}.t-rec:has(#chit-course-root) .t396,.t-rec:has(#chit-course-lite) .t396{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;overflow:visible!important;left:0!important;transform:none!important}.t-rec:has(#chit-course-root) .t396__artboard,.t-rec:has(#chit-course-lite) .t396__artboard,.t-rec:has(#chit-course-root) .tn-elem[data-elem-type="html"],.t-rec:has(#chit-course-lite) .tn-elem[data-elem-type="html"],.t-rec:has(#chit-course-root) .tn-atom,.t-rec:has(#chit-course-lite) .tn-atom,.t-rec:has(#chit-course-root) .tn-atom__html,.t-rec:has(#chit-course-lite) .tn-atom__html{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;width:100%!important;max-width:100%!important;left:0!important;top:0!important;transform:none!important}.t-rec:has(#chit-course-root) .t396__carrier,.t-rec:has(#chit-course-root) .t396__filter,.t-rec:has(#chit-course-lite) .t396__carrier,.t-rec:has(#chit-course-lite) .t396__filter{height:0!important;max-height:0!important;overflow:hidden!important;position:absolute!important;pointer-events:none!important}#chit-course-root,#chit-course-lite{width:100%!important;max-width:100%!important;box-sizing:border-box;margin:0;padding:0;font-family:Manrope,Nunito,system-ui,sans-serif;color:#2E2A38;background:#fff;line-height:1.65;font-size:17px}#chit-course-root *,#chit-course-lite *,#chit-course-root *::before,#chit-course-lite *::before,#chit-course-root *::after,#chit-course-lite *::after{box-sizing:border-box}.tn-atom__html #chit-course-root,.tn-atom__html #chit-course-lite{display:block!important;width:100%!important}#chit-course-app[hidden],#chit-course-lite-app[hidden],#chit-course-static[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.css?v=20260822l">
+<link rel="stylesheet" href="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.css?v=20260823g">
 <div id="chit-course-root" class="chit-course-page" data-group="extra-6-8">
-  <div id="chit-course"></div>
+<article id="chit-course-static" class="cc-static" itemscope itemtype="https://schema.org/Course"><meta itemprop="name" content="Курс по внеклассному чтению 6–8 лет"><meta itemprop="description" content="8 любимых книг для детей 6–8 лет — от Плюшевого зайца до Чарли. Внеклассное чтение на платформе Читательство."><link itemprop="url" href="https://chitatelstvo.ru/6-8-let"><header class="cc-header"><div class="cc-header__inner"><a class="cc-logo" href="https://chitatelstvo.ru"><img src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство"></a><nav class="cc-nav" aria-label="Разделы"><a href="#about">О курсе</a><a href="#program-list">Программа</a><a href="#outcome">После курса</a><a href="#tariffs">Тарифы</a><a href="#enroll">Запись</a></nav><a class="cc-header-cta" href="#enroll">Записаться</a></div></header><section class="cc-banner" id="about"><div class="cc-banner__inner"><span class="cc-banner__tag">Внеклассное чтение</span> <span class="cc-banner__tag cc-banner__tag--ghost">6–8 лет</span><h1 itemprop="headline">Курс по внеклассному чтению 6–8 лет</h1><p class="cc-banner__lead">8 любимых книг — от Плюшевого зайца до Чарли. Для детей, которые читают вне школьной программы.</p><p>Подборка для младших читателей: тёплые истории, приключения и первые большие книги.</p><p><strong>8 сказок · старт в любой день</strong> · видео и задания на платформе</p></div></section><section class="cc-section cc-section--pale" id="program-list"><div class="cc-section__inner"><h2>8 сказок — что читаем</h2><p>Два блока по 4 сказки. Можно начать с любого блока.</p><h3>Блок 1 · сказки 1–4</h3><ol><li>Плюшевый заяц, или как игрушки становятся настоящими У. Марджери</li><li>Муми-тролль и комета Т. Янссон</li><li>Шляпа волшебника Т. Янссон</li><li>Приключения медвежонка Паддингтона М. Бонд</li></ol><h3>Блок 2 · сказки 5–8</h3><ol><li>Невероятные приключения кролика Эдварда К. ДиКамилло</li><li>Тутта Карлссон Первая и единственная, Людвиг Четырнадцатый и др. Я. Экхольм</li><li>Карлик Нос В. Гауф</li><li>Чарли и шоколадная фабрика Р. Даль</li></ol></div></section><section class="cc-section cc-section--outcome" id="outcome"><div class="cc-section__inner"><h2>После курса</h2><p>К концу курса у ребёнка появляется «своя полка» любимых внеклассных книг.</p><ul class="cc-outcome-list"><li>Познакомился с 8 тёплыми и приключенческими книгами</li><li>Читает вне учебника с интересом и без давления</li><li>Умеет коротко рассказать, о чём книга и кто герой</li><li>Хочет следующую историю — чтение становится привычкой</li></ul></div></section><section class="cc-section cc-section--white" id="for-whom"><div class="cc-section__inner"><h2>Этот курс для вас, если</h2><ul><li>Ребёнку 6–8 лет, ещё не в школе или в начальной школе</li><li>Семья хочет развивать любовь к чтению вне учебника</li><li>Подойдут короткие и средние по объёму тексты</li><li>Можно заниматься вместе или самостоятельно</li></ul></div></section><section class="cc-section cc-section--pale" id="tariffs"><div class="cc-section__inner"><h2>Тарифы</h2><ul><li><strong>Разовое</strong> — 799 ₽ · 1 сказка на платформе</li><li><strong>Индивидуальное</strong> — 1 990 ₽ · 4 сказки (499 ₽ за сказку)</li><li><strong>С преподавателем</strong> — 4 990 ₽ · 4 сказки и живые встречи (1 248 ₽ за сказку)</li></ul></div></section><section class="cc-section cc-section--deep" id="enroll"><div class="cc-section__inner"><h2>Записаться на курс</h2><p>Выберите формат и оформите запись на этой странице или на <a href="https://chitatelstvo.ru/#program">главной</a>.</p><p><a class="cc-btn" href="#enroll">Записаться</a></p></div></section><footer class="cc-footer"><div class="cc-footer__inner"><img class="cc-footer__logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="256" height="256"><p class="cc-footer__warm">С теплом, команда Читательство</p><nav class="cc-footer__legal" aria-label="Юридическая информация"><a href="https://api.chitatelstvo.ru/legal/politika">Политика</a><a href="https://api.chitatelstvo.ru/legal/oferta">Оферта</a><a href="https://api.chitatelstvo.ru/legal/rekvizity">Реквизиты</a></nav><p class="cc-footer__contact"><a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> · <a href="https://chitatelstvo.ru">chitatelstvo.ru</a></p><p class="cc-footer__seller">ИП Рощина Ольга Владимировна · ИНН 231150315327</p><p class="cc-footer__copy">© Читательство</p></div></footer></article><script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"Курс по внеклассному чтению 6–8 лет","description":"8 любимых книг для детей 6–8 лет — от Плюшевого зайца до Чарли. Внеклассное чтение на платформе Читательство.","provider":{"@type":"Organization","name":"Читательство","url":"https://chitatelstvo.ru"},"url":"https://chitatelstvo.ru/6-8-let","inLanguage":"ru","audience":{"@type":"EducationalAudience","audienceType":"6–8 лет"}}</script>
+  <div id="chit-course-app" hidden><div id="chit-course"></div></div>
 </div>
-<script src="https://api.chitatelstvo.ru/static/chit-image-guard.js?v=20260822l"></script>
-<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-data.js?v=20260822l"></script>
-<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.js?v=20260822l"></script>
-<!-- Внеклассное чтение · 6–8 лет -->
+<script src="https://api.chitatelstvo.ru/static/chit-image-guard.js?v=20260823g"></script>
+<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-data.js?v=20260823g"></script>
+<script src="https://api.chitatelstvo.ru/assets/course-pages/chit-course-page.js?v=20260823g"></script>
+<!-- Курс по внеклассному чтению 6–8 лет · SEO static + interactive app -->
