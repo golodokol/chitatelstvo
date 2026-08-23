@@ -375,6 +375,15 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
   gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.quest-playfield__surface > .quest-grid {
+  align-self: stretch;
+  width: 100%;
+  max-width: min(100%, 520px);
+  margin-left: auto;
+  margin-right: auto;
 }
 .quest-mini-block {
   width: 100%;
@@ -838,7 +847,22 @@
   animation: none;
 }
 .quest-grid--rich {
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  max-width: min(100%, 520px);
+  margin-left: auto;
+  margin-right: auto;
+}
+.quest-grid--rich .quest-opt--pic {
+  flex: 0 1 auto;
+  width: min(30vw, 136px);
+  min-width: 96px;
+  max-width: 148px;
 }
 .quest-opt--pic {
   min-height: 118px;
@@ -3080,7 +3104,13 @@
     gap: 8px;
   }
   .quest-grid--rich {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+  }
+  .quest-grid--rich .quest-opt--pic {
+    width: min(28vw, 112px);
+    min-width: 88px;
   }
   .quest-opt {
     min-height: 52px;
