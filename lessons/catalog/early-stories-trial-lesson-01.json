@@ -186,7 +186,7 @@
       "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-vo-key",
+      "audio": "ph-vo-look-key",
       "spark": false,
       "spark_group": "word",
       "hint": "Ключ: фигура = буква. Расшифруй и выбери слово.",
