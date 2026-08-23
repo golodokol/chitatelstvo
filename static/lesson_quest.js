@@ -107,6 +107,34 @@
     });
   }
 
+  function navigateToProgress() {
+    var url = String(cfg.progressUrl || "").trim();
+    if (!url || url === "#") return;
+    window.location.assign(url);
+  }
+
+  function bindBackLinks() {
+    document.addEventListener("click", function (e) {
+      var back = e.target.closest("[data-quest-back]");
+      if (!back) return;
+      e.preventDefault();
+      navigateToProgress();
+    });
+    var topBack = document.querySelector(".chit-back__link");
+    if (topBack && cfg.progressUrl) {
+      topBack.setAttribute("href", cfg.progressUrl);
+    }
+  }
+
+  function makeIntroBackLink() {
+    var back = document.createElement("a");
+    back.className = "quest-intro__back";
+    back.href = cfg.progressUrl || "#";
+    back.setAttribute("data-quest-back", "1");
+    back.textContent = "← К урокам";
+    return back;
+  }
+
   function bindRewardNav(el, url, item) {
     if (!el || !url) return;
     el.addEventListener("click", function (e) {
@@ -2415,6 +2443,7 @@
     var top = document.createElement("p");
     top.className = "quest-intro__hello";
     top.textContent = cfg.childName ? ("Привет, " + cfg.childName + "!") : "Привет!";
+    box.appendChild(makeIntroBackLink());
     box.appendChild(top);
 
     var play = document.createElement("button");
@@ -3190,6 +3219,7 @@
   if (!stations.length) {
     elBody.innerHTML = "<p>Станции урока пока готовятся.</p>";
   } else {
+    bindBackLinks();
     render();
   }
 })();

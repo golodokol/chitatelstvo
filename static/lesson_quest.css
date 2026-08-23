@@ -15,7 +15,15 @@
   box-sizing: border-box;
 }
 .chit-quest-page .chit-back {
+  position: relative;
+  z-index: 40;
   margin-bottom: 10px;
+}
+.chit-quest-page .chit-back__link {
+  position: relative;
+  z-index: 41;
+  min-height: 44px;
+  padding: 8px 4px 8px 0;
 }
 
 /* Одна карточка на весь урок */
@@ -2053,7 +2061,7 @@
 .quest-intro__hello {
   position: absolute;
   z-index: 3;
-  top: 10px;
+  top: 52px;
   left: 12px;
   right: auto;
   max-width: calc(100% - 96px);
@@ -2071,6 +2079,31 @@
   font: inherit;
   font-size: inherit;
   font-weight: inherit;
+}
+.quest-intro__back {
+  position: absolute;
+  z-index: 6;
+  top: 8px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: rgba(20, 18, 16, 0.34);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+.quest-intro__back:hover {
+  background: rgba(20, 18, 16, 0.48);
+  text-decoration: none;
 }
 .quest-intro__center {
   position: absolute;
@@ -3415,9 +3448,16 @@
   }
   .quest-intro__hello {
     font-size: 0.95rem;
-    top: 8px;
+    top: 48px;
     left: 10px;
     max-width: calc(100% - 88px);
+  }
+  .quest-intro__back {
+    top: 8px;
+    left: 10px;
+    max-width: calc(100% - 120px);
+    font-size: 0.78rem;
+    padding: 6px 10px;
   }
   .quest-intro.is-idle .quest-intro__center,
   .quest-intro.is-paused .quest-intro__center {

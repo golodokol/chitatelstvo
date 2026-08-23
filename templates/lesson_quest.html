@@ -6,11 +6,11 @@
   {% include "_favicon.html" %}
   <title>Читательство · {{ lesson.title }}</title>
   <link rel="stylesheet" href="/static/chit-student.css?v=20260731a">
-  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260823x">
+  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260823y">
 </head>
 <body class="chit-student chit-lesson-page chit-quest-page">
   <div class="chit-wrap quest-wrap">
-    <p class="chit-back"><a class="chit-back__link" href="{{ progress_url }}">← К странице уроков</a></p>
+    <p class="chit-back"><a class="chit-back__link" href="{{ progress_url }}" data-quest-back>← К странице уроков</a></p>
 
     <article class="quest-board">
       <header class="quest-head">
@@ -65,6 +65,6 @@
       childName: {{ child_name|tojson }}
     };
   </script>
-  <script src="/static/lesson_quest.js?v=20260823x"></script>
+  <script src="/static/lesson_quest.js?v=20260823y"></script>
 </body>
 </html>
