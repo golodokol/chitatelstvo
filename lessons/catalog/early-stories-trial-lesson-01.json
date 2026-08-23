@@ -666,6 +666,7 @@
       "spark_group": "meaning",
       "rounds": [
         {
+          "prompt_text": "Ночь. Кот спит.",
           "prompt_alt": "Ночь, кот спит",
           "correct": "noch",
           "options": [
