@@ -92,3 +92,21 @@ def test_plyushevyy_zayats_chest_rewards():
         "Раскрась зайца",
     ]
     assert all(item.get("download_url", "").endswith(".pdf") for item in items)
+
+
+def test_early_stories_intro_chest_rewards():
+    items = items_for_treasury(
+        rewards_for_tale("early-stories-trial-lesson-01", "Спаси первую историю")
+    )
+    labels = [item["label"] for item in items]
+    assert labels == [
+        "Дорисуй дом",
+        "Обведи кота",
+        "Обведи фразу",
+        "Пройди лабиринт",
+    ]
+    assert all(item.get("download_url", "").endswith(".pdf") for item in items)
+    assert all(
+        "читательство" in (item.get("download_name") or "").lower()
+        for item in items
+    )
