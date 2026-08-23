@@ -2688,6 +2688,20 @@
     spread.appendChild(pageText);
     spread.appendChild(fullFrame);
     spread.appendChild(leaf);
+
+    var edgePrev = document.createElement("button");
+    edgePrev.type = "button";
+    edgePrev.className = "quest-book__edge quest-book__edge--prev";
+    edgePrev.setAttribute("aria-label", "Предыдущая страница");
+    edgePrev.textContent = "‹";
+    var edgeNext = document.createElement("button");
+    edgeNext.type = "button";
+    edgeNext.className = "quest-book__edge quest-book__edge--next";
+    edgeNext.setAttribute("aria-label", "Следующая страница");
+    edgeNext.textContent = "›";
+    spread.appendChild(edgePrev);
+    spread.appendChild(edgeNext);
+
     cover.appendChild(spread);
     stage.appendChild(cover);
     book.appendChild(stage);
@@ -2698,14 +2712,14 @@
     prevBtn.type = "button";
     prevBtn.className = "quest-book__nav-btn";
     prevBtn.setAttribute("aria-label", "Предыдущая страница");
-    prevBtn.textContent = "←";
+    prevBtn.textContent = "← Назад";
     var pager = document.createElement("p");
     pager.className = "quest-book__pager";
     var nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.className = "quest-book__nav-btn quest-book__nav-btn--next";
     nextBtn.setAttribute("aria-label", "Следующая страница");
-    nextBtn.textContent = "→";
+    nextBtn.textContent = "Вперёд →";
     nav.appendChild(prevBtn);
     nav.appendChild(pager);
     nav.appendChild(nextBtn);
@@ -2776,6 +2790,8 @@
       pager.textContent = (idx + 1) + " из " + Math.max(lines.length, 1);
       prevBtn.disabled = idx <= 0;
       nextBtn.disabled = idx >= lines.length - 1;
+      edgePrev.disabled = idx <= 0;
+      edgeNext.disabled = idx >= lines.length - 1;
       Array.prototype.forEach.call(dots.children, function (dot, i) {
         dot.classList.toggle("is-active", i === idx);
         dot.classList.toggle("is-done", i < idx);
@@ -2815,6 +2831,12 @@
       goTo(pageIdx - 1, -1);
     });
     nextBtn.addEventListener("click", function () {
+      goTo(pageIdx + 1, 1);
+    });
+    edgePrev.addEventListener("click", function () {
+      goTo(pageIdx - 1, -1);
+    });
+    edgeNext.addEventListener("click", function () {
       goTo(pageIdx + 1, 1);
     });
 
