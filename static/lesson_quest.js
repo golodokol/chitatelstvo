@@ -8,37 +8,13 @@
     letter: "Буква",
     syllable: "Слог"
   };
-  // Prefer explicit order: Jinja tojson may sort object keys alphabetically
-  // (meaning/phrase/word), which reverses the curriculum sequence.
-  var SPARK_ORDER = ["word", "phrase", "meaning", "sound", "letter", "syllable"];
-  function orderedSparkKeys(labels) {
-    var keys = Object.keys(labels || {});
-    var preferred = (cfg.quest && Array.isArray(cfg.quest.spark_order) && cfg.quest.spark_order.length)
-      ? cfg.quest.spark_order
-      : SPARK_ORDER;
-    var seen = {};
-    var out = [];
-    preferred.forEach(function (k) {
-      if (labels && Object.prototype.hasOwnProperty.call(labels, k) && !seen[k]) {
-        seen[k] = true;
-        out.push(k);
-      }
-    });
-    keys.forEach(function (k) {
-      if (!seen[k]) {
-        seen[k] = true;
-        out.push(k);
-      }
-    });
-    return out;
-  }
   var sparkKinds = {};
-  orderedSparkKeys(sparkLabels).forEach(function (k) { sparkKinds[k] = false; });
+  Object.keys(sparkLabels).forEach(function (k) { sparkKinds[k] = false; });
   (function paintSparkHud() {
     var hud = document.getElementById("quest-sparks-hud");
     if (!hud) return;
     hud.innerHTML = "";
-    orderedSparkKeys(sparkLabels).forEach(function (k) {
+    Object.keys(sparkLabels).forEach(function (k) {
       var chip = document.createElement("span");
       chip.className = "quest-spark-chip";
       chip.setAttribute("data-spark", k);
@@ -92,7 +68,7 @@
 
   // Skip .ogg: many early files were saved as M4A under a .ogg name and break playback fallback.
   var AUDIO_EXTS = [".mp3", ".MP3", ".m4a", ".wav"];
-  var AUDIO_VER = "20260823f";
+  var AUDIO_VER = "20260823c";
 
   function audioCandidates(id) {
     if (!id) return [];
@@ -121,8 +97,14 @@
   }
 
   function whenQuestSaved() {
-    if (completeSent) return Promise.resolve();
     return completeLesson();
+  }
+
+  function navigateAfterQuestSave(url) {
+    if (!url) return;
+    whenQuestSaved().finally(function () {
+      window.location.href = url;
+    });
   }
 
   function bindRewardNav(el, url, item) {
@@ -265,22 +247,13 @@
 
   function afterStationVoice(fn) {
     var gen = playGen;
-    function runWhenQuiet() {
-      if (gen !== playGen) return;
-      // Wait until Slovik's line is fully done (flag + actual audio element).
-      if (instructionPlaying || (audio && !audio.paused && !audio.ended && audio.currentTime > 0)) {
-        setTimeout(runWhenQuiet, 200);
-        return;
-      }
-      fn();
-    }
     pendingVoiceCb = function () {
       if (gen !== playGen) return;
-      runWhenQuiet();
+      fn();
     };
     if (!instructionPlaying) {
       pendingVoiceCb = null;
-      runWhenQuiet();
+      if (gen === playGen) fn();
     }
   }
 
@@ -288,49 +261,41 @@
     var urls = audioCandidates(id);
     var finished = false;
     var token = ++audioToken;
-    function finish(force) {
+    function finish() {
       if (finished) return;
-      // Duration/safety timeouts must not cut off a still-playing instruction
-      // (that used to start letter SFX while Slovik was still speaking).
-      if (!force && typeof onEnded === "function" && audio && !audio.paused && !audio.ended) {
-        setTimeout(function () {
-          if (token === audioToken) finish(false);
-        }, 250);
-        return;
-      }
       finished = true;
       try { audio.onended = null; } catch (e) {}
       if (token !== audioToken) return;
       if (typeof onEnded === "function") onEnded();
     }
     if (!urls.length) {
-      finish(true);
+      finish();
       return;
     }
     try {
       hushVoice();
       sfx.pause();
       audio.pause();
-      audio.onended = function () { finish(true); };
+      audio.onended = finish;
       playOnEl(audio, urls, function () {
-        finish(true);
+        finish();
       });
       if (onEnded) {
         setTimeout(function () {
-          if (token === audioToken) finish(true);
-        }, 20000);
+          if (token === audioToken) finish();
+        }, 15000);
         audio.addEventListener("loadedmetadata", function meta() {
           audio.removeEventListener("loadedmetadata", meta);
           var d = audio.duration;
           if (isFinite(d) && d > 0) {
             setTimeout(function () {
-              if (token === audioToken) finish(false);
-            }, Math.ceil(d * 1000) + 500);
+              if (token === audioToken) finish();
+            }, Math.ceil(d * 1000) + 350);
           }
         });
       }
     } catch (e) {
-      finish(true);
+      finish();
     }
   }
 
@@ -368,7 +333,6 @@
 
   function playSfx(id) {
     if (instructionPlaying) return;
-    if (audio && !audio.paused && !audio.ended && audio.currentTime > 0) return;
     hushVoice();
     var urls = audioCandidates(id);
     if (!urls.length) return;
@@ -592,8 +556,12 @@
   }
 
   function completeLesson() {
-    if (completeSent) return Promise.resolve();
     if (completePromise) return completePromise;
+    if (completeSent) {
+      completePromise = Promise.resolve();
+      return completePromise;
+    }
+    completeSent = true;
     completePromise = fetch("/api/lesson/" + encodeURIComponent(cfg.slug) + "/quest-complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -602,37 +570,14 @@
         passed_stations: passedStations
       })),
     })
-      .then(function (r) {
-        return r.json().catch(function () { return {}; }).then(function (data) {
-          if (!r.ok) {
-            var detail = data && data.detail;
-            var msg = "Не удалось сохранить прогресс урока";
-            if (typeof detail === "string" && detail) msg = detail;
-            else if (Array.isArray(detail) && detail[0] && detail[0].msg) msg = detail[0].msg;
-            throw new Error(msg);
-          }
-          completeSent = true;
-          bindFinishButton();
-          return data;
-        });
-      })
-      .catch(function (err) {
-        completePromise = null;
+      .then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function () {
         bindFinishButton();
-        throw err;
+      })
+      .catch(function () {
+        bindFinishButton();
       });
     return completePromise;
-  }
-
-  function navigateAfterQuestSave(url) {
-    if (!url) return;
-    whenQuestSaved()
-      .then(function () {
-        window.location.href = url;
-      })
-      .catch(function (err) {
-        showMsg((err && err.message) || "Не удалось сохранить прогресс. Попробуй ещё раз.", false);
-      });
   }
 
   function goNext() {
@@ -706,10 +651,6 @@
       sfx.removeAttribute("src");
       sfx.load();
     } catch (e) {}
-    try {
-      audio.pause();
-      audio.onended = null;
-    } catch (e2) {}
   }
 
   function coachSay(text, speed) {
@@ -1307,11 +1248,7 @@
     wrap.appendChild(count);
     root().appendChild(wrap);
     afterStationVoice(function () {
-      if (!alive()) return;
-      // Small beat after Slovik finishes, so letter sounds never overlap the line.
-      gameTimer = setTimeout(function () {
-        if (alive()) scheduleFlash();
-      }, 450);
+      if (alive()) scheduleFlash();
     });
   }
 
@@ -2251,15 +2188,7 @@
     }
 
     function showRound() {
-      var view = {
-        // Keep the station coach line; only the first round plays audio.
-        slovik_line: station.slovik_line || "",
-        slovik_pose: station.slovik_pose,
-        scene_image: station.scene_image,
-        audio: roundIdx === 0 ? (station.audio || "") : "",
-        tech_msg: roundIdx === 0 ? station.tech_msg : undefined
-      };
-      openPlayfield(view);
+      openPlayfield(station);
       var field = elBody.querySelector(".quest-playfield");
       if (field) field.classList.add("quest-playfield--rebus");
       enableNext(false);
@@ -2379,15 +2308,7 @@
     }
 
     function showRound() {
-      var view = {
-        // Keep the station coach line; only the first round plays audio.
-        slovik_line: station.slovik_line || "",
-        slovik_pose: station.slovik_pose,
-        scene_image: station.scene_image,
-        audio: roundIdx === 0 ? (station.audio || "") : "",
-        tech_msg: roundIdx === 0 ? station.tech_msg : undefined
-      };
-      openPlayfield(view);
+      openPlayfield(station);
       var field = elBody.querySelector(".quest-playfield");
       if (field) field.classList.add("quest-playfield--pathword");
       enableNext(false);
@@ -2487,11 +2408,8 @@
         vid.setAttribute("aria-label", station.video.title);
       }
       box.appendChild(vid);
-      vid.addEventListener("loadedmetadata", function () {
-        if (vid.videoWidth && vid.videoHeight) {
-          box.style.aspectRatio = vid.videoWidth + " / " + vid.videoHeight;
-        }
-      });
+      // Don't sync box aspect-ratio to the raw video frame: many intro
+      // files have baked-in side bars, and matching them keeps the letterbox.
     }
 
     var top = document.createElement("p");
@@ -2909,6 +2827,21 @@
     nav.appendChild(nextBtn);
     book.appendChild(nav);
 
+    var dots = document.createElement("div");
+    dots.className = "quest-book__dots";
+    lines.forEach(function (_, i) {
+      var dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "quest-book__dot";
+      dot.setAttribute("aria-label", "Страница " + (i + 1));
+      dot.addEventListener("click", function () {
+        if (flipping || i === pageIdx) return;
+        goTo(i, i > pageIdx ? 1 : -1);
+      });
+      dots.appendChild(dot);
+    });
+    book.appendChild(dots);
+
     var foot = document.createElement("div");
     foot.className = "quest-book__foot";
     var hint = document.createElement("p");
@@ -2961,20 +2894,17 @@
       nextBtn.disabled = idx >= lines.length - 1;
       edgePrev.disabled = idx <= 0;
       edgeNext.disabled = idx >= lines.length - 1;
+      Array.prototype.forEach.call(dots.children, function (dot, i) {
+        dot.classList.toggle("is-active", i === idx);
+        dot.classList.toggle("is-done", i < idx);
+      });
       if (idx >= lines.length - 1) {
         cta.disabled = false;
-        // One finale line only — don't mirror it in the hint.
-        hint.hidden = true;
+        hint.textContent = station.finale || "Ура, история прочитана!";
         var finaleEl = foot.querySelector(".quest-book__finale");
-        if (finaleEl) {
-          finaleEl.hidden = false;
-        } else {
-          hint.hidden = false;
-          hint.textContent = station.finale || "Ура, история прочитана!";
-        }
+        if (finaleEl) finaleEl.hidden = false;
       } else {
         cta.disabled = lines.length > 1;
-        hint.hidden = false;
         hint.textContent = station.read_hint || "Листай страницы и прочитай каждое предложение.";
         var finaleHide = foot.querySelector(".quest-book__finale");
         if (finaleHide) finaleHide.hidden = true;

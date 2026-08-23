@@ -2021,9 +2021,12 @@
 .quest-intro {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
+  max-height: min(78vh, 720px);
+  margin: 0 auto;
   overflow: hidden;
   background: #f3e2b8;
+  border-radius: 0;
 }
 .quest-intro__video {
   position: absolute;
@@ -2031,7 +2034,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center center;
   background: #f3e2b8;
   transition: opacity 0.2s ease;
 }
@@ -2043,6 +2046,9 @@
 .quest-intro.is-playing .quest-intro__video,
 .quest-intro.is-ended .quest-intro__video {
   opacity: 1;
+  /* Crop baked-in pillarboxes that object-fit alone cannot remove */
+  transform: scale(1.65);
+  transform-origin: center center;
 }
 .quest-intro__hello {
   position: absolute;
