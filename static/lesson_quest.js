@@ -349,6 +349,7 @@
     return VO_LINE[kind] || "";
   }
 
+  // Промежуточные шаги («yes» / «more») — без голоса; финал задания — всегда озвучка.
   var VO_SILENT = { more: true };
   var SUCCESS_VO = ["ok", "yes", "good"];
   var successVoIdx = 0;
@@ -360,8 +361,15 @@
   }
 
   function coachReact(kind, ok) {
-    var successKind = kind === "ok" || kind === "yes" || kind === "good" || kind === "found";
-    var voKind = (ok === true || successKind) ? nextSuccessVo() : kind;
+    // Каждая пойманная буква / частичный ответ — тихо; голос только когда задание собрано целиком.
+    if (kind === "yes") {
+      if (typeof ok === "boolean") {
+        showMsg(voLine("yes") || voLine(ok ? "ok" : "try"), ok);
+      }
+      return;
+    }
+    var finalSuccess = kind === "ok" || kind === "good" || kind === "found";
+    var voKind = finalSuccess ? nextSuccessVo() : kind;
     var line = voLine(voKind);
     if (voKind && !VO_SILENT[voKind]) playId(voPrefix() + voKind);
     if (typeof ok === "boolean") {
