@@ -380,8 +380,8 @@
             <h2 class="chit-current-lesson__title">{{ track.group_label }}</h2>
           </section>
           {% endif %}
-          {{ render_chest(track, child, loop.index, '#treasury-all') }}
           {{ render_weekly_lessons(track) }}
+          {{ render_chest(track, child, loop.index, '#treasury-all') }}
           {% if track.upcoming_lessons %}
           <section class="chit-panel chit-panel--stories chit-panel--upcoming">
             <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
@@ -530,8 +530,8 @@
           <h2 class="chit-current-lesson__title">{{ legacy_lesson.headline or legacy_lesson.title }}</h2>
         </section>
         {% endif %}
-        {{ render_chest(legacy_track, child, 1, '#treasury-all') }}
         {{ render_weekly_lessons(legacy_track) }}
+        {{ render_chest(legacy_track, child, 1, '#treasury-all') }}
         {% if cab.story_stages %}
         <section class="chit-panel chit-panel--stories">
           <h2 class="chit-section-title">{% if cab.is_early %}Мои уроки{% else %}Мои сказки{% endif %}</h2>
