@@ -64,8 +64,13 @@ def badge_image_filename(name: str) -> str | None:
     filename = BADGE_ASSET_FILES.get(name)
     if not filename:
         return None
-    if (IMAGES_DIR / filename).is_file():
+    path = IMAGES_DIR / filename
+    if path.is_file():
         return filename
+    target = filename.lower()
+    for candidate in IMAGES_DIR.iterdir():
+        if candidate.is_file() and candidate.name.lower() == target:
+            return filename
     return None
 
 

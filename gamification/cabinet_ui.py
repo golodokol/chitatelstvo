@@ -143,7 +143,7 @@ CHEST_STEPS = ("video_unlock", "comprehension", "meaning_analysis")
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260822g"
+EARLY_ASSETS_VERSION = "20260823b"
 
 INTRO_TRIAL_COVERS: dict[str, str] = {
     "early-letters": "course-cover-letters-intro.jpg",
@@ -280,6 +280,13 @@ def _asset_url(base: str, filename: str | None) -> str | None:
     if not filename:
         return None
     return f"{base.rstrip('/')}/assets/{filename}"
+
+
+def _badge_asset_url(base: str, filename: str | None) -> str | None:
+    url = _asset_url(base, filename)
+    if not url:
+        return None
+    return f"{url}?v={EARLY_ASSETS_VERSION}"
 
 
 def _sloviki_word(n: int) -> str:
@@ -541,7 +548,7 @@ def _build_badges_ui(
                 "name_lines": _badge_name_lines(name),
                 "condition": badge["condition"],
                 "earned": earned,
-                "image": _asset_url(assets_base, badge_image_filename(image_name)),
+                "image": _badge_asset_url(assets_base, badge_image_filename(image_name)),
                 "status": "earned" if earned else ("next" if name == next_badge else "locked"),
             }
         )
@@ -555,7 +562,7 @@ def _build_badges_ui(
                 "name_lines": _badge_name_lines(name),
                 "condition": "Уже получен",
                 "earned": True,
-                "image": _asset_url(assets_base, badge_image_filename(name)),
+                "image": _badge_asset_url(assets_base, badge_image_filename(name)),
                 "status": "earned",
             }
         )
