@@ -546,27 +546,6 @@
               "image": "/static/early/letters/kot.png"
             }
           ]
-        },
-        {
-          "word": "МАМА",
-          "correct": "mama",
-          "options": [
-            {
-              "id": "house",
-              "label": "Дом",
-              "image": "/static/early/letters/house.png"
-            },
-            {
-              "id": "syr",
-              "label": "Сыр",
-              "image": "/static/early/letters/syr.png"
-            },
-            {
-              "id": "mama",
-              "label": "Мама",
-              "image": "/static/early/letters/mama.png"
-            }
-          ]
         }
       ]
     },
