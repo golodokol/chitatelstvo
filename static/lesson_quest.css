@@ -2801,15 +2801,29 @@
   }
 }
 
-.quest-playfield--reward .quest-playfield__surface {
+.quest-playfield--reward {
+  overflow: visible;
+}
+.quest-playfield--reward .quest-playfield__canvas,
+.quest-playfield--has-scene.quest-playfield--reward .quest-playfield__canvas {
+  aspect-ratio: auto;
+  min-height: 0;
+  height: auto;
+  flex: 0 0 auto;
+}
+.quest-playfield--reward .quest-playfield__surface,
+.quest-playfield--has-scene.quest-playfield--reward .quest-playfield__surface {
+  height: auto;
+  min-height: 0;
   justify-content: center;
-  padding: 16px 12px;
+  padding: 16px 12px 20px;
+  align-items: center;
 }
 .quest-playfield--reward .quest-reward {
   margin: 0 auto;
   width: min(100%, 460px);
-  max-height: min(72dvh, 640px);
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
   position: relative;
   z-index: 2;
 }
