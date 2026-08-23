@@ -11,6 +11,12 @@ from lessons.single_content import single_lesson_playable
 from lessons.stages import normalize_stage
 
 EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
+# Пробные сказки, доступные после early-квестов (без записи на модуль).
+PROMO_LESSON_SLUGS = frozenset({"tsarevna-lyagushka"})
+
+
+def is_promo_lesson(lesson: dict[str, Any] | None) -> bool:
+    return str((lesson or {}).get("slug") or "").strip() in PROMO_LESSON_SLUGS
 
 
 def resolve_chosen_tale(
@@ -52,6 +58,8 @@ def child_can_access_lesson(
     lesson: dict[str, Any],
     enrollment: Enrollment | None = None,
 ) -> bool:
+    if is_promo_lesson(lesson):
+        return True
     module_id = lesson.get("module_id")
     if module_id is None:
         return enrollment is None

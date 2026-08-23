@@ -29,7 +29,12 @@ from gamification.chest_rewards import canonical_tale_slug
 from gamification.chest_rewards import canonical_tale_slug
 from gamification.sloviki import LESSON_STEP_SLOVIK, lesson_step_key, slovik_url, slovik_urls
 from lessons.access import is_lesson_unlocked
-from lessons.enrollment_access import child_can_access_lesson, find_enrollment_for_lesson, normalize_stage
+from lessons.enrollment_access import (
+    child_can_access_lesson,
+    find_enrollment_for_lesson,
+    is_promo_lesson,
+    normalize_stage,
+)
 from lessons.loader import (
     emotion_quiz_for_client,
     get_lesson,
@@ -64,6 +69,9 @@ def require_lesson_unlocked(
     bypass: bool = False,
 ) -> Child:
     if bypass:
+        return get_child_or_404(db, child_id)
+
+    if is_promo_lesson(lesson):
         return get_child_or_404(db, child_id)
 
     child = get_child_or_404(db, child_id)

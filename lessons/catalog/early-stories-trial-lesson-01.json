@@ -935,7 +935,6 @@
       "fail_slovik_line": "История почти проснулась. Давай пройдём ещё раз.",
       "fail_pose": "worry",
       "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Дома вместе перечитайте первую книжку. В модуле — 8 маршрутов посложнее.",
       "module_url": "https://chitatelstvo.ru/#programs",
       "module_cta": "О модуле и записи",
       "chest_cta": "Открыть сундук",
@@ -948,9 +947,14 @@
         },
         {
           "eyebrow": "Если было легко",
-          "text": "Вы готовы к первому курсу по сказкам:",
+          "text": "Готовы к первой сказке?",
           "cta": "Царевна-лягушка — пробный урок",
-          "slug": "tsarevna-lyagushka"
+          "slug": "tsarevna-lyagushka",
+          "bridge": true,
+          "bridge_title": "Сказка «Царевна-лягушка»",
+          "bridge_text": "Сначала посмотри мультфильм, потом — задания со Словиком. Это уже большой урок, как в курсе по сказкам.",
+          "bridge_image": "/static/lessons/tsarevna/lyagushka.png",
+          "bridge_cta": "Начать сказку"
         }
       ]
     }

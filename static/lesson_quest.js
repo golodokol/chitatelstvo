@@ -25,6 +25,7 @@
   var stationCleared = false;
   var passedStations = [];
   var completeSent = false;
+  var completePromise = null;
   var goalCount = (cfg.quest && cfg.quest.goal_count) || 3;
   var selected = [];
   var audio = new Audio();
@@ -90,10 +91,92 @@
     if (!slug && url.indexOf("/lesson/") >= 0) {
       slug = url.split("/lesson/")[1].split("?")[0].split("#")[0];
     }
+    if (url) return url;
     if (slug && links[slug]) return links[slug];
-    if (url && url.indexOf("http") === 0) return url;
-    if (url && url.indexOf("/lesson/") === 0 && slug && links[slug]) return links[slug];
-    return url;
+    return "";
+  }
+
+  function whenQuestSaved() {
+    return completeLesson();
+  }
+
+  function navigateAfterQuestSave(url) {
+    if (!url) return;
+    whenQuestSaved().finally(function () {
+      window.location.href = url;
+    });
+  }
+
+  function bindRewardNav(el, url, item) {
+    if (!el || !url) return;
+    el.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (item && item.bridge) {
+        openRewardBridge(item, url);
+        return;
+      }
+      navigateAfterQuestSave(url);
+    });
+  }
+
+  function openRewardBridge(item, href) {
+    var existing = document.querySelector(".quest-bridge");
+    if (existing) existing.remove();
+    var overlay = document.createElement("div");
+    overlay.className = "quest-bridge";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", item.bridge_title || item.cta || "Следующий урок");
+
+    var card = document.createElement("div");
+    card.className = "quest-bridge__card";
+
+    if (item.bridge_image) {
+      var art = document.createElement("img");
+      art.className = "quest-bridge__art";
+      art.src = assetUrl(item.bridge_image);
+      art.alt = item.bridge_title || "";
+      card.appendChild(art);
+    }
+
+    var title = document.createElement("h3");
+    title.className = "quest-bridge__title";
+    title.textContent = item.bridge_title || item.cta || "Следующий урок";
+    card.appendChild(title);
+
+    var text = document.createElement("p");
+    text.className = "quest-bridge__text";
+    text.textContent = item.bridge_text || item.text || "Сначала мультфильм, потом задания со Словиком.";
+    card.appendChild(text);
+
+    var actions = document.createElement("div");
+    actions.className = "quest-bridge__actions";
+
+    var go = document.createElement("button");
+    go.type = "button";
+    go.className = "chit-btn chit-btn--primary quest-bridge__go";
+    go.textContent = item.bridge_cta || "Начать урок";
+    go.addEventListener("click", function () {
+      go.disabled = true;
+      navigateAfterQuestSave(href);
+    });
+
+    var later = document.createElement("button");
+    later.type = "button";
+    later.className = "chit-btn quest-bridge__later";
+    later.textContent = item.bridge_later || "Пока оставить";
+    later.addEventListener("click", function () {
+      overlay.remove();
+    });
+
+    actions.appendChild(go);
+    actions.appendChild(later);
+    card.appendChild(actions);
+    overlay.appendChild(card);
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) overlay.remove();
+    });
+    document.body.appendChild(overlay);
   }
 
   function playOnEl(el, urls, onFail) {
@@ -473,9 +556,13 @@
   }
 
   function completeLesson() {
-    if (completeSent) return;
+    if (completePromise) return completePromise;
+    if (completeSent) {
+      completePromise = Promise.resolve();
+      return completePromise;
+    }
     completeSent = true;
-    fetch("/api/lesson/" + encodeURIComponent(cfg.slug) + "/quest-complete", {
+    completePromise = fetch("/api/lesson/" + encodeURIComponent(cfg.slug) + "/quest-complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(authBody({
@@ -490,6 +577,7 @@
       .catch(function () {
         bindFinishButton();
       });
+    return completePromise;
   }
 
   function goNext() {
@@ -2885,6 +2973,7 @@
           link.className = "quest-reward__link quest-reward__link--next";
           link.href = href;
           link.textContent = item.cta;
+          bindRewardNav(link, href, item);
           card.appendChild(link);
         }
       }
@@ -2915,17 +3004,11 @@
       line.textContent = station.fail_line || "Искорки ещё не все. Пройди задания ещё раз.";
       box.appendChild(line);
     }
-    if (earned && station.parent_note) {
-      var note = document.createElement("p");
-      note.className = "quest-reward__note";
-      note.textContent = station.parent_note;
-      box.appendChild(note);
-    }
     var links = document.createElement("div");
     links.className = "quest-reward__links" + (earned ? " quest-reward__links--stack" : "");
     var chestHref = cfg.chestUrl || "";
     if (!chestHref && cfg.progressUrl) {
-      chestHref = cfg.progressUrl + (String(cfg.progressUrl).indexOf("?") >= 0 ? "&" : "?") + "chest=" + encodeURIComponent(cfg.taleSlug || cfg.slug || "");
+      chestHref = cfg.progressUrl + (String(cfg.progressUrl).indexOf("?") >= 0 ? "&" : "?") + "chest=" + encodeURIComponent(cfg.taleSlug || cfg.slug || "") + "&open_chest=1";
     }
     if (earned && chestHref) {
       var chestLink = document.createElement("a");
@@ -2937,6 +3020,7 @@
       chestIcon.alt = "";
       chestLink.appendChild(chestIcon);
       chestLink.appendChild(document.createTextNode(station.chest_cta || "Открыть сундук"));
+      bindRewardNav(chestLink, chestHref);
       links.appendChild(chestLink);
     }
     if (incompleteIndices().length) {
@@ -2947,6 +3031,8 @@
       retry.addEventListener("click", retryIncomplete);
       links.insertBefore(retry, links.firstChild);
     }
+    if (links.childNodes.length) box.appendChild(links);
+    if (earned) appendNextPaths(box, station.next_paths || []);
     if (station.module_url) {
       var moduleLink = document.createElement("a");
       moduleLink.className = "quest-reward__link quest-reward__link--quiet";
@@ -2954,10 +3040,8 @@
       moduleLink.target = "_blank";
       moduleLink.rel = "noopener";
       moduleLink.textContent = station.module_cta || "О модуле и записи";
-      links.appendChild(moduleLink);
+      box.appendChild(moduleLink);
     }
-    if (links.childNodes.length) box.appendChild(links);
-    if (earned) appendNextPaths(box, station.next_paths || []);
     root().appendChild(box);
     if (btnNext) btnNext.hidden = true;
     if (btnAudio) btnAudio.hidden = true;
