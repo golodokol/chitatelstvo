@@ -2632,7 +2632,11 @@
   justify-content: center;
   gap: 10px;
   flex: 0 0 auto;
-  padding: 2px 4px 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.92);
+  border: 1px solid rgba(120, 90, 50, 0.12);
+  box-shadow: 0 4px 12px rgba(40, 24, 10, 0.08);
 }
 .quest-book__nav-btn {
   min-width: 48px;
@@ -2668,6 +2672,9 @@
   justify-content: center;
   gap: 8px;
   flex: 0 0 auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.9);
 }
 .quest-book__dot {
   width: 10px;
@@ -2692,12 +2699,17 @@
   gap: 8px;
   margin-top: 0;
   flex: 0 0 auto;
+  padding: 8px 10px 6px;
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.94);
+  border: 1px solid rgba(120, 90, 50, 0.12);
+  box-shadow: 0 6px 14px rgba(40, 24, 10, 0.1);
 }
 .quest-book__hint {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #6a5844;
+  color: #4a3a28;
   line-height: 1.35;
 }
 .quest-book__finale {

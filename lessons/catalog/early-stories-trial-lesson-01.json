@@ -855,7 +855,7 @@
       "kind": "book_page",
       "slovik_line": "Листай книжку: на каждом развороте — картинка и одно предложение. Прочитай до конца.",
       "slovik_pose": "joy",
-      "scene_image": "/static/early/stories/scene-book.jpg",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
       "audio": "ph-vo-book",
       "book_label": "Книжка",
       "book_title": "Дома",
