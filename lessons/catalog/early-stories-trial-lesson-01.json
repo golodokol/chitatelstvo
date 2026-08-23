@@ -393,7 +393,7 @@
       "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова из двух слогов.",
       "slovik_pose": "talk",
       "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-vo-stones",
+      "audio": "ph-vo-color-path",
       "spark": false,
       "spark_group": "word",
       "hint": "Слева слог + справа слог. Все слова из двух слогов.",
