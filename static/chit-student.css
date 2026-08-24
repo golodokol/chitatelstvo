@@ -2950,20 +2950,39 @@ a.chit-lesson-card__cover-link:focus-visible {
   text-align: center;
   color: #3a342c;
 }
-.chit-book-shelf__slot.is-empty {
-  justify-content: flex-end;
-  padding-bottom: 6px;
-  min-height: 0;
+.chit-book-shelf__sticker {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background:
+    radial-gradient(circle at 35% 30%, #fff9ef 0%, #f3dfb4 55%, #e2c07a 100%);
+  border: 2px dashed rgba(140, 96, 48, 0.35);
+  box-shadow: 0 6px 14px rgba(92, 72, 48, 0.1);
 }
-.chit-book-shelf__placeholder {
-  width: 36px;
-  height: 48px;
-  border-radius: 3px 6px 6px 3px;
-  background: linear-gradient(160deg, #d8d2c8 0%, #c4bdb2 100%);
-  box-shadow:
-    inset 1px 0 0 rgba(255, 255, 255, 0.35),
-    0 3px 8px rgba(70, 58, 42, 0.08);
-  opacity: 0.72;
+.chit-book-shelf__sticker-num {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #8a5a18;
+}
+.chit-book-shelf__sticker-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #9a7340;
+}
+.chit-book-shelf__wait {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9a7340;
+  text-align: center;
 }
 .chit-book-shelf__hint {
   margin: 12px 0 0;
@@ -2971,6 +2990,27 @@ a.chit-lesson-card__cover-link:focus-visible {
   font-weight: 600;
   color: var(--muted, #6a5f52);
   text-align: center;
+}
+.chit-book-shelf__slot--coral .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #fff4ef 0%, #f5c4b0 60%, #e89a7a 100%);
+}
+.chit-book-shelf__slot--blue .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f2f7ff 0%, #c5d8f2 60%, #8fb0d8 100%);
+}
+.chit-book-shelf__slot--green .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f3faf2 0%, #c7e4c0 60%, #8fbc84 100%);
+}
+.chit-book-shelf__slot--teal .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f0faf8 0%, #b9e0d8 60%, #78b8ac 100%);
+}
+.chit-book-shelf__slot--violet .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #f7f2ff 0%, #d5c4ef 60%, #a88fd0 100%);
+}
+.chit-book-shelf__slot--gold .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #fff9e8 0%, #f0d78a 60%, #d4b04a 100%);
+}
+.chit-book-shelf__slot--brown .chit-book-shelf__sticker {
+  background: radial-gradient(circle at 35% 30%, #faf3ea 0%, #e2c8a4 60%, #c49a68 100%);
 }
 
 @media (max-width: 640px) {
@@ -2982,9 +3022,12 @@ a.chit-lesson-card__cover-link:focus-visible {
   .chit-book-shelf__cover-wrap {
     max-width: 68px;
   }
-  .chit-book-shelf__placeholder {
-    width: 28px;
-    height: 38px;
+  .chit-book-shelf__sticker {
+    width: 56px;
+    height: 56px;
+  }
+  .chit-book-shelf__sticker-num {
+    font-size: 1.1rem;
   }
   .chit-book-shelf__title {
     font-size: 0.68rem;
