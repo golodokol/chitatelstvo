@@ -1591,6 +1591,8 @@ def _build_path_hint(
     lesson_links: list[dict],
     cabinet_mode: str,
 ) -> dict[str, Any] | None:
+    # Блок «Куда дальше?» в кабинете временно скрыт.
+    return None
     if cabinet_mode not in ("trial_early", "paid_early"):
         return None
     key = _last_early_path_key(events, tracks, lesson_links)
