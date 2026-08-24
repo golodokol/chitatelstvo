@@ -2505,7 +2505,8 @@
     if (poster) {
       var posterUrl = assetUrl(poster);
       box.style.backgroundImage = "url(" + posterUrl + ")";
-      box.style.backgroundSize = "cover";
+      box.style.backgroundSize = "contain";
+      box.style.backgroundRepeat = "no-repeat";
       box.style.backgroundPosition = "center";
     }
 
