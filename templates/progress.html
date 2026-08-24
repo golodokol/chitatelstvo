@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260823c">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260824b">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -613,11 +613,7 @@
               </div>
               <h3 class="chit-book-shelf__title">{{ slot.book_title }}</h3>
               {% else %}
-              <div class="chit-book-shelf__sticker" aria-hidden="true">
-                <span class="chit-book-shelf__sticker-num">{{ slot.slot }}</span>
-                <span class="chit-book-shelf__sticker-label">место</span>
-              </div>
-              <p class="chit-book-shelf__wait">{{ slot.slot_label }}</p>
+              <div class="chit-book-shelf__placeholder" aria-hidden="true"></div>
               {% endif %}
             </article>
             {% endfor %}
