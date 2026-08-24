@@ -5,6 +5,15 @@ from gamification.rules import (
     is_early_stories_title,
 )
 from gamification.sloviki import event_toast_message as slovik_toast
+from gamification.sloviki import recent_event_slovik
+
+
+class _Ev:
+    def __init__(self, event_type, tale_title, payload=None, created_at=None):
+        self.event_type = event_type
+        self.tale_title = tale_title
+        self.payload = payload or {}
+        self.created_at = created_at
 
 
 def test_reader_badge_not_for_letters_quest():
@@ -71,3 +80,46 @@ def test_toast_message_respects_early_quest_rules():
         "lesson_complete",
         tale_title="Спаси первую историю",
     )
+
+
+def test_cabinet_toast_skips_incomplete_early_quest():
+    toast = recent_event_slovik(
+        [
+            _Ev(
+                "lesson_complete",
+                "Словик и пропавшие звуки",
+                {"chest_ready": False, "sparks": 0},
+            )
+        ]
+    )
+    assert toast is None
+
+
+def test_cabinet_toast_letters_complete_has_no_reader_badge():
+    toast = recent_event_slovik(
+        [
+            _Ev(
+                "lesson_complete",
+                "Словик и пропавшие звуки",
+                {"chest_ready": True, "sparks": 3},
+            )
+        ]
+    )
+    assert toast is not None
+    assert toast["badge"] is None
+    assert toast["points"] == EARLY_QUEST_COMPLETE_POINTS
+
+
+def test_cabinet_toast_stories_complete_shows_reader():
+    toast = recent_event_slovik(
+        [
+            _Ev(
+                "lesson_complete",
+                "Спаси первую историю",
+                {"chest_ready": True, "sparks": 3},
+            )
+        ]
+    )
+    assert toast is not None
+    assert toast["badge"] == "Читатель"
+

@@ -120,7 +120,8 @@
 
     var eventType = opts.eventType || '';
     var parts = rewardParts(eventType);
-    var badge = opts.badge || parts.badge;
+    // null с сервера = «бейджа нет» (напр. урок букв). Не подменять на EVENT_BADGES.
+    var badge = Object.prototype.hasOwnProperty.call(opts, 'badge') ? opts.badge : parts.badge;
     var points = opts.points != null ? opts.points : parts.points;
     var slovikKey = opts.slovikKey || EVENT_SLOVIK[eventType] || 'reward';
     var urls = opts.urls || {};

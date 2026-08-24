@@ -5,7 +5,12 @@ from __future__ import annotations
 from typing import Any
 
 from gamification.badge_assets import BADGE_ASSET_FILES
-from gamification.rules import EVENT_RULES, apply_badge_rules
+from gamification.rules import (
+    EVENT_RULES,
+    apply_badge_rules,
+    is_early_letters_title,
+    is_early_quest_title,
+)
 from lessons.step_labels import LESSON_STEP_LABELS
 
 STATIC_PREFIX = "/static/sloviki"
@@ -225,10 +230,18 @@ def recent_event_slovik(events: list[Any]) -> dict[str, Any] | None:
     ev = events[0]
     et = getattr(ev, "event_type", "") or ""
     tale_title = getattr(ev, "tale_title", None)
+    payload = getattr(ev, "payload", None) or {}
+    # Early-квест без готового сундука — не празднуем (выход «назад» / недопройдено).
+    if et == "lesson_complete" and is_early_quest_title(tale_title):
+        if payload.get("chest_ready") is not True:
+            return None
     try:
         reward = apply_badge_rules(et, [], "Старт", tale_title=tale_title)
     except ValueError:
         return None
+    # «Читатель» после букв не показываем, даже если в БД бейдж уже ошибочно есть.
+    if reward.get("badge_name") == "Читатель" and is_early_letters_title(tale_title):
+        reward = {**reward, "badge_name": None}
     if not reward.get("points") and not reward.get("badge_name"):
         return None
     key = event_slovik_key(et, big=et in BIG_EVENT_SLOVIK)
