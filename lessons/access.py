@@ -10,6 +10,7 @@ from db.models import Child, Enrollment
 from lessons.schedule import (
     COHORT_GROUPS,
     LEGACY_MODULE_START,
+    STANDARD_GRADE_GROUPS,
     cohort_lesson_opens_on,
     effective_module_week,
     format_date_ru,
@@ -21,7 +22,7 @@ from lessons.schedule import (
     week_in_stage,
 )
 
-# Дата выката нового календаря; записи до неё сохраняют доступ по старому старту.
+# Дата выката нового календаря; legacy-недели только для cohort/early, не для 1–4 и внеклассного.
 SCHEDULE_SHIFT_DATE = date(2026, 7, 10)
 
 EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
@@ -178,6 +179,10 @@ def is_lesson_unlocked(
     admin_weeks = _admin_unlocked_weeks(child)
     if admin_weeks > 0 and lesson_week <= admin_weeks:
         return True
+
+    # Школьные и внеклассные курсы — только календарь и ручной доступ админа.
+    if group_code in STANDARD_GRADE_GROUPS:
+        return False
 
     if _grandfather_schedule_unlock(child, enrollment):
         legacy_weeks = _legacy_unlocked_weeks(

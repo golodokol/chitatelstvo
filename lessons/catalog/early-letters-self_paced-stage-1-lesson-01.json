@@ -1,7 +1,7 @@
 {
   "slug": "early-letters-self_paced-stage-1-lesson-01",
-  "title": "Мотор на поляне",
-  "tale_title": "Мотор на поляне",
+  "title": "Круглая О",
+  "tale_title": "Круглая О",
   "module_id": 21,
   "group_code": "early-letters",
   "group_label": "Буквы оживают",
@@ -25,8 +25,8 @@
       "id": "hello",
       "title": "Приветствие",
       "kind": "intro_video",
-      "slovik_line": "Сегодня: Мир звуков",
-      "audio": "bo-m1-l01-hi",
+      "slovik_line": "Сегодня: Буква А — голос открывается",
+      "audio": "bo-m1-l03-hi",
       "spark": false
     },
     {
@@ -34,7 +34,7 @@
       "title": "Разминка",
       "kind": "find",
       "slovik_line": "Вспомним прошлое.",
-      "audio": "bo-m1-l01-warm",
+      "audio": "bo-m1-l03-warm",
       "spark": false,
       "rounds": [
         {
@@ -52,8 +52,8 @@
       "title": "Новое",
       "kind": "repeat_sound",
       "slovik_line": "Новый навык.",
-      "audio": "bo-m1-l01-new",
-      "sound": "bo-m1-l01-sound",
+      "audio": "bo-m1-l03-new",
+      "sound": "bo-m1-l03-sound",
       "spark": false
     },
     {
@@ -61,7 +61,7 @@
       "title": "Игра 1",
       "kind": "listen_pick",
       "slovik_line": "Поиграем!",
-      "audio": "bo-m1-l01-g1",
+      "audio": "bo-m1-l03-g1",
       "spark": true,
       "rounds": [
         {
@@ -93,7 +93,7 @@
       "title": "Игра 2",
       "kind": "find",
       "slovik_line": "Ещё практика.",
-      "audio": "bo-m1-l01-g2",
+      "audio": "bo-m1-l03-g2",
       "spark": true,
       "rounds": [
         {
@@ -111,7 +111,7 @@
       "title": "Мини-квест",
       "kind": "mini_quest",
       "slovik_line": "Почти финиш!",
-      "audio": "bo-m1-l01-quest",
+      "audio": "bo-m1-l03-quest",
       "spark": false,
       "steps": [
         {
@@ -131,7 +131,7 @@
       "slovik_line": "Молодец!",
       "audio": "shared-reward",
       "spark": false,
-      "parent_note": "Урок «Мир звуков» пройден. Повторите дома главный навык."
+      "parent_note": "Урок «Буква А — голос открывается» пройден. Повторите дома главный навык."
     }
   ],
   "quest": {

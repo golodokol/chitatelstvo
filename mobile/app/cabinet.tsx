@@ -501,14 +501,15 @@ export default function CabinetScreen() {
 
             {stages.length ? (
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Расписание сказок</Text>
+                <Text style={styles.panelTitle}>
+                  {data?.schedule_intro?.heading ?? "Расписание сказок"}
+                </Text>
                 <Text style={styles.hint}>
-                  {payload?.module_start_date
-                    ? `Первый этап начинается ${payload.module_start_date} — новая сказка по понедельникам.`
-                    : "Новая сказка открывается раз в неделю по понедельникам."}
-                  {data?.has_meetings
-                    ? " Встречи с преподавателем — по четвергам."
-                    : ""}
+                  {data?.schedule_intro?.text
+                    ? data.schedule_intro.text
+                    : payload?.module_start_date
+                      ? `Первый этап начинается ${payload.module_start_date} — новая сказка по понедельникам.`
+                      : "Даты открытия указаны у каждого урока ниже."}
                 </Text>
                 {stages.map((stage) => (
                   <View key={stage.key} style={styles.stageBlock}>

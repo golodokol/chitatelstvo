@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Собрать единый HTML для вставки в Zero Block на Tilda."""
 
 from __future__ import annotations
@@ -10,7 +10,35 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260822k"
+VERSION = "20260824i"
+
+CHIT_QUIZ_LOADER = (
+    '<script id="chit-quiz-loader">(function(){if(window.__chitTrialLoaderBound)return;window.__chitTrialLoaderBound=1;'
+    'var A="https://api.chitatelstvo.ru/assets/",V="__VERSION__",busy=0,done=0,q=[],last=0;'
+    'function run(){while(q.length)q.shift()();}'
+    'function rememberTrial(el){if(!el||!el.getAttribute)return;var slug=el.getAttribute("data-trial-slug");if(!slug)return;'
+    'try{var age=el.getAttribute("data-trial-age")||"",quiz=el.getAttribute("data-quiz")||"";'
+    'sessionStorage.setItem("chit_trial",JSON.stringify({age:age,slug:slug,title:el.getAttribute("data-trial-title")||"",quiz:quiz}));'
+    'var hint=age==="4-6"?"5":(age==="5-7"?"6":(age==="6-8"?"7":(age==="9-11"?"10":"")));'
+    'if(hint)sessionStorage.setItem("chit_trial_age_hint",hint);}catch(err){}}'
+    'function openReady(el){if(window.chitQuizOpenWithEl){window.chitQuizOpenWithEl(el);return;}'
+    'if(window.chitQuizOpen)window.chitQuizOpen();}'
+    'function appendJs(){if(document.querySelector(\'script[src*="chit-quiz.js"]\'))return;'
+    'var s=document.createElement("script");s.src=A+"chit-quiz.js?v="+V;'
+    's.onload=function(){done=1;busy=0;run();};s.onerror=function(){busy=0;};document.head.appendChild(s);}'
+    'window.chitLoadQuiz=function(cb){if(done){if(cb)cb();return;}if(cb)q.push(cb);if(busy)return;busy=1;'
+    'if(!document.querySelector(\'link[href*="chit-quiz.css"]\')){var c=document.createElement("link");'
+    'c.rel="stylesheet";c.href=A+"chit-quiz.css?v="+V;document.head.appendChild(c);}'
+    'appendJs();setTimeout(function(){if(!done)appendJs();},2000);};'
+    'function openTrial(el,e){if(!el)return;var now=Date.now();if(now-last<450)return;last=now;'
+    'if(e){e.preventDefault();e.stopPropagation();}rememberTrial(el);'
+    'if(done&&window.chitQuizOpen){openReady(el);return;}'
+    'window.chitLoadQuiz(function(){openReady(el);});}'
+    'function trialTarget(e){return e.target&&e.target.closest?e.target.closest(\'[href="#quiz"], [data-qz-open], .course-card__btn--trial\'):null;}'
+    'document.addEventListener("click",function(e){var t=trialTarget(e);if(t)openTrial(t,e);},true);'
+    'document.addEventListener("touchend",function(e){var t=trialTarget(e);if(t)openTrial(t,e);},{capture:true,passive:false});'
+    'if(location.hash==="#quiz")window.chitLoadQuiz();})();</script>'
+).replace("__VERSION__", VERSION)
 
 CHIT_QZ_CLOSE = (
     '<style id="chit-qz-close">'
@@ -27,9 +55,12 @@ CHIT_QZ_CLOSE = (
     'background:currentColor!important;border-radius:1px!important}'
     '#qz-modal .qz-modal__close-icon::before{transform:translate(-50%,-50%) rotate(45deg)!important}'
     '#qz-modal .qz-modal__close-icon::after{transform:translate(-50%,-50%) rotate(-45deg)!important}'
-    '#qz-modal .qz-progress__meta{padding-right:56px!important}'
-    '#qz-modal .qz-modal__dialog .qz-card{padding-right:68px!important}'
-    '@media(max-width:720px){#qz-modal .qz-modal__close{top:14px!important;right:28px!important}}'
+    '#qz-modal .qz-progress__meta{padding-right:0!important}'
+    '#qz-modal .qz-modal__dialog .qz-card{padding:44px 16px 20px!important;width:100%!important;max-width:none!important;box-sizing:border-box!important}'
+    '#qz-modal .qz-modal__dialog .qz-options,#qz-modal .qz-modal__dialog .qz-option,#qz-modal .qz-modal__dialog .qz-nav,#qz-modal .qz-modal__dialog .qz-btn{width:100%!important;max-width:100%!important;box-sizing:border-box!important}'
+    '@media(max-width:720px){#qz-modal{padding:8px!important}#qz-modal .qz-modal__dialog{max-width:100%!important;width:100%!important}'
+    '#qz-modal .qz-modal__close{top:10px!important;right:10px!important}'
+    '#qz-modal .qz-modal__dialog .qz-card{padding:42px 16px 18px!important;border-radius:16px!important}}'
     '</style>'
 )
 
@@ -45,7 +76,7 @@ CHIT_QZ_LAUNCHER = (
     '#chit-main .qz-launcher:hover{background:#7a6a8f;transform:translateY(-2px)}'
     '#chit-main .qz-launcher__icon,#chit-main .qz-launcher__text{color:#fff!important;-webkit-text-fill-color:#fff}'
     '#chit-main .qz-launcher__icon{font-size:18px;line-height:1}'
-    '@media(max-width:720px){#chit-main{padding-bottom:calc(54px + env(safe-area-inset-bottom))!important}'
+    '@media(max-width:720px){#chit-main{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}'
     '#chit-main .qz-launcher{left:0;right:50%;justify-content:center;border-radius:0;'
     'padding:12px 10px max(14px,env(safe-area-inset-bottom));font-size:13px;line-height:1.2;'
     'white-space:nowrap;box-shadow:none;border-right:1px solid rgba(255,255,255,.28)}'
@@ -113,7 +144,8 @@ CHIT_HERO_PREMIUM = (
     '#chit-main .hero--premium .hero__visual-gift{margin-top:14px!important;padding-top:0!important;align-self:center!important}'
     '@media(max-width:960px){'
     '#chit-main .hero--premium .hero__grid{grid-template-columns:1fr!important}'
-    '#chit-main .hero--premium .hero__badge--hero-top{grid-column:1!important;grid-row:1!important}'
+    '#chit-main .hero--premium .hero__badge--hero-top{grid-column:1!important;grid-row:1!important;'
+    'margin:0 0 26px!important}'
     '#chit-main .hero--premium .hero__content{grid-column:1!important;grid-row:2!important;align-items:center!important;'
     'justify-content:flex-start!important;text-align:center!important}'
     '#chit-main .hero--premium .hero__visual{grid-column:1!important;grid-row:3!important;justify-content:flex-start!important}'
@@ -122,6 +154,7 @@ CHIT_HERO_PREMIUM = (
     '#chit-main .hero--premium .hero__cta-note,#chit-main .hero--premium .hero__visual-gift{margin-top:12px!important;padding-top:0!important}'
     '#chit-main .hero--premium .hero__badge-line--sub{font-size:14px!important}'
     '#chit-main .hero--premium .hero__badge-line--title em{font-size:clamp(28px,7.5vw,34px)!important;letter-spacing:.04em!important}'
+    '#chit-main .hero--premium h1{margin-top:4px!important}'
     '}'
     '</style>'
 )
@@ -134,7 +167,8 @@ CHIT_QZ_CRITICAL = (
     '#qz-modal.is-open{display:flex!important}'
     '#qz-modal .qz-modal__backdrop{position:absolute!important;inset:0!important;background:rgba(26,38,58,.55)!important}'
     '#qz-modal .qz-modal__dialog{position:relative!important;z-index:1!important;width:100%!important;'
-    'max-width:600px!important;max-height:calc(100vh - 32px)!important;overflow:hidden!important}'
+    'max-width:600px!important;max-height:calc(100vh - 32px)!important;overflow:hidden!important;box-sizing:border-box!important}'
+    '@media(max-width:720px){#qz-modal{padding:8px!important}#qz-modal .qz-modal__dialog{max-width:100%!important}}'
     '#chit-quiz .qz-step{display:none!important}#chit-quiz .qz-step.is-active{display:block!important}'
     'body.qz-modal-open{overflow:hidden!important}'
     '</style>'
@@ -184,6 +218,10 @@ CHIT_GAMIFY_PATH = (
 def patch_head_styles(head: str) -> str:
     head = re.sub(r'<style id="chit-btn-fix">[^<]+</style>', CHIT_BTN_FIX, head)
     head = re.sub(r'<style id="chit-hero-premium">[\s\S]*?</style>', CHIT_HERO_PREMIUM, head)
+    head = head.replace(
+        '.hero__badge--hero-top{margin-top:0!important;margin-bottom:14px!important}',
+        '.hero__badge--hero-top{margin-top:0!important;margin-bottom:26px!important}',
+    )
     head = re.sub(r'<style id="chit-qz-launcher-critical">[\s\S]*?</style>', CHIT_QZ_LAUNCHER, head)
     head = re.sub(r'<style id="chit-qz-critical">[\s\S]*?</style>', CHIT_QZ_CRITICAL, head)
     head = re.sub(r'<style id="chit-qz-close">[\s\S]*?</style>', CHIT_QZ_CLOSE, head)
@@ -240,29 +278,11 @@ def read_body_from_html_txt() -> str:
 
 
 def read_footer_scripts() -> str:
-    # Берём футер из актуального upload (lite может быть устаревшим)
-    for src in (OUT, LITE):
-        if not src.is_file():
-            continue
-        text = src.read_text(encoding="utf-8")
-        m = re.search(
-            r"(<script>window\.CHIT_QUIZ_AUTO[\s\S]*?</script>\s*"
-            r"(?:<script id=\"chit-quiz-loader\">[\s\S]*?</script>\s*)?"
-            r"<script defer src=\"[^\"]+chit-zero\.js[^\"]+\"></script>)",
-            text,
-        )
-        if not m:
-            m = re.search(
-                r"(<script>window\.CHIT_QUIZ_AUTO[\s\S]*?</script>\s*"
-                r"<script defer src=\"[^\"]+chit-zero\.js[^\"]+\"></script>)",
-                text,
-            )
-        if m:
-            footer = m.group(1)
-            footer = re.sub(r"chit-zero\.js\?v=[^\"']+", f"chit-zero.js?v={VERSION}", footer)
-            footer = re.sub(r'V="[^"]+"', f'V="{VERSION}"', footer)
-            return footer
-    raise RuntimeError("Cannot find footer scripts in upload/lite template")
+    return (
+        '<script>window.CHIT_QUIZ_AUTO={enabled:false};</script>\n'
+        + CHIT_QUIZ_LOADER
+        + f'\n<script defer src="https://api.chitatelstvo.ru/assets/chit-zero.js?v={VERSION}"></script>'
+    )
 
 
 def build_css_js_assets() -> None:

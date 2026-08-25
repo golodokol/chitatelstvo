@@ -9,15 +9,18 @@ from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.orm import Session
 
 from api.deps import rate_limit
+from config.settings import PUBLIC_BASE_URL
 from db.session import get_db
-from services.early_trial import grant_early_trial, resolve_trial_module_id
 from notifications.email_channel import send_email
 from notifications.email_templates import (
-    SUBJECT_QUIZ_AUTO,
-    build_quiz_auto_email,
-    build_quiz_auto_email_html,
+    EARLY_COURSE_COPY,
+    SUBJECT_QUIZ_EARLY,
+    build_early_trial_email,
+    build_early_trial_email_html,
+    early_course_key,
 )
-from config.settings import PUBLIC_BASE_URL
+from services.early_trial import grant_early_trial, resolve_trial_module_id
+from services.early_trial_leads import append_early_trial_lead
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["early-trial"])
@@ -33,6 +36,9 @@ class EarlyTrialLead(BaseModel):
     child_age: int | None = Field(default=None, ge=1, le=99)
     trial_slug: str = Field(min_length=1, max_length=120)
     trial_title: str | None = Field(default=None, max_length=200)
+    consent_privacy: bool = False
+    consent_offer: bool = False
+    consent_marketing: bool = False
 
 
 @router.post("/api/early/trial")
@@ -43,6 +49,11 @@ def early_trial_lead(
 ) -> dict:
     if not resolve_trial_module_id(trial_slug=body.trial_slug):
         raise HTTPException(400, "Неизвестный пробный урок")
+    if not body.consent_privacy or not body.consent_offer:
+        raise HTTPException(
+            400,
+            "Нужно согласие с политикой конфиденциальности и публичной офертой",
+        )
 
     try:
         access = grant_early_trial(
@@ -61,32 +72,58 @@ def early_trial_lead(
     if not access:
         raise HTTPException(400, "Не удалось открыть пробный урок")
 
+    course_key = early_course_key(body.trial_slug)
+    course_label = EARLY_COURSE_COPY[course_key]["label"]
     title = body.trial_title or access.get("lesson_title") or "Пробный урок"
+
     try:
-        message = build_quiz_auto_email(
+        append_early_trial_lead(
+            {
+                "parent_name": body.parent_name,
+                "parent_email": str(body.parent_email).lower(),
+                "phone": body.phone or "",
+                "child_name": body.child_name,
+                "child_age": body.child_age,
+                "trial_slug": body.trial_slug,
+                "trial_title": title,
+                "course_group": course_key,
+                "course_label": course_label,
+                "consent_privacy": bool(body.consent_privacy),
+                "consent_offer": bool(body.consent_offer),
+                "consent_marketing": bool(body.consent_marketing),
+                "lesson_url": access.get("lesson_url"),
+                "family_id": access.get("family_id"),
+                "child_id": access.get("child_id"),
+            }
+        )
+    except Exception:
+        logger.exception("early trial lead save failed for %s", body.parent_email)
+
+    try:
+        message = build_early_trial_email(
             parent_name=body.parent_name,
             child_name=body.child_name,
             child_age=body.child_age,
-            answers_by_id={},
-            checklist_url=f"{PUBLIC_BASE_URL}/quiz/checklist.pdf",
-            site_url=SITE_URL,
             trial_title=title,
             trial_lesson_url=access["lesson_url"],
             trial_progress_url=access["progress_url"],
+            trial_slug=body.trial_slug,
+            course_group=course_key,
+            site_url=SITE_URL,
         )
-        html_message = build_quiz_auto_email_html(
+        html_message = build_early_trial_email_html(
             parent_name=body.parent_name,
             child_name=body.child_name,
             child_age=body.child_age,
-            answers_by_id={},
-            checklist_url=f"{PUBLIC_BASE_URL}/quiz/checklist.pdf",
+            trial_title=title,
+            trial_lesson_url=access["lesson_url"],
+            trial_progress_url=access["progress_url"],
+            trial_slug=body.trial_slug,
+            course_group=course_key,
             site_url=SITE_URL,
             assets_url=PUBLIC_BASE_URL,
-            trial_title=title,
-            trial_lesson_url=access["lesson_url"],
-            trial_progress_url=access["progress_url"],
         )
-        send_email(str(body.parent_email), SUBJECT_QUIZ_AUTO, message, html_message)
+        send_email(str(body.parent_email), SUBJECT_QUIZ_EARLY, message, html_message)
         email_sent = True
     except Exception:
         logger.exception("early trial email failed for %s", body.parent_email)

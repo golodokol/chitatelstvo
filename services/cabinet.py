@@ -24,9 +24,60 @@ from gamification.rules import level_from_points
 from lessons.access import lesson_access_info
 from lessons.covers import enrich_lesson_link
 from lessons.enrollment_access import list_enrollment_tracks, list_lessons_for_enrollment
-from lessons.schedule import STAGE_LABELS, tariff_has_meetings
+from lessons.schedule import (
+    EARLY_GROUPS,
+    RUSSIAN_TALES_GROUPS,
+    SLOW_READING_GROUPS,
+    STAGE_LABELS,
+    STANDARD_GRADE_GROUPS,
+    tariff_has_meetings,
+)
 from lessons.step_labels import event_type_label
 from services.birthday_gift import maybe_grant_birthday_gift
+
+
+def build_schedule_intro(
+    lesson_links: list[dict[str, Any]],
+    *,
+    has_meetings: bool = False,
+) -> dict[str, str]:
+    """Текст шапки расписания на странице родителя (с учётом смешанных курсов)."""
+    codes = {str(link.get("group_code") or "") for link in lesson_links}
+    has_early = bool(codes & EARLY_GROUPS) or any(c.startswith("early-") for c in codes)
+    has_standard = bool(codes & STANDARD_GRADE_GROUPS)
+    has_slow = bool(codes & SLOW_READING_GROUPS)
+    has_rus = bool(codes & RUSSIAN_TALES_GROUPS)
+
+    parts: list[str] = []
+    if has_standard:
+        parts.append(
+            "Курсы 1–4 класса и внеклассное чтение: сказки 1–2 уже открыты; "
+            "3–4 — с 31 августа; 5–6 — с 7 сентября; 7–8 — с 14 сентября."
+        )
+    if has_early:
+        parts.append(
+            "«Буквы оживают» и «Первые истории»: модуль с 1 сентября, "
+            "новые уроки по вторникам и четвергам."
+        )
+    if has_slow:
+        parts.append("Медленное чтение: старт 15 сентября, далее по вторникам.")
+    if has_rus:
+        parts.append("Русские сказки: старт 15 октября.")
+    if not parts:
+        parts.append("Даты открытия указаны у каждого урока ниже.")
+
+    text = " ".join(parts)
+    if has_meetings:
+        text += " Встречи с преподавателем — по четвергам."
+
+    if has_early and not (has_standard or has_slow or has_rus):
+        heading = "Расписание уроков"
+    elif has_early:
+        heading = "Расписание"
+    else:
+        heading = "Расписание сказок"
+
+    return {"heading": heading, "text": text}
 
 
 def _lesson_is_ready(lesson: dict[str, Any]) -> bool:
@@ -175,6 +226,9 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
         "badges": badges,
         "lessons": all_lesson_links,
         "lesson_stages": group_lessons(all_lesson_links),
+        "schedule_intro": build_schedule_intro(
+            all_lesson_links, has_meetings=has_meetings
+        ),
         "module_title": module_title,
         "has_meetings": has_meetings,
         "tracks": tracks,

@@ -25,6 +25,14 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory=str(ROOT / "static")), name="static")
 
+_LLMS = ROOT / "docs" / "course-pages" / "llms.txt"
+
+
+@app.get("/llms.txt", include_in_schema=False)
+def llms_txt() -> FileResponse:
+    return FileResponse(_LLMS, media_type="text/plain; charset=utf-8")
+
+
 app.include_router(admin.router)
 app.include_router(pages.router)
 app.include_router(legal.router)

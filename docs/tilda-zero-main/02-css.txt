@@ -611,12 +611,13 @@
       #chit-main .hero--premium .hero__badge--hero-top {
         align-items: center;
         text-align: center;
+        margin: 0 0 26px;
       }
       .hero--premium .hero__badge-line--title em {
         font-size: clamp(28px, 7.5vw, 34px);
         letter-spacing: 0.04em;
       }
-      .hero--premium h1 { max-width: 100%; text-align: center; font-size: clamp(24px, 7vw, 30px); }
+      .hero--premium h1 { max-width: 100%; text-align: center; font-size: clamp(24px, 7vw, 30px); margin-top: 4px; }
       .hero__cta { align-items: stretch; max-width: 100%; width: 100%; }
       .hero--premium .hero__lead { text-align: center; max-width: 100%; }
       .hero--premium .hero__price { text-align: center; }
@@ -1688,6 +1689,15 @@
     }
     .enroll-opt.pill.is-active {
       box-shadow: 0 6px 18px rgba(91, 127, 166, 0.22);
+      background: var(--blue) !important;
+      border-color: var(--blue) !important;
+      color: #fff !important;
+      -webkit-text-fill-color: #fff !important;
+    }
+    .enroll-opt.pill.is-active .enroll-opt__name,
+    .enroll-opt.pill.is-active .enroll-opt__meta {
+      color: #fff !important;
+      -webkit-text-fill-color: #fff !important;
     }
     @media (max-width: 720px) {
       .enroll-track__opts.pills,
@@ -1781,14 +1791,21 @@
       transition: all .15s;
     }
     .tale-btn:hover { border-color: var(--blue-light); }
-    .tale-btn.is-active { border-color: var(--blue); background: var(--accent-pale); }
+    .tale-btn.is-active {
+      border-color: var(--blue) !important;
+      background: var(--blue-pale) !important;
+      box-shadow: 0 0 0 2px rgba(91, 127, 166, 0.25);
+    }
     .tale-num {
-      display: inline-block; width: 22px; height: 22px;
-      background: var(--blue-pale); border-radius: 6px;
-      text-align: center; line-height: 22px; font-size: 12px;
+      display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center;
+      border-radius: 50%; background: var(--blue-pale); font-size: 13px;
       font-weight: 800; margin-right: 8px; color: var(--blue);
     }
-    .tale-btn.is-active .tale-num { background: var(--blue); color: #fff; }
+    .tale-btn.is-active .tale-num {
+      background: var(--blue) !important;
+      color: #fff !important;
+      -webkit-text-fill-color: #fff !important;
+    }
     .tale-btn__body { display: block; margin-top: 2px; }
     .tale-btn__title { display: block; font-weight: 700; color: var(--text); }
     .tale-schedule {
@@ -1821,7 +1838,7 @@
     .summary {
       background: var(--accent-pale); border-radius: 12px;
       padding: 18px 24px; font-size: 22px; min-height: 56px;
-      border: 1.5px dashed var(--accent);
+      border: 1.5px solid rgba(143, 125, 163, 0.35);
       font-family: var(--hand); font-weight: 600;
       line-height: 1.45;
       color: var(--text-warm);
@@ -1829,6 +1846,8 @@
     .summary.is-empty {
       display: flex; align-items: center; justify-content: center;
       text-align: center;
+      border-style: dashed;
+      background: #fff;
     }
     .summary strong { color: var(--blue); font-weight: 700; }
     .summary-empty { color: var(--muted); font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; line-height: 1.45; }
@@ -3152,6 +3171,8 @@
   gap: 8px;
   margin-top: auto;
   padding-top: 8px;
+  position: relative;
+  z-index: 3;
 }
 #chit-main .course-card__actions--early {
   grid-template-columns: 1fr 1.2fr;
@@ -3178,6 +3199,10 @@
   border: none;
   cursor: pointer;
   font-family: inherit;
+  position: relative;
+  z-index: 4;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(143, 125, 163, 0.2);
 }
 #chit-main .course-card__btn--ghost {
   background: transparent;
@@ -3455,10 +3480,22 @@
   background: linear-gradient(135deg, #F8EFE3 0%, #E8F1F8 100%);
 }
 #chit-main .course-card[data-group="early-letters"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-letters.jpg?v=20260822g") center center / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-letters.webp?v=20260825e") center 46% / 104% auto no-repeat !important;
+  animation: chit-early-letters-drift 14s ease-in-out infinite alternate;
+}
+@keyframes chit-early-letters-drift {
+  0% { background-size: 104% auto; background-position: center 48%; }
+  100% { background-size: 112% auto; background-position: center 40%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #chit-main .course-card[data-group="early-letters"] .course-card__media {
+    animation: none;
+    background-size: cover !important;
+    background-position: center center !important;
+  }
 }
 #chit-main .course-card[data-group="early-stories"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-stories.jpg?v=20260822g") center center / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-stories.webp?v=20260823u") center center / cover no-repeat !important;
 }
 #chit-main .course-card[data-group="early-letters"] .course-card__media img,
 #chit-main .course-card[data-group="early-stories"] .course-card__media img {
@@ -3479,50 +3516,47 @@
   display: none !important;
 }
 #chit-main .course-card[data-group="grade-1"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-1.jpg") center 40% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-1.webp?v=20260823u") center 40% / cover no-repeat !important;
 }
 #chit-main .course-card[data-group="grade-2"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-2.jpg") center 42% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-2.webp?v=20260823u") center 42% / cover no-repeat !important;
 }
 #chit-main .course-card[data-group="grade-3"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-3.jpg") center 42% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-3.webp?v=20260823u") center 42% / cover no-repeat !important;
 }
 #chit-main .course-card[data-group="grade-4"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-4.jpg") center 42% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-grade-4.webp?v=20260823u") center 42% / cover no-repeat !important;
 }
 #chit-main .course-card[data-group="extra-6-8"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-extra-6-8.jpg") center 45% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-extra-6-8.webp?v=20260823u") center 45% / cover no-repeat !important;
 }
 #chit-main .course-card[data-group="extra-9-11"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-extra-9-11.jpg") center 45% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-extra-9-11.webp?v=20260823u") center 45% / cover no-repeat !important;
 }
 #chit-main .course-card[data-cover="wind"] .course-card__media,
 #chit-main .course-card[data-course-title="Ветер в ивах"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-wind.jpg") center 48% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-wind.webp?v=20260823u") center 48% / cover no-repeat !important;
 }
 #chit-main .course-card[data-cover="garden"] .course-card__media,
 #chit-main .course-card[data-course-title="Таинственный сад"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-garden.jpg") center 45% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-garden.webp?v=20260823u") center 45% / cover no-repeat !important;
 }
 #chit-main .course-card[data-cover="rus-6-9"] .course-card__media,
 #chit-main .course-card[data-course-title="Русские сказки"][data-course-meta="6–9 лет · старт в октябре"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-rus-6-9.jpg") center 48% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-rus-6-9.webp?v=20260823u") center 48% / cover no-repeat !important;
 }
 #chit-main .course-card[data-cover="rus-10-12"] .course-card__media,
 #chit-main .course-card[data-course-title="Русские сказки"][data-course-meta="10–12 лет · старт в октябре"] .course-card__media {
-  background: url("https://api.chitatelstvo.ru/assets/course-cover-rus-10-12.jpg") center 42% / cover no-repeat !important;
+  background: url("https://api.chitatelstvo.ru/assets/course-cover-rus-10-12.webp?v=20260823u") center 42% / cover no-repeat !important;
 }
 #chit-main .course-card__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 45%;
-  display: block;
-  position: relative;
-  z-index: 1;
-  border-radius: 12px 12px 0 0;
+  /* Yandex/Safari: broken <img> leaves white hole over CSS cover */
+  display: none !important;
 }
-#chit-main .course-card__media:has(img)::after { display: none; }
+#chit-main .course-card__media img[data-chit-img-failed] {
+  display: none !important;
+}
+#chit-main .course-card__media:has(img:not([data-chit-img-failed]))::after { display: none; }
 #chit-main .course-card > :not(.course-card__media):not(.course-card__body) {
   margin-left: 16px;
   margin-right: 16px;
@@ -3988,5 +4022,3 @@ body.fare-modal-open { overflow: hidden; }
   .fare-modal__head { flex-direction: column; gap: 8px; }
   .fare-modal__dialog { padding: 22px 14px 16px; }
 }
-
-

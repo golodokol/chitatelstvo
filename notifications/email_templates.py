@@ -594,3 +594,156 @@ def build_quiz_auto_email_html(
   </div>
 </body>
 </html>"""
+
+
+EARLY_COURSE_COPY = {
+    "early-letters": {
+        "label": "Буквы оживают",
+        "page_url": "https://chitatelstvo.ru/bukvy-ozhivayut",
+        "about": (
+            "«Буквы оживают» — мягкий старт чтения с 4 лет. "
+            "Со Словиком ребёнок идёт от звука к букве, слогу и коротким словам: "
+            "короткие станции, опора на слух и игра вместо зубрёжки алфавита."
+        ),
+        "trial_hint": (
+            "Пробный урок «Словик и пропавшие звуки» открывает букву А и первый слог — "
+            "можно пройти вместе за 10–20 минут."
+        ),
+        "next_step": (
+            "Если урок зайдёт, дальше в модуле — ещё буквы, слоги, первые слова "
+            "и праздник у Словика на тропе букв."
+        ),
+    },
+    "early-stories": {
+        "label": "Первые истории",
+        "page_url": "https://chitatelstvo.ru/pervye-istorii",
+        "about": (
+            "«Первые истории» — следующий шаг после букв и слогов. "
+            "Ребёнок читает короткие предложения про кота и Словика и учится понимать, "
+            "о ком история и что произошло: слово → фраза → смысл."
+        ),
+        "trial_hint": (
+            "Пробный урок «Спаси первую историю» — квест и первая книжка «Дома» "
+            "из коротких предложений, которые ребёнок читает сам."
+        ),
+        "next_step": (
+            "Дальше в модуле — новые сюжеты и полка из восьми книжек, "
+            "которые появляются у Словика после каждого урока."
+        ),
+    },
+}
+
+
+def early_course_key(trial_slug: str | None, course_group: str | None = None) -> str:
+    group = (course_group or "").strip()
+    if group in EARLY_COURSE_COPY:
+        return group
+    slug = (trial_slug or "").strip()
+    if slug.startswith("early-stories"):
+        return "early-stories"
+    return "early-letters"
+
+
+def build_early_trial_email(
+    *,
+    parent_name: str,
+    child_name: str,
+    child_age: int | None,
+    trial_title: str,
+    trial_lesson_url: str,
+    trial_progress_url: str | None = None,
+    trial_slug: str | None = None,
+    course_group: str | None = None,
+    site_url: str = "https://chitatelstvo.ru",
+) -> str:
+    parent = parent_name.strip() or "родитель"
+    child = child_name.strip() or "ребёнок"
+    child_gen = name_genitive(child)
+    key = early_course_key(trial_slug, course_group)
+    copy = EARLY_COURSE_COPY[key]
+    title = (trial_title or "").strip() or "Пробный урок"
+    age_bit = f" ({age_years_phrase(child_age)})" if child_age else ""
+    progress = (trial_progress_url or "").strip() or trial_lesson_url
+
+    return "\n".join(
+        [
+            f"Здравствуйте, {parent}!",
+            "",
+            f"Спасибо, что записались на пробный урок для {child_gen}{age_bit}.",
+            "",
+            copy["about"],
+            "",
+            copy["trial_hint"],
+            "",
+            f"Ваш бесплатный урок «{title}» уже открыт.",
+            f"Открыть урок: {trial_lesson_url}",
+            f"Личная страница: {progress}",
+            "",
+            copy["next_step"],
+            "",
+            f"Подробнее о курсе: {copy['page_url']}",
+            f"Выбрать формат модуля: {site_url}/#program",
+            "",
+            "с теплом, команда Читательства",
+            "",
+            "—",
+            "info@chitatelstvo.ru",
+        ]
+    )
+
+
+def build_early_trial_email_html(
+    *,
+    parent_name: str,
+    child_name: str,
+    child_age: int | None,
+    trial_title: str,
+    trial_lesson_url: str,
+    trial_progress_url: str | None = None,
+    trial_slug: str | None = None,
+    course_group: str | None = None,
+    site_url: str = "https://chitatelstvo.ru",
+    assets_url: str = "https://api.chitatelstvo.ru",
+) -> str:
+    parent = parent_name.strip() or "родитель"
+    child = child_name.strip() or "ребёнок"
+    child_gen = name_genitive(child)
+    key = _early_course_key(trial_slug, course_group)
+    copy = EARLY_COURSE_COPY[key]
+    title = (trial_title or "").strip() or "Пробный урок"
+    age_bit = f" ({age_years_phrase(child_age)})" if child_age else ""
+    progress = (trial_progress_url or "").strip() or trial_lesson_url
+    logo_url = quiz_logo_url(assets_url)
+    home_url = html.escape(site_url, quote=True)
+    lesson_url = html.escape(trial_lesson_url, quote=True)
+    progress_url = html.escape(progress, quote=True)
+    page_url = html.escape(copy["page_url"], quote=True)
+
+    return f"""<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:24px 16px;background:#F6F4F9;font-family:Nunito,Arial,sans-serif;color:#3D5266;">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #E4E0EC;border-radius:16px;padding:28px 24px 32px;">
+    <p style="margin:0 0 24px;text-align:center;">
+      <a href="{home_url}" style="text-decoration:none;display:inline-block;background:#ffffff;padding:12px 16px;border-radius:14px;border:1px solid #E4E0EC;">
+        <img src="{html.escape(logo_url, quote=True)}" alt="Читательство" width="180" style="max-width:180px;height:auto;display:block;background:#ffffff;border:0;">
+      </a>
+    </p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Здравствуйте, {html.escape(parent)}!</p>
+    <p style="margin:0 0 16px;line-height:1.6;">Спасибо, что записались на пробный урок для {html.escape(child_gen)}{html.escape(age_bit)}.</p>
+    <p style="margin:0 0 16px;line-height:1.6;">{html.escape(copy["about"])}</p>
+    <p style="margin:0 0 16px;line-height:1.6;">{html.escape(copy["trial_hint"])}</p>
+    <p style="margin:0 0 8px;line-height:1.6;">Ваш бесплатный урок «{html.escape(title)}» уже открыт.</p>
+    <p style="margin:0 0 16px;text-align:center;">
+      <a href="{lesson_url}" style="display:inline-block;background:#5B7FA6;color:#fff;text-decoration:none;padding:12px 22px;border-radius:12px;font-weight:700;">Открыть пробный урок</a>
+    </p>
+    <p style="margin:0 0 16px;text-align:center;font-size:14px;">
+      <a href="{progress_url}" style="color:#5B7FA6;">Личная страница ребёнка</a>
+    </p>
+    <p style="margin:0 0 16px;line-height:1.6;">{html.escape(copy["next_step"])}</p>
+    <p style="margin:0 0 16px;line-height:1.6;">Подробнее о курсе «{html.escape(copy["label"])}»: <a href="{page_url}" style="color:#5B7FA6;">{html.escape(copy["page_url"])}</a></p>
+    <p style="margin:0;line-height:1.6;">с теплом, команда Читательства</p>
+    <p style="margin:24px 0 0;font-size:13px;color:#7A8FA3;line-height:1.5;"><a href="mailto:info@chitatelstvo.ru" style="color:#7A8FA3;">info@chitatelstvo.ru</a></p>
+  </div>
+</body>
+</html>"""

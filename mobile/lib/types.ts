@@ -127,6 +127,7 @@ export type CabinetChild = {
   badges?: string[];
   module_title?: string | null;
   has_meetings?: boolean;
+  schedule_intro?: { heading: string; text: string } | null;
   lessons?: LessonLink[];
   lesson_stages?: LessonStage[];
   events?: ChildEvent[];

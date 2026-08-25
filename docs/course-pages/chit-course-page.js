@@ -287,10 +287,10 @@
     ];
     var formats = [
       '<strong>Разовое</strong> — 1 сказка на платформе, без встречи в цене (799 ₽)',
-      '<strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч',
+      '<strong>Индивидуальное</strong> — 4 сказки в своём темпе, без живых встреч (1 990 ₽)',
       withTeacherClosed
         ? '<strong>С преподавателем</strong> — пока недоступно, можно подписаться на обновления'
-        : '<strong>С преподавателем</strong> — 4 сказки и 4 встречи в мини-группе'
+        : '<strong>С преподавателем</strong> — 4 сказки и 4 встречи в мини-группе (4 990 ₽)'
     ];
     return '<section class="cc-strip cc-strip--what-how" id="what">' +
       '<div class="cc-strip__inner">' +
@@ -522,10 +522,10 @@
             tariffCard('single', D.TARIFF_COPY.single.name, D.TARIFF_COPY.single.mood,
               D.TARIFF_COPY.single.list,
               D.TARIFF_COPY.single.meetNote, false) +
-            tariffCard('self_paced', 'Индивидуальное', '4 сказки — путешествие в книгу',
+            tariffCard('self_paced', 'Индивидуальное', '4 сказки — 1 990 ₽',
               ['4 сказки на платформе', 'Видео и задания на смысл', 'Личная страница прогресса', 'Блок из 4 сказок', 'Живые встречи — нет'],
               false, true) +
-            tariffCard('with_teacher', 'С преподавателем', '4 сказки и живые разговоры о книге',
+            tariffCard('with_teacher', 'С преподавателем', '4 сказки и встречи — 4 990 ₽',
               ['4 сказки на платформе', 'Видео и задания на смысл', 'Личная страница прогресса', 'Блок из 4 сказок', 'Живые встречи'],
               true) +
           '</div>' +
@@ -550,8 +550,8 @@
               '<div class="cc-step-label">шаг 1 · формат</div>' +
               '<div class="cc-pick-cards" id="cc-tariffs">' +
                 pickCard('single', D.TARIFF_COPY.single.pickTag, D.TARIFF_COPY.single.name, D.TARIFF_PRICE.single, D.TARIFF_COPY.single.pickHint) +
-                pickCard('self_paced', 'Основной', 'Индивидуальное', 1990, '4 сказки в своём темпе') +
-                pickCard('with_teacher', 'С поддержкой', 'С преподавателем', 4990, '4 сказки + встречи') +
+                pickCard('self_paced', 'Основной', 'Индивидуальное', 1990, '4 сказки · 1 990 ₽') +
+                pickCard('with_teacher', 'С поддержкой', 'С преподавателем', 4990, '4 сказки · 4 990 ₽ + встречи') +
               '</div>' +
             '</div>' +
 
@@ -602,8 +602,8 @@
             faqItem('Что будет после оплаты?', 'На email придёт ссылка на личную страницу — там открытые сказки, баллы и прогресс.') +
             faqItem('Можно ли начать с одной сказки?', 'Да. Тариф «Разовое» — ' + D.formatPrice(D.TARIFF_PRICE.single) + ': одна сказка на платформе, без встречи в цене.' + (withTeacherClosed ? '' : ' Живые занятия — на тарифе «С преподавателем».')) +
             faqItem('Чем отличаются тарифы?', withTeacherClosed
-              ? ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). Тариф «С преподавателем» для этой программы пока недоступен — можно оставить контакты, и мы напишем, когда набор откроется.')
-              : ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки без встреч (' + D.formatPrice(D.TARIFF_PRICE.self_paced) + '). С преподавателем — 4 сказки + 4 встречи по четвергам (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').')) +
+              ? ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки за ' + D.formatPrice(D.TARIFF_PRICE.self_paced) + ' без встреч. Тариф «С преподавателем» для этой программы пока недоступен — можно оставить контакты, и мы напишем, когда набор откроется.')
+              : ('Разовое — 1 сказка онлайн (' + D.formatPrice(D.TARIFF_PRICE.single) + '). Индивидуальное — 4 сказки за ' + D.formatPrice(D.TARIFF_PRICE.self_paced) + ' без встреч. С преподавателем — 4 сказки + 4 встречи по четвергам (' + D.formatPrice(D.TARIFF_PRICE.with_teacher) + ').')) +
           '</div>' +
         '</div>' +
       '</section>' +

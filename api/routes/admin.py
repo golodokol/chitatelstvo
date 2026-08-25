@@ -28,6 +28,7 @@ from db import repository as repo
 from db.session import get_db
 from lessons.enrollment_access import get_active_enrollments, normalize_stage
 from services.quiz_leads import build_quiz_lead_rows, load_quiz_leads
+from services.early_trial_leads import build_early_trial_lead_rows, load_early_trial_leads
 from services.meeting_attendance import mark_meeting_attendance, meeting_tale_options
 from services.registration import grant_enrollment_to_child, process_registration
 
@@ -38,6 +39,43 @@ _TARIFF_LABELS = {
     "single": "Разовое",
     "self_paced": "Индивидуальное",
     "with_teacher": "С преподавателем",
+    "trial": "Пробный",
+    "meeting_addon": "Докупка встречи",
+}
+
+_EARLY_GROUPS = frozenset({"early-letters", "early-stories"})
+_COHORT_GROUPS = frozenset({"wind", "garden", "rus-6-9", "rus-10-12"})
+_ADMIN_SKIP_TARIFFS = frozenset({"meeting_addon"})
+
+# Порядок курсов в селектах админки (новые курсы внизу списка классов).
+_GROUP_ORDER = (
+    "grade-1",
+    "grade-2",
+    "grade-3",
+    "grade-4",
+    "extra-6-8",
+    "extra-9-11",
+    "early-letters",
+    "early-stories",
+    "wind",
+    "garden",
+    "rus-6-9",
+    "rus-10-12",
+)
+
+_GROUP_DISPLAY = {
+    "grade-1": "1 класс",
+    "grade-2": "2 класс",
+    "grade-3": "3 класс",
+    "grade-4": "4 класс",
+    "extra-6-8": "Внеклассное · 6–8 лет",
+    "extra-9-11": "Внеклассное · 9–11 лет",
+    "early-letters": "Буквы оживают",
+    "early-stories": "Первые истории",
+    "wind": "Ветер в ивах",
+    "garden": "Таинственный сад",
+    "rus-6-9": "Русские сказки · 6–9 лет",
+    "rus-10-12": "Русские сказки · 10–12 лет",
 }
 
 _GRADE_SHORT = {
@@ -47,17 +85,44 @@ _GRADE_SHORT = {
     "4 класс": "4",
     "Внеклассное чтение 6–8 лет": "6–8",
     "Внеклассное чтение 9–11 лет": "9–11",
+    "Внеклассное · 6–8 лет": "6–8",
+    "Внеклассное · 9–11 лет": "9–11",
+    "Буквы оживают": "Буквы",
+    "Первые истории": "Истор.",
+    "Ветер в ивах": "Ветер",
+    "Таинственный сад": "Сад",
+    "Русские сказки": "РС",
+    "Русские сказки · 6–9 лет": "РС6–9",
+    "Русские сказки · 10–12 лет": "РС10–12",
 }
 
 
-def _short_grade_label(label: str | None) -> str:
+def _group_display_label(module: dict | None) -> str:
+    if not module:
+        return "—"
+    code = module.get("group_code") or ""
+    return _GROUP_DISPLAY.get(code) or module.get("group_label") or "—"
+
+
+def _short_grade_label(label: str | None, group_code: str | None = None) -> str:
+    if group_code and group_code in _GROUP_DISPLAY:
+        return _GRADE_SHORT.get(_GROUP_DISPLAY[group_code], _GROUP_DISPLAY[group_code][:6])
     if not label or label == "—":
         return "—"
     return _GRADE_SHORT.get(label, label[:6])
 
 
-def _format_stage_label(chosen_stage: str | None) -> str:
+def _format_stage_label(chosen_stage: str | None, module: dict | None = None) -> str:
     stage = normalize_stage(chosen_stage)
+    group = (module or {}).get("group_code") or ""
+    if group in _EARLY_GROUPS or group in _COHORT_GROUPS:
+        if stage == "stage-1":
+            return "Модуль 1"
+        if stage == "stage-2":
+            return "Модуль 2"
+        if not chosen_stage:
+            return "—"
+        return str(chosen_stage)
     if stage == "stage-1":
         return "15 июля"
     if stage == "stage-2":
@@ -70,13 +135,20 @@ def _format_stage_label(chosen_stage: str | None) -> str:
 def _format_lesson_label(enrollment, module: dict | None) -> str:
     if not enrollment or not module:
         return "—"
-    if module.get("tariff_code") == "single":
+    tariff = module.get("tariff_code")
+    group = module.get("group_code") or ""
+    if tariff in ("single", "trial"):
         if enrollment.chosen_tale_title:
             return enrollment.chosen_tale_title
         if enrollment.chosen_tale_number:
-            return f"Сказка №{enrollment.chosen_tale_number}"
+            unit = "Урок" if group in _EARLY_GROUPS or group in _COHORT_GROUPS else "Сказка"
+            return f"{unit} №{enrollment.chosen_tale_number}"
         return "—"
-    count = module.get("tales_count") or 4
+    count = int(module.get("tales_count") or 4)
+    if group in _EARLY_GROUPS:
+        return f"Модуль · {count} уроков"
+    if group in _COHORT_GROUPS:
+        return f"Модуль · {count} урока"
     return f"Блок · {count} сказки"
 
 
@@ -92,14 +164,22 @@ def _enrollment_columns(enrollment, module: dict | None) -> dict[str, str]:
         }
     mod = module or get_module(enrollment.module_id)
     tariff_code = mod["tariff_code"] if mod else ""
-    grade = mod["group_label"] if mod else "—"
+    group_code = mod.get("group_code") if mod else ""
+    grade = _group_display_label(mod)
     return {
         "grade": grade,
-        "grade_short": _short_grade_label(grade),
+        "grade_short": _short_grade_label(grade, group_code),
+        "group_code": group_code or "",
         "tariff": _TARIFF_LABELS.get(tariff_code, mod["tariff_label"] if mod else "—"),
         "tariff_code": tariff_code,
-        "stage": _format_stage_label(enrollment.chosen_stage),
+        "stage": _format_stage_label(enrollment.chosen_stage, mod),
         "lesson": _format_lesson_label(enrollment, mod),
+        "tales_count": int(mod.get("tales_count") or 4) if mod else 4,
+        "has_stage2": bool(
+            group_code
+            and group_code not in _EARLY_GROUPS
+            and group_code not in _COHORT_GROUPS
+        ),
     }
 
 
@@ -134,6 +214,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                     "show_delete": show_delete,
                     "grade": "—",
                     "grade_short": "—",
+                    "group_code": "",
                     "tariff": "—",
                     "tariff_code": "",
                     "stage": "—",
@@ -166,6 +247,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                         "show_delete": show_delete,
                         "grade": "—",
                         "grade_short": "—",
+                        "group_code": "",
                         "tariff": "—",
                         "tariff_code": "",
                         "stage": "—",
@@ -183,6 +265,14 @@ def _build_rows(families, db: Session) -> list[dict]:
             for idx, enrollment in enumerate(enrollments):
                 module = get_module(enrollment.module_id)
                 cols = _enrollment_columns(enrollment, module)
+                meeting_tales: list[dict] = []
+                if module and module.get("tariff_code") == "with_teacher":
+                    meeting_tales = meeting_tale_options(
+                        db,
+                        child.id,
+                        module=module,
+                        enrollment=enrollment,
+                    )
                 rows.append(
                     {
                         "registered_at": _fmt_dt(family.created_at),
@@ -199,6 +289,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                         "show_delete": show_delete and idx == 0,
                         "grade": cols["grade"],
                         "grade_short": cols["grade_short"],
+                        "group_code": cols["group_code"],
                         "tariff": cols["tariff"],
                         "tariff_code": cols["tariff_code"],
                         "stage": cols["stage"],
@@ -207,12 +298,7 @@ def _build_rows(families, db: Session) -> list[dict]:
                         "level": child.current_level,
                         "points": str(child.total_points),
                         "progress_url": progress_url,
-                        "meeting_tales": meeting_tale_options(
-                            db,
-                            child.id,
-                            module=module,
-                            enrollment=enrollment,
-                        ),
+                        "meeting_tales": meeting_tales,
                     }
                 )
                 if idx == 0:
@@ -227,10 +313,38 @@ def _admin_modules() -> list[dict]:
 def _admin_module_groups() -> list[dict]:
     by_group: dict[str, list[dict]] = {}
     for mod in _admin_modules():
-        by_group.setdefault(mod["group_label"], []).append(mod)
+        if mod.get("tariff_code") in _ADMIN_SKIP_TARIFFS:
+            continue
+        code = mod.get("group_code") or mod.get("group_label") or "other"
+        by_group.setdefault(code, []).append(mod)
+
+    def sort_key(code: str) -> tuple:
+        if code in _GROUP_ORDER:
+            return (0, _GROUP_ORDER.index(code))
+        return (1, code)
+
     ordered: list[dict] = []
-    for label in sorted(by_group, key=lambda name: by_group[name][0]["id"]):
-        ordered.append({"label": label, "modules": by_group[label]})
+    for code in sorted(by_group, key=sort_key):
+        mods = sorted(by_group[code], key=lambda m: m["id"])
+        label = _GROUP_DISPLAY.get(code) or mods[0].get("group_label") or code
+        enriched = []
+        for mod in mods:
+            item = dict(mod)
+            item["admin_label"] = _TARIFF_LABELS.get(
+                mod.get("tariff_code") or "",
+                mod.get("tariff_label") or mod.get("title") or str(mod["id"]),
+            )
+            count = int(mod.get("tales_count") or 0)
+            if mod.get("tariff_code") == "self_paced" and count:
+                unit = "уроков" if code in _EARLY_GROUPS else ("урока" if code in _COHORT_GROUPS else "сказки")
+                item["admin_label"] = f"{item['admin_label']} · {count} {unit}"
+            elif mod.get("tariff_code") == "with_teacher" and count:
+                unit = "уроков" if code in _EARLY_GROUPS else ("урока" if code in _COHORT_GROUPS else "сказки")
+                item["admin_label"] = f"{item['admin_label']} · {count} {unit} + встречи"
+            item["has_stage2"] = code not in _EARLY_GROUPS and code not in _COHORT_GROUPS
+            item["tale_max"] = 8 if code in _EARLY_GROUPS else max(count, 4)
+            enriched.append(item)
+        ordered.append({"label": label, "group_code": code, "modules": enriched})
     return ordered
 
 
@@ -348,6 +462,8 @@ def admin_page(
     rows = _build_rows(families, db)
     quiz_leads = load_quiz_leads()
     quiz_rows = build_quiz_lead_rows(quiz_leads)
+    early_leads = load_early_trial_leads()
+    early_rows = build_early_trial_lead_rows(early_leads)
     return templates.TemplateResponse(
         request,
         "admin.html",
@@ -357,6 +473,8 @@ def admin_page(
             "child_count": sum(len(f.children) for f in families),
             "quiz_rows": quiz_rows,
             "quiz_count": len(quiz_rows),
+            "early_rows": early_rows,
+            "early_count": len(early_rows),
             "modules": _admin_modules(),
             "module_groups": _admin_module_groups(),
             "tariff_labels": _TARIFF_LABELS,
@@ -642,6 +760,53 @@ def admin_quiz_export_csv(request: Request) -> StreamingResponse:
 
     buffer.seek(0)
     filename = f"quiz_leads_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/early-trial-export.csv")
+def admin_early_trial_export_csv(request: Request) -> StreamingResponse:
+    require_admin(request)
+
+    early_rows = build_early_trial_lead_rows()
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(
+        [
+            "Дата",
+            "Родитель",
+            "Email",
+            "Ребёнок",
+            "Возраст",
+            "Курс",
+            "Пробный урок",
+            "Политика",
+            "Оферта",
+            "Рассылка",
+        ]
+    )
+    for row in early_rows:
+        writer.writerow(
+            [
+                row["created_at"],
+                row["parent_name"],
+                row["parent_email"],
+                row["child_name"],
+                row["child_age"],
+                row["course"],
+                row["trial_title"],
+                row["consent_privacy"],
+                row["consent_offer"],
+                row["consent_marketing"],
+            ]
+        )
+
+    buffer.seek(0)
+    filename = f"early_trial_leads_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
     return StreamingResponse(
         iter([buffer.getvalue()]),
         media_type="text/csv; charset=utf-8",

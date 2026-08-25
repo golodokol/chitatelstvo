@@ -44,7 +44,7 @@
       "kind": "meet_letter",
       "slovik_line": "Ты на поляне страны звуков. Вот познакомься с буквой А. Она говорит: а-а-а.",
       "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-missing.jpg",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "vo-meet",
       "sound": "snd-a",
       "letter": "А",

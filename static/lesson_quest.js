@@ -35,7 +35,6 @@
   var gameTimer = null;
   var gameRaf = null;
   var coachStation = null;
-  var currentLayoutKind = "";
 
   var elTitle = document.getElementById("quest-station-title");
   var elLine = document.getElementById("quest-slovik-line");
@@ -48,7 +47,6 @@
   var btnAudio = document.getElementById("quest-btn-audio");
   var miniSkip = null;
   var retryMode = false;
-  var currentLayoutKind = "";
 
   function authBody(extra) {
     var body = {
@@ -64,8 +62,89 @@
   function showMsg(text, ok) {
     if (!elMsg) return;
     elMsg.style.display = "block";
-    elMsg.className = "chit-msg " + (ok ? "ok" : "info");
+    elMsg.className = "chit-msg quest-msg " + (ok ? "ok" : "info");
     elMsg.textContent = text;
+  }
+
+  function hideMsg() {
+    if (!elMsg) return;
+    elMsg.style.display = "none";
+    elMsg.textContent = "";
+  }
+
+  var autoAdvanceGen = 0;
+  var autoAdvanceTimer = null;
+
+  function cancelAutoAdvance() {
+    autoAdvanceGen += 1;
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+  }
+
+  // Чёткое правило автоперехода: сначала голос договаривает до конца, потом goNext.
+  var voicePlaying = false;
+
+  function voiceIsBusy() {
+    if (voicePlaying || instructionPlaying) return true;
+    try {
+      if (!audio.paused && !audio.ended) return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function waitVoiceThen(fn) {
+    var gen = autoAdvanceGen;
+    var tries = 0;
+    var idleStreak = 0;
+    function tick() {
+      if (gen !== autoAdvanceGen) return;
+      if (voiceIsBusy()) {
+        idleStreak = 0;
+        tries += 1;
+        // ~15с максимум ожидания голоса
+        if (tries < 90) {
+          autoAdvanceTimer = setTimeout(tick, 180);
+          return;
+        }
+        // Залипший флаг не должен блокировать переход навсегда.
+        voicePlaying = false;
+        instructionPlaying = false;
+      } else {
+        // Два тихих тика подряд — защита от гонки «ещё не стартовал play».
+        idleStreak += 1;
+        if (idleStreak < 2 && tries < 90) {
+          tries += 1;
+          autoAdvanceTimer = setTimeout(tick, 160);
+          return;
+        }
+      }
+      autoAdvanceTimer = setTimeout(function () {
+        if (gen !== autoAdvanceGen) return;
+        if (voiceIsBusy() && tries < 90) {
+          autoAdvanceTimer = setTimeout(tick, 180);
+          return;
+        }
+        fn();
+      }, 320);
+    }
+    // Дать coachReact/playId выставить voicePlaying до первой проверки.
+    autoAdvanceTimer = setTimeout(tick, 60);
+  }
+
+  function shouldAutoAdvance(station) {
+    if (!station) return false;
+    var kind = station.kind || "";
+    if (
+      kind === "intro_video" ||
+      kind === "reward" ||
+      kind === "enter" ||
+      kind === "break"
+    ) {
+      return false;
+    }
+    return true;
   }
 
   // Skip .ogg: many early files were saved as M4A under a .ogg name and break playback fallback.
@@ -122,7 +201,7 @@
       e.preventDefault();
       navigateToProgress();
     });
-    var topBack = document.querySelector(".chit-back__link");
+    var topBack = document.querySelector(".quest-top__back, .chit-back__link");
     if (topBack && cfg.progressUrl) {
       topBack.setAttribute("href", cfg.progressUrl);
     }
@@ -133,7 +212,7 @@
     back.className = "quest-intro__back";
     back.href = cfg.progressUrl || "#";
     back.setAttribute("data-quest-back", "1");
-    back.textContent = "← К урокам";
+    back.textContent = "← Уроки";
     return back;
   }
 
@@ -294,14 +373,17 @@
     function finish() {
       if (finished) return;
       finished = true;
+      if (token === audioToken) voicePlaying = false;
       try { audio.onended = null; } catch (e) {}
-      if (token !== audioToken) return;
+      // Даже если клип прервали новым playId — колбэк нужен (сброс instructionPlaying).
       if (typeof onEnded === "function") onEnded();
     }
     if (!urls.length) {
       finish();
       return;
     }
+    // Сразу помечаем: автопереход обязан ждать ended, даже пока файл грузится.
+    voicePlaying = true;
     try {
       hushVoice();
       sfx.pause();
@@ -310,20 +392,20 @@
       playOnEl(audio, urls, function () {
         finish();
       });
-      if (onEnded) {
-        setTimeout(function () {
-          if (token === audioToken) finish();
-        }, 15000);
-        audio.addEventListener("loadedmetadata", function meta() {
-          audio.removeEventListener("loadedmetadata", meta);
-          var d = audio.duration;
-          if (isFinite(d) && d > 0) {
-            setTimeout(function () {
-              if (token === audioToken) finish();
-            }, Math.ceil(d * 1000) + 350);
-          }
-        });
-      }
+      audio.addEventListener("loadedmetadata", function meta() {
+        audio.removeEventListener("loadedmetadata", meta);
+        if (token !== audioToken) return;
+        var d = audio.duration;
+        if (isFinite(d) && d > 0) {
+          setTimeout(function () {
+            if (token === audioToken) finish();
+          }, Math.ceil(d * 1000) + 450);
+        }
+      });
+      // Страховка, если onended не пришёл.
+      setTimeout(function () {
+        if (token === audioToken) finish();
+      }, 12000);
     } catch (e) {
       finish();
     }
@@ -397,7 +479,7 @@
     var base = (cfg.assetsBase || "").replace(/\/$/, "");
     var url = base + path;
     if (/\.(png|jpe?g|webp)$/i.test(path) && url.indexOf("?") < 0) {
-      url += "?v=20260823i";
+      url += "?v=20260825t";
     }
     return url;
   }
@@ -444,11 +526,24 @@
 
   function enableNext(show) {
     stationCleared = !!show;
-    if (show) {
+    if (!show) {
+      cancelAutoAdvance();
+    } else {
       var cleared = stations[idx];
       if (cleared) {
         if (cleared.success_msg) showMsg(cleared.success_msg, true);
         else if (cleared.tech_msg) showMsg(cleared.tech_msg, true);
+      }
+      if (shouldAutoAdvance(cleared)) {
+        var sid = cleared && cleared.id;
+        var gen = playGen;
+        cancelAutoAdvance();
+        waitVoiceThen(function () {
+          if (gen !== playGen) return;
+          if (!stationCleared) return;
+          if (!stations[idx] || (sid && stations[idx].id !== sid)) return;
+          goNext();
+        });
       }
     }
     if (!btnNext) return;
@@ -629,6 +724,8 @@
   }
 
   function goNext() {
+    cancelAutoAdvance();
+    hideMsg();
     var cur = stations[idx];
     if (stationCleared && cur && cur.id && passedStations.indexOf(cur.id) < 0) {
       passedStations.push(cur.id);
@@ -661,8 +758,24 @@
     proceed();
   }
 
-  function slovikUrl(pose) {
-    return assetUrl("/static/early/slovik/" + (pose || "talk") + ".png");
+  function slovikUrl(pose, ext) {
+    return assetUrl("/static/early/slovik/" + (pose || "talk") + (ext || ".jpg"));
+  }
+
+  function bindSlovikImg(img, pose) {
+    if (!img) return;
+    var p = pose || "talk";
+    img.dataset.slovikPose = p;
+    img.dataset.fallback = "";
+    img.src = slovikUrl(p, ".jpg");
+    img.onerror = function () {
+      if (img.dataset.fallback !== "png") {
+        img.dataset.fallback = "png";
+        img.src = slovikUrl(p, ".png");
+        return;
+      }
+      img.removeAttribute("src");
+    };
   }
 
   function shuffle(list) {
@@ -679,8 +792,13 @@
 
   function clearQuestTimers() {
     playGen += 1;
+    cancelAutoAdvance();
     pendingVoiceCb = null;
     instructionPlaying = false;
+    voicePlaying = false;
+    try {
+      audio.pause();
+    } catch (ePause) {}
     if (typeTimer) {
       clearInterval(typeTimer);
       typeTimer = null;
@@ -742,7 +860,7 @@
     coachStation = station || coachStation;
     var line = (station && station.slovik_line) || "";
     coachSay(line);
-    if (station && station.tech_msg) showMsg(station.tech_msg, true);
+    // tech_msg — призыв после действия; не показываем при входе (ломает meet/другие станции).
     if (station && station.audio) {
       instructionPlaying = true;
       playId(station.audio, finishVoiceWait);
@@ -761,13 +879,13 @@
     };
   }
 
-  function appendCoach(station) {
+  function appendCoach(station, parent) {
     var coach = document.createElement("div");
     coach.className = "quest-coach";
     var img = document.createElement("img");
     img.id = "quest-buddy-img";
     img.className = "quest-coach__img";
-    img.src = slovikUrl(station.slovik_pose || "talk");
+    bindSlovikImg(img, station.slovik_pose || "talk");
     img.alt = "Словик";
     var cloud = document.createElement("div");
     cloud.className = "quest-coach__cloud";
@@ -782,7 +900,7 @@
     cloud.appendChild(bubble);
     coach.appendChild(img);
     coach.appendChild(cloud);
-    elBody.appendChild(coach);
+    (parent || elBody).appendChild(coach);
   }
 
   function questFooter() {
@@ -805,8 +923,10 @@
     if (!footer || !field) return;
     var dock = field.querySelector(".quest-playfield__dock") || field;
     dock.appendChild(footer);
-    if (elMsg && field.parentNode) {
-      field.parentNode.insertBefore(elMsg, field.nextSibling);
+    // Тост на холсте — не двигает высоту игрового поля.
+    if (elMsg) {
+      var canvas = field.querySelector(".quest-playfield__canvas") || field;
+      canvas.appendChild(elMsg);
     }
   }
 
@@ -817,58 +937,28 @@
     return "";
   }
 
-  function applyPlayfieldLayout(field, kind) {
-    if (!field) return;
-    field.classList.remove(
-      "quest-playfield--stacked",
-      "quest-playfield--scene-app",
-      "quest-playfield--catch",
-      "quest-playfield--maze"
-    );
-    var stacked = {
-      build_letter: 1,
-      letter_maze: 1,
-      catch_letter: 1,
-      sort_two: 1,
-      drag_basket: 1,
-      slot_build: 1,
-      letter_puzzle: 1,
-      match_pairs: 1,
-      drag_join: 1,
-      trace: 1,
-      listen_pick: 1,
-      find: 1,
-      word_picture: 1,
-      phrase_picture: 1,
-      shape_rebus: 1,
-      path_word: 1,
-      mini_quest: 1,
-      meet_letter: 1,
-      repeat_sound: 1,
-      enter: 1,
-      book_page: 1,
-      reward: 1,
-      break: 1
-    };
-    if (stacked[kind]) field.classList.add("quest-playfield--stacked");
-    if (kind === "scene_hunt") field.classList.add("quest-playfield--scene-app");
-    if (kind === "catch_letter") field.classList.add("quest-playfield--catch");
-    if (kind === "letter_maze") field.classList.add("quest-playfield--maze");
-  }
-
   function openPlayfield(station) {
     clearQuestTimers();
     parkFooter();
+    hideMsg();
+    contentRoot = null;
     elBody.innerHTML = "";
-    appendCoach(station);
+    // На всякий случай убрать залипшие поля вне #quest-body (двойной init / bfcache).
+    var stage = document.getElementById("quest-stage");
+    if (stage) {
+      stage.querySelectorAll(".quest-playfield").forEach(function (el) {
+        if (el.parentElement !== elBody) el.remove();
+      });
+    }
     var field = document.createElement("div");
-    field.className = "quest-playfield";
+    field.className = "quest-playfield quest-playfield--with-coach";
     var scene = resolveSceneImage(station);
     var hasVideo = !!videoSrc(station);
     var sceneUrl = (scene && !hasVideo) ? assetUrl(scene) : "";
 
     var canvas = document.createElement("div");
     canvas.className = "quest-playfield__canvas";
+    appendCoach(station, canvas);
     if (sceneUrl) {
       field.classList.add("quest-playfield--has-scene");
       canvas.style.backgroundImage = "url('" + sceneUrl + "')";
@@ -894,7 +984,6 @@
 
     elBody.appendChild(field);
     mountFooterOnPlayfield(field);
-    applyPlayfieldLayout(field, currentLayoutKind);
     contentRoot = surface;
     speakTask(station);
     return surface;
@@ -1023,7 +1112,7 @@
   function setSlovikPose(pose) {
     var el = document.getElementById("quest-buddy-img") || document.getElementById("quest-slovik");
     if (!el || !pose) return;
-    el.src = slovikUrl(pose);
+    bindSlovikImg(el, pose);
   }
 
   function renderEcho(station) {
@@ -1061,7 +1150,12 @@
 
   function renderMeetLetter(station) {
     var field = elBody.querySelector(".quest-playfield");
-    if (field) field.classList.add("quest-playfield--meet");
+    if (field) {
+      field.classList.add("quest-playfield--meet");
+      field.classList.remove("quest-playfield--catch", "quest-playfield--hunt", "quest-playfield--around", "quest-playfield--puzzle", "quest-playfield--build");
+    }
+    var surface = root();
+    if (surface) surface.innerHTML = "";
     var box = document.createElement("div");
     box.className = "quest-meet";
     var letter = document.createElement("button");
@@ -1114,11 +1208,24 @@
         if (!stations[idx] || stations[idx].id !== stayId) return;
         var coachLine = station.coach_success || station.success_msg;
         if (coachLine) coachSay(coachLine);
-        if (station.success_audio) playId(station.success_audio);
+        function afterMeetVoice() {
+          if (!stations[idx] || stations[idx].id !== stayId) return;
+          enableNext(true);
+        }
+        if (station.success_audio) playId(station.success_audio, afterMeetVoice);
+        else afterMeetVoice();
       });
     });
     root().appendChild(box);
-    enableNext(true);
+    enableNext(false);
+  }
+
+  function normalizeBuildRole(role) {
+    var r = String(role || "").toLowerCase().replace(/_/g, "-");
+    if (r === "left" || r === "leg-left" || r === "left-leg") return "leg-left";
+    if (r === "right" || r === "leg-right" || r === "right-leg") return "leg-right";
+    if (r === "bar" || r === "crossbar" || r === "cross-bar") return "bar";
+    return r || "bar";
   }
 
   function renderBuildLetter(station) {
@@ -1131,8 +1238,8 @@
     ]).map(function (p) {
       return {
         id: p.id,
-        role: p.role,
-        label: p.label || p.role
+        role: normalizeBuildRole(p.role || p.id),
+        label: p.label || p.role || p.id
       };
     }));
     var placed = {};
@@ -1144,10 +1251,17 @@
     letter.className = "quest-build__letter";
     letter.setAttribute("aria-label", "Собери букву " + (station.letter || "А"));
 
+    var tray = document.createElement("div");
+    tray.className = "quest-build__parts";
+
+    function partButtons() {
+      return tray.querySelectorAll(".quest-build__part");
+    }
+
     function clearPick() {
       selected = null;
       wrap.classList.remove("has-pick");
-      wrap.querySelectorAll(".quest-build__part").forEach(function (el) {
+      partButtons().forEach(function (el) {
         el.classList.remove("is-picked");
       });
       wrap.querySelectorAll(".quest-build__slot").forEach(function (el) {
@@ -1177,7 +1291,9 @@
       var left = parts.filter(function (p) { return !placed[p.role]; });
       if (!left.length) {
         wrap.classList.add("is-done");
-        if (!station.success_msg) coachReact("good", true);
+        tray.classList.add("is-done");
+        // Всегда озвучка «правильно/есть/здорово», затем автопереход после голоса.
+        coachReact("good", true);
         enableNext(true);
       } else {
         coachReact("yes");
@@ -1197,9 +1313,8 @@
       letter.appendChild(btn);
     });
     wrap.appendChild(letter);
+    root().appendChild(wrap);
 
-    var tray = document.createElement("div");
-    tray.className = "quest-build__parts";
     parts.forEach(function (part) {
       var btn = document.createElement("button");
       btn.type = "button";
@@ -1219,7 +1334,7 @@
       btn.appendChild(cap);
       btn.addEventListener("click", function () {
         if (btn.classList.contains("is-used") || wrap.classList.contains("is-done")) return;
-        wrap.querySelectorAll(".quest-build__part").forEach(function (el) {
+        partButtons().forEach(function (el) {
           el.classList.remove("is-picked");
         });
         if (selected && selected.btn === btn) {
@@ -1235,10 +1350,18 @@
       });
       tray.appendChild(btn);
     });
-    wrap.appendChild(tray);
+
+    // Детали в доке: подписи не обрезает сцена, буква по центру поля.
+    var dock = field && field.querySelector(".quest-playfield__dock");
+    if (dock) {
+      var footer = dock.querySelector(".quest-footer");
+      if (footer) dock.insertBefore(tray, footer);
+      else dock.appendChild(tray);
+    } else {
+      wrap.appendChild(tray);
+    }
 
     if (station.hint) showMsg(station.hint, true);
-    root().appendChild(wrap);
   }
 
   function letterSoundId(station, letter) {
@@ -1255,6 +1378,13 @@
   }
 
   function renderCatchLetter(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) {
+      field.classList.add("quest-playfield--catch");
+      field.classList.remove("quest-playfield--meet", "quest-playfield--hunt", "quest-playfield--around", "quest-playfield--puzzle", "quest-playfield--build");
+    }
+    var surface = root();
+    if (surface) surface.innerHTML = "";
     var gen = playGen;
     var target = station.letter || "А";
     var need = station.catches || 3;
@@ -1375,7 +1505,20 @@
     return out;
   }
 
+  function sceneFieldY(y) {
+    var py = Number(y) || 50;
+    var floor = window.innerWidth < 560 ? 28 : 18;
+    return Math.max(py, floor);
+  }
+
   function renderSceneHunt(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) {
+      field.classList.add("quest-playfield--hunt");
+      field.classList.remove("quest-playfield--meet", "quest-playfield--catch", "quest-playfield--around", "quest-playfield--puzzle", "quest-playfield--build");
+    }
+    var surface = root();
+    if (surface) surface.innerHTML = "";
     var need = (station.correct_ids || []).slice();
     var found = {};
     var hotspots = station.hotspots || [];
@@ -1389,7 +1532,10 @@
     var scene = document.createElement("div");
     scene.className = "quest-scene" + (moving ? " is-moving" : "") + (useGrid ? " is-grid" : "");
     var layer = document.createElement("div");
-    layer.className = "quest-scene__hotspots";
+    layer.className = "quest-scene__hotspots" + (useGrid ? " is-css-grid" : "");
+    if (useGrid) {
+      layer.style.setProperty("--quest-grid-cols", String(station.grid_cols || (hotspots.length <= 4 ? 2 : 3)));
+    }
     var wanderers = [];
     var count = null;
     if (need.length > 1) {
@@ -1408,9 +1554,11 @@
       btn.type = "button";
       btn.className = "quest-hotspot" + (hs.image ? " quest-hotspot--pic" : "") + (hs.size === "sm" ? " is-sm" : "") + (moving ? " quest-hotspot--wander" : "");
       var startX = (spots && spots[i] ? spots[i].x : hs.x) || 50;
-      var startY = (spots && spots[i] ? spots[i].y : hs.y) || 50;
-      btn.style.left = startX + "%";
-      btn.style.top = startY + "%";
+      var startY = sceneFieldY((spots && spots[i] ? spots[i].y : hs.y) || 50);
+      if (!useGrid) {
+        btn.style.left = startX + "%";
+        btn.style.top = startY + "%";
+      }
       btn.dataset.id = hs.id;
       if (hs.image) {
         var im = document.createElement("img");
@@ -1486,11 +1634,13 @@
         m.y += m.vy * dt;
         if (m.x < 8) { m.x = 8; m.vx = Math.abs(m.vx); }
         if (m.x > 92) { m.x = 92; m.vx = -Math.abs(m.vx); }
-        if (m.y < 10) { m.y = 10; m.vy = Math.abs(m.vy); }
+        if (m.y < (window.innerWidth < 560 ? 24 : 14)) {
+          m.y = window.innerWidth < 560 ? 24 : 14;
+          m.vy = Math.abs(m.vy);
+        }
         if (m.y > 90) { m.y = 90; m.vy = -Math.abs(m.vy); }
-        // Keep wandering letters out of the top slot row (letter cells).
-        if (m.x >= 26 && m.x <= 74 && m.y <= 30) {
-          m.y = 32;
+        if (m.x >= 26 && m.x <= 74 && m.y <= 36) {
+          m.y = 38;
           m.vy = Math.abs(m.vy) || 4;
         }
         var dx = m.x - 50;
@@ -1632,11 +1782,77 @@
   function avoidTopSlotZone(x, y) {
     var px = Number(x);
     var py = Number(y);
-    if (!(px >= 26 && px <= 74 && py <= 30)) {
-      return { x: px, y: py };
+    var slotY = 34;
+    var inSlotRow = py >= slotY - 12 && py <= slotY + 14 && px >= 10 && px <= 90;
+    if (!inSlotRow) return { x: px, y: py };
+    if (py <= slotY + 6) {
+      return { x: px < 50 ? 8 : 92, y: Math.max(py + 18, slotY + 24) };
     }
-    if (px < 50) return { x: 12, y: Math.max(py, 36) };
-    return { x: 88, y: Math.max(py, 36) };
+    return { x: px < 33 ? 8 : (px > 67 ? 92 : (px < 50 ? 12 : 88)), y: py };
+  }
+
+  function puzzleRingSpots(count) {
+    var compact = window.innerWidth < 640;
+    var ring = compact
+      ? [
+          { x: 14, y: 54 },
+          { x: 86, y: 54 },
+          { x: 10, y: 70 },
+          { x: 90, y: 70 },
+          { x: 22, y: 86 },
+          { x: 50, y: 90 },
+          { x: 78, y: 86 },
+          { x: 32, y: 62 },
+          { x: 68, y: 62 }
+        ]
+      : [
+          { x: 10, y: 34 },
+          { x: 90, y: 32 },
+          { x: 12, y: 56 },
+          { x: 88, y: 54 },
+          { x: 18, y: 78 },
+          { x: 50, y: 86 },
+          { x: 82, y: 78 },
+          { x: 28, y: 48 },
+          { x: 72, y: 46 }
+        ];
+    var out = [];
+    var i;
+    for (i = 0; i < count; i++) {
+      out.push(ring[i % ring.length]);
+    }
+    return out;
+  }
+
+  function separateSpots(spots, minDist, yFloor, yCeil) {
+    var dist = minDist || (window.innerWidth < 640 ? 20 : 15);
+    var floor = yFloor == null ? (window.innerWidth < 640 ? 50 : 30) : yFloor;
+    var ceil = yCeil == null ? 92 : yCeil;
+    var out = (spots || []).map(function (s) {
+      return {
+        x: Number(s.x) || 50,
+        y: Math.max(floor, Math.min(ceil, Number(s.y) || 50))
+      };
+    });
+    var iter, i, j;
+    for (iter = 0; iter < 10; iter++) {
+      for (i = 0; i < out.length; i++) {
+        for (j = i + 1; j < out.length; j++) {
+          var dx = out[j].x - out[i].x;
+          var dy = out[j].y - out[i].y;
+          var d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+          if (d >= dist) continue;
+          var push = (dist - d) / 2;
+          var nx = dx / d;
+          var ny = dy / d;
+          out[i].x = Math.max(8, Math.min(92, out[i].x - nx * push));
+          out[i].y = Math.max(floor, Math.min(ceil, out[i].y - ny * push));
+          out[j].x = Math.max(8, Math.min(92, out[j].x + nx * push));
+          out[j].y = Math.max(floor, Math.min(ceil, out[j].y + ny * push));
+        }
+      }
+    }
+    return out;
   }
 
   function avoidCenterSlotZone(x, y) {
@@ -1653,7 +1869,7 @@
 
   function renderLetterPuzzle(station) {
     var field = elBody.querySelector(".quest-playfield");
-    if (field) field.classList.add("quest-playfield--around");
+    if (field) field.classList.add("quest-playfield--around", "quest-playfield--puzzle");
     var order = shuffle((station.pieces || ["А", "А", "А"]).map(function (p, n) {
       if (typeof p === "string") {
         return { id: p + "-" + n, label: p, correct: true };
@@ -1666,14 +1882,20 @@
     }));
     var need = order.filter(function (p) { return p.correct; }).length;
     var slots = station.slots || need;
-    var spots = station.piece_spots || [
-      { x: 12, y: 34 },
-      { x: 88, y: 32 },
-      { x: 9, y: 56 },
-      { x: 91, y: 54 },
-      { x: 16, y: 84 },
-      { x: 84, y: 84 }
-    ];
+    var rawSpots = (station.piece_spots && station.piece_spots.length >= order.length)
+      ? station.piece_spots
+      : puzzleRingSpots(order.length);
+    if (window.innerWidth < 640) {
+      rawSpots = puzzleRingSpots(order.length);
+    }
+    var spots = separateSpots(
+      rawSpots.map(function (s) {
+        return window.innerWidth < 640 ? s : avoidTopSlotZone(s.x, s.y);
+      }),
+      window.innerWidth < 640 ? 22 : 16,
+      window.innerWidth < 640 ? 50 : 28,
+      window.innerWidth < 640 ? 92 : 72
+    );
     var filled = 0;
     var slotRow = document.createElement("div");
     slotRow.className = "quest-slots";
@@ -1693,10 +1915,7 @@
       b.type = "button";
       b.className = "quest-piece";
       b.textContent = piece.label;
-      var spot = avoidTopSlotZone(
-        (spots[n] || spots[0] || {}).x || 50,
-        (spots[n] || spots[0] || {}).y || 50
-      );
+      var spot = spots[n] || spots[0] || { x: 50, y: 70 };
       b.style.left = spot.x + "%";
       b.style.top = spot.y + "%";
       b.addEventListener("click", function () {
@@ -1784,9 +2003,22 @@
           res.className = "quest-slots__result";
           res.textContent = station.result_label || "МА";
           slotRow.appendChild(res);
-          coachReact("good", true);
-          if (station.result_sound) playId(station.result_sound);
-          enableNext(true);
+          var stayId = station.id;
+          var voKind = nextSuccessVo();
+          var line = voLine(voKind);
+          showMsg(line || station.success_msg || "Есть!", true);
+          function afterSlotVoice() {
+            if (!stations[idx] || stations[idx].id !== stayId) return;
+            enableNext(true);
+          }
+          function playResultThenNext() {
+            if (!stations[idx] || stations[idx].id !== stayId) return;
+            if (station.result_sound) playId(station.result_sound, afterSlotVoice);
+            else afterSlotVoice();
+          }
+          // Сначала «правильно/есть», потом слог — без обрыва и с автопереходом после всего.
+          if (voKind && !VO_SILENT[voKind]) playId(voPrefix() + voKind, playResultThenNext);
+          else playResultThenNext();
         } else {
           coachReact("yes");
         }
@@ -2482,6 +2714,7 @@
   function setIntroMode(on) {
     var board = document.querySelector(".quest-board");
     if (board) board.classList.toggle("quest-board--intro", !!on);
+    document.body.classList.toggle("quest-intro-active", !!on);
   }
 
   function renderIntroVideo(station) {
@@ -2518,7 +2751,7 @@
       vid.muted = false;
       vid.loop = false;
       vid.playsInline = true;
-      vid.preload = "metadata";
+      vid.preload = "auto";
       vid.controls = false;
       vid.setAttribute("playsinline", "");
       vid.setAttribute("webkit-playsinline", "");
@@ -2537,6 +2770,34 @@
     box.appendChild(makeIntroBackLink());
     box.appendChild(top);
 
+    function startIntroPlay() {
+      if (!vid || ended) return;
+      function markPlaying() {
+        setState("is-playing");
+      }
+      function tryUnmute() {
+        vid.muted = false;
+      }
+      vid.muted = true;
+      var p = vid.play();
+      if (p && p.then) {
+        p.then(function () {
+          tryUnmute();
+          markPlaying();
+        }).catch(function () {
+          vid.muted = false;
+          vid.play().then(function () {
+            markPlaying();
+          }).catch(function () {
+            setState("is-paused");
+          });
+        });
+      } else {
+        tryUnmute();
+        markPlaying();
+      }
+    }
+
     var play = document.createElement("button");
     play.type = "button";
     play.className = "quest-intro__play";
@@ -2544,13 +2805,7 @@
     play.textContent = "Воспроизвести";
     play.addEventListener("click", function (e) {
       e.stopPropagation();
-      if (!vid || ended) return;
-      vid.muted = false;
-      vid.play().then(function () {
-        setState("is-playing");
-      }).catch(function () {
-        setState("is-idle");
-      });
+      startIntroPlay();
     });
 
     var pause = document.createElement("button");
@@ -2604,22 +2859,47 @@
       vid.addEventListener("playing", function () {
         if (!ended) setState("is-playing");
       });
+      var onIntroViewport = function () {
+        if (!vid || !box.isConnected || ended) return;
+        if (box.classList.contains("is-playing") && vid.paused && vid.currentTime > 0) {
+          startIntroPlay();
+        }
+      };
+      window.addEventListener("orientationchange", onIntroViewport);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", onIntroViewport);
+      }
     }
+
+    box.addEventListener("click", function (e) {
+      if (e.target.closest(".quest-intro__back, .quest-intro__cta, .quest-intro__pause")) return;
+      if (!vid || ended) return;
+      if (box.classList.contains("is-idle") || box.classList.contains("is-paused")) {
+        startIntroPlay();
+      }
+    });
 
     elBody.appendChild(box);
   }
 
   function renderLetterMaze(station, onDone) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) field.classList.add("quest-playfield--maze");
     var grid = station.grid || [];
     var letter = station.letter || "А";
     var start = (station.start || [0, 0]).slice();
     var end = (station.end || [grid.length - 1, (grid[0] || []).length - 1]).slice();
     var path = [start[0] + "," + start[1]];
     var done = false;
+    var rows = grid.length || 1;
+    var cols = (grid[0] && grid[0].length) || 1;
     var wrap = document.createElement("div");
     wrap.className = "quest-maze";
     if (String(letter).length > 1) wrap.classList.add("is-syllable");
-    if (grid[0]) wrap.style.gridTemplateColumns = "repeat(" + grid[0].length + ", 1fr)";
+    wrap.style.setProperty("--maze-rows", String(rows));
+    wrap.style.setProperty("--maze-cols", String(cols));
+    wrap.style.gridTemplateColumns = "repeat(" + cols + ", minmax(0, 1fr))";
+    wrap.style.gridTemplateRows = "repeat(" + rows + ", minmax(0, 1fr))";
     var cells = {};
 
     function key(r, c) { return r + "," + c; }
@@ -2643,6 +2923,41 @@
       coachReact("good", true);
       if (typeof onDone === "function") onDone();
       else enableNext(true);
+    }
+    function fitMaze() {
+      var surface = wrap.parentElement;
+      var canvas = surface && surface.closest
+        ? surface.closest(".quest-playfield__canvas")
+        : (surface && surface.parentElement);
+      if (!surface) return;
+      var gap = 5;
+      var pad = 8;
+      var availW = Math.max(80, surface.clientWidth - pad * 2);
+      var availH = Math.max(
+        80,
+        ((canvas && canvas.clientHeight) || surface.clientHeight) - pad * 2
+      );
+      // Если поверхность ещё растянута контентом — ориентируемся на окно.
+      if (availH > window.innerHeight * 0.7) {
+        var field = surface.closest ? surface.closest(".quest-playfield") : null;
+        var dockH = 0;
+        if (field) {
+          var dock = field.querySelector(".quest-playfield__dock");
+          if (dock) dockH = dock.offsetHeight || 0;
+        }
+        var coach = elBody.querySelector(".quest-coach");
+        var coachH = coach ? coach.offsetHeight : 0;
+        availH = Math.max(80, window.innerHeight - coachH - dockH - 210);
+      }
+      var cell = Math.floor(Math.min(
+        (availW - gap * (cols - 1)) / cols,
+        (availH - gap * (rows - 1)) / rows,
+        78
+      ));
+      cell = Math.max(26, cell);
+      wrap.style.width = (cell * cols + gap * (cols - 1)) + "px";
+      wrap.style.height = (cell * rows + gap * (rows - 1)) + "px";
+      wrap.style.gap = gap + "px";
     }
 
     grid.forEach(function (row, r) {
@@ -2697,6 +3012,12 @@
     });
     root().appendChild(wrap);
     paint();
+    fitMaze();
+    requestAnimationFrame(fitMaze);
+    window.addEventListener("resize", fitMaze);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", fitMaze);
+    }
   }
 
   function renderEnter(station) {
@@ -3199,7 +3520,6 @@
     if (elLine) elLine.textContent = "";
 
     var kind = station.kind || "find";
-    currentLayoutKind = kind;
     var playView = kind === "reward" ? rewardSpeakView(station) : station;
     if (playView.slovik_pose) setSlovikPose(playView.slovik_pose);
     var board = document.querySelector(".quest-board");

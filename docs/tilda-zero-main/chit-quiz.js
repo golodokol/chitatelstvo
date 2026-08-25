@@ -503,6 +503,10 @@
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
     window.chitQuizOpen = function () { openQuizModal('manual'); };
+    window.chitQuizOpenWithEl = function (fromEl) {
+      if (fromEl) rememberTrialFromEl(fromEl);
+      openQuizModal('manual', fromEl);
+    };
     window.chitQuizClose = closeQuizModal;
     document.querySelectorAll('[href="#quiz"], [data-qz-open]').forEach(function (el) {
       el.addEventListener('click', function (e) {
@@ -518,8 +522,37 @@
       if (e.key === 'Escape' && modal.classList.contains('is-open')) closeQuizModal();
     });
     window.addEventListener('hashchange', function () {
-      if (window.location.hash === '#quiz') openQuizModal('hash');
+      if (window.location.hash === '#quiz') {
+        rememberTrialFromUrl();
+        openQuizModal('hash');
+      }
     });
+    rememberTrialFromUrl();
+    if (window.location.hash === '#quiz') {
+      window.setTimeout(function () { openQuizModal('hash'); }, 120);
+    }
+  }
+
+  function rememberTrialFromUrl() {
+    try {
+      var params = new URLSearchParams(window.location.search || '');
+      var slug = params.get('trial') || params.get('trial_slug') || '';
+      if (!slug) return;
+      var age = params.get('age') || params.get('trial_age') || '';
+      var title = params.get('title') || params.get('trial_title') || '';
+      var quiz = params.get('quiz') || '';
+      if (!quiz) {
+        quiz = (age === '4-6' || age === '5-7' || slug.indexOf('early-') === 0) ? 'early' : 'reading';
+      }
+      sessionStorage.setItem('chit_trial', JSON.stringify({
+        age: age,
+        slug: slug,
+        title: title,
+        quiz: quiz
+      }));
+      var hintAge = age === '4-6' ? '5' : (age === '5-7' ? '6' : (age === '6-8' ? '7' : (age === '9-11' ? '10' : '')));
+      if (hintAge) sessionStorage.setItem('chit_trial_age_hint', hintAge);
+    } catch (err) {}
   }
 
   function allQuestionsAnswered() {

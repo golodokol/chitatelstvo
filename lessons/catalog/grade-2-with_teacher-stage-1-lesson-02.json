@@ -18,5 +18,12 @@
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Этап 1: 4 недели, 4 сказки"
+  "note": "Этап 1: 4 недели, 4 сказки",
+  "video": {
+    "type": "kinescope",
+    "id": "uasVh1RsE4Wsp6u2spweRv",
+    "title": "Цветик-семицветик В.П. Катаев",
+    "duration_min": "8-15",
+    "pass_condition": "просмотр >= 50%"
+  }
 }
