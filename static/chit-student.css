@@ -1870,7 +1870,19 @@ body.chit-cabinet {
   color: var(--text);
   text-align: left;
   cursor: pointer;
+  -webkit-tap-highlight-color: rgba(91, 127, 166, 0.22);
+  touch-action: manipulation;
+  position: relative;
+  z-index: 2;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.chit-child-picker__card:active {
+  transform: scale(0.98);
+}
+.chit-child-picker__card *,
+.chit-child-picker__avatar,
+.chit-child-picker__avatar img {
+  pointer-events: none;
 }
 
 .chit-child-picker__card:hover {
@@ -1938,6 +1950,7 @@ body.chit-cabinet--parent {
 }
 
 .chit-view[hidden] { display: none !important; }
+.chit-room[hidden] { display: none !important; }
 
 .chit-slovik-intro {
   display: grid;

@@ -79,37 +79,73 @@
   }
 
   function initChildSwitch() {
-    var switcher = document.querySelector('.chit-child-picker');
+    var switcher = document.querySelector('.chit-child-picker') || document.querySelector('.chit-child-switch');
     if (!switcher) return;
-    var buttons = switcher.querySelectorAll('.chit-child-picker__card');
-    var rooms = document.querySelectorAll('.chit-room');
+    var buttons = switcher.querySelectorAll('.chit-child-picker__card, .chit-child-switch__btn');
+    var rooms = document.querySelectorAll('.chit-view--child .chit-room');
     var storageKey = 'chit-active-room';
+    var lastTouchTs = 0;
 
-    function showRoom(roomId) {
+    function showRoom(roomId, opts) {
       if (!roomId) return;
+      var roomEl = document.getElementById(roomId);
+      if (!roomEl) return;
       buttons.forEach(function (btn) {
         var active = btn.getAttribute('data-room') === roomId;
         btn.classList.toggle('is-active', active);
         btn.setAttribute('aria-selected', active ? 'true' : 'false');
+        if (active) btn.setAttribute('aria-current', 'true');
+        else btn.removeAttribute('aria-current');
       });
       rooms.forEach(function (room) {
         var show = room.id === roomId;
         room.hidden = !show;
+        room.setAttribute('aria-hidden', show ? 'false' : 'true');
+        room.classList.toggle('is-shown', show);
       });
       try { sessionStorage.setItem(storageKey, roomId); } catch (e) {}
+      if (opts && opts.scroll && roomEl) {
+        try {
+          roomEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (e) {
+          try { roomEl.scrollIntoView(true); } catch (e2) {}
+        }
+      }
     }
+
+    function roomIdFromEvent(event) {
+      var btn = event.target && event.target.closest
+        ? event.target.closest('.chit-child-picker__card, .chit-child-switch__btn')
+        : null;
+      if (!btn || !switcher.contains(btn)) return null;
+      return btn.getAttribute('data-room');
+    }
+
+    // Delegation + pointer events: more reliable on iOS Safari.
+    switcher.addEventListener('pointerup', function (event) {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      var roomId = roomIdFromEvent(event);
+      if (!roomId) return;
+      lastTouchTs = Date.now();
+      event.preventDefault();
+      showRoom(roomId, { scroll: true });
+    });
+    switcher.addEventListener('click', function (event) {
+      if (Date.now() - lastTouchTs < 700) {
+        event.preventDefault();
+        return;
+      }
+      var roomId = roomIdFromEvent(event);
+      if (!roomId) return;
+      event.preventDefault();
+      showRoom(roomId, { scroll: true });
+    });
 
     var saved = null;
     try { saved = sessionStorage.getItem(storageKey); } catch (e) {}
     if (saved && document.getElementById(saved)) {
       showRoom(saved);
     }
-
-    buttons.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        showRoom(btn.getAttribute('data-room'));
-      });
-    });
   }
 
   initChildSwitch();
