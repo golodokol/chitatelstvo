@@ -169,18 +169,17 @@
     if (store && store.getItem(key)) return;
 
     var badge = data.badge || null;
-    if (badge && store) {
-      var badgeKey = 'chit-badge-seen-' + badge;
-      if (store.getItem(badgeKey)) {
-        badge = null;
-        if (!data.points) return;
-      }
+    // Бейдж — один раз навсегда (не при каждом входе в кабинет).
+    if (badge && store && store.getItem('chit-badge-seen-' + badge)) {
+      return;
     }
+    // Без бейджа кабинетный toast не показываем (только праздник нового бейджа).
+    if (!badge) return;
 
     if (store) {
       try {
         store.setItem(key, '1');
-        if (data.badge) store.setItem('chit-badge-seen-' + data.badge, '1');
+        store.setItem('chit-badge-seen-' + badge, '1');
       } catch (e3) {}
     }
     if (!window.ChitSlovik || !window.ChitSlovik.showReward) return;
@@ -190,8 +189,10 @@
       slovikUrl: data.url,
       message: data.message,
       badge: badge,
-      badgeImage: badge ? data.badge_image : null,
+      badgeImage: data.badge_image || null,
       points: data.points,
+      // Уже записали seen выше — не сбрасывать бейдж при первом показе.
+      skipBadgeSeenCheck: true,
     });
   }
 

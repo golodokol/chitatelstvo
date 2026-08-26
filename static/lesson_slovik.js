@@ -129,7 +129,7 @@
     // null с сервера = «бейджа нет» (напр. урок букв). Не подменять на EVENT_BADGES.
     var badge = Object.prototype.hasOwnProperty.call(opts, 'badge') ? opts.badge : parts.badge;
     var points = opts.points != null ? opts.points : parts.points;
-    if (badge) {
+    if (badge && !opts.skipBadgeSeenCheck) {
       try {
         var badgeKey = 'chit-badge-seen-' + badge;
         if (window.localStorage && localStorage.getItem(badgeKey)) {

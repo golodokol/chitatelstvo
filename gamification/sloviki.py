@@ -237,6 +237,9 @@ def recent_event_slovik(
 
     Уже полученные бейджи не подставляем снова (current_badges → apply_badge_rules).
     Early-квест: сначала бонусные бейджи (Искатель / Слоговик), не только «Читатель».
+    Повторный заход в кабинет не должен снова всплывать тот же бейдж:
+    клиент хранит chit-badge-seen-*; сервер не шлёт toast без нового бейджа
+    и гасит «старые» события (>48 ч), даже если бейдж ещё в owned.
     """
     if not events:
         return None
@@ -246,6 +249,7 @@ def recent_event_slovik(
     et = getattr(ev, "event_type", "") or ""
     tale_title = getattr(ev, "tale_title", None)
     payload = getattr(ev, "payload", None) or {}
+    created = getattr(ev, "created_at", None)
     # Early-квест без готового сундука — не празднуем (выход «назад» / недопройдено).
     if et == "lesson_complete" and is_early_quest_title(tale_title):
         if payload.get("chest_ready") is not True:
@@ -261,7 +265,6 @@ def recent_event_slovik(
     pts = int(reward.get("points") or 0)
 
     # Бонусы early-квеста важнее «Читателя» из EVENT_RULES (иначе всплывает только он).
-    # Логика как в check_early_quest_badges — без импорта bonus_badges (тяжёлые зависимости).
     if et == "lesson_complete" and is_early_quest_title(tale_title):
         early_new: list[str] = []
         try:
@@ -277,25 +280,21 @@ def recent_event_slovik(
             if is_early_letters_title(tale_title) and "Слоговик" not in owned_set:
                 early_new.append("Слоговик")
         if early_new:
-            # Слоговик приоритетнее Искателя на уроке букв.
             badge = early_new[-1]
-    if not pts and not badge:
+
+    # Только бейдж-праздник; одни очки при каждом входе не показываем.
+    if not badge:
         return None
-    # Повторный вход: бейдж уже в коллекции — не крутим toast только за старые очки.
-    if (
-        not badge
-        and pts
-        and et in ("lesson_complete", "reading_practice")
-        and any(b == "Читатель" for b in owned)
-    ):
+
+    # Бейдж уже в коллекции и событие не свежее — не крутим снова.
+    if badge in owned_set and not _toast_event_is_fresh(created):
         return None
+
     key = event_slovik_key(et, big=et in BIG_EVENT_SLOVIK)
-    created = getattr(ev, "created_at", None)
     badge_image = None
-    if badge:
-        filename = BADGE_ASSET_FILES.get(badge)
-        if filename:
-            badge_image = f"/assets/{filename}"
+    filename = BADGE_ASSET_FILES.get(badge)
+    if filename:
+        badge_image = f"/assets/{filename}"
     msg = event_toast_message(et, tale_title=tale_title, current_badges=owned)
     if badge and badge not in (reward.get("badge_name"), None):
         msg = f"+{pts} Словиков · бейдж «{badge}»" if pts else f"Бейдж «{badge}»!"
@@ -304,8 +303,24 @@ def recent_event_slovik(
         "url": slovik_url(key),
         "event_type": et,
         "message": msg,
-        "toast_id": f"{et}-{created.isoformat() if created else '0'}-{badge or 'pts'}",
+        "toast_id": f"{et}-{created.isoformat() if created else '0'}-{badge}",
         "points": pts,
         "badge": badge,
         "badge_image": badge_image,
     }
+
+
+def _toast_event_is_fresh(created: Any, *, hours: int = 48) -> bool:
+    """Свежее событие — ещё можно один раз показать toast (клиент гасит повтор)."""
+    if created is None:
+        return True
+    try:
+        from datetime import datetime, timedelta, timezone
+
+        now = datetime.now(timezone.utc)
+        ts = created
+        if getattr(ts, "tzinfo", None) is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        return (now - ts) <= timedelta(hours=hours)
+    except Exception:
+        return True

@@ -151,3 +151,21 @@ def test_cabinet_toast_hides_owned_reader_badge():
     )
     assert toast is None
 
+
+def test_cabinet_toast_no_points_only_revisit():
+    """Повторный вход без нового бейджа — без toast (даже со свежим событием)."""
+    from datetime import datetime, timezone
+
+    toast = recent_event_slovik(
+        [
+            _Ev(
+                "lesson_complete",
+                "Словик и пропавшие звуки",
+                {"chest_ready": True, "sparks": 3},
+                created_at=datetime.now(timezone.utc),
+            )
+        ],
+        current_badges=["Искатель искорок", "Слоговик"],
+    )
+    assert toast is None
+

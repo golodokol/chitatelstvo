@@ -1785,6 +1785,9 @@ def build_child_cabinet(
 ) -> dict[str, Any]:
     """Собирает контекст игрового кабинета для одного ребёнка."""
     earned_set = set(earned_badges)
+    # Для toast — реальные бейджи из БД до trial-фильтра (иначе «Читатель»
+    # каждый раз выглядит как новый и снова всплывает).
+    toast_badge_names = list(earned_badges)
     display_level = level_from_points(points)
     lvl_idx = _level_index(display_level)
     progress = _level_progress(points, display_level)
@@ -1934,7 +1937,7 @@ def build_child_cabinet(
         "hint": COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"]),
         "lesson_url": continue_url,
     }
-    recent_toast = recent_event_slovik(events, current_badges=list(earned_set))
+    recent_toast = recent_event_slovik(events, current_badges=toast_badge_names)
     path_hint = _build_path_hint(
         events=events,
         tracks=track_sections,
