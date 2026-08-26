@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from db import repository as repo
 from db.session import get_db
 from gamification.cabinet_ui import CHEST_STEPS, _events_for_tale, chest_ready_from_done
-from gamification.chest_rewards import canonical_tale_slug, items_for_treasury, rewards_for_tale
+from gamification.chest_rewards import LETTER_KIND, canonical_tale_slug, items_for_treasury, rewards_for_tale
 from lessons.enrollment_access import list_lessons_for_child
 
 router = APIRouter(tags=["chest"])
@@ -105,7 +105,7 @@ def claim_chest(
         "status": "claimed",
         "message": "Награда сохранена в сокровищнице",
         "items": row.items,
-        "letter_shown": True,
+        "letter_shown": any(item.get("kind") == LETTER_KIND for item in all_items),
         "claimed_at": row.claimed_at.isoformat() if row.claimed_at else None,
         "badge_name": chest_badge.badge_name if chest_badge else None,
     }

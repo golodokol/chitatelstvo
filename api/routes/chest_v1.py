@@ -13,7 +13,7 @@ from api.routes.chest import _chest_ready_for_tale, _lesson_for_slug
 from db import repository as repo
 from db.models import Family
 from db.session import get_db
-from gamification.chest_rewards import canonical_tale_slug, items_for_treasury, rewards_for_tale
+from gamification.chest_rewards import LETTER_KIND, canonical_tale_slug, items_for_treasury, rewards_for_tale
 
 router = APIRouter(prefix="/api/v1", tags=["chest"])
 
@@ -89,7 +89,7 @@ def claim_chest_jwt(
         "status": "claimed",
         "message": "Награда сохранена в сокровищнице",
         "items": row.items,
-        "letter_shown": True,
+        "letter_shown": any(item.get("kind") == LETTER_KIND for item in all_items),
         "claimed_at": row.claimed_at.isoformat() if row.claimed_at else None,
         "badge_name": chest_badge.badge_name if chest_badge else None,
     }

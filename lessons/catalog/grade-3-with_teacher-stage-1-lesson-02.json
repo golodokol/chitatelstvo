@@ -25,5 +25,72 @@
     "title": "Сказка про храброго зайца, Серая Шейка Д.Н. Мамин-Сибиряк",
     "duration_min": "8-15",
     "pass_condition": "просмотр >= 50%"
+  },
+  "retelling_quiz": {
+    "title": "Пробуем пересказать сказку",
+    "pass_score": 1,
+    "questions": [
+      {
+        "id": "r1",
+        "type": "ordering",
+        "text": "Расставь события по порядку.",
+        "hint": "Перетащи события в шаги 1–6 по порядку сказки.",
+        "items": [
+          {
+            "id": "e1",
+            "text": "Заяц хвастался, что никого не боится",
+            "image": "/static/lessons/hrabryy-zayats/event-01.png",
+            "alt": "Хвастовство"
+          },
+          {
+            "id": "e2",
+            "text": "Другие зайцы смеялись и не верили",
+            "image": "/static/lessons/hrabryy-zayats/event-02.png",
+            "alt": "Смех"
+          },
+          {
+            "id": "e3",
+            "text": "Заяц встретил волка",
+            "image": "/static/lessons/hrabryy-zayats/event-03.png",
+            "alt": "Волк"
+          },
+          {
+            "id": "e4",
+            "text": "Он случайно наскочил на волка",
+            "image": "/static/lessons/hrabryy-zayats/event-04.png",
+            "alt": "Наскок"
+          },
+          {
+            "id": "e5",
+            "text": "Волк убежал от «храброго» зайца",
+            "image": "/static/lessons/hrabryy-zayats/event-05.png",
+            "alt": "Бегство"
+          },
+          {
+            "id": "e6",
+            "text": "Зайца стали звать самым храбрым",
+            "image": "/static/lessons/hrabryy-zayats/event-06.png",
+            "alt": "Слава"
+          }
+        ],
+        "correct": [
+          "e1",
+          "e2",
+          "e3",
+          "e4",
+          "e5",
+          "e6"
+        ]
+      }
+    ]
+  },
+  "creative_tasks": {
+    "title": "Творческие задания",
+    "items": [
+      "Сделай комикс: храбрость → испытание → победа",
+      "Напиши письмо зайцу: чем хвастовство отличается от храбрости",
+      "Нарисуй медаль зайцу за храбрость",
+      "Нарисуй своего храброго зайца и напиши, чем он отличается"
+    ]
   }
 }

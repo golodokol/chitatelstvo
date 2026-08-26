@@ -25,5 +25,73 @@
     "title": "Сказка о потерянном времени Е. Шварц",
     "duration_min": "8-15",
     "pass_condition": "просмотр >= 50%"
+  },
+  "retelling_quiz": {
+    "title": "Пробуем пересказать сказку",
+    "pass_score": 1,
+    "questions": [
+      {
+        "id": "r1",
+        "type": "ordering",
+        "text": "Расставь события по порядку.",
+        "hint": "Расставь 6 событий по порядку.",
+        "items": [
+          {
+            "id": "e1",
+            "text": "Петя ленится и теряет время",
+            "image": "/static/lessons/poteryannoe-vremya/event-01.png",
+            "alt": "Лень"
+          },
+          {
+            "id": "e2",
+            "text": "Волшебники крадут его время",
+            "image": "/static/lessons/poteryannoe-vremya/event-02.png",
+            "alt": "Кража"
+          },
+          {
+            "id": "e3",
+            "text": "Петя становится стариком",
+            "image": "/static/lessons/poteryannoe-vremya/event-03.png",
+            "alt": "Старость"
+          },
+          {
+            "id": "e4",
+            "text": "Петя видит себя стариком в зеркале",
+            "image": "/static/lessons/poteryannoe-vremya/event-04.png",
+            "alt": "Зеркало"
+          },
+          {
+            "id": "e5",
+            "text": "Петя находит волшебные часы",
+            "image": "/static/lessons/poteryannoe-vremya/event-05.png",
+            "alt": "Часы"
+          },
+          {
+            "id": "e6",
+            "text": "Он возвращает потерянное время",
+            "image": "/static/lessons/poteryannoe-vremya/event-06.png",
+            "alt": "Возврат"
+          }
+        ],
+        "correct": [
+          "e1",
+          "e2",
+          "e3",
+          "e4",
+          "e5",
+          "e6"
+        ]
+      }
+    ]
+  },
+  "creative_tasks": {
+    "title": "Творческие задания",
+    "items": [
+      "Напиши письмо Пете-старику от Пети-мальчика",
+      "Нарисуй комикс: лень → кража времени → возврат потерянного времени",
+      "Нарисуй свои волшебные часы",
+      "Нарисуй свои часы — вместо цифр важные дела",
+      "Составь карту дня: 3 дела, которые нельзя терять, и 1 честный отдых"
+    ]
   }
 }

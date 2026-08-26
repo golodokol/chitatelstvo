@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  {% include "_favicon.html" %}
+  <title>Читательство · {{ lesson.title }}</title>
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260731a">
+  <link rel="stylesheet" href="/static/lesson_quest.css?v=20260824u">
+</head>
+<body class="chit-student chit-lesson-page chit-quest-page">
+  <div class="chit-wrap quest-wrap">
+    <article class="quest-board">
+      <header class="quest-top">
+        <a class="quest-top__back" href="{{ progress_url }}" data-quest-back aria-label="К странице уроков">← Уроки</a>
+        <div class="quest-top__text">
+          <h1 class="quest-top__title">{{ lesson.title }}</h1>
+          <p class="quest-top__child">Привет, <strong>{{ child_name }}</strong>!</p>
+        </div>
+      </header>
+
+      <div class="quest-progress" aria-label="Прогресс квеста">
+        <div class="quest-sparks-hud" id="quest-sparks-hud" aria-label="Три искорки">
+          <span class="quest-spark-chip" data-spark="sound">Звук</span>
+          <span class="quest-spark-chip" data-spark="letter">Буква</span>
+          <span class="quest-spark-chip" data-spark="syllable">Слог</span>
+        </div>
+        <div class="quest-path" id="quest-path" role="img" aria-label="Прогресс по станциям"></div>
+        <p class="quest-progress__label" id="quest-progress-label">Станция 1</p>
+      </div>
+
+      <section class="quest-stage" id="quest-stage">
+        <div class="quest-stage__intro">
+          <p class="quest-stage__eyebrow" id="quest-station-title">Загрузка…</p>
+          <p class="quest-stage__line" id="quest-slovik-line" hidden></p>
+        </div>
+        <div id="quest-body"></div>
+        <div id="quest-msg" class="chit-msg quest-msg" style="display:none" aria-live="polite"></div>
+        <footer class="quest-footer">
+          <div class="quest-actions">
+            <button type="button" class="chit-btn" id="quest-btn-audio" hidden>Послушать Словика</button>
+            <button type="button" class="chit-btn chit-btn--primary" id="quest-btn-next" hidden>Дальше</button>
+          </div>
+        </footer>
+      </section>
+    </article>
+  </div>
+
+  <script>
+    window.CHIT_QUEST = {
+      slug: {{ slug|tojson }},
+      childId: {{ child_id|tojson }},
+      exp: {{ exp }},
+      sig: {{ sig|tojson }},
+      testKey: {{ (test_key or '')|tojson }},
+      stations: {{ (lesson.stations or [])|tojson }},
+      quest: {{ (lesson.quest or {})|tojson }},
+      progressUrl: {{ progress_url|tojson }},
+      chestUrl: {{ chest_url|tojson }},
+      taleSlug: {{ (lesson.tale_slug or slug)|tojson }},
+      assetsBase: {{ (assets_base or '')|tojson }},
+      lessonLinks: {{ (lesson_links or {})|tojson }},
+      slovikUrl: {{ slovik.initial_url|tojson }},
+      childName: {{ child_name|tojson }}
+    };
+  </script>
+  <script src="/static/lesson_quest.js?v=20260824u"></script>
+</body>
+</html>

@@ -1,10 +1,12 @@
 """Сундук сказки: картинки состояний и награды по tale_slug.
 
-Состав сундука (фиксированный, 4 предмета):
-  1. Письмо от школы — показывается при открытии, в сокровищницу не сохраняется.
+Состав сундука по умолчанию (4 предмета):
+  1. Письмо от школы — только в финале модуля/курса (MODULE_FINALE_TALE_SLUGS).
   2. Бонусная страница с заданием — можно скачать и распечатать, сохраняется в сокровищнице.
   3. Сказочная раскраска — можно скачать и распечатать, сохраняется в сокровищнице.
   4. Секретная наклейка — сохраняется в сокровищнице.
+
+Письмо временно скрыто в сундуках обычных сказок — см. MODULE_FINALE_TALE_SLUGS.
 
 Файлы для каждой сказки: static/chest/rewards/{tale_slug}/
   letter.png       — превью письма (или letter.pdf только для просмотра)
@@ -78,6 +80,13 @@ CHEST_CONTENTS: list[dict[str, Any]] = [
 ]
 
 TREASURY_KINDS = frozenset({BONUS_KIND, COLORING_KIND, STICKER_KIND})
+
+# Письмо от школы — только в финале модуля/курса. Пока список пуст: письмо скрыто.
+MODULE_FINALE_TALE_SLUGS: frozenset[str] = frozenset(
+    {
+        # Пример: "grade-1-stage1-tale-04",
+    }
+)
 
 # Состав сундука для отдельных сказок (если задан — вместо CHEST_CONTENTS)
 TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
@@ -226,6 +235,52 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
             "in_treasury": True,
         },
     ],
+    "grade-1-stage1-tale-02": [
+        {
+            "kind": "creative_1",
+            "label": "Комикс: ложь — страх — правда",
+            "description": "История о Ване — нарисуй три кадра",
+            "preview_files": ("creative-1.png", "creative-1.jpg"),
+            "download_files": ("creative-1.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Комикс - ложь - страх - правда.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Мораль — закон Словика",
+            "description": "Сформулируй правило своими словами",
+            "preview_files": ("creative-2.png", "creative-2.jpg"),
+            "download_files": ("creative-2.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Мораль - закон.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Обведи и раскрась волка и овечек",
+            "description": "Обведи по пунктиру и раскрась",
+            "preview_files": ("creative-3.png", "creative-3.jpg"),
+            "download_files": ("creative-3.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Обведи и раскрась волка и овечек.pdf",
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_4",
+            "label": "Честная и ложная дорожки",
+            "description": "Нарисуй дорожки и подпиши, куда каждая ведёт",
+            "preview_files": ("creative-4.png", "creative-4.jpg"),
+            "download_files": ("creative-4.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Честная и ложная дорожки.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
     "grade-2-stage1-tale-01": [
         {
             "kind": LETTER_KIND,
@@ -278,6 +333,52 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
             "in_treasury": True,
         },
     ],
+    "grade-2-stage1-tale-02": [
+        {
+            "kind": "creative_1",
+            "label": "7 добрых желаний",
+            "description": "Напиши 7 добрых желаний — по одному на каждый лепесток",
+            "preview_files": ("creative-1.png", "creative-1.jpg"),
+            "download_files": ("creative-1.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - 7 добрых желаний.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Комикс: каприз — грусть — помощь другу",
+            "description": "Придумай и нарисуй историю по сказке «Цветик-семицветик»",
+            "preview_files": ("creative-2.png", "creative-2.jpg"),
+            "download_files": ("creative-2.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Комикс.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Обведи цветик",
+            "description": "Обведи цветик по пунктирным линиям и раскрась",
+            "preview_files": ("creative-3.png", "creative-3.jpg"),
+            "download_files": ("creative-3.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Обведи цветик.pdf",
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_4",
+            "label": "Нарисуй свой цветик-семицветик",
+            "description": "Нарисуй свой цветик-семицветик",
+            "preview_files": ("creative-4.png", "creative-4.jpg"),
+            "download_files": ("creative-4.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - свой цветик - семицветик.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
     "extra-6-8-stage1-tale-01": [
         {
             "kind": LETTER_KIND,
@@ -315,6 +416,84 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
             "description": "Творческое задание — скачай и распечатай",
             "preview_files": ("creative-3.png", "creative-3.jpg"),
             "download_files": ("creative-3.pdf",),
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
+    "extra-6-8-stage1-tale-02": [
+        {
+            "kind": LETTER_KIND,
+            "label": "Письмо от школы",
+            "description": "Личное письмо от школы — прочитай сразу после открытия сундука",
+            "preview_files": ("letter.png", "letter.jpg"),
+            "download_files": ("letter.pdf",),
+            "fallback_image": "/static/sloviki/slovik-writes.png",
+            "downloadable": False,
+            "in_treasury": False,
+        },
+        {
+            "kind": "creative_1",
+            "label": "Нарисуй комикс: пугающая новость – путь – поддержка",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-1.png", "creative-1.jpg"),
+            "download_files": ("creative-1.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Комикс.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Нарисуй комету над Муми-долиной",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-2.png", "creative-2.jpg"),
+            "download_files": ("creative-2.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Нарисуй комету.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Нарисуй муми-дом",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-3.png", "creative-3.jpg"),
+            "download_files": ("creative-3.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Нарисуй муми-дом.pdf",
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_4",
+            "label": "Обведи муми-дом",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-4.png", "creative-4.jpg"),
+            "download_files": ("creative-4.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Обведи муми-дом.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_5",
+            "label": "Придумай и нарисуй торт для Муми-тролля",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-5.png", "creative-5.jpg"),
+            "download_files": ("creative-5.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Придумай торт.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_6",
+            "label": "Раскрась героев",
+            "description": "Творческое задание — скачай и распечатай",
+            "preview_files": ("creative-6.png", "creative-6.jpg"),
+            "download_files": ("creative-6.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Раскрась героев.pdf",
             "fallback_image": "/static/sloviki/slovik-dreams.png",
             "downloadable": True,
             "in_treasury": True,
@@ -404,6 +583,52 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
             "in_treasury": True,
         },
     ],
+    "grade-3-stage1-tale-02": [
+        {
+            "kind": "creative_1",
+            "label": "Комикс о храбрости",
+            "description": "Храбрость → испытание → победа",
+            "preview_files": ("creative-1.png", "creative-1.jpg"),
+            "download_files": ("creative-1.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Комикс о храбрости.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Напиши письмо зайцу",
+            "description": "Чем хвастовство отличается от храбрости",
+            "preview_files": ("creative-2.png", "creative-2.jpg"),
+            "download_files": ("creative-2.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Напиши письмо зайцу.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Нарисуй медаль",
+            "description": "Медаль зайцу за храбрость",
+            "preview_files": ("creative-3.png", "creative-3.jpg"),
+            "download_files": ("creative-3.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Нарисуй медаль.pdf",
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_4",
+            "label": "Нарисуй своего зайца",
+            "description": "Нарисуй храброго зайца и опиши, чем он отличается",
+            "preview_files": ("creative-4.png", "creative-4.jpg"),
+            "download_files": ("creative-4.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Нарисуй своего зайца.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
     "grade-4-stage1-tale-01": [
         {
             "kind": LETTER_KIND,
@@ -452,6 +677,63 @@ TALE_CHEST_ITEMS: dict[str, list[dict[str, Any]]] = {
             "preview_files": ("creative-4.png", "creative-4.jpg"),
             "download_files": ("creative-4.pdf",),
             "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+    ],
+    "grade-4-stage1-tale-02": [
+        {
+            "kind": "creative_1",
+            "label": "Напиши письмо",
+            "description": "Письмо Пете-старику от Пети-мальчика",
+            "preview_files": ("creative-1.png", "creative-1.jpg"),
+            "download_files": ("creative-1.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Напиши письмо.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_2",
+            "label": "Нарисуй комикс",
+            "description": "Лень → кража времени → возврат потерянного времени",
+            "preview_files": ("creative-2.png", "creative-2.jpg"),
+            "download_files": ("creative-2.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Нарисуй комикс.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_3",
+            "label": "Нарисуй свои волшебные часы",
+            "description": "Придумай и нарисуй волшебные часы",
+            "preview_files": ("creative-3.png", "creative-3.jpg"),
+            "download_files": ("creative-3.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Нарисуй свои волшебные часы.pdf",
+            "fallback_image": "/static/sloviki/slovik-dreams.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_4",
+            "label": "Нарисуй свои часы",
+            "description": "Вместо цифр — важные дела",
+            "preview_files": ("creative-4.png", "creative-4.jpg"),
+            "download_files": ("creative-4.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Нарисуй свои часы.pdf",
+            "fallback_image": "/static/sloviki/slovik-reads.png",
+            "downloadable": True,
+            "in_treasury": True,
+        },
+        {
+            "kind": "creative_5",
+            "label": "Составь карту дня",
+            "description": "3 дела, которые нельзя терять, и 1 честный отдых",
+            "preview_files": ("creative-5.png", "creative-5.jpg"),
+            "download_files": ("creative-5.pdf",),
+            "download_name": "ЧИТАТЕЛЬСТВО PDF - Составь карту дня.pdf",
+            "fallback_image": "/static/sloviki/slovik-grows.png",
             "downloadable": True,
             "in_treasury": True,
         },
@@ -539,11 +821,16 @@ def _build_item(entry: dict[str, Any], tale_slug: str, tale_title: str) -> dict[
 
 
 def rewards_for_tale(tale_slug: str, tale_title: str) -> list[dict[str, Any]]:
-    """Все предметы сундука для показа при открытии (включая письмо)."""
+    """Все предметы сундука для показа при открытии."""
     slug = canonical_tale_slug((tale_slug or "").strip())
     title = (tale_title or "").strip() or "Сказка недели"
     entries = TALE_CHEST_ITEMS.get(slug) or CHEST_CONTENTS
-    return [_build_item(entry, slug, title) for entry in entries]
+    show_letter = slug in MODULE_FINALE_TALE_SLUGS
+    filtered = [
+        entry for entry in entries
+        if entry.get("kind") != LETTER_KIND or show_letter
+    ]
+    return [_build_item(entry, slug, title) for entry in filtered]
 
 
 def items_for_treasury(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
