@@ -204,7 +204,10 @@ def quiz_lead(
         logger.exception("Не удалось отправить автоматическое письмо квиза на %s", body.parent_email)
 
     if trial_access and trial_access.get("lesson_url"):
-        message = "Спасибо! Пробный урок открыт — ссылка уже на email."
+        if email_sent:
+            message = "Спасибо! Пробный урок открыт — ссылка уже на email."
+        else:
+            message = "Спасибо! Пробный урок открыт. Если письмо не пришло — откройте ссылку на этой странице."
     elif email_sent:
         message = "Спасибо! PDF-чек-лист уже отправлен на email."
     else:

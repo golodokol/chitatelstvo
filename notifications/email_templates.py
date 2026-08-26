@@ -48,6 +48,19 @@ def build_otp_message(*, code: str, ttl_minutes: int = 10) -> str:
     )
 
 
+def build_otp_html(*, code: str, ttl_minutes: int = 10) -> str:
+    safe_code = html.escape(code)
+    return f"""<!DOCTYPE html>
+<html lang="ru"><body style="font-family:Segoe UI,Arial,sans-serif;color:#3D5266;line-height:1.5">
+<p>Здравствуйте!</p>
+<p>Код для входа в <strong>Читательство</strong>:</p>
+<p style="font-size:28px;letter-spacing:4px;font-weight:700;color:#5B7FA6">{safe_code}</p>
+<p>Код действует {ttl_minutes} мин. Никому его не сообщайте.</p>
+<p style="color:#6B8499;font-size:14px">Если вы не запрашивали вход — проигнорируйте письмо.</p>
+<p>С теплом,<br>Команда Читательства</p>
+</body></html>"""
+
+
 def build_welcome_message(
     *,
     parent_name: str,
@@ -708,7 +721,7 @@ def build_early_trial_email_html(
     parent = parent_name.strip() or "родитель"
     child = child_name.strip() or "ребёнок"
     child_gen = name_genitive(child)
-    key = _early_course_key(trial_slug, course_group)
+    key = early_course_key(trial_slug, course_group)
     copy = EARLY_COURSE_COPY[key]
     title = (trial_title or "").strip() or "Пробный урок"
     age_bit = f" ({age_years_phrase(child_age)})" if child_age else ""

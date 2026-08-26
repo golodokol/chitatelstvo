@@ -449,7 +449,7 @@
     } catch (err) {}
   }
 
-  function updateSuccessForTrial() {
+  function updateSuccessForTrial(apiData) {
     var success = root.querySelector('[data-step="success"]');
     if (!success) return;
     var giftLine = success.querySelector('[data-qz-gift-line]');
@@ -464,6 +464,18 @@
       }
     } catch (err) {}
     giftLine.textContent = title ? c.successTrialGift(title) : c.successDefaultGift;
+    var oldLink = success.querySelector('.qz-success-trial-link');
+    if (oldLink) oldLink.remove();
+    var lessonUrl = apiData && apiData.trial_lesson_url;
+    if (lessonUrl) {
+      var linkWrap = document.createElement('p');
+      linkWrap.className = 'qz-success-trial-link';
+      linkWrap.style.marginTop = '16px';
+      linkWrap.style.textAlign = 'center';
+      linkWrap.innerHTML =
+        '<a class="qz-btn qz-btn--submit" href="' + lessonUrl + '" target="_blank" rel="noopener">Открыть пробный урок</a>';
+      giftLine.insertAdjacentElement('afterend', linkWrap);
+    }
   }
 
   function openQuizModal(source, fromEl) {
@@ -643,9 +655,9 @@
           throw new Error(msg);
         });
       })
-      .then(function () {
+      .then(function (data) {
         markQuizPopup('done');
-        updateSuccessForTrial();
+        updateSuccessForTrial(data);
         showStep(questions().length + 1);
       })
       .catch(function (err3) {

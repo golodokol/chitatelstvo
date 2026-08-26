@@ -2935,7 +2935,9 @@ if (faqList) {
           child_name: childName,
           child_age: ageNum || null,
           trial_slug: trialSlug,
-          trial_title: (saved && saved.title) || ''
+          trial_title: (saved && saved.title) || '',
+          consent_privacy: true,
+          consent_offer: true
         };
         fetch(API_BASE + '/api/early/trial', {
           method: 'POST',
@@ -2946,6 +2948,11 @@ if (faqList) {
           .then(function(res) {
             if (note) {
               note.hidden = false;
+              if (!res.ok) {
+                var err = (res.j && res.j.detail) || 'Не удалось открыть пробный урок.';
+                note.textContent = typeof err === 'string' ? err : 'Не удалось открыть пробный урок.';
+                return;
+              }
               note.textContent = (res.j && res.j.message) || 'Заявка отправлена.';
               if (res.j && res.j.lesson_url) {
                 note.innerHTML = (res.j.message || 'Пробный открыт.') +
