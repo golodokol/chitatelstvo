@@ -854,6 +854,39 @@ def sort_tracks_by_access(tracks: list[dict]) -> list[dict]:
     return sorted(tracks, key=_track_access_sort_key)
 
 
+def _weekly_is_open_intro(weekly: dict[str, Any] | None) -> bool:
+    if not weekly or not weekly.get("url"):
+        return False
+    if weekly.get("chest_claimed") or weekly.get("cover_state") == "done":
+        return False
+    if weekly.get("is_intro_trial"):
+        return True
+    return str(weekly.get("headline") or "") == "Вводный урок"
+
+
+def _track_has_open_intro(section: dict[str, Any]) -> bool:
+    return any(_weekly_is_open_intro(w) for w in (section.get("weekly_lessons") or []))
+
+
+def prioritize_open_early_intro_tracks(
+    sections: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """В смешанном кабинете: открытые вводные early — выше сказок."""
+    if len(sections) < 2 or not any(_track_has_open_intro(s) for s in sections):
+        return sections
+
+    def sort_key(section: dict[str, Any]) -> tuple:
+        group = str(section.get("group_code") or "")
+        if _track_has_open_intro(section):
+            early_rank = 0 if group.startswith("early-letters") else 1
+            return (0, early_rank, group)
+        if section.get("is_early"):
+            return (1, 0, group)
+        return (2, 0, str(section.get("group_label") or group))
+
+    return sorted(sections, key=sort_key)
+
+
 def _lesson_reward_slug(lesson: dict | None) -> str:
     if not lesson:
         return ""
@@ -1030,6 +1063,7 @@ def _weekly_lesson_cards(
                     "tale_slug": _lesson_reward_slug(lesson),
                     "week_in_stage": num,
                     "is_early": True,
+                    "is_intro_trial": True,
                     "group_code": group,
                 }
             )
@@ -1868,6 +1902,8 @@ def build_child_cabinet(
                     child_id=child_id,
                 )
             )
+        if cabinet_mode == "full":
+            track_sections = prioritize_open_early_intro_tracks(track_sections)
 
     if track_sections:
         primary = track_sections[0]
@@ -1883,9 +1919,18 @@ def build_child_cabinet(
         missions_subtitle = primary["missions_subtitle"]
         story_stages = primary["story_stages"]
         continue_url = next(
-            (t["continue_url"] for t in track_sections if t.get("continue_url")),
+            (
+                t["continue_url"]
+                for t in track_sections
+                if t.get("continue_url") and _track_has_open_intro(t)
+            ),
             None,
         )
+        if not continue_url:
+            continue_url = next(
+                (t["continue_url"] for t in track_sections if t.get("continue_url")),
+                None,
+            )
     else:
         claimed = _claimed_slugs_for_links(claims, lesson_links)
         lesson = _current_lesson(lesson_links, claimed_slugs=claimed)

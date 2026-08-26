@@ -78,6 +78,13 @@ def test_mixed_cabinet_injects_intro_as_weekly_lesson(monkeypatch):
     assert stories and stories[0]["headline"] == "Вводный урок"
     assert "early-stories-trial-lesson-01" in (stories[0]["url"] or "")
     assert stories[0]["cover_url"] and "course-cover-stories.jpg" in stories[0]["cover_url"]
+    # Вводные early выше сказок; буквы — перед историями.
+    assert [t["group_code"] for t in cab["tracks"][:3]] == [
+        "early-letters",
+        "early-stories",
+        "grade-2",
+    ]
+    assert "early-letters-trial-lesson-01" in (cab["continue_url"] or "")
 
 
 def test_fairy_only_cabinet_hides_trial_buttons():
