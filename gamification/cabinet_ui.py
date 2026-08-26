@@ -1723,50 +1723,74 @@ def _last_early_path_key(
     return None
 
 
+def _trial_lesson_url(
+    lesson_links: list[dict],
+    slug: str,
+    child_id: str | None,
+) -> str | None:
+    """Подписанная ссылка на пробный урок (в lesson_links его может не быть)."""
+    needle = str(slug or "").strip()
+    if not needle:
+        return None
+    for les in lesson_links or []:
+        if str(les.get("slug") or "") != needle:
+            continue
+        url = str(les.get("url") or "").strip()
+        # Нужна подписанная ссылка (?child=&exp=&sig=), не голый /lesson/slug.
+        if url and "sig=" in url:
+            return url
+        break
+    if not child_id:
+        return None
+    from api.lesson_signing import build_lesson_url
+
+    return build_lesson_url(child_id, slug)
+
+
 def _build_path_hint(
     *,
     events: list[Any] | None,
     tracks: list[dict[str, Any]] | None,
     lesson_links: list[dict],
     cabinet_mode: str,
+    child_id: str | None = None,
 ) -> dict[str, Any] | None:
-    # Блок «Куда дальше?» в кабинете временно скрыт.
-    return None
-    if cabinet_mode not in ("trial_early", "paid_early"):
-        return None
-    key = _last_early_path_key(events, tracks, lesson_links)
-    if key == "early-letters":
-        return {
-            "title": "Куда дальше?",
-            "source": key,
-            "cards": [
+    # Смешанный кабинет (сказки + early): явные кнопки на оба вводных урока.
+    if cabinet_mode == "full" and _tracks_have_early(tracks) and child_id:
+        letters_url = _trial_lesson_url(
+            lesson_links, "early-letters-trial-lesson-01", child_id
+        )
+        stories_url = _trial_lesson_url(
+            lesson_links, "early-stories-trial-lesson-01", child_id
+        )
+        cards: list[dict[str, Any]] = []
+        if letters_url:
+            cards.append(
                 {
-                    "eyebrow": "Если эти задания показались слишком простыми",
-                    "text": "Попробуйте прочитать первую историю в нашем другом уроке:",
-                    "cta": "Первые истории — вводный урок",
-                    "url": _lesson_url_by_slug(lesson_links, "early-stories-trial-lesson-01"),
-                }
-            ],
-        }
-    if key == "early-stories":
-        return {
-            "title": "Куда дальше?",
-            "source": key,
-            "cards": [
-                {
-                    "eyebrow": "Если было сложно",
-                    "text": "Пройдите сначала курс по звукам:",
+                    "eyebrow": "Буквы и звуки",
+                    "text": "Вводный урок курса «Буквы оживают» — можно пройти прямо сейчас.",
                     "cta": "Буквы оживают — вводный урок",
-                    "url": _lesson_url_by_slug(lesson_links, "early-letters-trial-lesson-01"),
-                },
+                    "url": letters_url,
+                }
+            )
+        if stories_url:
+            cards.append(
                 {
-                    "eyebrow": "Если было легко",
-                    "text": "Вы готовы к нашему первому курсу по сказкам:",
-                    "cta": "Царевна-лягушка — пробный урок",
-                    "url": _lesson_url_by_slug(lesson_links, "tsarevna-lyagushka"),
-                },
-            ],
-        }
+                    "eyebrow": "Первые истории",
+                    "text": "Вводный урок курса «Первые истории» — можно пройти прямо сейчас.",
+                    "cta": "Первые истории — вводный урок",
+                    "url": stories_url,
+                }
+            )
+        if cards:
+            return {
+                "title": "Пробные уроки",
+                "source": "early-mixed",
+                "cards": cards,
+            }
+        return None
+
+    # Блок «Куда дальше?» для чисто early-кабинетов временно скрыт.
     return None
 
 
@@ -1782,6 +1806,7 @@ def build_child_cabinet(
     tale_ratings: list[Any] | None = None,
     chest_claims: list[Any] | None = None,
     assets_base: str,
+    child_id: str | None = None,
 ) -> dict[str, Any]:
     """Собирает контекст игрового кабинета для одного ребёнка."""
     earned_set = set(earned_badges)
@@ -1940,9 +1965,10 @@ def build_child_cabinet(
     recent_toast = recent_event_slovik(events, current_badges=toast_badge_names)
     path_hint = _build_path_hint(
         events=events,
-        tracks=track_sections,
+        tracks=track_sections or tracks,
         lesson_links=lesson_links,
         cabinet_mode=cabinet_mode,
+        child_id=child_id,
     )
     if path_hint and track_sections:
         src = str(path_hint.get("source") or "")

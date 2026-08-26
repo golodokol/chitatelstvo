@@ -243,6 +243,7 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
             tale_ratings=tale_ratings,
             chest_claims=chest_claims,
             assets_base=assets_base,
+            child_id=str(child.id),
         ),
         "events": [
             {
