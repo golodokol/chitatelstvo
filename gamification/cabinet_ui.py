@@ -159,6 +159,20 @@ EARLY_COURSE_COVERS: dict[str, str] = {
     "rus-10-12": "course-cover-rus-10-12.jpg",
 }
 
+# Вводный квест для early-трека, если в enrollment нет trial-урока (оплаченный / смешанный кабинет).
+EARLY_INTRO_TRIALS: dict[str, dict[str, str]] = {
+    "early-letters": {
+        "slug": "early-letters-trial-lesson-01",
+        "title": "Словик и пропавшие звуки",
+        "tale_slug": "early-letters-stage1-tale-00",
+    },
+    "early-stories": {
+        "slug": "early-stories-trial-lesson-01",
+        "title": "Спаси первую историю",
+        "tale_slug": "early-stories-stage1-tale-00",
+    },
+}
+
 EARLY_BUY_URLS: dict[str, str] = {
     "early-letters": "https://chitatelstvo.ru/#programs",
     "early-stories": "https://chitatelstvo.ru/#programs",
@@ -465,9 +479,48 @@ def _decorate_intro_trial_lesson(
 ) -> dict:
     row = dict(lesson)
     row["is_intro_trial"] = True
-    row["cover_url"] = _intro_trial_cover_url(assets_base, group_code) or lesson.get("cover_url")
+    # Общая обложка курса — как у остальных уроков трека.
+    row["cover_url"] = (
+        _course_cover_url(assets_base, group_code)
+        or _intro_trial_cover_url(assets_base, group_code)
+        or lesson.get("cover_url")
+    )
     row["cover_state"] = "open" if lesson.get("url") else lesson.get("cover_state", "locked")
     return row
+
+
+def _ensure_early_intro_trial(
+    lesson_links: list[dict],
+    *,
+    group_code: str,
+    child_id: str | None,
+    assets_base: str,
+) -> list[dict]:
+    """Добавляет вводный trial в список уроков early-трека, если его ещё нет."""
+    meta = EARLY_INTRO_TRIALS.get(group_code)
+    if not meta or not child_id:
+        return lesson_links
+    if any(_is_intro_trial_lesson(les) for les in lesson_links):
+        return lesson_links
+    url = _trial_lesson_url(lesson_links, meta["slug"], child_id)
+    if not url:
+        return lesson_links
+    intro = _decorate_intro_trial_lesson(
+        {
+            "slug": meta["slug"],
+            "title": meta["title"],
+            "tale_slug": meta["tale_slug"],
+            "tariff_code": "trial",
+            "group_code": group_code,
+            "week_in_stage": 1,
+            "module_week": 1,
+            "url": url,
+            "unlocked": True,
+        },
+        assets_base=assets_base,
+        group_code=group_code,
+    )
+    return [intro, *lesson_links]
 
 
 def _weekly_lessons_early(
@@ -1567,9 +1620,15 @@ def _build_track_section(
     points: int,
     assets_base: str,
     cabinet_mode: str,
+    child_id: str | None = None,
 ) -> dict[str, Any]:
-    lesson_links = track.get("lesson_links") or []
     group_code = str(track.get("group_code") or "")
+    lesson_links = _ensure_early_intro_trial(
+        list(track.get("lesson_links") or []),
+        group_code=group_code,
+        child_id=child_id,
+        assets_base=assets_base,
+    )
     claimed = _claimed_slugs_for_links(claims, lesson_links)
     lesson = _current_lesson(lesson_links, claimed_slugs=claimed)
     weekly_source, weekly_label = _weekly_lessons(
@@ -1755,42 +1814,8 @@ def _build_path_hint(
     cabinet_mode: str,
     child_id: str | None = None,
 ) -> dict[str, Any] | None:
-    # Смешанный кабинет (сказки + early): явные кнопки на оба вводных урока.
-    if cabinet_mode == "full" and _tracks_have_early(tracks) and child_id:
-        letters_url = _trial_lesson_url(
-            lesson_links, "early-letters-trial-lesson-01", child_id
-        )
-        stories_url = _trial_lesson_url(
-            lesson_links, "early-stories-trial-lesson-01", child_id
-        )
-        cards: list[dict[str, Any]] = []
-        if letters_url:
-            cards.append(
-                {
-                    "eyebrow": "Буквы и звуки",
-                    "text": "Вводный урок курса «Буквы оживают» — можно пройти прямо сейчас.",
-                    "cta": "Буквы оживают — вводный урок",
-                    "url": letters_url,
-                }
-            )
-        if stories_url:
-            cards.append(
-                {
-                    "eyebrow": "Первые истории",
-                    "text": "Вводный урок курса «Первые истории» — можно пройти прямо сейчас.",
-                    "cta": "Первые истории — вводный урок",
-                    "url": stories_url,
-                }
-            )
-        if cards:
-            return {
-                "title": "Пробные уроки",
-                "source": "early-mixed",
-                "cards": cards,
-            }
-        return None
-
-    # Блок «Куда дальше?» для чисто early-кабинетов временно скрыт.
+    # Блок «Куда дальше?» / отдельные кнопки пробных — скрыт:
+    # вводные early-уроки показываются как обычные карточки урока в треке.
     return None
 
 
@@ -1840,6 +1865,7 @@ def build_child_cabinet(
                     points=points,
                     assets_base=assets_base,
                     cabinet_mode=cabinet_mode,
+                    child_id=child_id,
                 )
             )
 
