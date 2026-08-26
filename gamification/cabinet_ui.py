@@ -636,10 +636,39 @@ def _filter_trial_earned_badges(
     return out
 
 
-def _badge_catalog_for_mode(mode: str) -> list[dict[str, str]]:
-    if mode == "trial_early":
-        return TRIAL_BADGE_CATALOG
-    return BADGE_CATALOG
+def _tracks_have_early(tracks: list[dict[str, Any]] | None) -> bool:
+    for track in tracks or []:
+        group = str(track.get("group_code") or "")
+        if group.startswith("early-") or group in COHORT_GROUPS:
+            return True
+    return False
+
+
+def _merge_badge_catalogs(*catalogs: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Объединяет каталоги без дублей имён (порядок: early → сказки)."""
+    seen: set[str] = set()
+    out: list[dict[str, str]] = []
+    for catalog in catalogs:
+        for badge in catalog:
+            name = badge["name"]
+            if name in seen:
+                continue
+            seen.add(name)
+            out.append(badge)
+    return out
+
+
+def _badge_catalog_for_mode(
+    mode: str,
+    tracks: list[dict[str, Any]] | None = None,
+) -> list[dict[str, str]]:
+    """Каталог трофеев: early / сказки / оба при смешанном кабинете."""
+    if mode in ("trial_early", "paid_early"):
+        return list(TRIAL_BADGE_CATALOG)
+    if mode == "full" and _tracks_have_early(tracks):
+        # Малыши + сказки в одном кабинете — показываем все бейджи.
+        return _merge_badge_catalogs(TRIAL_BADGE_CATALOG, BADGE_CATALOG)
+    return list(BADGE_CATALOG)
 
 
 def _build_badges_ui(
@@ -710,15 +739,27 @@ def _level_progress(points: int, level_name: str) -> dict[str, Any]:
     }
 
 
+def _normalize_tale_title(title: str | None) -> str:
+    raw = (title or "").strip().casefold().replace("ё", "е")
+    raw = raw.replace("—", "-").replace("–", "-").replace("-", " ")
+    return " ".join(raw.split())
+
+
 def _events_for_tale(events: list[Any], tale_title: str) -> set[str]:
-    title = (tale_title or "").strip()
+    title = _normalize_tale_title(tale_title)
     if not title:
         return set()
-    return {
-        e.event_type
-        for e in events
-        if (e.tale_title or "").strip() == title
-    }
+    out: set[str] = set()
+    for e in events:
+        ev_title = _normalize_tale_title(getattr(e, "tale_title", None))
+        if ev_title == title:
+            out.add(e.event_type)
+            continue
+        # Короткие совпадения / «Царевна-лягушка» vs «Царевна лягушка»
+        if title and ev_title and (title in ev_title or ev_title in title):
+            if abs(len(title) - len(ev_title)) <= 4:
+                out.add(e.event_type)
+    return out
 
 
 def _opens_on_sort_value(lesson: dict) -> date:
@@ -760,15 +801,81 @@ def sort_tracks_by_access(tracks: list[dict]) -> list[dict]:
     return sorted(tracks, key=_track_access_sort_key)
 
 
-def _current_lesson(lesson_links: list[dict]) -> dict | None:
+def _lesson_reward_slug(lesson: dict | None) -> str:
+    if not lesson:
+        return ""
+    return canonical_tale_slug(lesson.get("tale_slug") or lesson.get("slug") or "")
+
+
+def _claimed_slugs(claims: list[Any] | None) -> set[str]:
+    out: set[str] = set()
+    for claim in claims or []:
+        slug = canonical_tale_slug(getattr(claim, "tale_slug", "") or "")
+        if slug:
+            out.add(slug)
+    return out
+
+
+def _claimed_slugs_for_links(claims: list[Any] | None, lesson_links: list[dict]) -> set[str]:
+    """Slug'и забранных сундуков, в т.ч. если claim сохранён с другим slug, но тем же названием."""
+    claimed = _claimed_slugs(claims)
+    title_to_slug: dict[str, str] = {}
+    for les in lesson_links or []:
+        slug = _lesson_reward_slug(les)
+        title = _normalize_tale_title(les.get("title") or les.get("tale_title"))
+        if slug and title:
+            title_to_slug[title] = slug
+    for claim in claims or []:
+        title = _normalize_tale_title(getattr(claim, "tale_title", None))
+        if title and title in title_to_slug:
+            claimed.add(title_to_slug[title])
+    return claimed
+
+
+def _claim_for_lesson(claims: list[Any] | None, lesson: dict | None) -> Any | None:
+    if not lesson or not claims:
+        return None
+    slug = _lesson_reward_slug(lesson)
+    if slug:
+        for claim in claims:
+            if canonical_tale_slug(getattr(claim, "tale_slug", "") or "") == slug:
+                return claim
+    title = _normalize_tale_title(lesson.get("title") or lesson.get("tale_title"))
+    if not title:
+        return None
+    for claim in claims:
+        if _normalize_tale_title(getattr(claim, "tale_title", None)) == title:
+            return claim
+    return None
+
+
+def _lesson_chest_claimed(lesson: dict | None, claimed_slugs: set[str]) -> bool:
+    slug = _lesson_reward_slug(lesson)
+    return bool(slug and slug in claimed_slugs)
+
+
+def _current_lesson(
+    lesson_links: list[dict],
+    *,
+    claimed_slugs: set[str] | None = None,
+) -> dict | None:
+    """Текущий урок трека: первый доступный без забранного сундука."""
+    claimed = claimed_slugs or set()
     ordered = sort_lessons_by_access(lesson_links)
-    for les in ordered:
-        if les.get("url"):
+
+    def _pick(prefer_unclaimed: bool) -> dict | None:
+        for les in ordered:
+            if not les.get("url"):
+                continue
+            if prefer_unclaimed and _lesson_chest_claimed(les, claimed):
+                continue
             return les
-    for les in ordered:
-        if les.get("unlocked"):
-            return les
-    return ordered[0] if ordered else None
+        return None
+
+    return _pick(True) or _pick(False) or (
+        next((les for les in ordered if les.get("unlocked")), None)
+        or (ordered[0] if ordered else None)
+    )
 
 
 def _is_early_lesson(lesson: dict | None) -> bool:
@@ -796,6 +903,7 @@ def _weekly_lessons(
     events: list[Any] | None = None,
     group_code: str = "",
     assets_base: str = "",
+    claimed_slugs: set[str] | None = None,
 ) -> tuple[list[dict], str]:
     if not lesson_links:
         return [], "Будет доступно позже"
@@ -808,8 +916,13 @@ def _weekly_lessons(
             group_code=group_code,
             assets_base=assets_base,
         )
+    claimed = claimed_slugs or set()
     # Доступные уроки сверху; закрытые — ниже, по дате открытия.
     available = [les for les in lesson_links if les.get("url")]
+    if available and claimed:
+        unclaimed = [les for les in available if not _lesson_chest_claimed(les, claimed)]
+        if unclaimed:
+            available = unclaimed
     if available:
         week_lessons = sort_lessons_by_access(available)
         if early:
@@ -822,13 +935,20 @@ def _weekly_lessons(
     return week_lessons, label
 
 
-def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
+def _weekly_lesson_cards(
+    lessons: list[dict],
+    *,
+    claimed_slugs: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    claimed = claimed_slugs or set()
     cards: list[dict[str, Any]] = []
     for lesson in sort_lessons_by_access(lessons):
         early = _uses_lesson_labels(lesson)
         num = lesson.get("week_in_stage") or lesson.get("module_week") or 1
         title = lesson.get("title", "Урок")
         group = str(lesson.get("group_code") or "")
+        chest_claimed = _lesson_chest_claimed(lesson, claimed)
+        cover_state = "done" if chest_claimed else lesson.get("cover_state", "locked")
         if lesson.get("is_intro_trial") or _is_intro_trial_lesson(lesson):
             if group == "early-stories" or "истори" in title.lower():
                 goal = (
@@ -852,7 +972,9 @@ def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
                     "unlocked": bool(lesson.get("url")),
                     "opens_on_label": lesson.get("opens_on_label"),
                     "cover_url": lesson.get("cover_url"),
-                    "cover_state": lesson.get("cover_state", "locked"),
+                    "cover_state": cover_state,
+                    "chest_claimed": chest_claimed,
+                    "tale_slug": _lesson_reward_slug(lesson),
                     "week_in_stage": num,
                     "is_early": True,
                     "group_code": group,
@@ -882,7 +1004,9 @@ def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
                     "unlocked": bool(lesson.get("url")),
                     "opens_on_label": lesson.get("opens_on_label"),
                     "cover_url": lesson.get("cover_url"),
-                    "cover_state": lesson.get("cover_state", "locked"),
+                    "cover_state": cover_state,
+                    "chest_claimed": chest_claimed,
+                    "tale_slug": _lesson_reward_slug(lesson),
                     "week_in_stage": num,
                     "is_early": True,
                     "group_code": group,
@@ -904,7 +1028,9 @@ def _weekly_lesson_cards(lessons: list[dict]) -> list[dict[str, Any]]:
                     "unlocked": bool(lesson.get("url")),
                     "opens_on_label": lesson.get("opens_on_label"),
                     "cover_url": lesson.get("cover_url"),
-                    "cover_state": lesson.get("cover_state", "locked"),
+                    "cover_state": cover_state,
+                    "chest_claimed": chest_claimed,
+                    "tale_slug": _lesson_reward_slug(lesson),
                     "week_in_stage": num,
                     "is_early": False,
                     "group_code": group,
@@ -996,6 +1122,10 @@ def _chest_state(
         pct = int(steps_done / steps_total * 100) if steps_total else 0
     ready = steps_remaining == 0 and not claim
     claimed = claim is not None
+    if claimed:
+        steps_done = steps_total
+        steps_remaining = 0
+        pct = 100
     visual = chest_visual_state(
         steps_done=steps_done,
         steps_total=steps_total,
@@ -1195,9 +1325,14 @@ def _parent_summary(
     }
 
 
-def _story_stages(lesson_links: list[dict]) -> list[dict]:
+def _story_stages(
+    lesson_links: list[dict],
+    *,
+    claimed_slugs: set[str] | None = None,
+) -> list[dict]:
     if not lesson_links:
         return []
+    claimed = claimed_slugs or set()
     ordered = sort_lessons_by_access(lesson_links)
     by_stage: dict[str, list[dict]] = {}
     stage_order: list[str] = []
@@ -1206,7 +1341,11 @@ def _story_stages(lesson_links: list[dict]) -> list[dict]:
         if stage not in by_stage:
             stage_order.append(stage)
             by_stage[stage] = []
-        by_stage[stage].append(les)
+        row = dict(les)
+        if _lesson_chest_claimed(les, claimed):
+            row["cover_state"] = "done"
+            row["chest_claimed"] = True
+        by_stage[stage].append(row)
     # Этапы тоже: сначала где есть доступные уроки, иначе stage-1 → stage-2.
     def stage_key(stage: str) -> tuple:
         items = by_stage[stage]
@@ -1431,23 +1570,18 @@ def _build_track_section(
 ) -> dict[str, Any]:
     lesson_links = track.get("lesson_links") or []
     group_code = str(track.get("group_code") or "")
-    lesson = _current_lesson(lesson_links)
+    claimed = _claimed_slugs_for_links(claims, lesson_links)
+    lesson = _current_lesson(lesson_links, claimed_slugs=claimed)
     weekly_source, weekly_label = _weekly_lessons(
         lesson_links,
         events=events,
         group_code=group_code,
         assets_base=assets_base,
+        claimed_slugs=claimed,
     )
     early = _is_early_links(lesson_links) or group_code.startswith("early-") or group_code in COHORT_GROUPS
-    tale_slug = canonical_tale_slug((lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or "")
-    current_claim = (
-        next(
-            (c for c in claims if canonical_tale_slug(c.tale_slug) == tale_slug),
-            None,
-        )
-        if tale_slug
-        else None
-    )
+    tale_slug = _lesson_reward_slug(lesson)
+    current_claim = _claim_for_lesson(claims, lesson)
     reward_items = (
         rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
     )
@@ -1463,7 +1597,7 @@ def _build_track_section(
         stories_title = f"Дальше в программе · {track.get('group_label') or ''}".strip(" ·")
         stories_subtitle = "8 уроков модуля — по вторникам и четвергам с 1 сентября"
     else:
-        story_stages = _story_stages(lesson_links)
+        story_stages = _story_stages(lesson_links, claimed_slugs=claimed)
         upcoming_lessons = []
         stories_title = (
             f"Мои уроки · {track.get('group_label') or ''}".strip(" ·")
@@ -1472,6 +1606,7 @@ def _build_track_section(
         )
         stories_subtitle = None
     treasury = _treasury_for_track(claims, lesson_links)
+    weekly_cards = _weekly_lesson_cards(weekly_source, claimed_slugs=claimed)
 
     return {
         "group_code": group_code,
@@ -1483,9 +1618,9 @@ def _build_track_section(
         "is_trial": is_trial_track,
         "chest": chest,
         "treasury": treasury,
-        "weekly_lessons": _weekly_lesson_cards(weekly_source),
+        "weekly_lessons": weekly_cards,
         "weekly_lessons_label": weekly_label,
-        "daily_lesson": _weekly_lesson_cards(weekly_source)[0] if weekly_source else None,
+        "daily_lesson": weekly_cards[0] if weekly_cards else None,
         "story_stages": story_stages,
         "upcoming_lessons": upcoming_lessons,
         "stories_title": stories_title,
@@ -1502,7 +1637,11 @@ def _build_track_section(
             if lesson and lesson.get("title")
             else None
         ),
-        "continue_url": lesson.get("url") if lesson and lesson.get("url") else None,
+        "continue_url": (
+            None
+            if lesson and _lesson_chest_claimed(lesson, claimed)
+            else (lesson.get("url") if lesson and lesson.get("url") else None)
+        ),
     }
 
 
@@ -1678,7 +1817,7 @@ def build_child_cabinet(
 
     if track_sections:
         primary = track_sections[0]
-        lesson = _current_lesson(lesson_links)
+        lesson = _current_lesson(lesson_links, claimed_slugs=_claimed_slugs_for_links(claims, lesson_links))
         chest = primary["chest"]
         daily = primary.get("daily_lesson")
         weekly_lessons = primary.get("weekly_lessons") or []
@@ -1694,16 +1833,10 @@ def build_child_cabinet(
             None,
         )
     else:
-        lesson = _current_lesson(lesson_links)
-        tale_slug = canonical_tale_slug((lesson or {}).get("tale_slug") or (lesson or {}).get("slug") or "")
-        current_claim = (
-            next(
-                (c for c in claims if canonical_tale_slug(c.tale_slug) == tale_slug),
-                None,
-            )
-            if tale_slug
-            else None
-        )
+        claimed = _claimed_slugs_for_links(claims, lesson_links)
+        lesson = _current_lesson(lesson_links, claimed_slugs=claimed)
+        tale_slug = _lesson_reward_slug(lesson)
+        current_claim = _claim_for_lesson(claims, lesson)
         reward_items = (
             rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
         )
@@ -1716,8 +1849,9 @@ def build_child_cabinet(
             events=events,
             group_code=legacy_group,
             assets_base=assets_base,
+            claimed_slugs=claimed,
         )
-        weekly_lessons = _weekly_lesson_cards(weekly_source)
+        weekly_lessons = _weekly_lesson_cards(weekly_source, claimed_slugs=claimed)
         daily = weekly_lessons[0] if weekly_lessons else None
         missions = _missions(events, lesson, points, chest)
         missions_title = "Миссии на эту неделю"
@@ -1730,8 +1864,12 @@ def build_child_cabinet(
             if lesson and lesson.get("title")
             else None
         )
-        story_stages = _story_stages(lesson_links)
-        continue_url = lesson.get("url") if lesson and lesson.get("url") else None
+        story_stages = _story_stages(lesson_links, claimed_slugs=claimed)
+        continue_url = (
+            None
+            if lesson and _lesson_chest_claimed(lesson, claimed)
+            else (lesson.get("url") if lesson and lesson.get("url") else None)
+        )
         track_sections = []
 
     levels_ui = []
@@ -1758,12 +1896,15 @@ def build_child_cabinet(
 
     soft_earned = (
         _trial_soft_earned_badges(events, claims, lesson_links)
-        if cabinet_mode == "trial_early"
+        if cabinet_mode in ("trial_early", "paid_early")
+        or (cabinet_mode == "full" and _tracks_have_early(tracks))
         else set()
     )
-    if cabinet_mode == "trial_early":
+    if cabinet_mode == "trial_early" or (
+        cabinet_mode == "full" and _tracks_have_early(tracks)
+    ):
         earned_set = _filter_trial_earned_badges(earned_set, soft_earned, events)
-    badge_catalog = _badge_catalog_for_mode(cabinet_mode)
+    badge_catalog = _badge_catalog_for_mode(cabinet_mode, tracks)
     badges_ui, badges_earned_count = _build_badges_ui(
         earned_set=earned_set,
         soft_earned=soft_earned,
@@ -1793,7 +1934,7 @@ def build_child_cabinet(
         "hint": COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"]),
         "lesson_url": continue_url,
     }
-    recent_toast = recent_event_slovik(events)
+    recent_toast = recent_event_slovik(events, current_badges=list(earned_set))
     path_hint = _build_path_hint(
         events=events,
         tracks=track_sections,

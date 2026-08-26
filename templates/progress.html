@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260826c">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260826g">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -281,16 +281,18 @@
         {% endif %}
         {% endmacro %}
 
-        {% macro render_weekly_lessons(track) %}
-        {% if track.weekly_lessons %}
+        {% macro render_weekly_lessons(track, weeks=none) %}
+        {% set week_list = weeks if weeks is not none else (track.weekly_lessons or []) %}
+        {% if week_list %}
         <section class="chit-panel chit-panel--mission">
           <h2 class="chit-section-title">{{ track.weekly_lessons_label or 'Урок этой недели' }}</h2>
           {% if track.group_label %}
           <p class="chit-section-sub">{{ track.group_label }}</p>
           {% endif %}
-          {% for weekly in track.weekly_lessons %}
-          <div class="chit-lesson-card chit-lesson-card--daily{% if weekly.cover_state == 'open' %} chit-lesson-card--open{% endif %}">
-            {% if weekly.url %}
+          {% for weekly in week_list %}
+          {% set done = weekly.chest_claimed or weekly.cover_state == 'done' or (track.chest.claimed and track.chest.tale_slug and weekly.tale_slug == track.chest.tale_slug) or (track.chest.claimed and track.chest.tale_title and weekly.title == track.chest.tale_title) %}
+          <div class="chit-lesson-card chit-lesson-card--daily{% if done %} chit-lesson-card--done{% elif weekly.cover_state == 'open' %} chit-lesson-card--open{% endif %}">
+            {% if weekly.url and not done %}
             <a class="chit-lesson-card__cover chit-lesson-card__cover-link chit-story-card__cover chit-story-card__cover--{{ weekly.cover_state }}" href="{{ weekly.url }}" aria-label="Начать урок: {{ weekly.title }}">
               {% if weekly.cover_url %}
               <img src="{{ weekly.cover_url }}" alt="" loading="lazy">
@@ -299,13 +301,17 @@
               {% endif %}
             </a>
             {% else %}
-            <div class="chit-lesson-card__cover chit-story-card__cover chit-story-card__cover--{{ weekly.cover_state }}">
+            <div class="chit-lesson-card__cover chit-story-card__cover chit-story-card__cover--{% if done %}done{% else %}{{ weekly.cover_state }}{% endif %}">
               {% if weekly.cover_url %}
               <img src="{{ weekly.cover_url }}" alt="" loading="lazy">
               {% else %}
               <div class="chit-story-card__placeholder" aria-hidden="true"></div>
               {% endif %}
-              {% if weekly.cover_state != 'open' %}
+              {% if done %}
+              <div class="chit-story-card__overlay">
+                <span>Пройдено</span>
+              </div>
+              {% elif weekly.cover_state != 'open' %}
               <div class="chit-story-card__overlay">
                 <span>{% if weekly.opens_on_label %}Откроется {{ weekly.opens_on_label }}{% else %}Скоро{% endif %}</span>
               </div>
@@ -319,7 +325,9 @@
                 <span>⏱ {{ weekly.duration }}</span>
                 <span>✨ +{{ weekly.reward_pts }} {{ weekly.reward_label or 'Словиков и шаг к сундуку' }}</span>
               </div>
-              {% if weekly.url %}
+              {% if done %}
+              <a class="chit-btn" href="#treasury-all">В сокровищницу</a>
+              {% elif weekly.url %}
               <a class="chit-btn" href="{{ weekly.url }}">Начать урок</a>
               {% else %}
               <p class="chit-lesson-card__soon">Откроется: {{ weekly.opens_on_label }}</p>
@@ -367,7 +375,15 @@
             {% endif %}
           </section>
           {% for track in cab.tracks %}
-          {% set current_lesson = track.weekly_lessons[0] if track.weekly_lessons else none %}
+          {% set ns = namespace(active=[]) %}
+          {% for weekly in track.weekly_lessons or [] %}
+            {% set done = weekly.chest_claimed or weekly.cover_state == 'done' or (track.chest.claimed and track.chest.tale_slug and weekly.tale_slug == track.chest.tale_slug) or (track.chest.claimed and track.chest.tale_title and weekly.title == track.chest.tale_title) %}
+            {% if not done %}
+              {% if ns.active.append(weekly) %}{% endif %}
+            {% endif %}
+          {% endfor %}
+          {% set active_weeks = ns.active if ns.active else (track.weekly_lessons or []) %}
+          {% set current_lesson = active_weeks[0] if active_weeks else none %}
           {% if current_lesson and (current_lesson.headline or current_lesson.title) %}
           <section class="chit-current-lesson">
             {% if track.group_label %}
@@ -380,8 +396,11 @@
             <h2 class="chit-current-lesson__title">{{ track.group_label }}</h2>
           </section>
           {% endif %}
-          {{ render_weekly_lessons(track) }}
+          {{ render_weekly_lessons(track, active_weeks) }}
+          {# Забранный сундук не держим сверху — награды уже в сокровищнице. #}
+          {% if not track.chest.claimed %}
           {{ render_chest(track, child, loop.index, '#treasury-all') }}
+          {% endif %}
           {% if track.upcoming_lessons %}
           <section class="chit-panel chit-panel--stories chit-panel--upcoming">
             <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
@@ -421,9 +440,9 @@
               <div class="chit-story-grid">
                 {% for tale in stage.lessons %}
                 <article class="chit-story-card chit-story-card--{{ tale.cover_state }}">
-                  {% if tale.url %}
+                  {% if tale.url and tale.cover_state != 'done' and not tale.chest_claimed %}
                   <a class="chit-story-card__link" href="{{ tale.url }}">
-                  {% elif track.is_trial and track.buy_url and tale.cover_state != 'open' %}
+                  {% elif track.is_trial and track.buy_url and tale.cover_state != 'open' and tale.cover_state != 'done' %}
                   <a class="chit-story-card__link" href="{{ track.buy_url }}" target="_blank" rel="noopener">
                   {% else %}
                   <div class="chit-story-card__link chit-story-card__link--static">
@@ -434,7 +453,11 @@
                       {% else %}
                       <div class="chit-story-card__placeholder" aria-hidden="true"></div>
                       {% endif %}
-                      {% if tale.cover_state != 'open' %}
+                      {% if tale.cover_state == 'done' or tale.chest_claimed %}
+                      <div class="chit-story-card__overlay">
+                        <span class="chit-story-card__overlay-label">Пройдено</span>
+                      </div>
+                      {% elif tale.cover_state != 'open' %}
                       <div class="chit-story-card__overlay">
                         <span class="chit-story-card__overlay-label">Скоро</span>
                         <span class="chit-story-card__overlay-date">
@@ -450,7 +473,7 @@
                       <span class="chit-story-card__buy">Выбрать тариф</span>
                       {% endif %}
                     </div>
-                  {% if tale.url or (track.is_trial and track.buy_url and tale.cover_state != 'open') %}
+                  {% if (tale.url and tale.cover_state != 'done' and not tale.chest_claimed) or (track.is_trial and track.buy_url and tale.cover_state != 'open' and tale.cover_state != 'done') %}
                   </a>
                   {% else %}
                   </div>
@@ -524,14 +547,24 @@
           <p class="chit-treasury-empty">Открой сундук ниже — награды появятся здесь.</p>
           {% endif %}
         </section>
-        {% set legacy_lesson = legacy_track.weekly_lessons[0] if legacy_track.weekly_lessons else none %}
+        {% set ns_legacy = namespace(active=[]) %}
+        {% for weekly in legacy_track.weekly_lessons or [] %}
+          {% set done = weekly.chest_claimed or weekly.cover_state == 'done' or (legacy_track.chest.claimed and legacy_track.chest.tale_slug and weekly.tale_slug == legacy_track.chest.tale_slug) or (legacy_track.chest.claimed and legacy_track.chest.tale_title and weekly.title == legacy_track.chest.tale_title) %}
+          {% if not done %}
+            {% if ns_legacy.active.append(weekly) %}{% endif %}
+          {% endif %}
+        {% endfor %}
+        {% set legacy_weeks = ns_legacy.active if ns_legacy.active else (legacy_track.weekly_lessons or []) %}
+        {% set legacy_lesson = legacy_weeks[0] if legacy_weeks else none %}
         {% if legacy_lesson and (legacy_lesson.headline or legacy_lesson.title) %}
         <section class="chit-current-lesson">
           <h2 class="chit-current-lesson__title">{{ legacy_lesson.headline or legacy_lesson.title }}</h2>
         </section>
         {% endif %}
-        {{ render_weekly_lessons(legacy_track) }}
+        {{ render_weekly_lessons(legacy_track, legacy_weeks) }}
+        {% if not legacy_track.chest.claimed %}
         {{ render_chest(legacy_track, child, 1, '#treasury-all') }}
+        {% endif %}
         {% if cab.story_stages %}
         <section class="chit-panel chit-panel--stories">
           <h2 class="chit-section-title">{% if cab.is_early %}Мои уроки{% else %}Мои сказки{% endif %}</h2>
@@ -931,8 +964,8 @@
   </div>
 
   <script src="/static/chit-image-guard.js?v=20260708a"></script>
-  <script src="/static/chest_reveal.js?v=20260819c"></script>
-  <script src="/static/lesson_slovik.js?v=20260824c"></script>
-  <script src="/static/progress_cabinet.js?v=20260826c"></script>
+  <script src="/static/chest_reveal.js?v=20260826g"></script>
+  <script src="/static/lesson_slovik.js?v=20260826g"></script>
+  <script src="/static/progress_cabinet.js?v=20260826g"></script>
 </body>
 </html>

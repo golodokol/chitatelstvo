@@ -157,10 +157,15 @@ def companion_key(
     return "reads"
 
 
-def event_toast_message(event_type: str, *, tale_title: str | None = None) -> str:
+def event_toast_message(
+    event_type: str,
+    *,
+    tale_title: str | None = None,
+    current_badges: list[str] | None = None,
+) -> str:
     reward = apply_badge_rules(
         event_type,
-        [],
+        list(current_badges or []),
         "Старт",
         tale_title=tale_title,
     )
@@ -223,10 +228,20 @@ def lesson_step_key(
     return "reads"
 
 
-def recent_event_slovik(events: list[Any]) -> dict[str, Any] | None:
-    """Последнее событие для toast в кабинете."""
+def recent_event_slovik(
+    events: list[Any],
+    *,
+    current_badges: list[str] | None = None,
+) -> dict[str, Any] | None:
+    """Последнее событие для toast в кабинете.
+
+    Уже полученные бейджи не подставляем снова (current_badges → apply_badge_rules).
+    Early-квест: сначала бонусные бейджи (Искатель / Слоговик), не только «Читатель».
+    """
     if not events:
         return None
+    owned = list(current_badges or [])
+    owned_set = set(owned)
     ev = events[0]
     et = getattr(ev, "event_type", "") or ""
     tale_title = getattr(ev, "tale_title", None)
@@ -236,29 +251,60 @@ def recent_event_slovik(events: list[Any]) -> dict[str, Any] | None:
         if payload.get("chest_ready") is not True:
             return None
     try:
-        reward = apply_badge_rules(et, [], "Старт", tale_title=tale_title)
+        reward = apply_badge_rules(et, owned, "Старт", tale_title=tale_title)
     except ValueError:
         return None
     # «Читатель» после букв не показываем, даже если в БД бейдж уже ошибочно есть.
     if reward.get("badge_name") == "Читатель" and is_early_letters_title(tale_title):
         reward = {**reward, "badge_name": None}
-    if not reward.get("points") and not reward.get("badge_name"):
+    badge = reward.get("badge_name")
+    pts = int(reward.get("points") or 0)
+
+    # Бонусы early-квеста важнее «Читателя» из EVENT_RULES (иначе всплывает только он).
+    # Логика как в check_early_quest_badges — без импорта bonus_badges (тяжёлые зависимости).
+    if et == "lesson_complete" and is_early_quest_title(tale_title):
+        early_new: list[str] = []
+        try:
+            sparks = int(payload.get("sparks") or 0) if isinstance(payload, dict) else 0
+        except (TypeError, ValueError):
+            sparks = 0
+        chest_ok = isinstance(payload, dict) and (
+            payload.get("chest_ready") is True or sparks >= 3
+        )
+        if chest_ok:
+            if "Искатель искорок" not in owned_set:
+                early_new.append("Искатель искорок")
+            if is_early_letters_title(tale_title) and "Слоговик" not in owned_set:
+                early_new.append("Слоговик")
+        if early_new:
+            # Слоговик приоритетнее Искателя на уроке букв.
+            badge = early_new[-1]
+    if not pts and not badge:
+        return None
+    # Повторный вход: бейдж уже в коллекции — не крутим toast только за старые очки.
+    if (
+        not badge
+        and pts
+        and et in ("lesson_complete", "reading_practice")
+        and any(b == "Читатель" for b in owned)
+    ):
         return None
     key = event_slovik_key(et, big=et in BIG_EVENT_SLOVIK)
     created = getattr(ev, "created_at", None)
-    badge = reward.get("badge_name")
-    pts = int(reward.get("points") or 0)
     badge_image = None
     if badge:
         filename = BADGE_ASSET_FILES.get(badge)
         if filename:
             badge_image = f"/assets/{filename}"
+    msg = event_toast_message(et, tale_title=tale_title, current_badges=owned)
+    if badge and badge not in (reward.get("badge_name"), None):
+        msg = f"+{pts} Словиков · бейдж «{badge}»" if pts else f"Бейдж «{badge}»!"
     return {
         "key": key,
         "url": slovik_url(key),
         "event_type": et,
-        "message": event_toast_message(et, tale_title=tale_title),
-        "toast_id": f"{et}-{created.isoformat() if created else '0'}",
+        "message": msg,
+        "toast_id": f"{et}-{created.isoformat() if created else '0'}-{badge or 'pts'}",
         "points": pts,
         "badge": badge,
         "badge_image": badge_image,

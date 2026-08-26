@@ -479,7 +479,7 @@
     var base = (cfg.assetsBase || "").replace(/\/$/, "");
     var url = base + path;
     if (/\.(png|jpe?g|webp)$/i.test(path) && url.indexOf("?") < 0) {
-      url += "?v=20260825u";
+      url += "?v=20260826g";
     }
     return url;
   }
@@ -961,7 +961,11 @@
     appendCoach(station, canvas);
     if (sceneUrl) {
       field.classList.add("quest-playfield--has-scene");
-      canvas.style.backgroundImage = "url('" + sceneUrl + "')";
+      // Inline size/position: CSS media-rules must not wipe the scene photo.
+      canvas.style.backgroundImage = 'url("' + String(sceneUrl).replace(/"/g, "%22") + '")';
+      canvas.style.backgroundSize = "cover";
+      canvas.style.backgroundPosition = "center top";
+      canvas.style.backgroundRepeat = "no-repeat";
     } else if (hasVideo) {
       field.classList.add("quest-playfield--video");
     }
@@ -1564,6 +1568,11 @@
         var im = document.createElement("img");
         im.src = assetUrl(hs.image);
         im.alt = hs.label || hs.id;
+        im.width = 240;
+        im.height = 240;
+        im.decoding = "async";
+        im.loading = i < 6 ? "eager" : "lazy";
+        if (i < 3) im.fetchPriority = "high";
         btn.appendChild(im);
       }
       if ((hs.caption || station.captions) && hs.label) {
@@ -1882,19 +1891,18 @@
     }));
     var need = order.filter(function (p) { return p.correct; }).length;
     var slots = station.slots || need;
+    // Same spot source on mobile and web — never discard catalog piece_spots
+    // (old mobile override forced a ring + flex stack → letters in neat rows).
     var rawSpots = (station.piece_spots && station.piece_spots.length >= order.length)
       ? station.piece_spots
       : puzzleRingSpots(order.length);
-    if (window.innerWidth < 640) {
-      rawSpots = puzzleRingSpots(order.length);
-    }
     var spots = separateSpots(
       rawSpots.map(function (s) {
-        return window.innerWidth < 640 ? s : avoidTopSlotZone(s.x, s.y);
+        return avoidTopSlotZone(s.x, s.y);
       }),
-      window.innerWidth < 640 ? 22 : 16,
-      window.innerWidth < 640 ? 50 : 28,
-      window.innerWidth < 640 ? 92 : 72
+      window.innerWidth < 640 ? 20 : 16,
+      window.innerWidth < 640 ? 36 : 28,
+      window.innerWidth < 640 ? 90 : 72
     );
     var filled = 0;
     var slotRow = document.createElement("div");

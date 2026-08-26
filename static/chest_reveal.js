@@ -140,6 +140,18 @@
     if (revealStage) revealStage.hidden = false;
   }
 
+  async function openAndClaim(panel) {
+    activePanel = panel;
+    activeItems = panelItems(panel);
+    if (subEl) {
+      subEl.textContent = 'Посмотри награды. Они уже сохраняются в сокровищницу.';
+    }
+    renderRewards(activeItems);
+    await playOpenAnimation(panel);
+    // Сразу сохраняем — иначе при закрытии модалки сундук «открыт», а наград нет.
+    await claimReward();
+  }
+
   function closeModal() {
     modal.hidden = true;
     document.body.style.overflow = '';
@@ -325,6 +337,18 @@
       }
       claimBtn.textContent = 'Смотреть сокровищницу';
       claimBtn.disabled = false;
+      if (data.badge_name && window.ChitSlovik && window.ChitSlovik.showReward) {
+        var badgeName = data.badge_name;
+        var badgeImage =
+          (window.ChitSlovik.BADGE_IMAGES && window.ChitSlovik.BADGE_IMAGES[badgeName]) || '';
+        window.ChitSlovik.showReward({
+          badge: badgeName,
+          badgeImage: badgeImage,
+          message: 'Бейдж «' + badgeName + '»!',
+          points: 0,
+          slovikKey: 'reward',
+        });
+      }
     } catch (err) {
       claimBtn.disabled = false;
       if (subEl) subEl.textContent = (err && err.message) || 'Не удалось сохранить награду';
@@ -335,13 +359,25 @@
     openFromPanel: function (panel) {
       if (!panel || panel.getAttribute('data-chest-claimed') === '1') return;
       if (panel.getAttribute('data-chest-ready') !== '1') return;
-      activePanel = panel;
-      activeItems = panelItems(panel);
-      if (subEl) {
-        subEl.textContent = 'Посмотри награды. Потом нажми «Забрать награду» — они появятся в сокровищнице.';
+      openAndClaim(panel);
+    },
+    showClaimedInTreasury: function (panel) {
+      if (!panel) return;
+      var section = document.getElementById(treasuryIdFromHref(treasuryHref(panel)));
+      if (!section) {
+        section = document.getElementById('treasury-all');
       }
-      renderRewards(activeItems);
-      playOpenAnimation(panel);
+      if (!section) return;
+      var slug = panel.getAttribute('data-tale-slug') || '';
+      section.querySelectorAll('.chit-treasury-item').forEach(function (item) {
+        var match = !slug || item.getAttribute('data-tale-slug') === slug;
+        item.classList.toggle('is-highlight', match);
+      });
+      if (window.ChitTreasury && window.ChitTreasury.showTale) {
+        window.ChitTreasury.showTale(section, slug);
+      }
+      scrollToTreasury(section);
+      focusChestPanel(panel);
     },
   };
 

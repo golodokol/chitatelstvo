@@ -47,6 +47,12 @@
     'Исследователь сказки': '/assets/gamify-badge-module-explorer.png',
     'Непрерывная серия': '/assets/gamify-badge-streak.png',
     'Путешественник по сказке': '/assets/gamify-badge-tale-traveler.png',
+    'Искатель искорок': '/assets/gamify-badge-spark-hunter.png',
+    'Хранитель сундука': '/assets/gamify-badge-chest-keeper.png',
+    'Слоговик': '/assets/gamify-badge-syllable-master.png',
+    'Знаю букву М': '/assets/gamify-badge-letter-m.png',
+    'Словарик': '/assets/gamify-badge-word-book.png',
+    'Друг Словика': '/assets/gamify-badge-slovik-friend.png',
   };
 
   var EVENT_SLOVIK = {
@@ -123,6 +129,16 @@
     // null с сервера = «бейджа нет» (напр. урок букв). Не подменять на EVENT_BADGES.
     var badge = Object.prototype.hasOwnProperty.call(opts, 'badge') ? opts.badge : parts.badge;
     var points = opts.points != null ? opts.points : parts.points;
+    if (badge) {
+      try {
+        var badgeKey = 'chit-badge-seen-' + badge;
+        if (window.localStorage && localStorage.getItem(badgeKey)) {
+          badge = null;
+        } else if (window.localStorage) {
+          localStorage.setItem(badgeKey, '1');
+        }
+      } catch (e) {}
+    }
     var slovikKey = opts.slovikKey || EVENT_SLOVIK[eventType] || 'reward';
     var urls = opts.urls || {};
     var slovikUrl = opts.slovikUrl || (urls && urls[slovikKey]) || (urls && urls.reward) || '/static/sloviki/slovik-reward.png';

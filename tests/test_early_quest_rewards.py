@@ -95,7 +95,7 @@ def test_cabinet_toast_skips_incomplete_early_quest():
     assert toast is None
 
 
-def test_cabinet_toast_letters_complete_has_no_reader_badge():
+def test_cabinet_toast_letters_complete_shows_syllable_not_reader():
     toast = recent_event_slovik(
         [
             _Ev(
@@ -106,11 +106,11 @@ def test_cabinet_toast_letters_complete_has_no_reader_badge():
         ]
     )
     assert toast is not None
-    assert toast["badge"] is None
+    assert toast["badge"] == "Слоговик"
     assert toast["points"] == EARLY_QUEST_COMPLETE_POINTS
 
 
-def test_cabinet_toast_stories_complete_shows_reader():
+def test_cabinet_toast_stories_complete_prefers_spark_over_reader():
     toast = recent_event_slovik(
         [
             _Ev(
@@ -121,5 +121,33 @@ def test_cabinet_toast_stories_complete_shows_reader():
         ]
     )
     assert toast is not None
+    assert toast["badge"] == "Искатель искорок"
+
+
+def test_cabinet_toast_stories_shows_reader_when_spark_owned():
+    toast = recent_event_slovik(
+        [
+            _Ev(
+                "lesson_complete",
+                "Спаси первую историю",
+                {"chest_ready": True, "sparks": 3},
+            )
+        ],
+        current_badges=["Искатель искорок"],
+    )
+    assert toast is not None
     assert toast["badge"] == "Читатель"
+
+
+def test_cabinet_toast_hides_owned_reader_badge():
+    toast = recent_event_slovik(
+        [
+            _Ev(
+                "lesson_complete",
+                "Царевна лягушка",
+            )
+        ],
+        current_badges=["Читатель"],
+    )
+    assert toast is None
 

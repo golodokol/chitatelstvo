@@ -72,15 +72,15 @@
       "hint": "Выбери всё, что шумит!",
       "correct_ids": ["rain", "motor", "bell", "drum"],
       "hotspots": [
-        { "id": "rain", "label": "Дождь", "image": "/static/early/letters/rain.png", "x": 20, "y": 22 },
-        { "id": "bird", "label": "Птица", "image": "/static/early/letters/bird.png", "x": 50, "y": 22 },
-        { "id": "house", "label": "Дом", "image": "/static/early/letters/house.png", "x": 80, "y": 22 },
-        { "id": "ball", "label": "Мяч", "image": "/static/early/letters/ball.png", "x": 20, "y": 50 },
-        { "id": "motor", "label": "Мотор", "image": "/static/early/letters/motor.png", "x": 50, "y": 50 },
-        { "id": "arbuz", "label": "Арбуз", "image": "/static/early/letters/arbuz.png", "x": 80, "y": 50 },
-        { "id": "drum", "label": "Барабан", "image": "/static/early/letters/drum.png", "x": 20, "y": 78 },
-        { "id": "cup", "label": "Чашка", "image": "/static/early/letters/cup.png", "x": 50, "y": 78 },
-        { "id": "bell", "label": "Колокольчик", "image": "/static/early/letters/bell.png", "x": 80, "y": 78 }
+        { "id": "rain", "label": "Дождь", "image": "/static/early/letters/rain.webp", "x": 20, "y": 22 },
+        { "id": "bird", "label": "Птица", "image": "/static/early/letters/bird.webp", "x": 50, "y": 22 },
+        { "id": "house", "label": "Дом", "image": "/static/early/letters/house.webp", "x": 80, "y": 22 },
+        { "id": "ball", "label": "Мяч", "image": "/static/early/letters/ball.webp", "x": 20, "y": 50 },
+        { "id": "motor", "label": "Мотор", "image": "/static/early/letters/motor.webp", "x": 50, "y": 50 },
+        { "id": "arbuz", "label": "Арбуз", "image": "/static/early/letters/arbuz.webp", "x": 80, "y": 50 },
+        { "id": "drum", "label": "Барабан", "image": "/static/early/letters/drum.webp", "x": 20, "y": 78 },
+        { "id": "cup", "label": "Чашка", "image": "/static/early/letters/cup.webp", "x": 50, "y": 78 },
+        { "id": "bell", "label": "Колокольчик", "image": "/static/early/letters/bell.webp", "x": 80, "y": 78 }
       ],
       "spark": false,
       "spark_group": "sound"
@@ -253,12 +253,12 @@
       "grid_cols": 3,
       "correct_ids": ["aist", "arbuz"],
       "hotspots": [
-        { "id": "aist", "label": "Аист", "image": "/static/early/letters/aist.png", "x": 20, "y": 28 },
-        { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png", "x": 50, "y": 28 },
-        { "id": "myach", "label": "Мяч", "image": "/static/early/letters/ball.png", "x": 80, "y": 28 },
-        { "id": "cup", "label": "Чашка", "image": "/static/early/letters/cup.png", "x": 20, "y": 72 },
-        { "id": "arbuz", "label": "Арбуз", "image": "/static/early/letters/arbuz.png", "x": 50, "y": 72 },
-        { "id": "dom", "label": "Дом", "image": "/static/early/letters/house.png", "x": 80, "y": 72 }
+        { "id": "aist", "label": "Аист", "image": "/static/early/letters/aist.webp", "x": 20, "y": 28 },
+        { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.webp", "x": 50, "y": 28 },
+        { "id": "myach", "label": "Мяч", "image": "/static/early/letters/ball.webp", "x": 80, "y": 28 },
+        { "id": "cup", "label": "Чашка", "image": "/static/early/letters/cup.webp", "x": 20, "y": 72 },
+        { "id": "arbuz", "label": "Арбуз", "image": "/static/early/letters/arbuz.webp", "x": 50, "y": 72 },
+        { "id": "dom", "label": "Дом", "image": "/static/early/letters/house.webp", "x": 80, "y": 72 }
       ],
       "spark": false,
       "spark_group": "syllable"
@@ -302,7 +302,7 @@
           "correct": "mama",
           "options": [
             { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png" },
-            { "id": "myach", "label": "Мяч", "image": "/static/early/letters/ball.png" },
+            { "id": "myach", "label": "Мяч", "image": "/static/early/letters/ball.webp" },
             { "id": "kot", "label": "Кот", "image": "/static/early/letters/kot.png" },
             { "id": "syr", "label": "Сыр", "image": "/static/early/letters/syr.png" }
           ]

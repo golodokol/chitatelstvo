@@ -1,0 +1,49 @@
+---
+description: Early quest layout — never thrash mobile vs desktop fixes
+globs:
+  - static/lesson_quest.css
+  - static/lesson_quest.js
+  - templates/lesson_quest.html
+alwaysApply: false
+---
+
+# Quest layout: mobile ↔ web без «карусели»
+
+Проблема, которую нельзя повторять: правка «для телефона» ломает десктоп, правка «для веба» снова ломает телефон.
+
+## Жёсткие правила
+
+1. **Никогда не меняй базовые (вне `@media`) правила ради одного viewport.**
+   - Телефон → только `@media (max-width: 640px)` или `(max-width: 560px)`.
+   - Десктоп → только `@media (min-width: 641px)` (и при необходимости `min-height`).
+2. **Правка одной станции — через модификатор поля**, не через общий `.quest-playfield--around`.
+   - Примеры: `--puzzle`, `--build`, `--maze`, `--meet`.
+   - Если слогам нужен stack на мобиле, пиши  
+     `.quest-playfield--around:not(.quest-playfield--puzzle)`,  
+     а не «всем around → flex».
+3. **Не сбрасывай absolute-россыпь глобально.**  
+   `left`/`top` % на `.quest-piece` работают только при `position: absolute`.  
+   Запрещено на `--puzzle`: `position: relative !important` / `left: auto !important` на кусочках.
+4. **Фон сцены:** на портрете и на `--puzzle` всегда `background-size: cover` (не `contain` — иначе бежевые поля «фото не грузится»).  
+   Inline `backgroundImage` + `backgroundSize` в `openPlayfield` не затирать CSS-shorthand `background:`.
+5. **JS:** не подменять `piece_spots` из каталога отдельным mobile-only кольцом, если споты уже заданы. Один источник координат для обоих viewport.
+6. **После любой правки layout** перед коммитом/деплоем проверь оба:
+   - телефон ≤560: «Мастерская буквы» — буквы рассыпаны, фото сцены видно;
+   - десктоп ≥900: та же станция + станция со слотами/слогами (`slot_build`) не наложились друг на друга.
+7. **Кэш:** при правке CSS/JS бампить `?v=` в `templates/lesson_quest.html` и в `assetUrl` в JS одной буквой/цифрой.
+
+## Якоря в CSS (не удалять без замены)
+
+- `MOBILE_AROUND_STACK` — stack только для around **без** puzzle.
+- `MOBILE_PUZZLE_SCATTER` — россыпь + cover фона для puzzle.
+- `WEB_*` / `MOBILE_*` комментарии — метки владельца viewport.
+
+## Чеклист регрессии (короткий)
+
+| Станция | Mobile | Web |
+|---------|--------|-----|
+| `letter_puzzle` | scatter + scene cover | scatter + slots сверху |
+| `slot_build` / around syllables | слоты и куски не наезжают | куски по краям |
+| `build_letter` | буква целиком в кадре | то же |
+| `scene_hunt` | сетка/хотспоты видны | то же |
+---

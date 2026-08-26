@@ -179,7 +179,7 @@ def _maybe_heal_first_step_badge(db: Session, child: Child) -> None:
 def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_BASE_URL) -> dict[str, Any]:
     maybe_grant_birthday_gift(db, child)
     _maybe_heal_first_step_badge(db, child)
-    events = repo.get_child_events(db, child.id, limit=20)
+    events = repo.get_child_events(db, child.id, limit=120)
     tale_ratings = repo.get_child_tale_ratings(db, child.id)
     chest_claims = repo.get_child_chest_claims(db, child.id)
     badges = [b.badge_name for b in child.badges]

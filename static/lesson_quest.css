@@ -2208,9 +2208,13 @@
 }
 
 
-/* MOBILE_AROUND_STACK: слова/слоты не наезжают друг на друга */
+/*
+  MOBILE_AROUND_STACK: слоты/слоги в колонку на узком экране.
+  НЕ применять к --puzzle: буквы должны оставаться рассыпанными (left/top %).
+  WEB не трогаем: только max-width 560px.
+*/
 @media (max-width: 560px) {
-  .quest-playfield--around .quest-playfield__surface {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-playfield__surface {
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -2218,7 +2222,7 @@
     gap: 10px;
     overflow: auto;
   }
-  .quest-playfield--around .quest-prompt-pic {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-prompt-pic {
     position: relative;
     z-index: 2;
     width: min(42vw, 140px);
@@ -2226,8 +2230,8 @@
     margin: 0 auto 4px;
     flex: 0 0 auto;
   }
-  .quest-playfield--around .quest-slots,
-  .quest-playfield--around .quest-slots.is-center {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-slots,
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-slots.is-center {
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -2236,20 +2240,20 @@
     margin: 0;
     flex: 0 0 auto;
   }
-  .quest-playfield--around .quest-slots.is-center.is-wide {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-slots.is-center.is-wide {
     flex-direction: column;
     align-items: stretch;
     width: min(100%, 220px);
     gap: 8px;
   }
-  .quest-playfield--around .quest-slots.is-center.is-wide .quest-slot,
-  .quest-playfield--around .quest-slots.is-center.is-wide .quest-slots__result {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-slots.is-center.is-wide .quest-slot,
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-slots.is-center.is-wide .quest-slots__result {
     width: 100%;
     min-width: 0;
     height: 56px;
     font-size: 1.35rem;
   }
-  .quest-playfield--around .quest-pieces {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-pieces {
     position: relative !important;
     inset: auto !important;
     display: flex !important;
@@ -2261,7 +2265,7 @@
     flex: 0 0 auto;
     padding: 4px 0 8px;
   }
-  .quest-playfield--around .quest-piece {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-piece {
     position: relative !important;
     left: auto !important;
     top: auto !important;
@@ -2270,10 +2274,52 @@
     min-height: 52px;
     font-size: 1.2rem;
   }
-  .quest-playfield--around .quest-slots.is-center ~ .quest-pieces .quest-piece {
+  .quest-playfield--around:not(.quest-playfield--puzzle) .quest-slots.is-center ~ .quest-pieces .quest-piece {
     min-width: 72px;
     min-height: 52px;
     font-size: 1.2rem;
+  }
+}
+
+/*
+  MOBILE_PUZZLE_SCATTER: зафиксировать россыпь + фон сцены на телефоне.
+  !important только здесь — чтобы не откатывалось MOBILE_AROUND_STACK / flex-базой.
+*/
+@media (max-width: 640px) {
+  .quest-playfield--puzzle.quest-playfield--around .quest-playfield__surface {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    padding: 56px 6px 8px;
+  }
+  .quest-playfield--puzzle .quest-slots {
+    position: absolute !important;
+    top: 26% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 4;
+    margin: 0;
+  }
+  .quest-playfield--puzzle .quest-pieces {
+    position: absolute !important;
+    inset: 8px !important;
+    display: block !important;
+    flex-wrap: unset !important;
+    justify-content: unset !important;
+    gap: 0 !important;
+    width: auto !important;
+    z-index: 2;
+  }
+  .quest-playfield--puzzle .quest-piece {
+    position: absolute !important;
+    transform: translate(-50%, -50%) !important;
+  }
+  .quest-playfield--puzzle.quest-playfield--has-scene .quest-playfield__canvas {
+    background-size: cover !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-color: #d9cbb4;
   }
 }
 
@@ -4619,7 +4665,7 @@
   .quest-playfield {
     margin: 0 4px;
   }
-  .quest-playfield--has-scene .quest-playfield__canvas,
+  .quest-playfield--has-scene:not(.quest-playfield--puzzle) .quest-playfield__canvas,
   .quest-playfield--build .quest-playfield__canvas,
   .quest-playfield--build.quest-playfield--has-scene .quest-playfield__canvas {
     aspect-ratio: auto;
@@ -4630,6 +4676,12 @@
     background-repeat: no-repeat;
     background-position: center center;
     overflow: visible;
+  }
+  /* puzzle: всегда cover — иначе «фото не грузится» (бежевые поля contain) */
+  .quest-playfield--puzzle.quest-playfield--has-scene .quest-playfield__canvas {
+    background-size: cover !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
   }
   .quest-playfield__surface {
     min-height: 0;

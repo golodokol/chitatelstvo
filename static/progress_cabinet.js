@@ -42,9 +42,16 @@
   var chestAutoOpened = false;
   function tryAutoOpenChest(panel) {
     if (!panel || chestAutoOpened) return;
+    if (!window.ChitChest) return;
+    if (panel.getAttribute('data-chest-claimed') === '1') {
+      chestAutoOpened = true;
+      if (window.ChitChest.showClaimedInTreasury) {
+        window.ChitChest.showClaimedInTreasury(panel);
+      }
+      return;
+    }
     if (panel.getAttribute('data-chest-ready') !== '1') return;
-    if (panel.getAttribute('data-chest-claimed') === '1') return;
-    if (!window.ChitChest || !window.ChitChest.openFromPanel) return;
+    if (!window.ChitChest.openFromPanel) return;
     chestAutoOpened = true;
     window.ChitChest.openFromPanel(panel);
   }
@@ -64,6 +71,7 @@
         }
         if (!panel && (params.get('chest') || params.get('open_chest') === '1')) {
           panel = document.querySelector('.chit-panel--chest.is-ready') ||
+            document.querySelector('.chit-panel--chest.is-claimed') ||
             document.querySelector('.chit-panel--chest');
         }
       } catch (e) {}
@@ -153,16 +161,36 @@
   function showRoomToast(data) {
     if (!data || !data.toast_id) return;
     var key = 'chit-slovik-toast-' + data.toast_id;
-    if (sessionStorage.getItem(key)) return;
-    sessionStorage.setItem(key, '1');
+    var store = null;
+    try { store = window.localStorage; } catch (e) { store = null; }
+    if (!store) {
+      try { store = window.sessionStorage; } catch (e2) { store = null; }
+    }
+    if (store && store.getItem(key)) return;
+
+    var badge = data.badge || null;
+    if (badge && store) {
+      var badgeKey = 'chit-badge-seen-' + badge;
+      if (store.getItem(badgeKey)) {
+        badge = null;
+        if (!data.points) return;
+      }
+    }
+
+    if (store) {
+      try {
+        store.setItem(key, '1');
+        if (data.badge) store.setItem('chit-badge-seen-' + data.badge, '1');
+      } catch (e3) {}
+    }
     if (!window.ChitSlovik || !window.ChitSlovik.showReward) return;
     window.ChitSlovik.showReward({
       eventType: data.event_type,
       slovikKey: data.key,
       slovikUrl: data.url,
       message: data.message,
-      badge: data.badge,
-      badgeImage: data.badge_image,
+      badge: badge,
+      badgeImage: badge ? data.badge_image : null,
       points: data.points,
     });
   }
@@ -288,6 +316,27 @@
         return;
       }
       document.querySelectorAll('[data-treasury]').forEach(initTreasuryPager);
+    },
+    showTale: function (root, taleSlug) {
+      if (!root) return;
+      initTreasuryPager(root);
+      var grid = root.querySelector('.chit-treasury-grid');
+      if (!grid) return;
+      var list = Array.prototype.slice.call(grid.querySelectorAll('.chit-treasury-item'));
+      if (!list.length) return;
+      var idx = 0;
+      if (taleSlug) {
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].getAttribute('data-tale-slug') === taleSlug) {
+            idx = i;
+            break;
+          }
+        }
+      }
+      var size = Math.max(1, treasuryColumnCount(grid) * TREASURY_MAX_ROWS);
+      var page = Math.floor(idx / size);
+      root.setAttribute('data-treasury-page', String(page));
+      if (root._chitTreasuryRender) root._chitTreasuryRender();
     },
   };
 
