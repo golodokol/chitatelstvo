@@ -1527,15 +1527,15 @@
     if (moving && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       moving = false;
     }
-    var useGrid = !moving && (station.layout === "grid" || (!letterTiles && hotspots.length >= 4));
-    var spots = useGrid ? gridPositions(hotspots.length, station.grid_cols || 3) : null;
+    // Absolute % positions are more reliable than CSS-grid centering:
+    // on some viewports the grid layer collapsed and tiles stacked/clipped on the left.
+    var layoutGrid = !moving && (station.layout === "grid" || (!letterTiles && hotspots.length >= 4));
+    var useGrid = false;
+    var spots = layoutGrid ? gridPositions(hotspots.length, station.grid_cols || 3) : null;
     var scene = document.createElement("div");
-    scene.className = "quest-scene" + (moving ? " is-moving" : "") + (useGrid ? " is-grid" : "");
+    scene.className = "quest-scene" + (moving ? " is-moving" : "");
     var layer = document.createElement("div");
-    layer.className = "quest-scene__hotspots" + (useGrid ? " is-css-grid" : "");
-    if (useGrid) {
-      layer.style.setProperty("--quest-grid-cols", String(station.grid_cols || (hotspots.length <= 4 ? 2 : 3)));
-    }
+    layer.className = "quest-scene__hotspots";
     var wanderers = [];
     var count = null;
     if (need.length > 1) {
