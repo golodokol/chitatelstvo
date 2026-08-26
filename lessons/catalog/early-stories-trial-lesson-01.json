@@ -30,7 +30,7 @@
       "scene_image": "/static/early/stories/scene-book.jpg",
       "video": {
         "type": "html5",
-        "src": "/static/early/video/ph-trial-intro.mp4",
+        "src": "/static/early/video/ph-trial-intro.mp4?v=h264-1",
         "poster": "/static/early/stories/scene-book.jpg",
         "title": "Спаси первую историю"
       },

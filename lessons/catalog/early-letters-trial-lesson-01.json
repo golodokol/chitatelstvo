@@ -30,7 +30,7 @@
       "scene_image": "/static/early/letters/scene-gate.jpg",
       "video": {
         "type": "html5",
-        "src": "/static/early/video/bo-trial-intro.mp4",
+        "src": "/static/early/video/bo-trial-intro.mp4?v=h264-1",
         "poster": "/static/early/letters/scene-gate.jpg",
         "title": "Словик и пропавшие звуки"
       },
