@@ -4838,3 +4838,70 @@
   }
 }
 
+/* Заставка загрузки — не показываем пустые поля пока грузятся картинки и звук */
+.quest-preload {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse 120% 80% at 10% 0%, #efe6d8 0%, transparent 55%),
+    radial-gradient(ellipse 90% 70% at 90% 20%, #e4ece6 0%, transparent 50%),
+    linear-gradient(180deg, #f3eee6 0%, #ebe4d8 45%, #e7e0d4 100%);
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+.quest-preload.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.quest-preloading .quest-wrap {
+  visibility: hidden;
+}
+.quest-preload__card {
+  width: min(100%, 360px);
+  padding: 28px 24px 22px;
+  border-radius: 24px;
+  text-align: center;
+  background: rgba(255, 252, 247, 0.96);
+  box-shadow:
+    0 18px 40px rgba(42, 38, 34, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+.quest-preload__slovik {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  box-shadow: 0 8px 20px rgba(42, 38, 34, 0.12);
+}
+.quest-preload__title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #2a2622;
+}
+.quest-preload__hint {
+  margin: 0 0 18px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgba(42, 38, 34, 0.72);
+}
+.quest-preload__bar {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(42, 38, 34, 0.08);
+}
+.quest-preload__bar-fill {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5b7fa6, #7aa6c8);
+  transition: width 0.25s ease;
+}

@@ -74,6 +74,7 @@
 
   var autoAdvanceGen = 0;
   var autoAdvanceTimer = null;
+  var navLock = false;
 
   function cancelAutoAdvance() {
     autoAdvanceGen += 1;
@@ -139,8 +140,7 @@
     if (
       kind === "intro_video" ||
       kind === "reward" ||
-      kind === "enter" ||
-      kind === "break"
+      kind === "enter"
     ) {
       return false;
     }
@@ -524,6 +524,24 @@
     updatePath();
   }
 
+  function updateNextButton() {
+    if (!btnNext) return;
+    var station = stations[idx];
+    var kind = station && station.kind;
+    if (!station || kind === "intro_video" || kind === "reward") {
+      btnNext.hidden = true;
+      btnNext.disabled = false;
+      return;
+    }
+    if (stationCleared && shouldAutoAdvance(station)) {
+      btnNext.hidden = true;
+      btnNext.disabled = true;
+      return;
+    }
+    btnNext.hidden = false;
+    btnNext.disabled = false;
+  }
+
   function enableNext(show) {
     stationCleared = !!show;
     if (!show) {
@@ -546,13 +564,11 @@
         });
       }
     }
-    if (!btnNext) return;
-    var station = stations[idx];
-    var kind = station && station.kind;
-    btnNext.hidden = !station || kind === "intro_video";
+    updateNextButton();
   }
 
   function onNextClick() {
+    cancelAutoAdvance();
     if (stationCleared) {
       goNext();
       return;
@@ -724,6 +740,8 @@
   }
 
   function goNext() {
+    if (navLock) return;
+    navLock = true;
     cancelAutoAdvance();
     hideMsg();
     var cur = stations[idx];
@@ -745,10 +763,12 @@
     }
     function proceed() {
       if (next < 0 || next >= stations.length) {
+        navLock = false;
         completeLesson();
         return;
       }
       goToStation(next);
+      navLock = false;
     }
     if (got && got !== "spark") {
       showSparkFly(got, proceed);
@@ -3609,18 +3629,187 @@
       btnAudio.hidden = kind === "intro_video" || kind === "reward";
       if (!btnAudio.hidden) btnAudio.textContent = "Послушать Словика";
     }
-    if (btnNext && kind === "reward") {
-      btnNext.hidden = true;
-    } else if (btnNext && kind !== "intro_video") {
+    if (btnNext && kind !== "intro_video" && kind !== "reward") {
       btnNext.onclick = onNextClick;
       btnNext.textContent = "Дальше";
     }
+    updateNextButton();
+  }
+
+  function collectPreloadUrls() {
+    var seen = {};
+    var list = [];
+    function add(path) {
+      if (!path) return;
+      var url = assetUrl(path);
+      if (!url || seen[url]) return;
+      seen[url] = true;
+      list.push(url);
+    }
+    function addAudio(id) {
+      audioCandidates(id).forEach(function (url) {
+        if (!url || seen[url]) return;
+        seen[url] = true;
+        list.push(url);
+      });
+    }
+    function walkStation(st) {
+      if (!st) return;
+      add(st.scene_image);
+      add(st.letter_image);
+      add(st.prompt_image);
+      add(st.image);
+      add(st.spark_image);
+      if (st.video) {
+        if (typeof st.video === "string") add(st.video);
+        else {
+          add(st.video.src);
+          add(st.video.poster);
+        }
+      }
+      addAudio(st.audio);
+      addAudio(st.sound);
+      addAudio(st.success_audio);
+      addAudio(st.fail_audio);
+      addAudio(st.finale_audio);
+      (st.hotspots || []).forEach(function (hs) { add(hs.image); });
+      (st.lines || []).forEach(function (ln) {
+        if (!ln || typeof ln !== "object") return;
+        add(ln.image);
+        add(ln.spread_image);
+        add(ln.full_image);
+      });
+      (st.rounds || []).forEach(function (r) {
+        add(r.prompt_image);
+        add(r.scene_image);
+        addAudio(r.audio);
+        addAudio(r.sound);
+        addAudio(r.prompt_audio);
+      });
+      (st.steps || []).forEach(walkStation);
+      Object.keys(st.letter_sounds || {}).forEach(function (k) {
+        addAudio(st.letter_sounds[k]);
+      });
+    }
+    stations.forEach(walkStation);
+    ["talk", "wave", "invite", "listen", "hint"].forEach(function (pose) {
+      add("/static/early/slovik/" + pose + ".jpg");
+    });
+    add("/static/early/letters/spark.png");
+    return list;
+  }
+
+  function preloadOne(url, timeoutMs) {
+    return new Promise(function (resolve) {
+      var settled = false;
+      function finish() {
+        if (settled) return;
+        settled = true;
+        resolve();
+      }
+      var ms = timeoutMs || 8000;
+      var timer = setTimeout(finish, ms);
+      if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) {
+        var vid = document.createElement("video");
+        vid.preload = "auto";
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.onloadeddata = function () { clearTimeout(timer); finish(); };
+        vid.onerror = function () { clearTimeout(timer); finish(); };
+        vid.src = url;
+        try { vid.load(); } catch (e) { clearTimeout(timer); finish(); }
+        return;
+      }
+      if (/\.(mp3|m4a|wav|MP3)(\?|$)/i.test(url)) {
+        var aud = new Audio();
+        aud.preload = "auto";
+        aud.oncanplaythrough = function () { clearTimeout(timer); finish(); };
+        aud.onerror = function () { clearTimeout(timer); finish(); };
+        aud.src = url;
+        try { aud.load(); } catch (e2) { clearTimeout(timer); finish(); }
+        return;
+      }
+      var img = new Image();
+      img.onload = function () { clearTimeout(timer); finish(); };
+      img.onerror = function () { clearTimeout(timer); finish(); };
+      img.src = url;
+    });
+  }
+
+  function preloadAssets(urls, opts) {
+    var maxWait = (opts && opts.maxWait) || 30000;
+    var perItem = (opts && opts.perItem) || 8000;
+    var started = Date.now();
+    var total = urls.length || 1;
+    var loaded = 0;
+    var bar = document.querySelector(".quest-preload__bar-fill");
+    var barWrap = document.querySelector(".quest-preload__bar");
+    function tickProgress() {
+      var pct = Math.min(100, Math.round((loaded / total) * 100));
+      if (bar) bar.style.width = pct + "%";
+      if (barWrap) barWrap.setAttribute("aria-valuenow", String(pct));
+    }
+    function timeLeft() {
+      return Math.max(500, maxWait - (Date.now() - started));
+    }
+    return new Promise(function (resolve) {
+      if (!urls.length) {
+        tickProgress();
+        resolve();
+        return;
+      }
+      var deadline = setTimeout(resolve, maxWait);
+      var idx = 0;
+      var active = 0;
+      var concurrency = 6;
+      function pump() {
+        while (active < concurrency && idx < urls.length) {
+          (function (url) {
+            active += 1;
+            preloadOne(url, Math.min(perItem, timeLeft())).then(function () {
+              active -= 1;
+              loaded += 1;
+              tickProgress();
+              if (loaded >= urls.length) {
+                clearTimeout(deadline);
+                resolve();
+              } else {
+                pump();
+              }
+            });
+          })(urls[idx]);
+          idx += 1;
+        }
+      }
+      pump();
+    });
+  }
+
+  function hidePreload() {
+    var el = document.getElementById("quest-preload");
+    if (!el) return;
+    el.classList.add("is-done");
+    el.setAttribute("aria-busy", "false");
+    setTimeout(function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 420);
+  }
+
+  function bootQuest() {
+    bindBackLinks();
+    render();
   }
 
   if (!stations.length) {
     elBody.innerHTML = "<p>Станции урока пока готовятся.</p>";
+    hidePreload();
+    document.body.classList.remove("quest-preloading");
   } else {
-    bindBackLinks();
-    render();
+    document.body.classList.add("quest-preloading");
+    preloadAssets(collectPreloadUrls(), { maxWait: 30000, perItem: 8000 }).then(function () {
+      hidePreload();
+      document.body.classList.remove("quest-preloading");
+      bootQuest();
+    });
   }
 })();
