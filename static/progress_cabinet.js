@@ -227,10 +227,12 @@
 
   var TREASURY_MAX_ROWS = 3;
 
-  function treasuryColumnCount(grid) {
-    var width = grid.clientWidth || 0;
-    if (width && width <= 520) return 2;
-    if (width && width <= 820) return 3;
+  function treasuryColumnCount() {
+    // Должно совпадать с media-query в chit-student.css
+    // (.chit-treasury-item: 4 → 3 при ≤820px → 2 при ≤520px).
+    // Считать по ширине сетки нельзя: контейнер ~680px, а CSS смотрит на viewport.
+    if (window.matchMedia('(max-width: 520px)').matches) return 2;
+    if (window.matchMedia('(max-width: 820px)').matches) return 3;
     return 4;
   }
 
@@ -248,7 +250,7 @@
     }
 
     function pageSize() {
-      return Math.max(1, treasuryColumnCount(grid) * TREASURY_MAX_ROWS);
+      return Math.max(1, treasuryColumnCount() * TREASURY_MAX_ROWS);
     }
 
     function getPage() {
@@ -334,7 +336,7 @@
           }
         }
       }
-      var size = Math.max(1, treasuryColumnCount(grid) * TREASURY_MAX_ROWS);
+      var size = Math.max(1, treasuryColumnCount() * TREASURY_MAX_ROWS);
       var page = Math.floor(idx / size);
       root.setAttribute('data-treasury-page', String(page));
       if (root._chitTreasuryRender) root._chitTreasuryRender();
