@@ -8,13 +8,28 @@
     letter: "Буква",
     syllable: "Слог"
   };
+  function sparkKeys() {
+    var quest = cfg.quest || {};
+    var labels = quest.spark_labels || sparkLabels;
+    if (Array.isArray(quest.spark_order) && quest.spark_order.length) {
+      return quest.spark_order.filter(function (k) { return labels[k]; });
+    }
+    var keys = Object.keys(labels);
+    if (keys.indexOf("word") >= 0) {
+      return ["word", "phrase", "meaning"].filter(function (k) { return labels[k]; });
+    }
+    if (keys.indexOf("sound") >= 0) {
+      return ["sound", "letter", "syllable"].filter(function (k) { return labels[k]; });
+    }
+    return keys;
+  }
   var sparkKinds = {};
-  Object.keys(sparkLabels).forEach(function (k) { sparkKinds[k] = false; });
+  sparkKeys().forEach(function (k) { sparkKinds[k] = false; });
   (function paintSparkHud() {
     var hud = document.getElementById("quest-sparks-hud");
     if (!hud) return;
     hud.innerHTML = "";
-    Object.keys(sparkLabels).forEach(function (k) {
+    sparkKeys().forEach(function (k) {
       var chip = document.createElement("span");
       chip.className = "quest-spark-chip";
       chip.setAttribute("data-spark", k);
