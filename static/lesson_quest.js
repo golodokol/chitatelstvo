@@ -3618,8 +3618,8 @@
     updateNextButton();
   }
 
-  // Только первый экран: постер/сцена/Словик. Не качаем всё видео и все аудио урока —
-  // иначе «Минутка» зависает на 15+ МБ intro.mp4 и десятках 404 по форматам.
+  // Быстрый старт: ждём только картинку первого экрана (постер intro / сцена).
+  // Аудио и видео подгрузятся уже в уроке — иначе «Минутка» тянется слишком долго.
   function collectPreloadUrls() {
     var seen = {};
     var list = [];
@@ -3627,40 +3627,20 @@
       if (!path) return;
       var url = assetUrl(path);
       if (!url || seen[url]) return;
-      // Видео не прелоадим целиком — только постер.
-      if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) return;
+      if (/\.(mp4|webm|mov|mp3|m4a|wav)(\?|$)/i.test(url)) return;
       seen[url] = true;
       list.push(url);
     }
-    function addAudioMp3(id) {
-      if (!id) return;
-      if (String(id).indexOf("/") === 0 || String(id).indexOf("http") === 0) {
-        add(id);
-        return;
+    var first = stations[0];
+    if (first) {
+      if (first.video && typeof first.video === "object" && first.video.poster) {
+        add(first.video.poster);
+      } else {
+        add(first.scene_image);
       }
-      var base = (cfg.assetsBase || "").replace(/\/$/, "");
-      add(base + "/static/early/audio/" + id + ".mp3?v=" + AUDIO_VER);
+      add(first.letter_image);
     }
-    function walkStation(st, deep) {
-      if (!st) return;
-      add(st.scene_image);
-      add(st.letter_image);
-      add(st.prompt_image);
-      add(st.image);
-      if (st.video && typeof st.video === "object") add(st.video.poster);
-      addAudioMp3(st.audio);
-      (st.hotspots || []).slice(0, deep ? 12 : 4).forEach(function (hs) { add(hs.image); });
-      (st.rounds || []).slice(0, 1).forEach(function (r) {
-        add(r.prompt_image);
-        add(r.scene_image);
-      });
-    }
-    // Первые две станции — достаточно, чтобы открыть урок без пустых окон.
-    walkStation(stations[0], true);
-    if (stations[1]) walkStation(stations[1], false);
     add("/static/early/slovik/talk.jpg");
-    add("/static/early/slovik/wave.jpg");
-    add("/static/early/letters/spark.png");
     return list;
   }
 
@@ -3672,16 +3652,7 @@
         settled = true;
         resolve();
       }
-      var timer = setTimeout(finish, timeoutMs || 4000);
-      if (/\.(mp3|m4a|wav|MP3)(\?|$)/i.test(url)) {
-        var aud = new Audio();
-        aud.preload = "auto";
-        aud.oncanplaythrough = function () { clearTimeout(timer); finish(); };
-        aud.onerror = function () { clearTimeout(timer); finish(); };
-        aud.src = url;
-        try { aud.load(); } catch (e2) { clearTimeout(timer); finish(); }
-        return;
-      }
+      var timer = setTimeout(finish, timeoutMs || 1500);
       var img = new Image();
       img.onload = function () { clearTimeout(timer); finish(); };
       img.onerror = function () { clearTimeout(timer); finish(); };
@@ -3690,8 +3661,8 @@
   }
 
   function preloadAssets(urls, opts) {
-    var maxWait = (opts && opts.maxWait) || 8000;
-    var perItem = (opts && opts.perItem) || 4000;
+    var maxWait = (opts && opts.maxWait) || 2000;
+    var perItem = (opts && opts.perItem) || 1500;
     var total = urls.length || 1;
     var loaded = 0;
     var bar = document.querySelector(".quest-preload__bar-fill");
@@ -3715,29 +3686,18 @@
         return;
       }
       var deadline = setTimeout(finishAll, maxWait);
-      var idx = 0;
-      var active = 0;
-      var concurrency = 8;
-      function pump() {
-        while (active < concurrency && idx < urls.length && !done) {
-          (function (url) {
-            active += 1;
-            preloadOne(url, perItem).then(function () {
-              active -= 1;
-              loaded += 1;
-              tickProgress();
-              if (loaded >= urls.length) {
-                clearTimeout(deadline);
-                finishAll();
-              } else {
-                pump();
-              }
-            });
-          })(urls[idx]);
-          idx += 1;
-        }
-      }
-      pump();
+      var left = urls.length;
+      urls.forEach(function (url) {
+        preloadOne(url, perItem).then(function () {
+          loaded += 1;
+          left -= 1;
+          tickProgress();
+          if (left <= 0) {
+            clearTimeout(deadline);
+            finishAll();
+          }
+        });
+      });
     });
   }
 
@@ -3749,7 +3709,7 @@
     el.setAttribute("aria-busy", "false");
     setTimeout(function () {
       if (el.parentNode) el.parentNode.removeChild(el);
-    }, 420);
+    }, 280);
   }
 
   var questBooted = false;
@@ -3772,10 +3732,10 @@
     hidePreload();
   } else {
     document.body.classList.add("quest-preloading");
-    // Жёсткий запасной таймер: урок обязан открыться даже при сбое Promise/сети.
-    setTimeout(bootQuest, 10000);
+    // Максимум ~2.5 с — дальше открываем урок в любом случае.
+    setTimeout(bootQuest, 2500);
     try {
-      preloadAssets(collectPreloadUrls(), { maxWait: 8000, perItem: 3500 }).then(bootQuest).catch(bootQuest);
+      preloadAssets(collectPreloadUrls(), { maxWait: 2000, perItem: 1500 }).then(bootQuest).catch(bootQuest);
     } catch (bootErr) {
       bootQuest();
     }
