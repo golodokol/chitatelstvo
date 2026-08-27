@@ -3618,6 +3618,8 @@
     updateNextButton();
   }
 
+  // Только первый экран: постер/сцена/Словик. Не качаем всё видео и все аудио урока —
+  // иначе «Минутка» зависает на 15+ МБ intro.mp4 и десятках 404 по форматам.
   function collectPreloadUrls() {
     var seen = {};
     var list = [];
@@ -3625,58 +3627,39 @@
       if (!path) return;
       var url = assetUrl(path);
       if (!url || seen[url]) return;
+      // Видео не прелоадим целиком — только постер.
+      if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) return;
       seen[url] = true;
       list.push(url);
     }
-    function addAudio(id) {
-      audioCandidates(id).forEach(function (url) {
-        if (!url || seen[url]) return;
-        seen[url] = true;
-        list.push(url);
-      });
+    function addAudioMp3(id) {
+      if (!id) return;
+      if (String(id).indexOf("/") === 0 || String(id).indexOf("http") === 0) {
+        add(id);
+        return;
+      }
+      var base = (cfg.assetsBase || "").replace(/\/$/, "");
+      add(base + "/static/early/audio/" + id + ".mp3?v=" + AUDIO_VER);
     }
-    function walkStation(st) {
+    function walkStation(st, deep) {
       if (!st) return;
       add(st.scene_image);
       add(st.letter_image);
       add(st.prompt_image);
       add(st.image);
-      add(st.spark_image);
-      if (st.video) {
-        if (typeof st.video === "string") add(st.video);
-        else {
-          add(st.video.src);
-          add(st.video.poster);
-        }
-      }
-      addAudio(st.audio);
-      addAudio(st.sound);
-      addAudio(st.success_audio);
-      addAudio(st.fail_audio);
-      addAudio(st.finale_audio);
-      (st.hotspots || []).forEach(function (hs) { add(hs.image); });
-      (st.lines || []).forEach(function (ln) {
-        if (!ln || typeof ln !== "object") return;
-        add(ln.image);
-        add(ln.spread_image);
-        add(ln.full_image);
-      });
-      (st.rounds || []).forEach(function (r) {
+      if (st.video && typeof st.video === "object") add(st.video.poster);
+      addAudioMp3(st.audio);
+      (st.hotspots || []).slice(0, deep ? 12 : 4).forEach(function (hs) { add(hs.image); });
+      (st.rounds || []).slice(0, 1).forEach(function (r) {
         add(r.prompt_image);
         add(r.scene_image);
-        addAudio(r.audio);
-        addAudio(r.sound);
-        addAudio(r.prompt_audio);
-      });
-      (st.steps || []).forEach(walkStation);
-      Object.keys(st.letter_sounds || {}).forEach(function (k) {
-        addAudio(st.letter_sounds[k]);
       });
     }
-    stations.forEach(walkStation);
-    ["talk", "wave", "invite", "listen", "hint"].forEach(function (pose) {
-      add("/static/early/slovik/" + pose + ".jpg");
-    });
+    // Первые две станции — достаточно, чтобы открыть урок без пустых окон.
+    walkStation(stations[0], true);
+    if (stations[1]) walkStation(stations[1], false);
+    add("/static/early/slovik/talk.jpg");
+    add("/static/early/slovik/wave.jpg");
     add("/static/early/letters/spark.png");
     return list;
   }
@@ -3689,19 +3672,7 @@
         settled = true;
         resolve();
       }
-      var ms = timeoutMs || 8000;
-      var timer = setTimeout(finish, ms);
-      if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) {
-        var vid = document.createElement("video");
-        vid.preload = "auto";
-        vid.muted = true;
-        vid.playsInline = true;
-        vid.onloadeddata = function () { clearTimeout(timer); finish(); };
-        vid.onerror = function () { clearTimeout(timer); finish(); };
-        vid.src = url;
-        try { vid.load(); } catch (e) { clearTimeout(timer); finish(); }
-        return;
-      }
+      var timer = setTimeout(finish, timeoutMs || 4000);
       if (/\.(mp3|m4a|wav|MP3)(\?|$)/i.test(url)) {
         var aud = new Audio();
         aud.preload = "auto";
@@ -3719,9 +3690,8 @@
   }
 
   function preloadAssets(urls, opts) {
-    var maxWait = (opts && opts.maxWait) || 30000;
-    var perItem = (opts && opts.perItem) || 8000;
-    var started = Date.now();
+    var maxWait = (opts && opts.maxWait) || 8000;
+    var perItem = (opts && opts.perItem) || 4000;
     var total = urls.length || 1;
     var loaded = 0;
     var bar = document.querySelector(".quest-preload__bar-fill");
@@ -3731,30 +3701,34 @@
       if (bar) bar.style.width = pct + "%";
       if (barWrap) barWrap.setAttribute("aria-valuenow", String(pct));
     }
-    function timeLeft() {
-      return Math.max(500, maxWait - (Date.now() - started));
-    }
     return new Promise(function (resolve) {
+      var done = false;
+      function finishAll() {
+        if (done) return;
+        done = true;
+        if (bar) bar.style.width = "100%";
+        resolve();
+      }
       if (!urls.length) {
         tickProgress();
-        resolve();
+        finishAll();
         return;
       }
-      var deadline = setTimeout(resolve, maxWait);
+      var deadline = setTimeout(finishAll, maxWait);
       var idx = 0;
       var active = 0;
-      var concurrency = 6;
+      var concurrency = 8;
       function pump() {
-        while (active < concurrency && idx < urls.length) {
+        while (active < concurrency && idx < urls.length && !done) {
           (function (url) {
             active += 1;
-            preloadOne(url, Math.min(perItem, timeLeft())).then(function () {
+            preloadOne(url, perItem).then(function () {
               active -= 1;
               loaded += 1;
               tickProgress();
               if (loaded >= urls.length) {
                 clearTimeout(deadline);
-                resolve();
+                finishAll();
               } else {
                 pump();
               }
@@ -3769,6 +3743,7 @@
 
   function hidePreload() {
     var el = document.getElementById("quest-preload");
+    document.body.classList.remove("quest-preloading");
     if (!el) return;
     el.classList.add("is-done");
     el.setAttribute("aria-busy", "false");
@@ -3777,21 +3752,32 @@
     }, 420);
   }
 
+  var questBooted = false;
   function bootQuest() {
-    bindBackLinks();
-    render();
+    if (questBooted) return;
+    questBooted = true;
+    hidePreload();
+    try {
+      bindBackLinks();
+      render();
+    } catch (err) {
+      if (elBody) {
+        elBody.innerHTML = "<p>Не удалось открыть урок. Обновите страницу.</p>";
+      }
+    }
   }
 
   if (!stations.length) {
-    elBody.innerHTML = "<p>Станции урока пока готовятся.</p>";
+    if (elBody) elBody.innerHTML = "<p>Станции урока пока готовятся.</p>";
     hidePreload();
-    document.body.classList.remove("quest-preloading");
   } else {
     document.body.classList.add("quest-preloading");
-    preloadAssets(collectPreloadUrls(), { maxWait: 30000, perItem: 8000 }).then(function () {
-      hidePreload();
-      document.body.classList.remove("quest-preloading");
+    // Жёсткий запасной таймер: урок обязан открыться даже при сбое Promise/сети.
+    setTimeout(bootQuest, 10000);
+    try {
+      preloadAssets(collectPreloadUrls(), { maxWait: 8000, perItem: 3500 }).then(bootQuest).catch(bootQuest);
+    } catch (bootErr) {
       bootQuest();
-    });
+    }
   }
 })();
