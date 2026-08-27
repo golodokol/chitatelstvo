@@ -88,7 +88,7 @@
   var voicePlaying = false;
 
   function voiceIsBusy() {
-    if (voicePlaying || instructionPlaying) return true;
+    if (instructionPlaying) return true;
     try {
       if (!audio.paused && !audio.ended) return true;
     } catch (e) {}
@@ -98,40 +98,30 @@
   function waitVoiceThen(fn) {
     var gen = autoAdvanceGen;
     var tries = 0;
-    var idleStreak = 0;
+    var sawAudio = false;
     function tick() {
       if (gen !== autoAdvanceGen) return;
-      if (voiceIsBusy()) {
-        idleStreak = 0;
+      var busy = voiceIsBusy();
+      if (busy) sawAudio = true;
+      if (busy) {
         tries += 1;
-        // ~15с максимум ожидания голоса
-        if (tries < 90) {
-          autoAdvanceTimer = setTimeout(tick, 180);
+        if (tries < 50) {
+          autoAdvanceTimer = setTimeout(tick, 100);
           return;
         }
-        // Залипший флаг не должен блокировать переход навсегда.
         voicePlaying = false;
         instructionPlaying = false;
-      } else {
-        // Два тихих тика подряд — защита от гонки «ещё не стартовал play».
-        idleStreak += 1;
-        if (idleStreak < 2 && tries < 90) {
-          tries += 1;
-          autoAdvanceTimer = setTimeout(tick, 160);
-          return;
-        }
+      } else if (voicePlaying && !sawAudio && tries < 6) {
+        tries += 1;
+        autoAdvanceTimer = setTimeout(tick, 100);
+        return;
       }
       autoAdvanceTimer = setTimeout(function () {
         if (gen !== autoAdvanceGen) return;
-        if (voiceIsBusy() && tries < 90) {
-          autoAdvanceTimer = setTimeout(tick, 180);
-          return;
-        }
         fn();
-      }, 320);
+      }, 120);
     }
-    // Дать coachReact/playId выставить voicePlaying до первой проверки.
-    autoAdvanceTimer = setTimeout(tick, 60);
+    autoAdvanceTimer = setTimeout(tick, 80);
   }
 
   function shouldAutoAdvance(station) {
@@ -320,7 +310,9 @@
           p.then(ok).catch(function (err) {
             // Autoplay blocked: don't fall through to other formats; wait for «Послушать».
             if (err && err.name === "NotAllowedError") {
-              ok();
+              settled = true;
+              cleanup();
+              if (onFail) onFail();
               return;
             }
             if (el.paused && !settled) fail();
@@ -405,7 +397,7 @@
       // Страховка, если onended не пришёл.
       setTimeout(function () {
         if (token === audioToken) finish();
-      }, 12000);
+      }, 8000);
     } catch (e) {
       finish();
     }
@@ -528,17 +520,7 @@
     if (!btnNext) return;
     var station = stations[idx];
     var kind = station && station.kind;
-    if (!station || kind === "intro_video" || kind === "reward") {
-      btnNext.hidden = true;
-      btnNext.disabled = false;
-      return;
-    }
-    if (stationCleared && shouldAutoAdvance(station)) {
-      btnNext.hidden = true;
-      btnNext.disabled = true;
-      return;
-    }
-    btnNext.hidden = false;
+    btnNext.hidden = !station || kind === "intro_video" || kind === "reward";
     btnNext.disabled = false;
   }
 
