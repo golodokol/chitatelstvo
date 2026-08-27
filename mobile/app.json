@@ -6,6 +6,12 @@
     "orientation": "portrait",
     "scheme": "chitatelstvo",
     "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F6F4F9"
+    },
     "backgroundColor": "#F6F4F9",
     "ios": {
       "supportsTablet": true,
@@ -13,7 +19,11 @@
     },
     "android": {
       "package": "ru.chitatelstvo.app",
-      "backgroundColor": "#F6F4F9"
+      "backgroundColor": "#F6F4F9",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F6F4F9"
+      }
     },
     "plugins": ["expo-router", "expo-secure-store"],
     "extra": {

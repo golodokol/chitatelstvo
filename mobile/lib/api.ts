@@ -35,13 +35,18 @@ async function parseJson<T>(resp: Response): Promise<T> {
   return data as T;
 }
 
-export async function requestOtp(email: string): Promise<void> {
+export type OtpRequestResponse = {
+  status: string;
+  message: string;
+};
+
+export async function requestOtp(email: string): Promise<OtpRequestResponse> {
   const resp = await fetch(`${API_BASE_URL}/api/v1/auth/otp/request`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email: email.trim().toLowerCase() }),
   });
-  await parseJson(resp);
+  return parseJson<OtpRequestResponse>(resp);
 }
 
 export async function verifyOtp(
@@ -102,4 +107,9 @@ export async function fetchLesson(
 }
 
 export { ApiError };
+
+export function isAuthError(err: unknown): boolean {
+  return err instanceof ApiError && err.status === 401;
+}
+
 export type { AuthChild };

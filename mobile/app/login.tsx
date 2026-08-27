@@ -17,8 +17,11 @@ export default function LoginScreen() {
     }
     setLoading(true);
     try {
-      await requestOtp(value);
-      router.push({ pathname: "/verify", params: { email: value } });
+      const resp = await requestOtp(value);
+      router.push({
+        pathname: "/verify",
+        params: { email: value, hint: resp.message },
+      });
     } catch (err) {
       Alert.alert("Не удалось отправить код", String(err));
     } finally {
@@ -46,7 +49,8 @@ export default function LoginScreen() {
         disabled={loading}
       />
       <Text style={{ color: "#7a6654", fontSize: 14, lineHeight: 20 }}>
-        Если письма нет — проверьте «Спам». Код действует 10 минут.
+        Код приходит только на email из формы записи на chitatelstvo.ru — тот же,
+        что в письме «Добро пожаловать». Проверьте «Спам» и папку «Промоакции».
       </Text>
     </Screen>
   );

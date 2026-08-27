@@ -7,8 +7,12 @@ import { verifyOtp } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
 export default function VerifyScreen() {
-  const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
+  const { email: emailParam, hint: hintParam } = useLocalSearchParams<{
+    email?: string;
+    hint?: string;
+  }>();
   const email = String(emailParam || "");
+  const hint = String(hintParam || "");
   const { signIn } = useAuth();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,7 +46,10 @@ export default function VerifyScreen() {
   return (
     <Screen
       title="Код из письма"
-      subtitle={`Отправили на ${email}. Введите 6 цифр.`}
+      subtitle={
+        hint ||
+        `Если ${email} был в форме записи, код уже отправлен. Проверьте почту и «Спам».`
+      }
     >
       <Field
         keyboardType="number-pad"
@@ -62,8 +69,10 @@ export default function VerifyScreen() {
         variant="ghost"
         onPress={() => router.replace("/login")}
       />
-      <Text style={{ color: "#7a6654", fontSize: 14 }}>
-        Email должен совпадать с тем, что в форме записи на сайте.
+      <Text style={{ color: "#7a6654", fontSize: 14, lineHeight: 20 }}>
+        Письма нет? Убедитесь, что email совпадает с записью на сайте. Другой
+        адрес — код не отправляется (это нормально). Ищите тему «Код для входа
+        в Читательство» от school@yandex.ru.
       </Text>
     </Screen>
   );

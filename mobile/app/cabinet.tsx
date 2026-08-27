@@ -13,7 +13,9 @@ import {
 
 import { Button, Loader, Screen } from "@/components/ui";
 import { BadgeGrid } from "@/components/BadgeGrid";
+import { LessonHeroCard } from "@/components/LessonHeroCard";
 import { LevelPath } from "@/components/LevelPath";
+import { MissionChips } from "@/components/MissionChips";
 import { RemoteImage, textNoBreak } from "@/components/RemoteImage";
 import {
   LESSON_GUIDE_FOOTER,
@@ -21,10 +23,9 @@ import {
   PARENT_INTRO,
 } from "@/constants/cabinet-guide";
 import { colors, spacing, API_BASE_URL } from "@/constants/theme";
-import { claimChest, fetchCabinet } from "@/lib/api";
+import { claimChest, fetchCabinet, isAuthError } from "@/lib/api";
 import {
   formatEventType,
-  missionStatusLabel,
   parentFacts,
 } from "@/lib/cabinet-format";
 import { useAuth } from "@/lib/auth-context";
@@ -61,6 +62,22 @@ export default function CabinetScreen() {
     setPayload(resp);
   }, [token, selectedChildId]);
 
+  const handleLoadError = useCallback(
+    async (err: unknown) => {
+      if (isAuthError(err)) {
+        await signOut();
+        Alert.alert(
+          "Нужно войти снова",
+          "Сессия истекла. Запросите новый код на email.",
+          [{ text: "OK", onPress: () => router.replace("/login") }],
+        );
+        return;
+      }
+      Alert.alert("Ошибка", String(err));
+    },
+    [signOut],
+  );
+
   useFocusEffect(
     useCallback(() => {
       if (!token || !selectedChildId) {
@@ -69,9 +86,9 @@ export default function CabinetScreen() {
       }
       setLoading(true);
       load()
-        .catch((err) => Alert.alert("Ошибка", String(err)))
+        .catch(handleLoadError)
         .finally(() => setLoading(false));
-    }, [token, selectedChildId, load]),
+    }, [token, selectedChildId, load, handleLoadError]),
   );
 
   async function onRefresh() {
@@ -79,7 +96,7 @@ export default function CabinetScreen() {
     try {
       await load();
     } catch (err) {
-      Alert.alert("Ошибка", String(err));
+      await handleLoadError(err);
     } finally {
       setRefreshing(false);
     }
@@ -183,11 +200,10 @@ export default function CabinetScreen() {
           <>
             {cab?.slovik_main_url ? (
               <View style={styles.slovikIntro}>
-                <RemoteImage uri={cab.slovik_main_url} width={80} height={80} />
+                <RemoteImage uri={cab.slovik_main_url} width={96} height={96} />
                 <Text style={[styles.slovikText, textNoBreak]}>
-                  Привет! Я — <Text style={styles.strong}>Словик</Text> ✨ Буду рядом в
-                  приключениях: подскажу про сундук и помогу собрать Словики за каждое
-                  занятие.
+                  Привет! Я — <Text style={styles.strong}>Словик</Text> ✨ Помогу собрать
+                  Словики и открою сундук.
                 </Text>
               </View>
             ) : null}
@@ -278,25 +294,41 @@ export default function CabinetScreen() {
                 {track.chest ? (
                   <View style={styles.panel}>
                     {track.group_label ? (
-                      <Text style={styles.hint}>{track.group_label}</Text>
+                      <Text style={styles.trackBadge}>{track.group_label}</Text>
                     ) : null}
-                    <View style={styles.chestHeader}>
+                    <View style={styles.chestVisual}>
                       <RemoteImage
                         uri={chestImageUrl(track.chest)}
-                        width={120}
-                        height={120}
+                        width={150}
+                        height={150}
                       />
-                      <View style={styles.chestCopy}>
-                        <Text style={styles.panelTitle}>{track.chest.title}</Text>
-                        <Text style={styles.hint}>{track.chest.subtitle}</Text>
-                      </View>
+                      <Text style={styles.panelTitle}>{track.chest.title}</Text>
+                      {track.chest.hint ? (
+                        <Text style={styles.chestHint} numberOfLines={2}>
+                          {track.chest.hint}
+                        </Text>
+                      ) : null}
                     </View>
-                    {track.chest.hint ? (
-                      <Text style={styles.chestHint}>{track.chest.hint}</Text>
+                    {track.chest.steps_total ? (
+                      <View style={styles.progressTrack}>
+                        <View
+                          style={[
+                            styles.progressFill,
+                            {
+                              width: `${Math.min(
+                                100,
+                                ((track.chest.steps_done ?? 0) /
+                                  track.chest.steps_total) *
+                                  100,
+                              )}%`,
+                            },
+                          ]}
+                        />
+                      </View>
                     ) : null}
                     {track.chest.steps_total ? (
                       <Text style={styles.hint}>
-                        Шагов: {track.chest.steps_done ?? 0} из {track.chest.steps_total}
+                        Искорки: {track.chest.steps_done ?? 0} / {track.chest.steps_total}
                       </Text>
                     ) : null}
                     {track.chest.ready && !track.chest.claimed && track.chest.tale_slug ? (
@@ -315,37 +347,27 @@ export default function CabinetScreen() {
                       {track.weekly_lessons_label ?? "Сказка этой недели"}
                     </Text>
                     {track.group_label ? (
-                      <Text style={styles.hint}>{track.group_label}</Text>
+                      <Text style={styles.trackBadge}>{track.group_label}</Text>
                     ) : null}
-                    {track.weekly_lessons.map((weekly, weeklyIndex) => (
-                      <View key={`${weekly.title ?? "lesson"}-${weeklyIndex}`} style={styles.lessonCard}>
-                        <RemoteImage
-                          uri={weekly.cover_url}
-                          width={64}
-                          height={88}
-                          rounded
+                    <View style={styles.heroCards}>
+                      {track.weekly_lessons.map((weekly, weeklyIndex) => (
+                        <LessonHeroCard
+                          key={`${weekly.title ?? "lesson"}-${weeklyIndex}`}
+                          title={weekly.title}
+                          coverUrl={weekly.cover_url}
+                          meta={
+                            weekly.opens_on_label
+                              ? `Откроется ${weekly.opens_on_label}`
+                              : undefined
+                          }
+                          active={Boolean(weekly.url)}
                           dimmed={!weekly.url}
+                          onPress={
+                            weekly.url ? () => openLesson(weekly.url) : undefined
+                          }
                         />
-                        <View style={styles.lessonCardBody}>
-                          <Text style={styles.lessonTitle}>{weekly.title}</Text>
-                          {weekly.goal ? (
-                            <Text style={styles.hint}>{weekly.goal}</Text>
-                          ) : null}
-                          {weekly.opens_on_label && !weekly.url ? (
-                            <Text style={styles.hint}>
-                              Откроется: {weekly.opens_on_label}
-                            </Text>
-                          ) : null}
-                          {weekly.url ? (
-                            <Button
-                              label="Начать урок"
-                              variant="ghost"
-                              onPress={() => openLesson(weekly.url)}
-                            />
-                          ) : null}
-                        </View>
-                      </View>
-                    ))}
+                      ))}
+                    </View>
                   </View>
                 ) : null}
 
@@ -354,20 +376,7 @@ export default function CabinetScreen() {
                     <Text style={styles.panelTitle}>
                       {track.missions_title ?? "Миссии на эту неделю"}
                     </Text>
-                    {track.missions_subtitle ? (
-                      <Text style={styles.hint}>
-                        {track.group_label ? `${track.group_label} · ` : ""}
-                        {track.missions_subtitle}
-                      </Text>
-                    ) : null}
-                    {track.missions.map((m) => (
-                      <View key={`${trackIndex}-${m.id}`} style={styles.missionRow}>
-                        <Text style={styles.missionText}>{m.text}</Text>
-                        <Text style={styles.missionStatus}>
-                          {missionStatusLabel(m.status)}
-                        </Text>
-                      </View>
-                    ))}
+                    <MissionChips missions={track.missions} />
                   </View>
                 ) : null}
               </View>
@@ -376,31 +385,22 @@ export default function CabinetScreen() {
             {stages.map((stage) => (
               <View key={stage.key} style={styles.panel}>
                 <Text style={styles.panelTitle}>{stage.label}</Text>
-                {stage.lessons.map((les) => (
-                  <Pressable
-                    key={les.slug}
-                    style={styles.lessonRow}
-                    onPress={() => openLesson(les.url, les.slug)}
-                    disabled={!les.url && !les.unlocked}
-                  >
-                    <View style={styles.lessonCard}>
-                      <RemoteImage
-                        uri={les.cover_url}
-                        width={52}
-                        height={72}
-                        rounded
-                        dimmed={!les.unlocked && !les.url}
-                      />
-                      <View style={styles.lessonCardBody}>
-                        <Text style={styles.lessonTitle}>{les.title}</Text>
-                        <Text style={styles.lessonMeta}>
-                          {lessonStatus(les)}
-                          {les.opens_on_label ? ` · ${les.opens_on_label}` : ""}
-                        </Text>
-                      </View>
-                    </View>
-                  </Pressable>
-                ))}
+                <View style={styles.heroCards}>
+                  {stage.lessons.map((les) => (
+                    <LessonHeroCard
+                      key={les.slug}
+                      compact
+                      title={les.title}
+                      coverUrl={les.cover_url}
+                      meta={`${lessonStatus(les)}${
+                        les.opens_on_label ? ` · ${les.opens_on_label}` : ""
+                      }`}
+                      active={Boolean(les.url)}
+                      dimmed={!les.unlocked && !les.url}
+                      onPress={() => openLesson(les.url, les.slug)}
+                    />
+                  ))}
+                </View>
               </View>
             ))}
 
@@ -672,18 +672,23 @@ const styles = StyleSheet.create({
   },
   statLabel: { fontSize: 12, color: colors.textMuted, fontWeight: "600" },
   statValue: { fontSize: 16, fontWeight: "700", color: colors.text, textAlign: "center" },
-  lessonCard: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    alignItems: "flex-start",
+  heroCards: { gap: spacing.md },
+  trackBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.accentSoft,
+    color: colors.accent,
+    fontSize: 13,
+    fontWeight: "700",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    overflow: "hidden",
   },
-  lessonCardBody: { flex: 1, gap: 4 },
-  chestHeader: {
-    flexDirection: "row",
-    gap: spacing.md,
+  chestVisual: {
     alignItems: "center",
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
   },
-  chestCopy: { flex: 1, gap: 4 },
   progressTrack: {
     height: 8,
     borderRadius: 4,
@@ -711,11 +716,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   panelTitle: { fontSize: 18, fontWeight: "700", color: colors.textWarm },
-  lessonRow: {
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.bgSoft,
-  },
   scheduleRow: {
     paddingVertical: 6,
     borderBottomWidth: 1,
@@ -723,17 +723,7 @@ const styles = StyleSheet.create({
   },
   lessonTitle: { fontSize: 16, fontWeight: "600", color: colors.text },
   lessonMeta: { color: colors.textMuted, marginTop: 2, lineHeight: 18 },
-  missionRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: spacing.sm,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.bgSoft,
-  },
-  missionText: { flex: 1, color: colors.text, lineHeight: 20 },
-  missionStatus: { color: colors.blue, fontWeight: "600", fontSize: 13 },
-  chestHint: { color: colors.blue, fontWeight: "600" },
+  chestHint: { color: colors.blue, fontWeight: "600", textAlign: "center" },
   factRow: { color: colors.text, lineHeight: 22 },
   parentChildHead: {
     flexDirection: "row",

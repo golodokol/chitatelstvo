@@ -1904,6 +1904,8 @@ def build_child_cabinet(
             )
         if cabinet_mode == "full":
             track_sections = prioritize_open_early_intro_tracks(track_sections)
+        for section in track_sections:
+            section["pin_intro_top"] = _track_has_open_intro(section)
 
     if track_sections:
         primary = track_sections[0]
@@ -2027,10 +2029,13 @@ def build_child_cabinet(
         early=early_mode,
     )
     companion_k = companion_key(events, lesson, primary_chest)
+    companion_hint = COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"])
+    if any(_track_has_open_intro(t) for t in track_sections):
+        companion_hint = "Вводный урок ждёт!"
     companion = {
         "key": companion_k,
         "url": slovik_url(companion_k),
-        "hint": COMPANION_HINTS.get(companion_k, COMPANION_HINTS["main"]),
+        "hint": companion_hint,
         "lesson_url": continue_url,
     }
     recent_toast = recent_event_slovik(events, current_badges=toast_badge_names)

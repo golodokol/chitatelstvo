@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Image, Platform, StyleSheet, View, type ImageStyle, type ViewStyle } from "react-native";
 
 import { colors } from "@/constants/theme";
@@ -11,6 +12,9 @@ type RemoteImageProps = {
   containerStyle?: ViewStyle;
   rounded?: boolean;
   dimmed?: boolean;
+  resizeMode?: "contain" | "cover";
+  /** Высота по пропорциям картинки (width задаёт ширину, без обрезки). */
+  autoAspect?: boolean;
 };
 
 export function RemoteImage({
@@ -21,9 +25,36 @@ export function RemoteImage({
   containerStyle,
   rounded,
   dimmed,
+  resizeMode = "contain",
+  autoAspect,
 }: RemoteImageProps) {
   const resolved = resolveMediaUrl(uri);
-  const h = height ?? width;
+  const fallbackH = height ?? width;
+  const [aspectHeight, setAspectHeight] = useState(fallbackH);
+
+  useEffect(() => {
+    if (!autoAspect || !resolved) {
+      setAspectHeight(fallbackH);
+      return;
+    }
+    let cancelled = false;
+    Image.getSize(
+      resolved,
+      (imgW, imgH) => {
+        if (cancelled || imgW <= 0) return;
+        setAspectHeight(Math.round(width * (imgH / imgW)));
+      },
+      () => {
+        if (!cancelled) setAspectHeight(fallbackH);
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [autoAspect, resolved, width, fallbackH]);
+
+  const h = autoAspect ? aspectHeight : fallbackH;
+  const mode = autoAspect ? "contain" : resizeMode;
 
   if (!resolved) {
     return (
@@ -40,6 +71,7 @@ export function RemoteImage({
   return (
     <View
       style={[
+        { width, height: h, overflow: "hidden" },
         rounded ? styles.rounded : undefined,
         dimmed ? styles.dimmed : undefined,
         containerStyle,
@@ -48,7 +80,7 @@ export function RemoteImage({
       <Image
         source={{ uri: resolved }}
         style={[{ width, height: h }, style]}
-        resizeMode="contain"
+        resizeMode={mode}
         accessibilityIgnoresInvertColors
       />
     </View>

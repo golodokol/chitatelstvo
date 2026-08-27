@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260826j">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260826m">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -340,6 +340,64 @@
         {% endmacro %}
 
         {% if cab.tracks %}
+          {# Открытые вводные early — выше сокровищницы и сказок. #}
+          {% for track in cab.tracks %}
+            {% if track.pin_intro_top %}
+              {% set ns_intro = namespace(active=[]) %}
+              {% for weekly in track.weekly_lessons or [] %}
+                {% set done = weekly.chest_claimed or weekly.cover_state == 'done' or (track.chest.claimed and track.chest.tale_slug and weekly.tale_slug == track.chest.tale_slug) or (track.chest.claimed and track.chest.tale_title and weekly.title == track.chest.tale_title) %}
+                {% if not done %}
+                  {% if ns_intro.active.append(weekly) %}{% endif %}
+                {% endif %}
+              {% endfor %}
+              {% set intro_weeks = ns_intro.active if ns_intro.active else (track.weekly_lessons or []) %}
+              {% set intro_lesson = intro_weeks[0] if intro_weeks else none %}
+              {% if intro_lesson and (intro_lesson.headline or intro_lesson.title) %}
+              <section class="chit-current-lesson">
+                {% if track.group_label %}
+                <p class="chit-section-sub chit-section-sub--track">{{ track.group_label }}</p>
+                {% endif %}
+                <h2 class="chit-current-lesson__title">{{ intro_lesson.headline or intro_lesson.title }}</h2>
+              </section>
+              {% endif %}
+              {{ render_weekly_lessons(track, intro_weeks) }}
+              {% if not track.chest.claimed %}
+              {{ render_chest(track, child, loop.index, '#treasury-all') }}
+              {% endif %}
+              {% if track.upcoming_lessons %}
+              <section class="chit-panel chit-panel--stories chit-panel--upcoming">
+                <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
+                {% if track.stories_subtitle %}
+                <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
+                {% endif %}
+                <div class="chit-story-grid">
+                  {% for tale in track.upcoming_lessons %}
+                  <article class="chit-story-card chit-story-card--soon">
+                    <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
+                      <div class="chit-story-card__cover chit-story-card__cover--soon">
+                        {% if tale.cover_url %}
+                        <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                        {% else %}
+                        <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                        {% endif %}
+                        <div class="chit-story-card__overlay">
+                          <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
+                        </div>
+                      </div>
+                      <div class="chit-story-card__meta">
+                        <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                        <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                        <span class="chit-story-card__buy">Выбрать тариф</span>
+                      </div>
+                    </a>
+                  </article>
+                  {% endfor %}
+                </div>
+              </section>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+
           <section class="chit-panel chit-panel--treasury" id="treasury-all">
             <h2 class="chit-section-title">Моя сокровищница</h2>
             <p class="chit-section-sub">Единая копилка наград из всех уроков — можно скачать снова.</p>
@@ -375,6 +433,7 @@
             {% endif %}
           </section>
           {% for track in cab.tracks %}
+          {% if not track.pin_intro_top %}
           {% set ns = namespace(active=[]) %}
           {% for weekly in track.weekly_lessons or [] %}
             {% set done = weekly.chest_claimed or weekly.cover_state == 'done' or (track.chest.claimed and track.chest.tale_slug and weekly.tale_slug == track.chest.tale_slug) or (track.chest.claimed and track.chest.tale_title and weekly.title == track.chest.tale_title) %}
@@ -502,6 +561,7 @@
               {% endfor %}
             </ul>
           </section>
+          {% endif %}
           {% endfor %}
         {% else %}
         {% set legacy_track = {

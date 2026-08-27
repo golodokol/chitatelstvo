@@ -18,7 +18,7 @@ from config.settings import (
 )
 from db import repository as repo
 from db.models import Child, Family
-from notifications.email_templates import SUBJECT_OTP, build_otp_message
+from notifications.email_templates import SUBJECT_OTP, build_otp_html, build_otp_message
 from notifications.email_channel import send_email
 from sqlalchemy.orm import Session
 
@@ -108,11 +108,13 @@ def request_login_otp(db: Session, email: str) -> bool:
     code = _generate_code()
     _store_code(normalized, code)
     body = build_otp_message(code=code, ttl_minutes=max(1, OTP_TTL_SECONDS // 60))
+    html_body = build_otp_html(code=code, ttl_minutes=max(1, OTP_TTL_SECONDS // 60))
     try:
         send_email(
             to=normalized,
             subject=SUBJECT_OTP,
             body=body,
+            html_body=html_body,
         )
     except Exception as exc:
         _clear_code(normalized)

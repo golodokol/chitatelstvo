@@ -84,7 +84,10 @@ def test_mixed_cabinet_injects_intro_as_weekly_lesson(monkeypatch):
         "early-stories",
         "grade-2",
     ]
+    assert cab["tracks"][0]["pin_intro_top"] is True
+    assert cab["tracks"][2].get("pin_intro_top") is not True
     assert "early-letters-trial-lesson-01" in (cab["continue_url"] or "")
+    assert cab["companion"]["hint"] == "Вводный урок ждёт!"
 
 
 def test_fairy_only_cabinet_hides_trial_buttons():
