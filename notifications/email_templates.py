@@ -500,6 +500,9 @@ def build_quiz_auto_email(
                 "",
                 "Откройте урок вместе с ребёнком — это короткий квест со Словиком.",
                 "",
+                "В письме также PDF-чек-лист «10 признаков, что ребёнку нужен мягкий старт чтения».",
+                f"Если вложение не открылось — скачайте по ссылке: {parts['checklist_url']}",
+                "",
             ]
         )
     else:
@@ -575,6 +578,11 @@ def build_quiz_auto_email_html(
             f"{trial_btn}"
             f'<p style="margin:0 0 16px;line-height:1.6;">{gift_html}</p>'
             f'<p style="margin:0 0 16px;line-height:1.6;">Откройте урок вместе с ребёнком — это короткий квест со Словиком.</p>'
+            f'<p style="margin:0 0 8px;line-height:1.6;">В письме также PDF-чек-лист '
+            f'«10 признаков, что ребёнку нужен мягкий старт чтения» '
+            f'<strong>прикреплён к письму</strong>.</p>'
+            f'<p style="margin:0 0 16px;line-height:1.6;">Если вложение не открылось — '
+            f'<a href="{html.escape(parts["checklist_url"], quote=True)}" style="color:#5B7FA6;">скачайте PDF по ссылке</a>.</p>'
         )
     else:
         mid = (

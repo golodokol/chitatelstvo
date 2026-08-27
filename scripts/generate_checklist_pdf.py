@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-"""Generate static PDF checklist for quiz emails (Cyrillic via DejaVu, brand style)."""
+"""Generate static PDF checklists for quiz emails (Cyrillic via DejaVu, brand style).
+
+Variants:
+  reading — «10 признаков, что ребёнок не понимает прочитанное»
+  early   — «10 признаков, что ребёнку нужен мягкий старт чтения»
+"""
 
 from __future__ import annotations
 
+import argparse
 import urllib.request
 from pathlib import Path
 
@@ -23,7 +29,6 @@ from reportlab.platypus import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "static" / "quiz-checklist.pdf"
 SITE_URL = "https://chitatelstvo.ru"
 LOGO_REMOTE = "https://api.chitatelstvo.ru/assets/logo-chitatelstvo-quiz.png"
 SIGNOFF = "с теплом, команда Читательства"
@@ -47,18 +52,44 @@ LOGO_CANDIDATES = (
     Path("/var/www/chitatelstvo-assets/logo-chitatelstvo-quiz.png"),
 )
 
-ITEMS = [
-    "Перечитывает одно и то же место, но не может объяснить, что произошло",
-    "Отвечает на вопросы односложно: «не знаю», «нормально»",
-    "Путает персонажей или их мотивы",
-    "Читает вслух бегло, но не понимает смысл",
-    "Не может связать события в одну историю",
-    "Пропускает абзацы или «скачет» по тексту",
-    "Путает фантазию и факты из текста",
-    "Избегает книг с большим количеством текста",
-    "Раздражается, когда просят пересказать",
-    "Не может ответить «почему герой так поступил»",
-]
+VARIANTS = {
+    "reading": {
+        "out": ROOT / "static" / "quiz-checklist.pdf",
+        "title": "10 признаков, что ребёнок не понимает прочитанное",
+        "lead": "Если заметите 3+ признака — вам будет полезна наша помощь",
+        "doc_title": "10 признаков — Читательство",
+        "items": [
+            "Перечитывает одно и то же место, но не может объяснить, что произошло",
+            "Отвечает на вопросы односложно: «не знаю», «нормально»",
+            "Путает персонажей или их мотивы",
+            "Читает вслух бегло, но не понимает смысл",
+            "Не может связать события в одну историю",
+            "Пропускает абзацы или «скачет» по тексту",
+            "Путает фантазию и факты из текста",
+            "Избегает книг с большим количеством текста",
+            "Раздражается, когда просят пересказать",
+            "Не может ответить «почему герой так поступил»",
+        ],
+    },
+    "early": {
+        "out": ROOT / "static" / "quiz-checklist-early.pdf",
+        "title": "10 признаков, что ребёнку нужен мягкий старт чтения",
+        "lead": "Если заметите 3+ признака — мягкий квест со Словиком будет как раз",
+        "doc_title": "Мягкий старт чтения — Читательство",
+        "items": [
+            "Знает отдельные буквы, но путает похожие (М и Н, Б и Д)",
+            "Любит слушать сказки, но быстро теряет нить сюжета",
+            "Останавливается у вывесок и «читает» по картинке, а не по буквам",
+            "Путает звук буквы и её название («бэ» вместо «б»)",
+            "Устаёт от алфавита «по порядку» и карточек без игры",
+            "С трудом собирает даже короткие слоги",
+            "Читает слоги механически, без смысла слова",
+            "Не хочет «учиться», но с интересом играет в буквы",
+            "Боится ошибиться и бросает задание при первой трудности",
+            "Хочет читать «как взрослые», но пока не готов к длинным текстам",
+        ],
+    },
+}
 
 
 def _find_font() -> Path:
@@ -146,9 +177,9 @@ class ChecklistDoc(SimpleDocTemplate):
         _draw_page_frame(self.canv, self)
 
 
-def _item_table(font: str) -> Table:
+def _item_table(font: str, items: list[str]) -> Table:
     rows: list[list] = []
-    for index, text in enumerate(ITEMS, start=1):
+    for index, text in enumerate(items, start=1):
         rows.append(
             [
                 str(index),
@@ -190,8 +221,10 @@ def _item_table(font: str) -> Table:
     return table
 
 
-def main() -> None:
-    OUT.parent.mkdir(parents=True, exist_ok=True)
+def build_variant(variant: str) -> Path:
+    cfg = VARIANTS[variant]
+    out: Path = cfg["out"]
+    out.parent.mkdir(parents=True, exist_ok=True)
     font = _register_font()
 
     title_style = ParagraphStyle(
@@ -233,10 +266,10 @@ def main() -> None:
 
     story = [
         Spacer(1, 42 * mm),
-        Paragraph("10 признаков, что ребёнок не понимает прочитанное", title_style),
-        Paragraph("Если заметите 3+ признака — вам будет полезна наша помощь", lead_style),
+        Paragraph(cfg["title"], title_style),
+        Paragraph(cfg["lead"], lead_style),
         HRFlowable(width="88%", thickness=1, color=BORDER, spaceBefore=2, spaceAfter=10),
-        _item_table(font),
+        _item_table(font, cfg["items"]),
         Spacer(1, 4 * mm),
         Paragraph(SIGNOFF, signoff_style),
         Paragraph(
@@ -247,17 +280,32 @@ def main() -> None:
 
     doc = ChecklistDoc(
         font,
-        str(OUT),
+        str(out),
         pagesize=A4,
         leftMargin=20 * mm,
         rightMargin=20 * mm,
         topMargin=16 * mm,
         bottomMargin=28 * mm,
-        title="10 признаков — Читательство",
+        title=cfg["doc_title"],
         author="Читательство",
     )
     doc.build(story)
-    print(f"Wrote {OUT} ({OUT.stat().st_size} bytes)")
+    print(f"Wrote {out} ({out.stat().st_size} bytes)")
+    return out
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate quiz checklist PDFs")
+    parser.add_argument(
+        "--variant",
+        choices=["reading", "early", "all"],
+        default="all",
+        help="Which checklist to generate (default: all)",
+    )
+    args = parser.parse_args()
+    variants = list(VARIANTS) if args.variant == "all" else [args.variant]
+    for name in variants:
+        build_variant(name)
 
 
 if __name__ == "__main__":

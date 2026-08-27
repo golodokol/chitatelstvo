@@ -31,16 +31,28 @@ logger = logging.getLogger(__name__)
 
 SITE_URL = "https://chitatelstvo.ru"
 CHECKLIST_PDF = ROOT / "static" / "quiz-checklist.pdf"
+CHECKLIST_PDF_EARLY = ROOT / "static" / "quiz-checklist-early.pdf"
 CHECKLIST_PDF_NAME = "10-priznakov-chitatelstvo.pdf"
-CHECKLIST_PDF_VERSION = "20260615b"
+CHECKLIST_PDF_EARLY_NAME = "10-priznakov-myagkiy-start.pdf"
+CHECKLIST_PDF_VERSION = "20260827a"
 
 
-def checklist_pdf_url() -> str:
+def checklist_pdf_path(*, early: bool = False) -> Path:
+    return CHECKLIST_PDF_EARLY if early else CHECKLIST_PDF
+
+
+def checklist_pdf_name(*, early: bool = False) -> str:
+    return CHECKLIST_PDF_EARLY_NAME if early else CHECKLIST_PDF_NAME
+
+
+def checklist_pdf_url(*, early: bool = False) -> str:
     """Public URL with cache-bust query (PDFs are aggressively cached by browsers)."""
-    if CHECKLIST_PDF.is_file():
-        v = int(CHECKLIST_PDF.stat().st_mtime)
-        return f"{PUBLIC_BASE_URL}/quiz/checklist.pdf?v={v}"
-    return f"{PUBLIC_BASE_URL}/quiz/checklist.pdf?v={CHECKLIST_PDF_VERSION}"
+    path = checklist_pdf_path(early=early)
+    slug = "checklist-early.pdf" if early else "checklist.pdf"
+    if path.is_file():
+        v = int(path.stat().st_mtime)
+        return f"{PUBLIC_BASE_URL}/quiz/{slug}?v={v}"
+    return f"{PUBLIC_BASE_URL}/quiz/{slug}?v={CHECKLIST_PDF_VERSION}"
 
 PAGE_CONTEXT = {
     "site_url": SITE_URL,
@@ -81,7 +93,11 @@ def _send_quiz_auto_email(
     *,
     trial_access: dict | None = None,
 ) -> bool:
-    checklist_url = checklist_pdf_url()
+    quiz_variant = (body.quiz_variant or "").strip() or None
+    if not quiz_variant and resolve_trial_module_id(trial_slug=body.trial_slug):
+        quiz_variant = "early"
+    is_early = quiz_variant == "early"
+    checklist_url = checklist_pdf_url(early=is_early)
     trial_title = body.trial_title
     trial_lesson_url = None
     trial_progress_url = None
@@ -89,9 +105,6 @@ def _send_quiz_auto_email(
         trial_title = trial_access.get("lesson_title") or trial_title
         trial_lesson_url = trial_access.get("lesson_url")
         trial_progress_url = trial_access.get("progress_url")
-    quiz_variant = (body.quiz_variant or "").strip() or None
-    if not quiz_variant and resolve_trial_module_id(trial_slug=body.trial_slug):
-        quiz_variant = "early"
     message = build_quiz_auto_email(
         parent_name=body.parent_name,
         child_name=body.child_name,
@@ -118,9 +131,10 @@ def _send_quiz_auto_email(
         quiz_variant=quiz_variant,
     )
     attachments = []
-    if quiz_variant != "early" and CHECKLIST_PDF.is_file():
-        attachments.append((CHECKLIST_PDF_NAME, CHECKLIST_PDF))
-    subject = SUBJECT_QUIZ_EARLY if quiz_variant == "early" else SUBJECT_QUIZ_AUTO
+    pdf_path = checklist_pdf_path(early=is_early)
+    if pdf_path.is_file():
+        attachments.append((checklist_pdf_name(early=is_early), pdf_path))
+    subject = SUBJECT_QUIZ_EARLY if is_early else SUBJECT_QUIZ_AUTO
     send_email(str(body.parent_email), subject, message, html_message, attachments)
     return True
 
@@ -143,6 +157,21 @@ def quiz_checklist_pdf() -> FileResponse:
         CHECKLIST_PDF,
         media_type="application/pdf",
         filename=CHECKLIST_PDF_NAME,
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+        },
+    )
+
+
+@router.get("/quiz/checklist-early.pdf")
+def quiz_checklist_early_pdf() -> FileResponse:
+    if not CHECKLIST_PDF_EARLY.is_file():
+        raise HTTPException(404, "PDF-чек-лист пока недоступен")
+    return FileResponse(
+        CHECKLIST_PDF_EARLY,
+        media_type="application/pdf",
+        filename=CHECKLIST_PDF_EARLY_NAME,
         headers={
             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
             "Pragma": "no-cache",
@@ -205,7 +234,7 @@ def quiz_lead(
 
     if trial_access and trial_access.get("lesson_url"):
         if email_sent:
-            message = "Спасибо! Пробный урок открыт — ссылка уже на email."
+            message = "Спасибо! Пробный урок открыт — ссылка и PDF уже на email."
         else:
             message = "Спасибо! Пробный урок открыт. Если письмо не пришло — откройте ссылку на этой странице."
     elif email_sent:
@@ -213,10 +242,13 @@ def quiz_lead(
     else:
         message = "Спасибо! Заявка принята."
 
+    is_early = (body.quiz_variant or "").strip() == "early" or bool(
+        resolve_trial_module_id(trial_slug=body.trial_slug)
+    )
     return {
         "ok": True,
         "email_sent": email_sent,
-        "checklist_url": checklist_pdf_url(),
+        "checklist_url": checklist_pdf_url(early=is_early),
         "trial_lesson_url": (trial_access or {}).get("lesson_url"),
         "trial_progress_url": (trial_access or {}).get("progress_url"),
         "message": message,

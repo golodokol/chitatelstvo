@@ -132,22 +132,24 @@
         return 'Бесплатный урок «' + title + '» откроем чуть позже — ссылка придёт отдельным письмом.';
       },
       showChecklistLink: true,
+      checklistUrl: CHECKLIST_URL,
       questionSub: 'Ответьте честно — так мы точнее подстроим рекомендации в письме'
     },
     early: {
       introBadge: 'Бесплатный пробный квест со Словиком!',
-      introSub: '5 коротких вопросов — и откроем пробный урок для ребёнка, который ещё только знакомится с буквами и первыми историями. Без карты и без давления.',
-      formSub: 'Оставьте контакты — пришлём ссылку на пробный урок и короткие рекомендации на email.',
-      giftNow: '<strong>Сейчас:</strong> доступ к пробному квесту на платформе (ссылка в письме).',
+      introSub: '5 коротких вопросов — откроем пробный урок и пришлём PDF-чек-лист «10 признаков, что ребёнку нужен мягкий старт чтения».',
+      formSub: 'Оставьте контакты — пришлём ссылку на пробный урок и PDF-чек-лист на email.',
+      giftNow: '<strong>Сейчас:</strong> PDF-чек-лист и доступ к пробному квесту на платформе (ссылка в письме).',
       giftLater: '<strong>В письме:</strong> подсказка, с чего начать — «Буквы оживают» или «Первые истории».',
       ageNote: 'Этот квиз — для детей, которые ещё не читают сами или только начинают (примерно 4–7 лет)',
-      submit: 'Получить пробный урок',
-      successPdf: '<strong>Письмо со ссылкой на урок уже уходит на ваш email.</strong>',
-      successDefaultGift: 'Откройте письмо — там ссылка на пробный квест со Словиком.',
+      submit: 'Получить урок и PDF',
+      successPdf: '<strong>Письмо с PDF и ссылкой на урок уже уходит на ваш email.</strong>',
+      successDefaultGift: 'Откройте письмо — там PDF-чек-лист и ссылка на пробный квест со Словиком.',
       successTrialGift: function (title) {
-        return 'Пробный урок «' + title + '» уже открываем — ссылка придёт на email в течение минуты.';
+        return 'Пробный урок «' + title + '» и PDF уже открываем — письмо придёт в течение минуты.';
       },
-      showChecklistLink: false,
+      showChecklistLink: true,
+      checklistUrl: API_BASE + '/quiz/checklist-early.pdf?v=20260827a',
       questionSub: 'Ответьте честно — так мы подскажем, с какого курса начать'
     }
   };
@@ -284,6 +286,7 @@
     if (checklistLink) {
       checklistLink.hidden = !c.showChecklistLink;
       checklistLink.style.display = c.showChecklistLink ? '' : 'none';
+      if (c.checklistUrl) checklistLink.setAttribute('href', c.checklistUrl);
     }
   }
 
