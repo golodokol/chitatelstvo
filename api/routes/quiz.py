@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -208,6 +209,7 @@ def quiz_lead(
 
     LEADS_FILE.parent.mkdir(parents=True, exist_ok=True)
     record = {
+        "id": str(uuid.uuid4()),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "ip": request.client.host if request.client else None,
         "parent_name": body.parent_name,

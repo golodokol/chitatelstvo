@@ -27,7 +27,11 @@ from db.child_age import child_age_years
 from db import repository as repo
 from db.session import get_db
 from lessons.enrollment_access import get_active_enrollments, normalize_stage
-from services.quiz_leads import build_quiz_lead_rows, load_quiz_leads
+from services.quiz_leads import (
+    build_quiz_lead_rows,
+    load_quiz_leads,
+    set_quiz_lead_replied,
+)
 from services.early_trial_leads import build_early_trial_lead_rows, load_early_trial_leads
 from services.meeting_attendance import mark_meeting_attendance, meeting_tale_options
 from services.registration import grant_enrollment_to_child, process_registration
@@ -485,6 +489,7 @@ def admin_page(
             "child_count": sum(len(f.children) for f in families),
             "quiz_rows": quiz_rows,
             "quiz_count": len(quiz_rows),
+            "quiz_unreplied_count": sum(1 for row in quiz_rows if not row.get("replied")),
             "early_rows": early_rows,
             "early_count": len(early_rows),
             "modules": _admin_modules(),
@@ -744,6 +749,33 @@ def admin_export_csv(
     )
 
 
+@router.post("/quiz-leads/{lead_id}/replied")
+def admin_quiz_lead_replied(
+    request: Request,
+    lead_id: str,
+    replied: str = Form(default="0"),
+):
+    require_admin(request)
+    is_replied = str(replied).strip().lower() in {"1", "true", "on", "yes"}
+    try:
+        status = set_quiz_lead_replied(lead_id, replied=is_replied)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    accept = (request.headers.get("accept") or "").lower()
+    if "application/json" in accept or request.headers.get("x-requested-with") == "fetch":
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(
+            {
+                "ok": True,
+                "lead_id": lead_id,
+                "replied": bool(status.get("replied")),
+                "replied_at": status.get("replied_at"),
+            }
+        )
+    return RedirectResponse("/admin#quiz-leads", status_code=303)
+
+
 @router.get("/quiz-export.csv")
 def admin_quiz_export_csv(request: Request) -> StreamingResponse:
     require_admin(request)
@@ -760,6 +792,7 @@ def admin_quiz_export_csv(request: Request) -> StreamingResponse:
             "Телефон",
             "Ребёнок",
             "Возраст",
+            "Ответила",
             "Ответы квиза",
         ]
     )
@@ -772,6 +805,7 @@ def admin_quiz_export_csv(request: Request) -> StreamingResponse:
                 row["phone"],
                 row["child_name"],
                 row["child_age"],
+                "да" if row.get("replied") else "нет",
                 row["answers_text"].replace("\n", " | "),
             ]
         )
