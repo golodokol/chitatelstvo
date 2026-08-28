@@ -50,6 +50,7 @@
     .panel { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 20px; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 16px; }
     .field label { display: block; font-size: .85rem; color: #5a4a38; margin-bottom: 4px; }
+    .field .hint-inline { font-weight: 400; color: #8a7a68; font-size: .78rem; }
     .field input, .field select { width: 100%; padding: 8px 10px; border: 1px solid #ddd4c8; border-radius: 8px; font: inherit; background: #fffcf8; }
     .field--wide { grid-column: 1 / -1; }
     .field--check { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
@@ -311,7 +312,8 @@
         Ручная запись без оплаты — для тестов и исключений. Новая покупка в том же классе/курсе закроет прежний доступ в этом направлении; другой курс может идти параллельно.<br>
         <strong>Курсы:</strong> 1–4 класс, внеклассное, «Буквы оживают», «Первые истории», «Ветер в ивах», «Таинственный сад», «Русские сказки».<br>
         <strong>Этап:</strong> для школьных программ — дата старта (15 июля / 15 августа); для ранних и новинок — модуль 1.<br>
-        <strong>Сказка / урок:</strong> только для разового и пробного (у ранних — номер урока 1–8).
+        <strong>Сказка / урок:</strong> только для разового и пробного (у ранних — номер урока 1–8).<br>
+        <strong>Возраст:</strong> достаточно даты рождения <em>или</em> возраста в годах (если точной даты нет).
       </div>
 
       <div class="panel">
@@ -334,8 +336,12 @@
             <input id="new_child_name" name="child_name" required>
           </div>
           <div class="field">
-            <label for="new_child_birth_date">День рождения ребёнка</label>
-            <input id="new_child_birth_date" name="child_birth_date" type="date" required>
+            <label for="new_child_birth_date">День рождения <span class="hint-inline">(если знаете)</span></label>
+            <input id="new_child_birth_date" name="child_birth_date" type="date">
+          </div>
+          <div class="field">
+            <label for="new_child_age">Возраст, лет <span class="hint-inline">(если даты нет)</span></label>
+            <input id="new_child_age" name="child_age" type="number" inputmode="numeric" min="1" max="99" placeholder="например 8">
           </div>
           <div class="field">
             <label for="new_channel">Канал уведомлений</label>

@@ -437,6 +437,18 @@ def _parse_child_birth_date(raw: str | None):
     return str(raw).strip()
 
 
+def _parse_child_age(raw: str | None) -> int | None:
+    if raw is None or str(raw).strip() == "":
+        return None
+    try:
+        age = int(str(raw).strip())
+    except ValueError as exc:
+        raise ValueError("Возраст должен быть целым числом") from exc
+    if age < 1 or age > 99:
+        raise ValueError("Возраст должен быть от 1 до 99")
+    return age
+
+
 def _parse_tale_number(raw: str | None) -> int | None:
     if raw is None or str(raw).strip() == "":
         return None
@@ -525,6 +537,7 @@ def admin_enroll_new(
     parent_telegram: str = Form(default=""),
     child_name: str = Form(...),
     child_birth_date: str = Form(default=""),
+    child_age: str = Form(default=""),
     notification_channel: str = Form(default="email"),
     module_id: int = Form(...),
     chosen_stage: str = Form(...),
@@ -533,12 +546,17 @@ def admin_enroll_new(
 ):
     require_admin(request)
     try:
+        birth = _parse_child_birth_date(child_birth_date)
+        age = _parse_child_age(child_age)
+        if birth is None and age is None:
+            raise ValueError("Укажите день рождения ребёнка или возраст в годах")
         body = RegisterWebhook(
             parent_name=parent_name.strip(),
             parent_email=parent_email.strip(),
             parent_telegram=parent_telegram.strip() or None,
             child_name=child_name.strip(),
-            child_birth_date=_parse_child_birth_date(child_birth_date),
+            child_birth_date=birth,
+            child_age=age,
             notification_channel=notification_channel.strip() or "email",
             module_id=module_id,
             chosen_stage=chosen_stage.strip(),
