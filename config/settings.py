@@ -46,6 +46,16 @@ TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "").strip()
 TELEGRAM_WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
 # Пока с VPS нет доступа к api.telegram.org (нужен VPN) — держите 0
 TELEGRAM_ENABLED = os.getenv("TELEGRAM_ENABLED", "0").strip().lower() in ("1", "true", "yes")
+# Chat id админа для алертов об оплате (бот должен получить /start от вас)
+ADMIN_TELEGRAM_CHAT_ID = os.getenv("ADMIN_TELEGRAM_CHAT_ID", "").strip()
+
+# --- MAX (мессенджер) — админ-алерты об оплате ---
+MAX_BOT_TOKEN = os.getenv("MAX_BOT_TOKEN", "").strip()
+MAX_ENABLED = os.getenv("MAX_ENABLED", "0").strip().lower() in ("1", "true", "yes")
+MAX_WEBHOOK_SECRET = os.getenv("MAX_WEBHOOK_SECRET", "").strip()
+# Куда слать: личный user_id и/или chat_id канала/диалога
+ADMIN_MAX_USER_ID = os.getenv("ADMIN_MAX_USER_ID", "").strip()
+ADMIN_MAX_CHAT_ID = os.getenv("ADMIN_MAX_CHAT_ID", "").strip()
 
 
 def resolve_notification_channel(channel: str) -> str:

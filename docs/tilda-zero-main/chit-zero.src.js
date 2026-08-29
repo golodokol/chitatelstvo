@@ -43,7 +43,7 @@
   if (window.__chitTrialLoaderBound) return;
   window.__chitTrialLoaderBound = true;
   var A = 'https://api.chitatelstvo.ru/assets/';
-  var V = '20260828g';
+  var V = '20260829a';
   var busy = 0;
   var done = 0;
   var q = [];

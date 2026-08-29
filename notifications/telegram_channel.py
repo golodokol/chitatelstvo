@@ -8,8 +8,8 @@ from config.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_ENABLED
 logger = logging.getLogger(__name__)
 
 
-def send_telegram(chat_id: int, text: str) -> None:
-    if not TELEGRAM_ENABLED:
+def send_telegram(chat_id: int, text: str, *, force: bool = False) -> None:
+    if not TELEGRAM_ENABLED and not force:
         logger.info("Telegram отключён — уведомление не отправлено (chat_id=%s)", chat_id)
         return
     if not TELEGRAM_BOT_TOKEN:

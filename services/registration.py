@@ -13,6 +13,7 @@ from config.settings import PUBLIC_BASE_URL, resolve_notification_channel
 from db import repository as repo
 from db.models import Child
 from job_queue.redis_queue import enqueue
+from notifications.admin_alerts import notify_admin_payment
 from notifications.email_templates import build_welcome_message
 from notifications.telegram_bot import build_link_url
 from services.enrollment import create_enrollment_from_registration, validate_registration_module
@@ -208,6 +209,25 @@ def process_registration(
         send_email=send_email,
     )
     response.module_id = module_id
+
+    try:
+        notify_admin_payment(
+            parent_name=body.parent_name,
+            parent_email=str(body.parent_email),
+            parent_phone=body.parent_telegram,
+            child_name=body.child_name,
+            child_age=body.child_age,
+            module_id=module_id,
+            module_title=module_title,
+            chosen_stage=body.chosen_stage,
+            chosen_tale_number=body.chosen_tale_number,
+            promo_code=body.promo_code,
+            source=log_source,
+            is_returning=is_returning,
+        )
+    except Exception:
+        logger.exception("Admin payment alert failed (registration continues)")
+
     return response
 
 

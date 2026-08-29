@@ -468,7 +468,9 @@
     var success = root.querySelector('[data-step="success"]');
     if (!success) return;
     var giftLine = success.querySelector('[data-qz-gift-line]');
-    if (!giftLine) return;
+    var slot = success.querySelector('[data-qz-trial-slot]');
+    var enroll = success.querySelector('[data-qz-enroll]');
+    var pdf = success.querySelector('[data-qz-checklist-link]');
     var c = copy();
     var title = '';
     try {
@@ -478,18 +480,36 @@
         if (trial && trial.title) title = String(trial.title);
       }
     } catch (err) {}
-    giftLine.textContent = title ? c.successTrialGift(title) : c.successDefaultGift;
+    if (giftLine) {
+      giftLine.textContent = title ? c.successTrialGift(title) : c.successDefaultGift;
+    }
     var oldLink = success.querySelector('.qz-success-trial-link');
     if (oldLink) oldLink.remove();
     var lessonUrl = apiData && apiData.trial_lesson_url;
-    if (lessonUrl) {
-      var linkWrap = document.createElement('p');
-      linkWrap.className = 'qz-success-trial-link';
-      linkWrap.style.marginTop = '16px';
-      linkWrap.style.textAlign = 'center';
-      linkWrap.innerHTML =
-        '<a class="qz-btn qz-btn--submit" href="' + lessonUrl + '" target="_blank" rel="noopener">Открыть пробный урок</a>';
-      giftLine.insertAdjacentElement('afterend', linkWrap);
+    if (slot) {
+      if (lessonUrl) {
+        slot.hidden = false;
+        slot.innerHTML =
+          '<a class="qz-success-btn qz-success-btn--primary" href="' + lessonUrl +
+          '" target="_blank" rel="noopener">Открыть пробный урок</a>';
+        if (enroll) {
+          enroll.className = 'qz-success-btn qz-success-btn--secondary';
+        }
+        if (pdf) {
+          pdf.className = 'qz-success-btn qz-success-btn--ghost';
+        }
+      } else {
+        slot.hidden = true;
+        slot.innerHTML = '';
+        if (enroll) {
+          enroll.className = 'qz-success-btn qz-success-btn--primary';
+        }
+        if (pdf) {
+          pdf.className = c.showChecklistLink
+            ? 'qz-success-btn qz-success-btn--secondary'
+            : 'qz-success-btn qz-success-btn--ghost';
+        }
+      }
     }
   }
 

@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260828g"
+VERSION = "20260829a"
 
 CHIT_QUIZ_LOADER = (
     '<script id="chit-quiz-loader">(function(){if(window.__chitTrialLoaderBound)return;window.__chitTrialLoaderBound=1;'

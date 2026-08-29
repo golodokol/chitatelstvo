@@ -1255,15 +1255,22 @@
               <p class="qz-error" role="alert"></p>
             </form>
           </section>
-          <section class="qz-step" data-step="success">
-            <div class="qz-success-icon" aria-hidden="true">✓</div>
-            <h2 class="qz-title" style="text-align:center">Спасибо!</h2>
-            <p class="qz-sub" style="text-align:center">Мы получили ваши ответы.</p>
-            <p style="text-align:center;margin:0 0 12px" data-qz-success-pdf><strong>PDF-чек-лист уже на вашем email.</strong></p>
-            <p data-qz-gift-line style="text-align:center;margin:0 0 12px">Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
-            <div class="qz-success-links">
-              <a class="qz-link-btn" data-qz-checklist-link href="https://api.chitatelstvo.ru/quiz/checklist.pdf?v=20260615b" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
-              <a class="qz-link-btn" href="#program" data-qz-close style="background:var(--qz-blue);color:#fff;border-color:transparent">Записаться на программу</a>
+          <section class="qz-step qz-success" data-step="success">
+            <p class="qz-success__eyebrow">Готово</p>
+            <div class="qz-success__mark" aria-hidden="true">
+              <span class="qz-success__mark-ring"></span>
+              <span class="qz-success__mark-check">✓</span>
+            </div>
+            <h2 class="qz-success__title">Спасибо!</h2>
+            <p class="qz-success__lead">Мы получили ваши ответы.</p>
+            <div class="qz-success__note">
+              <p class="qz-success__note-main" data-qz-success-pdf><strong>PDF-чек-лист уже на вашем email.</strong></p>
+              <p class="qz-success__note-sub" data-qz-gift-line>Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
+            </div>
+            <div class="qz-success__actions" data-qz-actions>
+              <div class="qz-success__trial" data-qz-trial-slot hidden></div>
+              <a class="qz-success-btn qz-success-btn--primary" href="#program" data-qz-close data-qz-enroll>Записаться на программу</a>
+              <a class="qz-success-btn qz-success-btn--ghost" data-qz-checklist-link href="https://api.chitatelstvo.ru/quiz/checklist.pdf?v=20260615b" target="_blank" rel="noopener">Скачать PDF-чек-лист</a>
             </div>
           </section>
         </div>
