@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
 from catalog.loader import get_module, get_tale
@@ -43,15 +44,55 @@ def get_active_enrollment(child: Child) -> Enrollment | None:
     return active[-1]
 
 
-def find_enrollment_for_lesson(child: Child, lesson: dict[str, Any]) -> Enrollment | None:
+def find_enrollment_for_lesson(
+    child: Child,
+    lesson: dict[str, Any],
+    *,
+    enrollment_id: str | uuid.UUID | None = None,
+) -> Enrollment | None:
     module_id = lesson.get("module_id")
+    enrollments = get_active_enrollments(child)
+
+    if enrollment_id is not None:
+        want = str(enrollment_id).strip()
+        if want:
+            for enrollment in enrollments:
+                if str(enrollment.id) != want:
+                    continue
+                if module_id is not None and enrollment.module_id != module_id:
+                    return None
+                return enrollment
+            return None
+
     if module_id is None:
         return get_active_enrollment(child)
-    for enrollment in get_active_enrollments(child):
-        if enrollment.module_id == module_id:
-            return enrollment
-    return None
 
+    matches = [e for e in enrollments if e.module_id == module_id]
+    if not matches:
+        return None
+    if len(matches) == 1:
+        return matches[0]
+
+    # Несколько разовых на один module_id (общий slug оболочки):
+    # без enrollment в URL берём открытую по календарю с меньшей «неделей».
+    from lessons.access import is_lesson_unlocked
+    from lessons.schedule import effective_module_week
+
+    module = get_module(module_id)
+    unlocked = [
+        e
+        for e in matches
+        if is_lesson_unlocked(child, lesson, enrollment=e, module=module)
+    ]
+    pool = unlocked or matches
+    return min(
+        pool,
+        key=lambda e: (
+            effective_module_week(lesson, e, module),
+            str(e.created_at or ""),
+            str(e.id),
+        ),
+    )
 
 def child_can_access_lesson(
     child: Child,

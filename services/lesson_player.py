@@ -67,6 +67,7 @@ def require_lesson_unlocked(
     lesson: dict[str, Any],
     *,
     bypass: bool = False,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> Child:
     if bypass:
         return get_child_or_404(db, child_id)
@@ -77,7 +78,7 @@ def require_lesson_unlocked(
     child = get_child_or_404(db, child_id)
     ensure_sibling_early_trial(db, child=child, lesson_slug=str(lesson.get("slug") or ""))
     child = get_child_or_404(db, child_id)
-    enrollment = find_enrollment_for_lesson(child, lesson)
+    enrollment = find_enrollment_for_lesson(child, lesson, enrollment_id=enrollment_id)
     if not child_can_access_lesson(child, lesson, enrollment):
         raise HTTPException(403, "Этот урок недоступен для вашего модуля.")
     module = get_module(enrollment.module_id) if enrollment else None
@@ -107,7 +108,6 @@ def load_lesson(db: Session, slug: str, *, child: Child | None = None) -> dict[s
         return lesson
     enrollment = find_enrollment_for_lesson(child, lesson)
     return merge_single_lesson_content(lesson, enrollment)
-
 
 def _chest_track_index(child_payload: dict[str, Any], lesson: dict[str, Any]) -> int | None:
     tale_slug = (lesson.get("tale_slug") or lesson.get("slug") or "").strip()
@@ -284,14 +284,16 @@ def prepare_lesson_for_child(
     slug: str,
     *,
     bypass: bool = False,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> tuple[Child, dict[str, Any]]:
     lesson = get_lesson(slug)
     if not lesson:
         raise HTTPException(404, "Урок не найден")
-    child = require_lesson_unlocked(db, child_id, lesson, bypass=bypass)
-    enrollment = find_enrollment_for_lesson(child, lesson)
+    child = require_lesson_unlocked(
+        db, child_id, lesson, bypass=bypass, enrollment_id=enrollment_id
+    )
+    enrollment = find_enrollment_for_lesson(child, lesson, enrollment_id=enrollment_id)
     return child, merge_single_lesson_content(lesson, enrollment)
-
 
 def lesson_has_playable_video(lesson: dict[str, Any]) -> bool:
     """Есть ли реальное видео (не заглушка «ещё не добавлено»)."""
@@ -414,12 +416,16 @@ def build_lesson_json(
     child: Child,
     slug: str,
     test_bypass: bool = False,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
-    _, lesson = prepare_lesson_for_child(db, child.id, slug, bypass=test_bypass)
+    _, lesson = prepare_lesson_for_child(
+        db, child.id, slug, bypass=test_bypass, enrollment_id=enrollment_id
+    )
     sign_quest_next_paths(lesson, child.id)
     raw = get_lesson(slug)
-    enrollment = find_enrollment_for_lesson(child, raw) if raw else None
-
+    enrollment = (
+        find_enrollment_for_lesson(child, raw, enrollment_id=enrollment_id) if raw else None
+    )
     emotion = lesson.get("emotion_quiz")
     reading = lesson.get("reading_practice")
     comprehension = lesson.get("comprehension_quiz")
@@ -487,6 +493,9 @@ def build_lesson_json(
         "lesson": lesson,
         "child_id": str(child.id),
         "child_name": child.name,
+        "enrollment_id": str(enrollment.id) if enrollment else (
+            str(enrollment_id) if enrollment_id else None
+        ),
         "progress_url": nav_urls["progress_url"],
         "chest_url": nav_urls["chest_url"],
         "module_week": lesson.get("module_week"),
@@ -509,7 +518,9 @@ def build_lesson_json(
         "existing_rating": existing_rating.rating if existing_rating else None,
         "can_rate": can_rate,
         "progress": progress,
-        "lesson_url": build_lesson_url(child.id, slug),
+        "lesson_url": build_lesson_url(
+            child.id, slug, enrollment_id=enrollment.id if enrollment else enrollment_id
+        ),
         "lesson_links": build_quest_lesson_links(lesson, child.id),
         "manual_mark_types": list(MANUAL_MARK_ONLY),
         "assets_base": PUBLIC_BASE_URL,
@@ -531,12 +542,14 @@ def handle_video_unlock(
     watched_seconds: float,
     duration_seconds: float | None = None,
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
     tale_title = lesson["title"]
     if child_has_video_unlock(db, child_id, tale_title=tale_title, lesson=lesson):
@@ -581,12 +594,14 @@ def handle_video_complete(
     slug: str,
     percent: float,
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
     if (
         not verify_test_lesson_key(test_key)
@@ -625,12 +640,14 @@ def handle_emotion_quiz_submit(
     slug: str,
     answers: dict[str, list[str]],
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
 
     quiz = lesson.get("emotion_quiz")
@@ -678,12 +695,14 @@ def handle_quiz_submit(
     quiz_type: Literal["comprehension", "meaning_analysis"],
     answers: dict[str, Any],
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
 
     quiz_key = "comprehension_quiz" if quiz_type == "comprehension" else "meaning_quiz"
@@ -741,12 +760,14 @@ def handle_retelling_submit(
     slug: str,
     answers: dict[str, Any],
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
 
     quiz = lesson.get("retelling_quiz")
@@ -802,12 +823,14 @@ def handle_reading_practice_submit(
     slug: str,
     cards_read: list[str],
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
 
     block = lesson.get("reading_practice")
@@ -855,12 +878,14 @@ def handle_manual_mark(
     event_type: Literal["creative_task", "live_meeting"],
     notes: str | None,
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
     if event_type not in MANUAL_MARK_ONLY:
         raise HTTPException(400, "Этот тип события только для ручной отметки")
@@ -888,12 +913,14 @@ def handle_tale_rating(
     slug: str,
     rating: int,
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
     if not child_can_rate_tale(
         db, child_id, lesson=lesson, tale_title=lesson["title"]
@@ -923,12 +950,14 @@ def handle_quest_complete(
     sparks: int = 0,
     passed_stations: list[str] | None = None,
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     _, lesson = prepare_lesson_for_child(
         db,
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
     if lesson.get("lesson_format") != "quest" and not lesson.get("stations"):
         raise HTTPException(400, "Этот урок не является квестом со станциями.")

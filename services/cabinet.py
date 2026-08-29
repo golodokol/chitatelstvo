@@ -156,7 +156,7 @@ def build_lesson_links_for_track(
             link["meeting_on"] = access["meeting_on"]
             link["meeting_on_label"] = access["meeting_on_label"]
         if access["unlocked"] and _lesson_is_ready(les):
-            link["url"] = build_lesson_url(child.id, les["slug"])
+            link["url"] = build_lesson_url(child.id, les["slug"], enrollment_id=enrollment.id)
         enrich_lesson_link(link)
         lesson_links.append(link)
     return lesson_links, has_meetings

@@ -70,6 +70,7 @@
       sig: cfg.sig || "",
     };
     if (cfg.testKey) body.test_key = cfg.testKey;
+    if (cfg.enrollmentId) body.enrollment_id = cfg.enrollmentId;
     if (extra) Object.keys(extra).forEach(function (k) { body[k] = extra[k]; });
     return body;
   }

@@ -50,6 +50,7 @@ async def handle_creative_upload(
     slug: str,
     files: list[UploadFile],
     test_key: str | None = None,
+    enrollment_id: uuid.UUID | str | None = None,
 ) -> dict[str, Any]:
     from api.test_lesson_auth import verify_test_lesson_key
 
@@ -64,6 +65,7 @@ async def handle_creative_upload(
         child_id,
         slug,
         bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
     tale_title = lesson["title"]
     tale_slug = lesson.get("tale_slug") or slug

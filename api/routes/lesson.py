@@ -39,6 +39,7 @@ class LessonAuth(BaseModel):
     exp: int
     sig: str = ""
     test_key: str | None = None
+    enrollment_id: uuid.UUID | None = None
 
     @model_validator(mode="after")
     def _normalize_sig(self) -> "LessonAuth":
@@ -91,16 +92,26 @@ def _verify_access_fields(
     exp: int,
     sig: str,
     test_key: str | None,
+    enrollment_id: uuid.UUID | None = None,
 ) -> uuid.UUID:
     if verify_test_lesson_key(test_key):
         return child_id
-    if not verify_lesson_access(child_id, slug, exp, sig):
+    if not verify_lesson_access(
+        child_id, slug, exp, sig, enrollment_id=enrollment_id
+    ):
         raise HTTPException(403, "Ссылка урока недействительна или устарела")
     return child_id
 
 
 def _verify_access(body: LessonAuth, slug: str) -> uuid.UUID:
-    return _verify_access_fields(body.child_id, slug, body.exp, body.sig, body.test_key)
+    return _verify_access_fields(
+        body.child_id,
+        slug,
+        body.exp,
+        body.sig,
+        body.test_key,
+        body.enrollment_id,
+    )
 
 
 @router.get("/lesson/{slug}", response_class=HTMLResponse)
@@ -111,14 +122,23 @@ def lesson_page(
     exp: int,
     sig: str,
     db: Session = Depends(get_db),
+    enrollment: uuid.UUID | None = None,
 ) -> HTMLResponse:
     test_key = request.query_params.get("test_key")
     test_bypass = verify_test_lesson_key(test_key)
-    if not test_bypass and not verify_lesson_access(child, slug, exp, sig):
+    if not test_bypass and not verify_lesson_access(
+        child, slug, exp, sig, enrollment_id=enrollment
+    ):
         raise HTTPException(403, "Ссылка урока недействительна или устарела")
 
     child_row = get_child_or_404(db, child)
-    payload = build_lesson_json(db, child=child_row, slug=slug, test_bypass=test_bypass)
+    payload = build_lesson_json(
+        db,
+        child=child_row,
+        slug=slug,
+        test_bypass=test_bypass,
+        enrollment_id=enrollment,
+    )
     nav_urls = {
         "progress_url": payload["progress_url"],
         "chest_url": payload["chest_url"],
@@ -140,6 +160,7 @@ def lesson_page(
             "chest_url": nav_urls["chest_url"],
             "exp": exp,
             "sig": sig,
+            "enrollment_id": str(enrollment) if enrollment else payload.get("enrollment_id"),
             "video_threshold": VIDEO_BADGE_THRESHOLD,
             "video_unlock_seconds": VIDEO_UNLOCK_SECONDS,
             "video_unlock_minutes": max(1, VIDEO_UNLOCK_SECONDS // 60),
@@ -181,6 +202,7 @@ def reading_practice_submit(
         slug=slug,
         cards_read=body.cards_read,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -201,6 +223,7 @@ def video_unlock(
         watched_seconds=body.watched_seconds,
         duration_seconds=body.duration_seconds,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -220,6 +243,7 @@ def video_complete(
         slug=slug,
         percent=body.percent,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -239,6 +263,7 @@ def emotion_quiz_submit(
         slug=slug,
         answers=body.answers,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -259,6 +284,7 @@ def quiz_submit(
         quiz_type=body.quiz_type,
         answers=body.answers,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -278,6 +304,7 @@ def retelling_submit(
         slug=slug,
         answers=body.answers,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -298,6 +325,7 @@ def manual_mark(
         event_type=body.event_type,
         notes=body.notes,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -317,6 +345,7 @@ def tale_rating(
         slug=slug,
         rating=body.rating,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -342,6 +371,7 @@ def quest_complete(
         sparks=body.sparks,
         passed_stations=body.passed_stations,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -353,11 +383,12 @@ async def creative_upload(
     exp: int = Form(...),
     sig: str = Form(""),
     test_key: str | None = Form(None),
+    enrollment_id: uuid.UUID | None = Form(None),
     files: list[UploadFile] = File(...),
     db: Session = Depends(get_db),
 ) -> dict:
     rate_limit(request)
-    verified_id = _verify_access_fields(child_id, slug, exp, sig, test_key)
+    verified_id = _verify_access_fields(child_id, slug, exp, sig, test_key, enrollment_id)
     get_child_or_404(db, verified_id)
     return await handle_creative_upload(
         db,
@@ -365,4 +396,5 @@ async def creative_upload(
         slug=slug,
         files=files,
         test_key=test_key,
+        enrollment_id=enrollment_id,
     )

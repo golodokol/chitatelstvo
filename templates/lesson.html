@@ -165,6 +165,7 @@
       childId: {{ child_id|tojson }},
       exp: {{ exp }},
       sig: {{ sig|tojson }},
+      enrollmentId: {{ enrollment_id|tojson }},
       threshold: {{ video_badge_threshold }},
       unlockSeconds: {{ video_unlock_seconds }},
       badgeThreshold: {{ video_badge_threshold }},
@@ -319,6 +320,7 @@
       if (CFG.testKey && String(sig).length < 8) sig = '00000000';
       const body = { child_id: CFG.childId, exp: CFG.exp, sig: sig, ...extra };
       if (CFG.testKey) body.test_key = CFG.testKey;
+      if (CFG.enrollmentId) body.enrollment_id = CFG.enrollmentId;
       return body;
     }
 
@@ -1709,6 +1711,7 @@
         form.append('child_id', CFG.childId);
         form.append('exp', String(CFG.exp));
         form.append('sig', CFG.sig);
+        if (CFG.enrollmentId) form.append('enrollment_id', CFG.enrollmentId);
         if (CFG.testKey) form.append('test_key', CFG.testKey);
         for (let i = 0; i < files.length; i += 1) {
           form.append('files', files[i]);

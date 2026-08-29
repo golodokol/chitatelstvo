@@ -62,6 +62,7 @@
       childId: {{ child_id|tojson }},
       exp: {{ exp }},
       sig: {{ sig|tojson }},
+      enrollmentId: {{ enrollment_id|tojson }},
       testKey: {{ (test_key or '')|tojson }},
       stations: {{ (lesson.stations or [])|tojson }},
       quest: {{ (lesson.quest or {})|tojson }},
