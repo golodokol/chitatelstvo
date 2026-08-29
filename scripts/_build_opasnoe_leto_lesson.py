@@ -25,7 +25,7 @@ CONTENT = {
     ),
     "video": {
         "type": "kinescope",
-        "id": "",
+        "id": "fuDHSoEgHwZtSt57eraez5",
         "title": "Опасное лето",
         "duration_min": "8-15",
         "pass_condition": "просмотр >= 50%",
@@ -372,26 +372,38 @@ CONTENT = {
                     {
                         "id": "e1",
                         "text": "Наводнение заливает долину, семья спасается.",
+                        "image": f"{IMG}/event-01.png",
+                        "alt": "Семья в лодке во время наводнения",
                     },
                     {
                         "id": "e2",
                         "text": "Находят плавучий театр и поселяются.",
+                        "image": f"{IMG}/event-02.png",
+                        "alt": "Плавучий театр на воде",
                     },
                     {
                         "id": "e3",
                         "text": "Крыса Эмма объясняет, что это театр.",
+                        "image": f"{IMG}/event-03.png",
+                        "alt": "Крыса Эмма в театре",
                     },
                     {
                         "id": "e4",
                         "text": "Готовят спектакль.",
+                        "image": f"{IMG}/event-04.png",
+                        "alt": "Репетиция спектакля",
                     },
                     {
                         "id": "e5",
                         "text": "Показывают придуманный спектакль.",
+                        "image": f"{IMG}/event-05.png",
+                        "alt": "Спектакль на сцене",
                     },
                     {
                         "id": "e6",
                         "text": "Вода спадает, возвращаются в муми-дом.",
+                        "image": f"{IMG}/event-06.png",
+                        "alt": "Возвращение в муми-дом",
                     },
                 ],
                 "correct": ["e1", "e2", "e3", "e4", "e5", "e6"],
@@ -443,11 +455,10 @@ def main() -> None:
         "meeting_number": 0,
         "badge": "Первый шаг",
         "points": 2,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": (
-            "Внеклассное 9–11 лет, этап 1, книга 1. Без практики чтения. "
-            "Видео и картинки — заглушки."
+            "Внеклассное 9–11 лет, этап 1, книга 1. Без практики чтения."
         ),
     }
     teacher_meta = {
@@ -466,8 +477,8 @@ def main() -> None:
         "meeting_number": 1,
         "badge": "Первый шаг",
         "points": 2,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": "Тот же контент, что self_paced; встреча с преподавателем по расписанию.",
     }
     legacy_meta = {
@@ -477,8 +488,8 @@ def main() -> None:
         "stage": "stage-1",
         "tale_number": 1,
         "module_week": 1,
-        "active": False,
-        "status": "черновик",
+        "active": True,
+        "status": "тест",
         "note": "Legacy-slug. Зеркало extra-9-11-self_paced-stage-1-lesson-01.",
     }
 

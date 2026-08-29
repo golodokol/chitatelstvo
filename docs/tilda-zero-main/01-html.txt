@@ -9,15 +9,18 @@
 <header class="site-header">
   <div class="site-header__inner">
     <a class="logo" href="#top" id="site-logo" aria-label="Читательство — наверх">
-      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="180" height="180">
+      <img class="logo__img" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo-header.webp" alt="Читательство" width="114" height="88" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='https://api.chitatelstvo.ru/assets/logo-chitatelstvo-header.png'">
     </a>
-    <nav class="site-nav" aria-label="Разделы страницы">
+    <nav class="site-nav" id="chit-site-nav" aria-label="Разделы страницы">
       <a href="#programs">Программы</a>
       <a href="#support">Опоры</a>
       <a href="#platform">Платформа</a>
       <a href="#proof">Отзывы</a>
       <a href="#lead">Консультация</a>
     </nav>
+    <button type="button" class="nav-toggle" aria-label="Меню" aria-expanded="false" aria-controls="chit-site-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"></span>
+    </button>
     <div class="site-header__right">
       <a class="header-cta" href="#programs">Выбрать программу</a>
     </div>
@@ -52,7 +55,7 @@
             <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-single.png" alt="" width="108" height="156" onerror="this.remove()">
           </button>
           <button type="button" class="book is-active" data-idx="1" aria-label="Полная программа">
-            <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-full.png" alt="" width="124" height="180" onerror="this.remove()">
+            <img class="book__cover" src="https://static.tildacdn.com/tild3866-3262-4865-b637-313336366339/hero-book-full.webp" alt="" width="124" height="180" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='https://api.chitatelstvo.ru/assets/hero-book-full.png'">
           </button>
           <button type="button" class="book" data-idx="2" aria-label="Один блок программы">
             <img class="book__cover" src="https://api.chitatelstvo.ru/assets/hero-book-block.png" alt="" width="108" height="156" onerror="this.remove()">
@@ -896,8 +899,8 @@
             <input type="email" id="chit_parent_email" name="parent_email" autocomplete="email" required>
           </div>
           <div class="form-field">
-            <label for="chit_parent_telegram">Телефон</label>
-            <input type="tel" id="chit_parent_telegram" name="parent_telegram" autocomplete="tel">
+            <label for="chit_parent_phone">Телефон</label>
+            <input type="tel" id="chit_parent_phone" name="parent_phone" autocomplete="tel">
           </div>
           <div class="form-field">
             <label for="chit_child_name">Имя ребёнка</label>
@@ -1076,7 +1079,7 @@
     <div class="final-cta__frame">
       <h2>Почему бы не открыть первую сказку?</h2>
       <p>Даём бесплатный доступ к платформе и одному полноценному уроку. Пройдите книжное приключение вместе с ребёнком — если понравится, запись на программу займёт пару минут.</p>
-      <a class="btn" href="#quiz" data-quiz="reading">Получить урок бесплатно</a>
+      <a class="btn" href="#quiz" data-qz-open data-quiz="reading">Получить урок бесплатно</a>
     </div>
   </section>
 </div>
@@ -1114,7 +1117,7 @@
 
 <footer class="footer chit-meadow-bg__footer">
   <div class="footer__inner">
-    <img class="footer__logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="256" height="256">
+    <img class="footer__logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="160" height="123" loading="lazy" decoding="async">
     <p class="footer__warm">С теплом, команда Читательства</p>
     <nav class="footer__legal" aria-label="Юридическая информация">
       <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a>
@@ -1197,6 +1200,7 @@
   </div>
 </div>
 
+<span id="quiz" hidden aria-hidden="true"></span>
 <div class="qz-modal" id="qz-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="qz-modal-title">
   <div class="qz-modal__backdrop" data-qz-close tabindex="-1"></div>
   <div class="qz-modal__dialog">

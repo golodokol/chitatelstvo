@@ -1,0 +1,19 @@
+<!--
+  Страница Tilda /quiz сейчас — устаревший летний лендинг.
+  Замените содержимое Zero Block на этой странице этим фрагментом
+  (или поставьте в Tilda редирект /quiz → https://chitatelstvo.ru/#quiz).
+-->
+<script>
+(function () {
+  try {
+    sessionStorage.setItem('chit_open_quiz', '1');
+  } catch (e) {}
+  var target = 'https://chitatelstvo.ru/#quiz';
+  if (window.location.replace) window.location.replace(target);
+  else window.location.href = target;
+})();
+</script>
+<p style="font-family:Nunito,system-ui,sans-serif;text-align:center;padding:48px 16px;color:#5E5670">
+  Открываем подборку… Если страница не перешла —
+  <a href="https://chitatelstvo.ru/#quiz">нажмите сюда</a>.
+</p>

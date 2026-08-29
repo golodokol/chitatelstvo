@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260824i"
+VERSION = "20260828g"
 
 CHIT_QUIZ_LOADER = (
     '<script id="chit-quiz-loader">(function(){if(window.__chitTrialLoaderBound)return;window.__chitTrialLoaderBound=1;'
@@ -34,10 +34,12 @@ CHIT_QUIZ_LOADER = (
     'if(e){e.preventDefault();e.stopPropagation();}rememberTrial(el);'
     'if(done&&window.chitQuizOpen){openReady(el);return;}'
     'window.chitLoadQuiz(function(){openReady(el);});}'
-    'function trialTarget(e){return e.target&&e.target.closest?e.target.closest(\'[href="#quiz"], [data-qz-open], .course-card__btn--trial\'):null;}'
+    'function trialTarget(e){return e.target&&e.target.closest?e.target.closest(\'[href="#quiz"], [href="/quiz"], [href$="/quiz"], a[href*="/quiz"], [data-qz-open], .course-card__btn--trial\'):null;}'
     'document.addEventListener("click",function(e){var t=trialTarget(e);if(t)openTrial(t,e);},true);'
     'document.addEventListener("touchend",function(e){var t=trialTarget(e);if(t)openTrial(t,e);},{capture:true,passive:false});'
-    'if(location.hash==="#quiz")window.chitLoadQuiz();})();</script>'
+    'if(location.hash==="#quiz")window.chitLoadQuiz();' +
+    'try{if(sessionStorage.getItem("chit_open_quiz")==="1"){sessionStorage.removeItem("chit_open_quiz");window.chitLoadQuiz(function(){if(window.chitQuizOpen)window.chitQuizOpen();});}}catch(err){}' +
+    '})();</script>'
 ).replace("__VERSION__", VERSION)
 
 CHIT_QZ_CLOSE = (
@@ -57,7 +59,12 @@ CHIT_QZ_CLOSE = (
     '#qz-modal .qz-modal__close-icon::after{transform:translate(-50%,-50%) rotate(-45deg)!important}'
     '#qz-modal .qz-progress__meta{padding-right:0!important}'
     '#qz-modal .qz-modal__dialog .qz-card{padding:44px 16px 20px!important;width:100%!important;max-width:none!important;box-sizing:border-box!important}'
-    '#qz-modal .qz-modal__dialog .qz-options,#qz-modal .qz-modal__dialog .qz-option,#qz-modal .qz-modal__dialog .qz-nav,#qz-modal .qz-modal__dialog .qz-btn{width:100%!important;max-width:100%!important;box-sizing:border-box!important}'
+    '#qz-modal .qz-modal__dialog .qz-options,#qz-modal .qz-modal__dialog .qz-option{width:100%!important;max-width:100%!important;box-sizing:border-box!important}'
+    '#qz-modal .qz-modal__dialog .qz-nav{width:100%!important;max-width:100%!important;box-sizing:border-box!important;'
+    'display:flex!important;flex-wrap:nowrap!important;gap:10px!important;align-items:stretch!important}'
+    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}'
+    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}'
+    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}'
     '@media(max-width:720px){#qz-modal{padding:8px!important}#qz-modal .qz-modal__dialog{max-width:100%!important;width:100%!important}'
     '#qz-modal .qz-modal__close{top:10px!important;right:10px!important}'
     '#qz-modal .qz-modal__dialog .qz-card{padding:42px 16px 18px!important;border-radius:16px!important}}'

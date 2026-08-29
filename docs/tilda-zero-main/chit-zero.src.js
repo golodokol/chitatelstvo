@@ -16,6 +16,18 @@
     style.textContent = '#chit-st100-warning,.st100-warning{display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important}';
     head.appendChild(style);
   }
+  if (!document.getElementById('chit-qz-nav-fix')) {
+    var navFix = document.createElement('style');
+    navFix.id = 'chit-qz-nav-fix';
+    navFix.textContent =
+      '#qz-modal .qz-modal__dialog .qz-nav{display:flex!important;flex-wrap:nowrap!important;gap:10px!important;width:100%!important;box-sizing:border-box!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}' +
+      '@media(max-width:480px){#qz-modal .qz-modal__dialog .qz-nav{flex-direction:column!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back,#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{width:100%!important;min-width:0!important}}';
+    head.appendChild(navFix);
+  }
   function killSt100Warning() {
     var warn = document.getElementById('chit-st100-warning');
     if (warn && warn.parentNode) warn.parentNode.removeChild(warn);
@@ -31,7 +43,7 @@
   if (window.__chitTrialLoaderBound) return;
   window.__chitTrialLoaderBound = true;
   var A = 'https://api.chitatelstvo.ru/assets/';
-  var V = '20260825h';
+  var V = '20260828g';
   var busy = 0;
   var done = 0;
   var q = [];
@@ -98,7 +110,7 @@
   };
   function trialTarget(e) {
     return e.target && e.target.closest
-      ? e.target.closest('[href="#quiz"], [data-qz-open], .course-card__btn--trial')
+      ? e.target.closest('[href="#quiz"], [href="/quiz"], [href$="/quiz"], a[href*="/quiz"], [data-qz-open], .course-card__btn--trial')
       : null;
   }
   function openTrial(el, e) {
@@ -127,6 +139,15 @@
     var t = trialTarget(e);
     if (t) openTrial(t, e);
   }, { capture: true, passive: false });
+  if (location.hash === '#quiz') window.chitLoadQuiz();
+  try {
+    if (sessionStorage.getItem('chit_open_quiz') === '1') {
+      sessionStorage.removeItem('chit_open_quiz');
+      window.chitLoadQuiz(function () {
+        openReady(null);
+      });
+    }
+  } catch (err) {}
 })();
 
 function chitReady(fn) {
@@ -185,8 +206,15 @@ function fixForWhomCopy() {
   var ctaBtn = document.querySelector('#final-cta .btn');
   if (ctaBtn) {
     ctaBtn.setAttribute('href', '#quiz');
+    ctaBtn.setAttribute('data-qz-open', '');
+    ctaBtn.setAttribute('data-quiz', ctaBtn.getAttribute('data-quiz') || 'reading');
     ctaBtn.textContent = 'Получить урок бесплатно';
   }
+  // Старые CTA на /quiz (летний лендинг) — открываем модальный квиз
+  document.querySelectorAll('a[href="/quiz"], a[href$="/quiz"], a[href*="chitatelstvo.ru/quiz"]').forEach(function(a) {
+    a.setAttribute('href', '#quiz');
+    a.setAttribute('data-qz-open', '');
+  });
   var aboutPs = document.querySelectorAll('#chit-main p');
   for (var k = 0; k < aboutPs.length; k++) {
     var ph = aboutPs[k].innerHTML;
@@ -466,13 +494,13 @@ function getTaleInfo(title) {
 
 var CHIT_SCHEDULE = {
   '1': {
-    lessons: ['15 июля', '3 августа', '31 августа', '31 августа'],
+    lessons: ['15 июля', '3 августа', '7 сентября', '7 сентября'],
     weekdays: ['среда', 'понедельник', 'понедельник', 'понедельник'],
     meetings: ['16 июля', '23 июля', '30 июля', '6 августа'],
     meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
   },
   '2': {
-    lessons: ['7 сентября', '7 сентября', '14 сентября', '14 сентября'],
+    lessons: ['14 сентября', '21 сентября', '28 сентября', '5 октября'],
     weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'],
     meetings: ['10 сентября', '17 сентября', '24 сентября', '1 октября'],
     meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
@@ -485,8 +513,8 @@ var CHIT_SINGLE_MEETINGS_ISO = {
 };
 
 var CHIT_LESSON_OPENS_ISO = {
-  '1': ['2026-07-15', '2026-08-03', '2026-08-31', '2026-08-31'],
-  '2': ['2026-09-07', '2026-09-07', '2026-09-14', '2026-09-14']
+  '1': ['2026-07-15', '2026-08-03', '2026-09-07', '2026-09-07'],
+  '2': ['2026-09-14', '2026-09-21', '2026-09-28', '2026-10-05']
 };
 
 /** Early-курсы (Буквы / Истории), модуль 1: 4 встречи по четвергам */
@@ -782,12 +810,44 @@ if (faqList) {
     try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch (e) { window.dispatchEvent(new Event('hashchange')); }
   }
 
+  function trackOrderConfigError(reason) {
+    try {
+      if (typeof ym === 'function') {
+        ym(109851195, 'reachGoal', 'order_config_error');
+      }
+    } catch (e) {}
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'order_config_error', reason: reason || 'unknown' });
+    } catch (e2) {}
+  }
+
   orderConfigReady = new Promise(function(resolve) {
     function load() {
-      fetch('https://api.chitatelstvo.ru/assets/order-config.json?v=5', { cache: 'no-store' })
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .then(function(cfg) { applyOrderConfig(cfg); resolve(); })
-        .catch(function() { resolve(); });
+      fetch('https://api.chitatelstvo.ru/assets/order-config.json?v=20260828a', {
+        cache: 'no-store',
+        mode: 'cors',
+        credentials: 'omit'
+      })
+        .then(function(r) {
+          if (!r.ok) {
+            trackOrderConfigError('http_' + r.status);
+            return null;
+          }
+          return r.json();
+        })
+        .then(function(cfg) {
+          if (!cfg) {
+            trackOrderConfigError('empty');
+          } else {
+            applyOrderConfig(cfg);
+          }
+          resolve();
+        })
+        .catch(function() {
+          trackOrderConfigError('fetch');
+          resolve();
+        });
     }
     if ('requestIdleCallback' in window) {
       requestIdleCallback(load, { timeout: 3000 });
@@ -1091,7 +1151,7 @@ if (faqList) {
   var CART_FIELD_ALIASES = {
     parent_name: ['parent_name', 'Name', 'name', 'nm', 'your_name'],
     parent_email: ['parent_email', 'Email', 'email'],
-    parent_telegram: ['parent_telegram', 'Phone', 'phone', 'tel', 'your_phone'],
+    parent_phone: ['parent_phone', 'parent_telegram', 'Phone', 'phone', 'tel', 'your_phone', 'Telegram'],
     child_name: ['child_name', 'childname'],
     child_birth_date: ['child_birth_date', 'birth_date', 'childbirthdate'],
     child_age: ['child_age', 'childage'],
@@ -1101,6 +1161,13 @@ if (faqList) {
     chosen_stage: ['chosen_stage'],
     chosen_tale_number: ['chosen_tale_number']
   };
+  var CART_PRODUCT_IMG = 'https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png';
+
+  function readParentPhone() {
+    var el = document.querySelector('#chit-main [name="parent_phone"]') ||
+      document.querySelector('#chit-main [name="parent_telegram"]');
+    return el ? String(el.value || '').trim() : '';
+  }
   var lastAppliedPromo = '';
 
   function ageFromBirthDate(isoDate) {
@@ -1581,7 +1648,8 @@ if (faqList) {
       recid: ST100_RECID,
       sku: p.sku || '',
       uid: uid,
-      lid: p.lid || uid
+      lid: p.lid || uid,
+      img: CART_PRODUCT_IMG
     };
     window.tcart__addProduct(item);
     window.tcart.updated = Math.floor(Date.now() / 1000);
@@ -1651,7 +1719,7 @@ if (faqList) {
 
     var parentName = src('parent_name');
     var parentEmail = src('parent_email');
-    var parentTelegram = src('parent_telegram');
+    var parentPhone = readParentPhone();
     var childName = src('child_name');
     var childBirthDate = src('child_birth_date');
     var childAge = ageFromBirthDate(childBirthDate) || src('child_age');
@@ -1661,7 +1729,7 @@ if (faqList) {
     });
 
     form.querySelectorAll('input[type="tel"], .t-input-phonemask__value').forEach(function(el) {
-      if (parentTelegram) setInputValue(el, parentTelegram);
+      if (parentPhone) setInputValue(el, parentPhone);
     });
 
     var textInputs = [];
@@ -1689,16 +1757,17 @@ if (faqList) {
     pushField('chosen_tale_number', hidTale ? hidTale.value : '');
     pushField('notification_channel', 'email');
     pushField('promo_code', getPromoCodeValue());
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_birth_date'].forEach(function(name) {
+    ['parent_name', 'parent_email', 'child_name', 'child_birth_date'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (el) pushField(name, el.value);
     });
+    pushField('parent_phone', readParentPhone());
     var birthEl = document.querySelector('#chit-main [name="child_birth_date"]');
     if (birthEl && birthEl.value) {
       pushField('child_age', ageFromBirthDate(birthEl.value));
     }
     fillCartFormAggressive();
-    pushCheckbox('legal_consent', true);
+    // Согласие родитель ставит сам на /oplata — не проставляем автоматически
   }
 
   function findSt100Root() {
@@ -1716,10 +1785,14 @@ if (faqList) {
   }
 
   function bindContactSync() {
-    ['parent_name', 'parent_email', 'parent_telegram', 'child_name', 'child_birth_date', 'promo_code'].forEach(function(name) {
+    ['parent_name', 'parent_email', 'parent_phone', 'parent_telegram', 'child_name', 'child_birth_date', 'promo_code'].forEach(function(name) {
       var el = document.querySelector('#chit-main [name="' + name + '"]');
       if (!el) return;
       function syncContact() {
+        if (name === 'parent_phone' || name === 'parent_telegram') {
+          pushField('parent_phone', readParentPhone());
+          return;
+        }
         pushField(name, el.value);
         if (name === 'child_birth_date') pushField('child_age', ageFromBirthDate(el.value));
       }
@@ -1751,7 +1824,7 @@ if (faqList) {
       chosen_tale_number: hidTale ? hidTale.value : '',
       parent_name: val('parent_name'),
       parent_email: val('parent_email'),
-      parent_telegram: val('parent_telegram'),
+      parent_phone: readParentPhone(),
       child_name: val('child_name'),
       child_birth_date: val('child_birth_date'),
       child_age: ageFromBirthDate(val('child_birth_date')) || val('child_age'),
@@ -1770,8 +1843,14 @@ if (faqList) {
     try {
       sessionStorage.setItem('chit_checkout', JSON.stringify(payload));
     } catch (e) {}
+    // PII только в sessionStorage — не в URL (parent_name, child_birth_date и контакты)
+    var urlSafe = {
+      tariff: 1, module_id: 1, chosen_stage: 1, chosen_tale_number: 1,
+      lesson_slug: 1, group_code: 1, group: 1, promo_code: 1, notification_channel: 1
+    };
     var qs = new URLSearchParams();
     Object.keys(payload).forEach(function(key) {
+      if (!urlSafe[key]) return;
       var v = payload[key];
       if (v !== undefined && v !== null && String(v).trim() !== '') qs.set(key, String(v));
     });
@@ -2497,7 +2576,6 @@ if (faqList) {
         return;
       }
       syncToCartForm();
-      pushCheckbox('legal_consent', true);
     }
   }, true);
 
@@ -2510,7 +2588,6 @@ if (faqList) {
         e.stopPropagation();
       } else {
         syncToCartForm();
-        pushCheckbox('legal_consent', true);
       }
     }
   }, true);
@@ -2675,6 +2752,46 @@ if (faqList) {
       });
     });
   }
+
+  (function initMobileNav() {
+    var header = document.querySelector('#chit-main .site-header');
+    var nav = document.querySelector('#chit-main .site-nav');
+    if (!header || !nav) return;
+    var inner = header.querySelector('.site-header__inner') || header;
+    var toggle = header.querySelector('.nav-toggle');
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'nav-toggle';
+      toggle.setAttribute('aria-label', 'Меню');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-controls', 'chit-site-nav');
+      toggle.innerHTML = '<span class="nav-toggle__bars" aria-hidden="true"></span>';
+      var right = inner.querySelector('.site-header__right');
+      if (right) inner.insertBefore(toggle, right);
+      else inner.appendChild(toggle);
+    }
+    if (!nav.id) nav.id = 'chit-site-nav';
+    function setOpen(open) {
+      nav.classList.toggle('is-open', open);
+      header.classList.toggle('is-nav-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.documentElement.classList.toggle('chit-nav-open', open);
+    }
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      setOpen(!nav.classList.contains('is-open'));
+    });
+    nav.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() { setOpen(false); });
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') setOpen(false);
+    });
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 820) setOpen(false);
+    }, { passive: true });
+  })();
 
   var revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {

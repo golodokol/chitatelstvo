@@ -118,7 +118,7 @@ body {
   flex: 1;
   display: flex;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 .cc-nav a {
@@ -127,7 +127,7 @@ body {
   color: var(--muted);
   text-decoration: none;
   white-space: nowrap;
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: var(--radius-pill);
   transition: color 0.2s var(--ease), background 0.2s var(--ease);
 }
@@ -145,6 +145,7 @@ body {
   text-decoration: none;
   transition: background 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
   box-shadow: 0 2px 12px rgba(74, 82, 136, 0.25);
+  white-space: nowrap;
 }
 .cc-header-cta:hover {
   background: var(--blue);
@@ -2516,6 +2517,45 @@ body.cc-waitlist-open { overflow: hidden; }
   font-weight: 700;
   color: var(--text);
 }
+.cc-footer__courses {
+  margin: 0 auto 24px;
+  max-width: 760px;
+  text-align: center;
+}
+.cc-footer__courses-title {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cc-footer__courses-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 10px;
+}
+.cc-footer__courses-list a {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+  color: var(--blue-deep);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.cc-footer__courses-list a:hover {
+  background: #fff;
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
 .cc-footer__legal {
   display: flex;
   flex-wrap: wrap;
@@ -2592,7 +2632,25 @@ body.cc-waitlist-open { overflow: hidden; }
 }
 
 @media (max-width: 960px) {
-  .cc-nav { display: none; }
+  .cc-header__inner {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    padding: 10px 16px;
+  }
+  .cc-nav {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    gap: 2px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .cc-nav a {
+    font-size: 13px;
+    padding: 7px 10px;
+  }
   .cc-banner__layout {
     grid-template-columns: 1fr;
     align-items: start;

@@ -1,6 +1,6 @@
 # Копипаст в Tilda · 12 курсов + llms.txt
 
-**Версия Zero Block:** `20260824o`  
+**Версия Zero Block:** `20260828c`  
 **Папка файлов:** `docs/course-pages/tilda-redirects/`
 
 На каждой странице:

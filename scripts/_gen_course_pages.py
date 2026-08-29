@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent / "docs" / "course-pages"
 REDIR = ROOT / "tilda-redirects"
 SEO = json.loads((ROOT / "course-seo.json").read_text(encoding="utf-8"))
-VER = "20260825o"
+VER = "20260828c"
 API = "https://api.chitatelstvo.ru/assets/course-pages"
 SITE = SEO["site"]
 ASSETS = SEO["assets"]
@@ -271,11 +271,29 @@ TILDA_FIX = (
 
 
 def static_footer_full() -> str:
+    courses = (
+        ("1-klass", "1 класс"),
+        ("2-klass", "2 класс"),
+        ("3-klass", "3 класс"),
+        ("4-klass", "4 класс"),
+        ("6-8-let", "Внеклассное 6–8 лет"),
+        ("9-11-let", "Внеклассное 9–11 лет"),
+        ("bukvy-ozhivayut", "Буквы оживают"),
+        ("pervye-istorii", "Первые истории"),
+        ("programmy", "Все программы"),
+    )
+    course_lis = "".join(
+        f'<li><a href="{SITE}/{slug}">{esc(label)}</a></li>' for slug, label in courses
+    )
     return (
         '<footer class="cc-footer">'
         '<div class="cc-footer__inner">'
         f'<img class="cc-footer__logo" src="{ASSETS}/logo-chitatelstvo.png" alt="{esc(ORG)}" width="256" height="256">'
         f'<p class="cc-footer__warm">С теплом, команда {esc(ORG)}</p>'
+        '<nav class="cc-footer__courses" aria-label="Все курсы">'
+        '<p class="cc-footer__courses-title">Курсы Читательства</p>'
+        f'<ul class="cc-footer__courses-list">{course_lis}</ul>'
+        "</nav>"
         '<nav class="cc-footer__legal" aria-label="Юридическая информация">'
         '<a href="https://api.chitatelstvo.ru/legal/politika">Политика</a>'
         '<a href="https://api.chitatelstvo.ru/legal/oferta">Оферта</a>'
@@ -323,12 +341,12 @@ def static_full_html(group: str, data: dict) -> str:
         f'<link itemprop="url" href="{esc(url)}">'
         '<header class="cc-header"><div class="cc-header__inner">'
         f'<a class="cc-logo" href="{SITE}"><img src="{ASSETS}/logo-chitatelstvo.png" alt="{esc(ORG)}"></a>'
-        '<nav class="cc-nav" aria-label="Разделы">'
-        '<a href="#about">О курсе</a>'
-        '<a href="#program-list">Программа</a>'
-        '<a href="#outcome">После курса</a>'
-        '<a href="#tariffs">Тарифы</a>'
-        '<a href="#enroll">Запись</a>'
+        '<nav class="cc-nav" aria-label="О школе">'
+        f'<a href="{SITE}/#programs">Программы</a>'
+        f'<a href="{SITE}/#timeline">О школе</a>'
+        f'<a href="{SITE}/#platform">Платформа</a>'
+        f'<a href="{SITE}/#proof">Отзывы</a>'
+        f'<a href="{SITE}/#lead">Консультация</a>'
         "</nav>"
         '<a class="cc-header-cta" href="#enroll">Записаться</a>'
         "</div></header>"

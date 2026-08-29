@@ -1,6 +1,20 @@
 (function () {
   'use strict';
 
+  // Починка «Дальше»: старый inline CSS давал width:100% всем .qz-btn — кнопка сжималась
+  if (!document.getElementById('chit-qz-nav-fix')) {
+    var navFix = document.createElement('style');
+    navFix.id = 'chit-qz-nav-fix';
+    navFix.textContent =
+      '#qz-modal .qz-modal__dialog .qz-nav{display:flex!important;flex-wrap:nowrap!important;gap:10px!important;width:100%!important;box-sizing:border-box!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}' +
+      '@media(max-width:480px){#qz-modal .qz-modal__dialog .qz-nav{flex-direction:column!important}' +
+      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back,#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{width:100%!important;min-width:0!important}}';
+    (document.head || document.documentElement).appendChild(navFix);
+  }
+
   var API_BASE = window.CHIT_QUIZ_API || 'https://api.chitatelstvo.ru';
   var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf?v=20260615b';
   var AUTO_CFG = window.CHIT_QUIZ_AUTO || {};
@@ -190,9 +204,7 @@
     var qs = questions();
     var pct;
     if (stepIndex < qs.length) {
-      pct = Math.round(((stepIndex + 1) / qs.length) * 80);
-    } else if (stepIndex === qs.length) {
-      pct = 92;
+      pct = Math.round(((stepIndex + 1) / qs.length) * 100);
     } else {
       pct = 100;
     }
@@ -267,7 +279,7 @@
     var introSub = root.querySelector('.qz-intro-gift__sub');
     var formStep = root.querySelector('[data-step="form"]');
     var formSub = formStep && formStep.querySelector('.qz-sub');
-    var giftPs = formStep && formStep.querySelectorAll('.qz-gift p');
+    var giftPs = formStep && formStep.querySelectorAll('.qz-gift p:not(.qz-gift__label)');
     var ageNote = root.querySelector('.qz-age-note');
     var submitBtn = form && form.querySelector('.qz-btn--submit');
     var successPdf = root.querySelector('[data-qz-success-pdf]');

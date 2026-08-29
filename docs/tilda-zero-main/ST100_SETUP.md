@@ -120,7 +120,7 @@ Zero Block подставит значения при «Записаться». 
 |---|-----------------|---------------|-------------|-------|
 | 1 | Имя родителя | `parent_name` | Однострочный текст (Input) | да |
 | 2 | Email | `parent_email` | Email | да |
-| 3 | Telegram | `parent_telegram` | Однострочный текст | нет |
+| 3 | Телефон | `parent_telegram` (скрипт пишет сюда `parent_phone`) | Однострочный текст | нет |
 | 4 | Имя ребёнка | `child_name` | Однострочный текст | да |
 | 5 | Возраст ребёнка | `child_age` | Число (Number) | нет |
 | 6 | Как присылать новости | `notification_channel` | Выпадающий список (Select) | да |
@@ -220,14 +220,14 @@ WEBHOOK_SECRET=ваша_длинная_случайная_строка
 |-----------------|---------------|-----|-------|
 | Имя родителя | `parent_name` | text | да |
 | Email | `parent_email` | email | да |
-| Telegram | `parent_telegram` | text | нет |
+| Телефон | `parent_telegram` (из `parent_phone`) | text | нет |
 | Имя ребёнка | `child_name` | text | да |
 | Возраст ребёнка | `child_age` | number | нет |
 | Как присылать новости | `notification_channel` | select | да |
 | *(скрыто)* | `module_id` | hidden | — |
 | *(скрыто)* | `chosen_stage` | hidden | — |
 | *(скрыто)* | `chosen_tale_number` | hidden | — |
-| Согласие | `legal_consent` | checkbox | **да** |
+| Согласие | `legal_consent` | checkbox, без галочки по умолчанию | **да** |
 
 **Webhook:** `POST https://api.chitatelstvo.ru/webhook/register` + заголовок `X-Webhook-Secret`.
 

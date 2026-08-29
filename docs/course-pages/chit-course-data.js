@@ -26,16 +26,40 @@ window.CHIT_COURSE = (function () {
     '2': ['2026-09-10', '2026-09-17', '2026-09-24', '2026-10-01']
   };
 
+  // Источник правды: lessons/schedule.py (sync_chit_schedule.py → главная;
+  // этот файл держим вручную в том же календаре).
   var LESSON_OPENS_ISO = {
-    '1': ['2026-07-15', '2026-08-03', '2026-08-31', '2026-08-31'],
-    '2': ['2026-09-07', '2026-09-07', '2026-09-14', '2026-09-14']
+    '1': ['2026-07-15', '2026-08-03', '2026-09-07', '2026-09-07'],
+    '2': ['2026-09-14', '2026-09-21', '2026-09-28', '2026-10-05']
   };
 
-  var RONI_LESSON_OPEN_ISO = '2026-08-27';
+  var RONI_LESSON_OPEN_ISO = '2026-08-31';
 
   var WITH_TEACHER_STAGE1_CLOSED = true;
   var NO_WITH_TEACHER_GROUPS = ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11'];
-  var PAGES_VERSION = '20260824f';
+  var PAGES_VERSION = '20260828c';
+
+  /** Общие ссылки шапки (как на главной). */
+  var SITE_NAV = [
+    { href: 'https://chitatelstvo.ru/#programs', label: 'Программы' },
+    { href: 'https://chitatelstvo.ru/#timeline', label: 'О школе' },
+    { href: 'https://chitatelstvo.ru/#platform', label: 'Платформа' },
+    { href: 'https://chitatelstvo.ru/#proof', label: 'Отзывы' },
+    { href: 'https://chitatelstvo.ru/#lead', label: 'Консультация' }
+  ];
+
+  /** Курсы в подвале страниц 1–4 класс и внеклассного. */
+  var FOOTER_COURSES = [
+    { href: 'https://chitatelstvo.ru/1-klass', label: '1 класс' },
+    { href: 'https://chitatelstvo.ru/2-klass', label: '2 класс' },
+    { href: 'https://chitatelstvo.ru/3-klass', label: '3 класс' },
+    { href: 'https://chitatelstvo.ru/4-klass', label: '4 класс' },
+    { href: 'https://chitatelstvo.ru/6-8-let', label: 'Внеклассное 6–8 лет' },
+    { href: 'https://chitatelstvo.ru/9-11-let', label: 'Внеклассное 9–11 лет' },
+    { href: 'https://chitatelstvo.ru/bukvy-ozhivayut', label: 'Буквы оживают' },
+    { href: 'https://chitatelstvo.ru/pervye-istorii', label: 'Первые истории' },
+    { href: 'https://chitatelstvo.ru/programmy', label: 'Все программы' }
+  ];
 
   function todayIsoLocal() {
     var d = new Date();
@@ -69,8 +93,18 @@ window.CHIT_COURSE = (function () {
   };
 
   var SCHEDULE = {
-    '1': { lessons: ['15 июля', '3 августа', '31 августа', '31 августа'], weekdays: ['среда', 'понедельник', 'воскресенье', 'воскресенье'], meetings: ['16 июля', '23 июля', '30 июля', '6 августа'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] },
-    '2': { lessons: ['7 сентября', '7 сентября', '14 сентября', '14 сентября'], weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'], meetings: ['10 сентября', '17 сентября', '24 сентября', '1 октября'], meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг'] }
+    '1': {
+      lessons: ['15 июля', '3 августа', '7 сентября', '7 сентября'],
+      weekdays: ['среда', 'понедельник', 'понедельник', 'понедельник'],
+      meetings: ['16 июля', '23 июля', '30 июля', '6 августа'],
+      meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
+    },
+    '2': {
+      lessons: ['14 сентября', '21 сентября', '28 сентября', '5 октября'],
+      weekdays: ['понедельник', 'понедельник', 'понедельник', 'понедельник'],
+      meetings: ['10 сентября', '17 сентября', '24 сентября', '1 октября'],
+      meetingWeekdays: ['четверг', 'четверг', 'четверг', 'четверг']
+    }
   };
 
   var DIARY_SLUGS = {
@@ -377,7 +411,7 @@ window.CHIT_COURSE = (function () {
     if (!s || index < 0) return '';
     if (lessonIsOpen(stage, index + 1, group)) return 'Уже доступен для прохождения';
     if (group === 'extra-9-11' && String(stage) === '1' && index === 1) {
-      return 'Урок откроется: четверг, 27 августа';
+      return 'Урок откроется: понедельник, 31 августа';
     }
     var wd = s.weekdays && s.weekdays[index] ? s.weekdays[index] + ', ' : '';
     return 'Урок откроется: ' + wd + s.lessons[index];
@@ -599,6 +633,8 @@ window.CHIT_COURSE = (function () {
     singleTaleBadgeHtml: singleTaleBadgeHtml,
     WITH_TEACHER_STAGE1_CLOSED: WITH_TEACHER_STAGE1_CLOSED,
     NO_WITH_TEACHER_GROUPS: NO_WITH_TEACHER_GROUPS,
-    PAGES_VERSION: PAGES_VERSION
+    PAGES_VERSION: PAGES_VERSION,
+    SITE_NAV: SITE_NAV,
+    FOOTER_COURSES: FOOTER_COURSES
   };
 })();

@@ -1,7 +1,7 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты (один раз):
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=26"></script>
- * Важно: только ОДИН HTML-блок со скриптом на странице /oplata (удалить старые v=6, v=16).
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=20260828e"></script>
+ * Важно: только ОДИН HTML-блок со скриптом на странице /oplata (удалить старые версии).
  */
 (function () {
   if (window._chitPayPageInited) return;
@@ -16,6 +16,7 @@
   var checkoutFinished = false;
 
   var HOME_URL = 'https://chitatelstvo.ru/#program';
+  var PRODUCT_IMG = 'https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png';
   var ORDER_PRODUCTS = {
     single: { uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2', title: 'Читательство · Разовое', price: 799 },
     self_paced: { uid: '206548598642', lid: '205285061796', sku: 'SKU0002', title: 'Читательство · Индивидуальное', price: 1990 },
@@ -37,6 +38,19 @@
     'body.chit-pay-mode .t706__carticon { opacity:0!important;pointer-events:none!important; }',
     'body.chit-pay-mode .t706 .t-input-group_pc .chit-promo-label {',
     'display:block;margin:0 0 8px;font-size:16px;line-height:1.3;color:#000;',
+    '}',
+    'body.chit-pay-mode .t706 .t-input-group_cb[data-field-name="legal_consent"],',
+    'body.chit-pay-mode .t706 .t-input-group_cb:has(input[name="legal_consent"]) {',
+    'display:block!important;visibility:visible!important;opacity:1!important;',
+    'height:auto!important;overflow:visible!important;margin:12px 0!important;',
+    '}',
+    'body.chit-pay-mode .t706 .t-input-group_cb input[name="legal_consent"] {',
+    'position:static!important;opacity:1!important;width:18px!important;height:18px!important;',
+    '}',
+    'body.chit-pay-mode .t706 .t-input-group_cb .t-checkbox__control,',
+    'body.chit-pay-mode .t706 .t-input-group_cb .t-checkbox__control span {',
+    'display:flex!important;align-items:flex-start!important;gap:10px!important;',
+    'font-size:14px!important;line-height:1.45!important;color:#2B2140!important;',
     '}',
     '#chit-pay-shell {',
     'position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;',
@@ -78,9 +92,18 @@
     return v;
   }
 
+  function readPhone(data) {
+    if (!data) return '';
+    return String(data.parent_phone || data.parent_telegram || '').trim();
+  }
+
   function normalizeCheckout(data) {
     if (!data) return data;
-    if (data.parent_telegram) data.parent_telegram = sanitizeTelegram(data.parent_telegram);
+    var phone = sanitizeTelegram(readPhone(data));
+    if (phone) {
+      data.parent_phone = phone;
+      data.parent_telegram = phone;
+    }
     if (data.child_birth_date && !data.child_age) {
       data.child_age = ageFromBirthDate(data.child_birth_date);
     }
@@ -154,7 +177,7 @@
       var data = { tariff: tariff };
       [
         'module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug',
-        'group_code', 'group', 'parent_name', 'parent_email', 'parent_telegram',
+        'group_code', 'group', 'parent_name', 'parent_email', 'parent_phone', 'parent_telegram',
         'child_name', 'child_birth_date', 'child_age', 'promo_code', 'notification_channel'
       ].forEach(function (name) {
         var val = params.get(name);
@@ -185,7 +208,8 @@
     var aliases = {
       parent_name: ['parent_name'],
       parent_email: ['parent_email', 'email', 'Email'],
-      parent_telegram: ['parent_telegram'],
+      parent_phone: ['parent_phone', 'parent_telegram', 'Phone', 'phone', 'tel', 'Telegram'],
+      parent_telegram: ['parent_telegram', 'parent_phone', 'Phone', 'phone', 'tel', 'Telegram'],
       child_name: ['child_name'],
       child_birth_date: ['child_birth_date'],
       child_age: ['child_age'],
@@ -211,11 +235,66 @@
     });
   }
 
-  function ensureLegalConsent() {
-    document.querySelectorAll('.t706 input[name="legal_consent"]').forEach(function (el) {
-      if (el.type === 'checkbox') el.checked = true;
-      else if (!el.value) el.value = 'yes';
+  function clearJunkFormFields() {
+    document.querySelectorAll(
+      '.t706 [name="form-spec-comments"], .t706 [name="Comments"], .t706 [name="Comment"], .t706 [name="comments"], .t706 textarea'
+    ).forEach(function (el) {
+      var v = String(el.value || '').trim();
+      if (!v) return;
+      if (/^its\s*good\.?$/i.test(v)) el.value = '';
     });
+  }
+
+  function ensureLegalConsent(opts) {
+    var forceUnchecked = !opts || opts.forceUnchecked !== false;
+    var CONSENT_HTML =
+      'Я соглашаюсь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">публичной офертой</a>';
+    document.querySelectorAll('.t706 input[name="legal_consent"]').forEach(function (el) {
+      if (el.type === 'checkbox') {
+        if (forceUnchecked && !window._chitConsentTouched) {
+          el.checked = false;
+          el.removeAttribute('checked');
+        }
+        el.setAttribute('data-tilda-req', '1');
+        el.setAttribute('aria-required', 'true');
+        if (!el._chitConsentBound) {
+          el._chitConsentBound = true;
+          el.addEventListener('change', function () {
+            window._chitConsentTouched = true;
+          });
+        }
+        var group = el.closest('.t-input-group');
+        if (group) {
+          group.style.removeProperty('display');
+          group.style.removeProperty('visibility');
+          group.style.removeProperty('height');
+          group.style.removeProperty('overflow');
+          group.style.setProperty('display', 'block', 'important');
+        }
+        var label = el.closest('label');
+        var span = label && label.querySelector('span');
+        if (span) {
+          var text = (span.textContent || '').replace(/\s+/g, ' ').trim();
+          if (!text || text.length < 8) span.innerHTML = CONSENT_HTML;
+        } else if (label && !(label.textContent || '').replace(/\s+/g, ' ').trim()) {
+          var s = document.createElement('span');
+          s.innerHTML = CONSENT_HTML;
+          label.appendChild(s);
+        }
+        return;
+      }
+      if (!el.value) el.value = 'yes';
+    });
+    clearJunkFormFields();
+  }
+
+  function hasLegalConsent() {
+    var boxes = document.querySelectorAll('.t706 input[name="legal_consent"][type="checkbox"]');
+    if (!boxes.length) return true;
+    for (var i = 0; i < boxes.length; i++) {
+      if (boxes[i].checked) return true;
+    }
+    return false;
   }
 
   function configurePromoField(data) {
@@ -269,9 +348,16 @@
     if (!data.notification_channel) data.notification_channel = 'email';
     [
       'module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code',
-      'parent_name', 'parent_email', 'parent_telegram', 'child_name',
+      'parent_name', 'parent_email', 'parent_phone', 'parent_telegram', 'child_name',
       'child_birth_date', 'child_age', 'promo_code', 'notification_channel'
     ].forEach(function (name) { setField(name, data[name]); });
+    var phone = readPhone(data);
+    if (phone) {
+      setField('parent_phone', phone);
+      document.querySelectorAll('.t706 input[type="tel"], .t706 .t-input-phonemask__value').forEach(function (el) {
+        el.value = phone;
+      });
+    }
     mirrorEmailForKassa(data);
     ensureLegalConsent();
     configurePromoField(data);
@@ -332,7 +418,8 @@
       recid: resolveSt100Recid(),
       sku: p.sku || '',
       uid: p.uid,
-      lid: p.lid || p.uid
+      lid: p.lid || p.uid,
+      img: PRODUCT_IMG
     });
     window.tcart.updated = Math.floor(Date.now() / 1000);
     normalizeCartItem(tariff);
@@ -487,18 +574,54 @@
   function bindPayHandlers(tariff) {
     if (window._chitPayGuard) return;
     window._chitPayGuard = true;
-    function onPayAttempt() {
+    function onPayAttempt(e) {
       var checkout = readCheckout();
       if (checkout && checkout.tariff) prepareCartForPayment(checkout.tariff);
-      applyCheckoutFields(checkout);
+      // Не сбрасываем галочку согласия при повторном apply
+      if (checkout) {
+        normalizeCheckout(checkout);
+        if (!checkout.notification_channel) checkout.notification_channel = 'email';
+        [
+          'module_id', 'chosen_stage', 'chosen_tale_number', 'lesson_slug', 'group_code',
+          'parent_name', 'parent_email', 'parent_phone', 'parent_telegram', 'child_name',
+          'child_birth_date', 'child_age', 'promo_code', 'notification_channel'
+        ].forEach(function (name) { setField(name, checkout[name]); });
+        var phone = readPhone(checkout);
+        if (phone) {
+          setField('parent_phone', phone);
+          document.querySelectorAll('.t706 input[type="tel"], .t706 .t-input-phonemask__value').forEach(function (el) {
+            el.value = phone;
+          });
+        }
+        mirrorEmailForKassa(checkout);
+        ensureLegalConsent({ forceUnchecked: false });
+        configurePromoField(checkout);
+        fixFormLayout();
+      }
+      clearJunkFormFields();
+      if (!hasLegalConsent()) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        ensureLegalConsent({ forceUnchecked: false });
+        var box = document.querySelector('.t706 input[name="legal_consent"][type="checkbox"]');
+        if (box) {
+          box.focus();
+          var group = box.closest('.t-input-group');
+          if (group) group.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return false;
+      }
+      return true;
     }
     document.addEventListener('click', function (e) {
       if (!e.target.closest('.t706 .t-submit, .t706 button[type="submit"]')) return;
-      onPayAttempt();
+      onPayAttempt(e);
     }, true);
     document.addEventListener('submit', function (e) {
       if (!e.target || !e.target.closest || !e.target.closest('.t706')) return;
-      onPayAttempt();
+      onPayAttempt(e);
     }, true);
     document.addEventListener('change', function (e) {
       if (!e.target.matches || !e.target.matches('.t706 .t-radio_payment[name="paymentsystem"]')) return;

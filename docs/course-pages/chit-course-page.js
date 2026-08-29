@@ -13,8 +13,24 @@
     if (staticEl) {
       staticEl.setAttribute('hidden', '');
       staticEl.setAttribute('aria-hidden', 'true');
+      // Убрать дубли id — иначе #about / #enroll скроллят к скрытому SEO-блоку.
+      var nodes = staticEl.querySelectorAll('[id]');
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].id = 'seo-' + nodes[i].id;
+      }
     }
     if (appWrap) appWrap.removeAttribute('hidden');
+  }
+
+  function siteHeaderHtml(ctaHref, ctaLabel) {
+    var nav = (D.SITE_NAV || []).map(function (item) {
+      return '<a href="' + esc(item.href) + '">' + esc(item.label) + '</a>';
+    }).join('');
+    return '<header class="cc-header"><div class="cc-header__inner">' +
+      '<a class="cc-logo" href="' + HOME_URL + '"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство"></a>' +
+      '<nav class="cc-nav" aria-label="О школе">' + nav + '</nav>' +
+      '<a class="cc-header-cta" href="' + esc(ctaHref) + '">' + esc(ctaLabel) + '</a>' +
+    '</div></header>';
   }
 
   if (isHub) {
@@ -88,10 +104,7 @@
         '</a>';
     }).join('');
     root.innerHTML =
-      '<header class="cc-header"><div class="cc-header__inner">' +
-        '<a class="cc-logo" href="' + HOME_URL + '"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство"></a>' +
-        '<a class="cc-header-cta" href="' + HOME_URL + '">На главную</a>' +
-      '</div></header>' +
+      siteHeaderHtml(HOME_URL + '#programs', 'Выбрать программу') +
       '<section class="cc-hero"><div class="cc-hero__grid" style="grid-template-columns:1fr">' +
         '<div><span class="cc-badge">Программы по возрастам</span>' +
         '<h1>Сказки по классам и возрастам</h1>' +
@@ -144,7 +157,7 @@
       return 'Уже доступен для прохождения';
     }
     if (group === 'extra-9-11' && String(stageKey) === '1' && index === 1) {
-      return '27 АВГУСТА';
+      return '31 АВГУСТА';
     }
     var raw = sched.lessons[index];
     var parts = raw.trim().split(/\s+/);
@@ -455,15 +468,29 @@
     '</section>';
   }
 
+  function footerCoursesHtml() {
+    var items = D.FOOTER_COURSES || [];
+    if (!items.length) return '';
+    return '<nav class="cc-footer__courses" aria-label="Все курсы">' +
+      '<p class="cc-footer__courses-title">Курсы Читательства</p>' +
+      '<ul class="cc-footer__courses-list">' +
+        items.map(function (item) {
+          return '<li><a href="' + esc(item.href) + '">' + esc(item.label) + '</a></li>';
+        }).join('') +
+      '</ul></nav>';
+  }
+
   function footerHtml() {
     return '<div class="cc-pattern-strip" aria-hidden="true"></div>' +
       '<footer class="cc-footer">' +
         '<div class="cc-footer__inner">' +
           '<img class="cc-footer__logo" src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство" width="256" height="256">' +
           '<p class="cc-footer__warm">С теплом, команда Читательства</p>' +
+          footerCoursesHtml() +
           '<nav class="cc-footer__legal" aria-label="Юридическая информация">' +
             '<a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a>' +
             '<a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">Публичная оферта</a>' +
+            '<a href="https://api.chitatelstvo.ru/legal/rekvizity" target="_blank" rel="noopener">Реквизиты</a>' +
           '</nav>' +
           '<p class="cc-footer__contact">' +
             '<a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> · ' +
@@ -479,16 +506,7 @@
     var root = document.getElementById('chit-course');
 
     root.innerHTML =
-      '<header class="cc-header"><div class="cc-header__inner">' +
-        '<a class="cc-logo" href="' + HOME_URL + '"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство"></a>' +
-        '<nav class="cc-nav" aria-label="Разделы">' +
-          '<a href="#about">О курсе</a>' +
-          '<a href="#program-list">Программа</a>' +
-          '<a href="#tariffs">Тарифы</a>' +
-          '<a href="#enroll">Запись</a>' +
-        '</nav>' +
-        '<a class="cc-header-cta" href="#enroll">Записаться</a>' +
-      '</div></header>' +
+      siteHeaderHtml('#enroll', 'Записаться') +
 
       bannerHtml() +
       schoolIntroHtml() +
@@ -581,7 +599,7 @@
               '<div class="cc-form-grid" id="cc-contact-form">' +
                 formField('parent_name', 'Имя родителя', 'text', true) +
                 formField('parent_email', 'Email', 'email', true) +
-                formField('parent_telegram', 'Телефон', 'tel', false) +
+                formField('parent_phone', 'Телефон', 'tel', false) +
                 formField('child_name', 'Имя ребёнка', 'text', true) +
                 formField('child_birth_date', 'День рождения ребёнка', 'date', true) +
                 formField('promo_code', 'Промокод', 'text', false) +
@@ -919,7 +937,7 @@
         chosen_tale_number: hidTale.value,
         parent_name: val('parent_name'),
         parent_email: val('parent_email'),
-        parent_telegram: val('parent_telegram'),
+        parent_phone: val('parent_phone') || val('parent_telegram'),
         child_name: val('child_name'),
         child_birth_date: val('child_birth_date'),
         child_age: ageFromBirthDate(val('child_birth_date')),
@@ -969,11 +987,29 @@
       try {
         sessionStorage.setItem('chit_checkout', JSON.stringify(payload));
       } catch (err) {}
+      // PII только в sessionStorage; на /oplata подставит chit-pay-page.js
+      // (страницы курсов на api.* — sessionStorage не шарится с Tilda, поэтому
+      // оставляем в URL только служебные поля; контакты — через postMessage не делаем).
+      var urlSafe = {
+        tariff: 1, module_id: 1, chosen_stage: 1, chosen_tale_number: 1,
+        lesson_slug: 1, group_code: 1, group: 1, promo_code: 1, notification_channel: 1
+      };
       var qs = new URLSearchParams();
       Object.keys(payload).forEach(function (key) {
+        if (!urlSafe[key]) return;
         var v = payload[key];
         if (v !== undefined && v !== null && String(v).trim() !== '') qs.set(key, String(v));
       });
+      // Fallback для API-origin: без PII в URL оплата на Tilda не получит контакты —
+      // дублируем контакты только если origin другой (api.*).
+      try {
+        if (window.location.hostname.indexOf('api.') === 0) {
+          ['parent_name', 'parent_email', 'parent_phone', 'parent_telegram', 'child_name', 'child_birth_date', 'child_age'].forEach(function (key) {
+            var v = payload[key];
+            if (v !== undefined && v !== null && String(v).trim() !== '') qs.set(key, String(v));
+          });
+        }
+      } catch (e2) {}
       var url = D.PAY_PAGE_URL;
       var query = qs.toString();
       if (query) url += (url.indexOf('?') >= 0 ? '&' : '?') + query;
