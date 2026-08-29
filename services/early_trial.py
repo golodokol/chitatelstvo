@@ -131,7 +131,12 @@ def grant_early_trial(
     lesson_title = (lesson or {}).get("title") or module.get("title") or "Пробный урок"
 
     progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
-    lesson_url = build_lesson_url(child.id, lesson_slug) if lesson_slug else progress_url
+    if lesson_slug and enrollment:
+        lesson_url = build_lesson_url(child.id, lesson_slug, enrollment_id=enrollment.id)
+    elif lesson_slug:
+        lesson_url = build_lesson_url(child.id, lesson_slug)
+    else:
+        lesson_url = progress_url
 
     return {
         "module_id": module_id,

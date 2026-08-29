@@ -31,6 +31,7 @@ router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
 class LessonChildBody(BaseModel):
     child_id: uuid.UUID
     test_key: str | None = None
+    enrollment_id: uuid.UUID | None = None
 
 
 class VideoCompleteMobileBody(LessonChildBody):
@@ -76,6 +77,7 @@ def lesson_json(
     slug: str,
     child: Child = Depends(get_family_child),
     test_key: str | None = Query(default=None),
+    enrollment_id: uuid.UUID | None = Query(default=None),
     db: Session = Depends(get_db),
 ) -> dict:
     """Метаданные урока: видео, квизы, slovik, lesson_url для WebView."""
@@ -84,6 +86,7 @@ def lesson_json(
         child=child,
         slug=slug,
         test_bypass=verify_test_lesson_key(test_key),
+        enrollment_id=enrollment_id,
     )
 
 
@@ -104,6 +107,7 @@ def video_unlock_v1(
         watched_seconds=body.watched_seconds,
         duration_seconds=body.duration_seconds,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -123,6 +127,7 @@ def video_complete_v1(
         slug=slug,
         percent=body.percent,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -142,6 +147,7 @@ def emotion_quiz_submit_v1(
         slug=slug,
         answers=body.answers,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -162,6 +168,7 @@ def quiz_submit_v1(
         quiz_type=body.quiz_type,
         answers=body.answers,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -181,6 +188,7 @@ def retelling_submit_v1(
         slug=slug,
         answers=body.answers,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -201,6 +209,7 @@ def manual_mark_v1(
         event_type=body.event_type,
         notes=body.notes,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )
 
 
@@ -220,4 +229,5 @@ def tale_rating_v1(
         slug=slug,
         rating=body.rating,
         test_key=body.test_key,
+        enrollment_id=body.enrollment_id,
     )

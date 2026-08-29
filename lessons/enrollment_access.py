@@ -84,6 +84,7 @@ def find_enrollment_for_lesson(
         for e in matches
         if is_lesson_unlocked(child, lesson, enrollment=e, module=module)
     ]
+    # Без enrollment в URL: никогда не берём закрытую запись, если есть открытая.
     pool = unlocked or matches
     return min(
         pool,

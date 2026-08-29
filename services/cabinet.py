@@ -156,7 +156,15 @@ def build_lesson_links_for_track(
             link["meeting_on"] = access["meeting_on"]
             link["meeting_on_label"] = access["meeting_on_label"]
         if access["unlocked"] and _lesson_is_ready(les):
-            link["url"] = build_lesson_url(child.id, les["slug"], enrollment_id=enrollment.id)
+            url = build_lesson_url(child.id, les["slug"], enrollment_id=enrollment.id)
+            # Разовые делят один slug: без enrollment в ссылке сказки путаются.
+            if (module.get("tariff_code") == "single") and (
+                f"enrollment={enrollment.id}" not in url
+            ):
+                raise RuntimeError(
+                    f"single lesson URL missing enrollment_id: module={module.get('id')} slug={les['slug']}"
+                )
+            link["url"] = url
         enrich_lesson_link(link)
         lesson_links.append(link)
     return lesson_links, has_meetings

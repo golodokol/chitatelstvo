@@ -61,3 +61,19 @@ def test_find_enrollment_prefers_unlocked_over_older_locked(monkeypatch):
 
     by_id = find_enrollment_for_lesson(child, lesson, enrollment_id=pike.id)
     assert by_id is pike
+
+
+def test_build_lesson_url_includes_enrollment(monkeypatch):
+    """Контракт прогресса: у разового в URL всегда есть enrollment=<id>."""
+    monkeypatch.setattr("api.lesson_signing.LESSON_SIGNING_SECRET", "test-secret")
+    monkeypatch.setattr("api.lesson_signing.PUBLIC_BASE_URL", "https://api.example")
+    from api.lesson_signing import build_lesson_url
+
+    enrollment_id = uuid4()
+    url = build_lesson_url(
+        uuid4(),
+        "grade-1-single-lesson-01",
+        enrollment_id=enrollment_id,
+    )
+    assert f"enrollment={enrollment_id}" in url
+    assert "sig=" in url
