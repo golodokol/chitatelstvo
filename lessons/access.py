@@ -153,8 +153,9 @@ def is_lesson_unlocked(
     enrollment: Enrollment | None = None,
     module: dict[str, Any] | None = None,
 ) -> bool:
-    # Бесплатный пробный early — сразу
-    if lesson.get("tariff_code") == "trial" or (module and module.get("tariff_code") == "trial"):
+    # Пробный early и оплаченное разовое — сразу (не по календарю потока)
+    tariff = lesson.get("tariff_code") or (module or {}).get("tariff_code")
+    if tariff in ("trial", "single"):
         return True
 
     lesson_week = effective_module_week(lesson, enrollment, module)
