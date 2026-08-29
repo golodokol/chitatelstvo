@@ -559,7 +559,7 @@
               true) +
           '</div>' +
           (withTeacherClosed
-            ? '<p class="cc-tariff-waitnote">Тариф «С преподавателем» для этой программы сейчас закрыт. Оставьте телефон и email — напишем, когда набор откроется.</p>'
+            ? '<p class="cc-tariff-waitnote">Тариф «С преподавателем» для этой программы сейчас закрыт. Оставьте имя и email — напишем, когда набор откроется.</p>'
             : '') +
           '<details class="cc-compare-details">' +
             '<summary>Сравнить тарифы в таблице</summary>' +
@@ -1061,16 +1061,16 @@
         '</button>' +
         '<p class="cc-waitlist__eyebrow">обратная связь</p>' +
         '<h2 class="cc-waitlist__title" id="cc-waitlist-title">Набор с преподавателем закрыт</h2>' +
-        '<p class="cc-waitlist__lead">Оставьте телефон и email — напишем, когда откроется тариф «С преподавателем» для курса «' +
+        '<p class="cc-waitlist__lead">Оставьте имя и электронную почту — напишем, когда откроется тариф «С преподавателем» для курса «' +
           esc(courseLabel()) + '».</p>' +
         '<form class="cc-waitlist__form" id="cc-waitlist-form" novalidate>' +
           '<div class="cc-form-field">' +
-            '<label for="cc_waitlist_email">Email</label>' +
-            '<input type="email" id="cc_waitlist_email" name="email" required autocomplete="email" placeholder="you@email.com">' +
+            '<label for="cc_waitlist_name">Имя</label>' +
+            '<input type="text" id="cc_waitlist_name" name="name" required autocomplete="name" placeholder="Как к вам обращаться" maxlength="120">' +
           '</div>' +
           '<div class="cc-form-field">' +
-            '<label for="cc_waitlist_phone">Телефон</label>' +
-            '<input type="tel" id="cc_waitlist_phone" name="phone" required autocomplete="tel" placeholder="+7 …">' +
+            '<label for="cc_waitlist_email">Электронная почта</label>' +
+            '<input type="email" id="cc_waitlist_email" name="email" required autocomplete="email" placeholder="you@email.com">' +
           '</div>' +
           '<button type="submit" class="cc-btn cc-btn--block" id="cc-waitlist-submit">Отправить</button>' +
           '<p class="cc-waitlist__note" id="cc-waitlist-note" hidden></p>' +
@@ -1082,8 +1082,8 @@
     var form = document.getElementById('cc-waitlist-form');
     var note = document.getElementById('cc-waitlist-note');
     var submitBtn = document.getElementById('cc-waitlist-submit');
+    var nameEl = document.getElementById('cc_waitlist_name');
     var emailEl = document.getElementById('cc_waitlist_email');
-    var phoneEl = document.getElementById('cc_waitlist_phone');
     var busy = false;
 
     function setNote(text, ok) {
@@ -1099,8 +1099,8 @@
       wrap.setAttribute('aria-hidden', 'false');
       document.body.classList.add('cc-waitlist-open');
       setNote('', false);
-      if (emailEl) {
-        setTimeout(function () { emailEl.focus(); }, 40);
+      if (nameEl) {
+        setTimeout(function () { nameEl.focus(); }, 40);
       }
       if (typeof window.chitSyncTildaLayout === 'function') window.chitSyncTildaLayout();
     }
@@ -1155,7 +1155,7 @@
         fname = (nameInp && nameInp.value ? nameInp.value : '').trim();
         if (fname === 'Cart' || fname === 'Order') continue;
         if (formEl.querySelector('[name="Email"], [name="email"], input[type="email"]') &&
-            formEl.querySelector('[name="Phone"], [name="phone"], input[type="tel"]')) {
+            formEl.querySelector('[name="Name"], [name="name"], [name="Input"], input[type="text"]')) {
           return formEl;
         }
       }
@@ -1183,12 +1183,11 @@
       return set;
     }
 
-    function fillTildaForm(tildaForm, email, phone) {
+    function fillTildaForm(tildaForm, name, email) {
       var label = courseLabel();
       var comment = 'Жду тариф «С преподавателем» · ' + label + ' (' + group + ')';
+      setTildaField(tildaForm, ['Name', 'name', 'Input', 'parent_name'], name);
       setTildaField(tildaForm, ['Email', 'email', 'parent_email', 'E-mail'], email);
-      setTildaField(tildaForm, ['Phone', 'phone', 'tel', 'Telegram', 'parent_phone', 'parent_telegram'], phone);
-      setTildaField(tildaForm, ['Name', 'name', 'Input', 'parent_name'], label);
       setTildaField(tildaForm, [
         'course', 'Course', 'program', 'Program', 'Textarea', 'Comments', 'Comment',
         'comment', 'Message', 'message', 'Input_2', 'Input2'
@@ -1205,12 +1204,12 @@
       }
     }
 
-    function submitViaTilda(email, phone) {
+    function submitViaTilda(name, email) {
       var tildaForm = findWaitlistForm();
       if (!tildaForm) {
         return Promise.reject(new Error('no-tilda-form'));
       }
-      fillTildaForm(tildaForm, email, phone);
+      fillTildaForm(tildaForm, name, email);
 
       return new Promise(function (resolve, reject) {
         var done = false;
@@ -1255,16 +1254,16 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (busy) return;
+      var name = String(nameEl && nameEl.value || '').trim();
       var email = String(emailEl && emailEl.value || '').trim();
-      var phone = String(phoneEl && phoneEl.value || '').trim();
-      if (!email || email.indexOf('@') < 0) {
-        setNote('Укажите корректный email.', false);
-        if (emailEl) emailEl.focus();
+      if (!name || name.length < 2) {
+        setNote('Укажите имя.', false);
+        if (nameEl) nameEl.focus();
         return;
       }
-      if (!phone || phone.replace(/\D/g, '').length < 10) {
-        setNote('Укажите телефон (не меньше 10 цифр).', false);
-        if (phoneEl) phoneEl.focus();
+      if (!email || email.indexOf('@') < 0) {
+        setNote('Укажите корректную электронную почту.', false);
+        if (emailEl) emailEl.focus();
         return;
       }
 
@@ -1275,7 +1274,7 @@
       }
       setNote('', false);
 
-      submitViaTilda(email, phone)
+      submitViaTilda(name, email)
         .then(function () {
           setNote('Спасибо! Заявка отправлена — напишем, когда набор откроется.', true);
           form.reset();
@@ -1287,7 +1286,7 @@
             encodeURIComponent('Жду тариф «С преподавателем» · ' + courseLabel()) +
             '&body=' + encodeURIComponent(
               'Здравствуйте!\n\nХочу узнать, когда откроется тариф «С преподавателем» для курса «' +
-              courseLabel() + '».\n\nEmail: ' + email + '\nТелефон: ' + phone + '\n'
+              courseLabel() + '».\n\nИмя: ' + name + '\nEmail: ' + email + '\n'
             );
           if (err && err.message === 'no-tilda-form') {
             setNote('Форма Tilda ещё не подключена на странице. Откроется письмо — или напишите на info@chitatelstvo.ru.', false);

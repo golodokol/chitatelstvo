@@ -37,7 +37,7 @@ window.CHIT_COURSE = (function () {
 
   var WITH_TEACHER_STAGE1_CLOSED = true;
   var NO_WITH_TEACHER_GROUPS = ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11'];
-  var PAGES_VERSION = '20260829b';
+  var PAGES_VERSION = '20260829c';
 
   /** Общие ссылки шапки (как на главной). */
   var SITE_NAV = [
