@@ -480,12 +480,23 @@
       '</ul></nav>';
   }
 
+  function footerSiteHtml() {
+    var items = D.FOOTER_SITE || [];
+    if (!items.length) return '';
+    return '<nav class="cc-footer__site" aria-label="О школе и сайт">' +
+      items.map(function (item) {
+        return '<a href="' + esc(item.href) + '">' + esc(item.label) + '</a>';
+      }).join('') +
+    '</nav>';
+  }
+
   function footerHtml() {
     return '<div class="cc-pattern-strip" aria-hidden="true"></div>' +
       '<footer class="cc-footer">' +
         '<div class="cc-footer__inner">' +
           '<img class="cc-footer__logo" src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство" width="256" height="256">' +
           '<p class="cc-footer__warm">С теплом, команда Читательства</p>' +
+          footerSiteHtml() +
           footerCoursesHtml() +
           '<nav class="cc-footer__legal" aria-label="Юридическая информация">' +
             '<a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика конфиденциальности</a>' +

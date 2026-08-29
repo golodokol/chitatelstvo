@@ -2556,6 +2556,20 @@ body.cc-waitlist-open { overflow: hidden; }
   border-color: var(--blue);
   transform: translateY(-1px);
 }
+.cc-footer__site {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin: 0 0 18px;
+  font-size: 14px;
+  font-weight: 800;
+}
+.cc-footer__site a {
+  color: var(--blue);
+  text-decoration: none;
+}
+.cc-footer__site a:hover { text-decoration: underline; }
 .cc-footer__legal {
   display: flex;
   flex-wrap: wrap;

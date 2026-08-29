@@ -925,6 +925,19 @@
   color: #3D5266;
   font: 700 16px/1.4 Nunito, system-ui, sans-serif;
 }
+.ccl-footer__site {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+  margin-bottom: 14px;
+}
+.ccl-footer__site a {
+  color: #5B7FA6;
+  text-decoration: none;
+  font-weight: 800;
+}
+.ccl-footer__site a:hover { text-decoration: underline; }
 .ccl-footer__legal {
   display: flex;
   flex-wrap: wrap;

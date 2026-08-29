@@ -37,14 +37,22 @@ window.CHIT_COURSE = (function () {
 
   var WITH_TEACHER_STAGE1_CLOSED = true;
   var NO_WITH_TEACHER_GROUPS = ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11'];
-  var PAGES_VERSION = '20260828c';
+  var PAGES_VERSION = '20260829b';
 
   /** Общие ссылки шапки (как на главной). */
   var SITE_NAV = [
     { href: 'https://chitatelstvo.ru/#programs', label: 'Программы' },
-    { href: 'https://chitatelstvo.ru/#timeline', label: 'О школе' },
+    { href: 'https://chitatelstvo.ru/o-shkole', label: 'О школе' },
     { href: 'https://chitatelstvo.ru/#platform', label: 'Платформа' },
     { href: 'https://chitatelstvo.ru/#proof', label: 'Отзывы' },
+    { href: 'https://chitatelstvo.ru/#lead', label: 'Консультация' }
+  ];
+
+  /** Ссылки школы в подвале (на главной не дублируем — там свой footer). */
+  var FOOTER_SITE = [
+    { href: 'https://chitatelstvo.ru/', label: 'Главная' },
+    { href: 'https://chitatelstvo.ru/o-shkole', label: 'О школе' },
+    { href: 'https://chitatelstvo.ru/programmy', label: 'Программы' },
     { href: 'https://chitatelstvo.ru/#lead', label: 'Консультация' }
   ];
 
@@ -635,6 +643,7 @@ window.CHIT_COURSE = (function () {
     NO_WITH_TEACHER_GROUPS: NO_WITH_TEACHER_GROUPS,
     PAGES_VERSION: PAGES_VERSION,
     SITE_NAV: SITE_NAV,
+    FOOTER_SITE: FOOTER_SITE,
     FOOTER_COURSES: FOOTER_COURSES
   };
 })();

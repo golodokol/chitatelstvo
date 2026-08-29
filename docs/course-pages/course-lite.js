@@ -180,6 +180,7 @@
   if (course.gallery) navExtra += '<a href="#look">Как выглядит</a>';
   navExtra += '<a href="#program">Программа</a><a href="#outcome">После курса</a>';
   if (course.faq) navExtra += '<a href="#faq">Вопросы</a>';
+  navExtra += '<a href="https://chitatelstvo.ru/o-shkole">О школе</a>';
   navExtra += '<a href="' + (isEarly ? '#tariffs' : '#enroll') + '">Запись</a>';
   if (isEarly && course.trialSlug) navExtra += '<a href="#trial">Пробный</a>';
 
@@ -480,6 +481,11 @@
       '<div class="ccl-footer__inner">' +
         '<img class="ccl-footer__logo" src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство" width="180" height="48">' +
         '<p class="ccl-footer__warm">С теплом, команда Читательства</p>' +
+        '<nav class="ccl-footer__site" aria-label="О школе и сайт">' +
+          '<a href="' + esc(home) + '">Главная</a>' +
+          '<a href="https://chitatelstvo.ru/o-shkole">О школе</a>' +
+          '<a href="https://chitatelstvo.ru/programmy">Программы</a>' +
+        '</nav>' +
         '<nav class="ccl-footer__legal" aria-label="Юридическая информация">' +
           '<a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политика</a>' +
           '<a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">Оферта</a>' +
