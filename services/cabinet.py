@@ -120,6 +120,74 @@ def group_lessons(lesson_links: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return stages
 
 
+def _lesson_merge_key(lesson: dict[str, Any]) -> str:
+    tale = str(lesson.get("tale_slug") or "").strip()
+    if tale:
+        return f"tale:{tale}"
+    title = str(lesson.get("title") or "").strip().casefold()
+    if title:
+        return f"title:{title}"
+    return f"slug:{lesson.get('slug') or ''}"
+
+
+def _dedupe_lesson_links(lesson_links: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Одинаковые сказки из разных enrollments — одна карточка (предпочитаем с url)."""
+    best: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for les in lesson_links:
+        key = _lesson_merge_key(les)
+        prev = best.get(key)
+        if prev is None:
+            best[key] = les
+            order.append(key)
+            continue
+        if les.get("url") and not prev.get("url"):
+            best[key] = les
+        elif les.get("url") and prev.get("url"):
+            # оба открыты — оставляем более ранний в порядке доступа
+            pass
+    return [best[key] for key in order]
+
+
+def merge_tracks_by_group(tracks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Один блок кабинета на программу: разовые сказки 1 класса не разъезжаются по странице."""
+    if len(tracks) <= 1:
+        return tracks
+
+    order: list[str] = []
+    by_group: dict[str, dict[str, Any]] = {}
+    for track in tracks:
+        key = str(track.get("group_code") or "").strip() or f"module:{track.get('module_id')}"
+        if key not in by_group:
+            order.append(key)
+            by_group[key] = {
+                **track,
+                "lesson_links": list(track.get("lesson_links") or []),
+            }
+            continue
+        existing = by_group[key]
+        existing["lesson_links"].extend(track.get("lesson_links") or [])
+        existing["has_meetings"] = bool(existing.get("has_meetings") or track.get("has_meetings"))
+        # Если к разовым добавили полный тариф — подписи берём от него.
+        if existing.get("tariff_code") in ("", "single", "trial") and track.get("tariff_code") not in (
+            "",
+            "single",
+            "trial",
+        ):
+            for field in ("tariff_code", "tariff_label", "module_title", "module_id"):
+                if track.get(field) not in (None, ""):
+                    existing[field] = track[field]
+
+    merged: list[dict[str, Any]] = []
+    for key in order:
+        track = by_group[key]
+        links = _dedupe_lesson_links(sort_lessons_by_access(track.get("lesson_links") or []))
+        track["lesson_links"] = links
+        track["lesson_stages"] = group_lessons(links)
+        merged.append(track)
+    return merged
+
+
 def build_lesson_links_for_track(
     db: Session,
     child: Child,
@@ -219,8 +287,9 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
             }
         )
 
+    tracks = merge_tracks_by_group(tracks)
     tracks = sort_tracks_by_access(tracks)
-    all_lesson_links = sort_lessons_by_access(all_lesson_links)
+    all_lesson_links = _dedupe_lesson_links(sort_lessons_by_access(all_lesson_links))
     module_titles = [t["module_title"] for t in tracks]
     module_title = " · ".join(module_titles) if module_titles else None
 

@@ -1679,7 +1679,6 @@ def _build_track_section(
         assets_base=assets_base,
     )
     claimed = _claimed_slugs_for_links(claims, lesson_links)
-    lesson = _current_lesson(lesson_links, claimed_slugs=claimed)
     weekly_source, weekly_label = _weekly_lessons(
         lesson_links,
         events=events,
@@ -1688,14 +1687,33 @@ def _build_track_section(
         claimed_slugs=claimed,
     )
     early = _is_early_links(lesson_links) or group_code.startswith("early-") or group_code in COHORT_GROUPS
-    tale_slug = _lesson_reward_slug(lesson)
-    current_claim = _claim_for_lesson(claims, lesson)
-    reward_items = (
-        rewards_for_tale(tale_slug, lesson.get("title", "")) if tale_slug and lesson else []
-    )
-    chest = _chest_state(events, lesson, claim=current_claim, reward_items=reward_items)
-    chest["slovik_key"] = chest_slovik_key(chest)
-    chest["slovik_url"] = slovik_url(chest["slovik_key"])
+
+    def _chest_for_lesson(les: dict | None) -> dict[str, Any]:
+        tale_slug = _lesson_reward_slug(les)
+        current_claim = _claim_for_lesson(claims, les)
+        reward_items = (
+            rewards_for_tale(tale_slug, les.get("title", "")) if tale_slug and les else []
+        )
+        chest_state = _chest_state(events, les, claim=current_claim, reward_items=reward_items)
+        chest_state["slovik_key"] = chest_slovik_key(chest_state)
+        chest_state["slovik_url"] = slovik_url(chest_state["slovik_key"])
+        return chest_state
+
+    # Сундук на каждую открытую сказку трека (несколько разовых в одном блоке).
+    chests = [_chest_for_lesson(les) for les in weekly_source]
+    lesson = _current_lesson(lesson_links, claimed_slugs=claimed)
+    if chests:
+        ready = next((c for c in chests if c.get("ready") and not c.get("claimed")), None)
+        chest = ready or next((c for c in chests if not c.get("claimed")), chests[0])
+        # Текущий урок = сказка выбранного сундука.
+        focus_slug = str(chest.get("tale_slug") or "")
+        if focus_slug:
+            for les in weekly_source:
+                if _lesson_reward_slug(les) == focus_slug:
+                    lesson = les
+                    break
+    else:
+        chest = _chest_for_lesson(lesson)
 
     missions = _missions(events, lesson, points, chest)
     is_trial_track = cabinet_mode == "trial_early" or str(track.get("tariff_code") or "") == "trial"
@@ -1725,6 +1743,7 @@ def _build_track_section(
         "is_early": early,
         "is_trial": is_trial_track,
         "chest": chest,
+        "chests": chests if chests else ([chest] if chest else []),
         "treasury": treasury,
         "weekly_lessons": weekly_cards,
         "weekly_lessons_label": weekly_label,
