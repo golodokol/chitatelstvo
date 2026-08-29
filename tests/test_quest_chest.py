@@ -80,3 +80,11 @@ def test_regular_chest_still_uses_three_steps():
     done = {"video_unlock", "comprehension", "meaning_analysis"}
     assert chest_ready_from_done(done, lesson) is True
     assert chest_ready_from_done({"lesson_complete"}, lesson) is False
+
+
+def test_regular_chest_opens_when_quizzes_done_without_video_event():
+    """Эмоциометр/квизы могли пройти без записи video_unlock — сундук не должен зависать."""
+    lesson = {"group_code": "grade-1", "title": "Царевна лягушка"}
+    done = {"emotion_quiz", "comprehension", "meaning_analysis", "retelling"}
+    assert chest_ready_from_done(done, lesson) is True
+    assert chest_ready_from_done({"comprehension"}, lesson) is False

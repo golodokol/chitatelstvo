@@ -552,14 +552,31 @@ def handle_video_unlock(
         enrollment_id=enrollment_id,
     )
     tale_title = lesson["title"]
-    if child_has_video_unlock(db, child_id, tale_title=tale_title, lesson=lesson):
+    titles = lesson_tale_titles(lesson)
+    if tale_title.strip() and tale_title.strip() not in titles:
+        titles = [tale_title.strip(), *titles]
+    already_recorded = _child_has_event_any_title(
+        db, child_id, titles=titles, event_type="video_unlock"
+    ) or _child_has_lesson_complete_any_title(db, child_id, titles=titles)
+    if already_recorded:
         return {
             "status": "duplicate",
             "message": "Можно переходить к заданиям ниже.",
         }
 
     # Нет ролика — засчитываем «просмотр», чтобы открылись шаги и оценка книги.
-    if not lesson_has_playable_video(lesson) or verify_test_lesson_key(test_key):
+    # Если квизы уже сданы без video_unlock (старый обход эмоциометра) — дописываем событие.
+    quiz_progressed = any(
+        _child_has_event_any_title(db, child_id, titles=titles, event_type=et)
+        for et in (
+            "emotion_quiz",
+            "reading_practice",
+            "comprehension",
+            "meaning_analysis",
+            "retelling",
+        )
+    )
+    if not lesson_has_playable_video(lesson) or verify_test_lesson_key(test_key) or quiz_progressed:
         pass
     else:
         required = _required_video_unlock_seconds(duration_seconds)
@@ -573,8 +590,16 @@ def handle_video_unlock(
         event_type="video_unlock",
         tale_title=tale_title,
         lesson_date=date.today(),
-        notes=f"auto: video {int(watched_seconds)}s",
-        payload={"source": "lesson_player", "watched_seconds": watched_seconds},
+        notes=(
+            f"auto: backfill after quiz progress"
+            if quiz_progressed and watched_seconds < _required_video_unlock_seconds(duration_seconds)
+            else f"auto: video {int(watched_seconds)}s"
+        ),
+        payload={
+            "source": "lesson_player",
+            "watched_seconds": watched_seconds,
+            "backfill": bool(quiz_progressed),
+        },
     )
     return {
         "status": status,
@@ -653,6 +678,13 @@ def handle_emotion_quiz_submit(
     quiz = lesson.get("emotion_quiz")
     if not quiz:
         raise HTTPException(404, "Эмоциометр для этого урока ещё не настроен")
+
+    tale_title = lesson["title"]
+    if (
+        not child_has_video_unlock(db, child_id, tale_title=tale_title, lesson=lesson)
+        and not verify_test_lesson_key(test_key)
+    ):
+        raise HTTPException(400, "Сначала посмотрите начало видео-урока.")
 
     passed = score_emotion_quiz(quiz, answers)
     if not passed:

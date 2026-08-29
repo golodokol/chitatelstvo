@@ -1236,10 +1236,17 @@
         updateEmotionButton();
         return;
       }
-      if (!emotionVideoOk() && maxWatchedSeconds >= videoUnlockTargetSeconds()) {
-        try {
-          await sendVideoUnlock();
-        } catch (e) {}
+      if (!emotionVideoOk()) {
+        if (maxWatchedSeconds >= videoUnlockTargetSeconds()) {
+          try {
+            await sendVideoUnlock();
+          } catch (e) {}
+        }
+        if (!emotionVideoOk()) {
+          showEmotionVerdict('err', 'Сначала посмотрите первые минуты видео-урока.');
+          updateEmotionButton();
+          return;
+        }
       }
       const btn = document.getElementById('btn-emotion');
       btn.disabled = true;

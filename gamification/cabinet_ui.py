@@ -140,6 +140,15 @@ TRIAL_BADGE_CATALOG: list[dict[str, str]] = [
 BADGES_TOTAL = len(BADGE_CATALOG)
 
 CHEST_STEPS = ("video_unlock", "comprehension", "meaning_analysis")
+# Шаги после видео — если они уже в событиях, «просмотр» для сундука тоже засчитываем
+# (тот же смысл, что child_has_video_unlock в lesson_player).
+_POST_VIDEO_CHEST_STEPS = (
+    "emotion_quiz",
+    "reading_practice",
+    "comprehension",
+    "meaning_analysis",
+    "retelling",
+)
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
@@ -285,9 +294,15 @@ STORIES_SHELF_BOOKS: tuple[dict[str, Any], ...] = (
 
 
 def is_chest_step_done(step: str, done: set[str]) -> bool:
-    """Шаг «видео»: засчитывается и 3 мин (video_unlock), и досмотр (lesson_complete)."""
+    """Шаг «видео»: 3 мин, досмотр или любой уже пройденный шаг после видео.
+
+    Иначе сундук зависает: эмоциометр/квизы можно сдать без записи video_unlock,
+    а кабинет продолжал ждать только video_unlock / lesson_complete.
+    """
     if step == "video_unlock":
-        return "video_unlock" in done or "lesson_complete" in done
+        if "video_unlock" in done or "lesson_complete" in done:
+            return True
+        return any(s in done for s in _POST_VIDEO_CHEST_STEPS)
     return step in done
 
 
