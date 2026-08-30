@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
@@ -21,6 +22,8 @@ from notifications.email_templates import (
 )
 from services.early_trial import grant_early_trial, resolve_trial_module_id
 from services.early_trial_leads import append_early_trial_lead
+from services.founder_letter_queue import schedule_founder_letter
+from services.recommendation_rules import match_recommendation_rule_by_trial_slug
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["early-trial"])
@@ -128,6 +131,25 @@ def early_trial_lead(
     except Exception:
         logger.exception("early trial email failed for %s", body.parent_email)
         email_sent = False
+
+    rule = match_recommendation_rule_by_trial_slug(body.trial_slug)
+    if rule:
+        try:
+            schedule_founder_letter(
+                lead_id=str(uuid.uuid4()),
+                parent_email=str(body.parent_email),
+                payload={
+                    "rule_id": rule.rule_id,
+                    "parent_name": body.parent_name,
+                    "child_name": body.child_name,
+                    "child_age": body.child_age,
+                    "trial_lesson_url": access.get("lesson_url"),
+                    "trial_progress_url": access.get("progress_url"),
+                    "trial_title": title,
+                },
+            )
+        except Exception:
+            logger.exception("founder letter schedule failed for %s", body.parent_email)
 
     return {
         "ok": True,

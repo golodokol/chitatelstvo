@@ -150,6 +150,112 @@ def grant_early_trial(
     }
 
 
+def grant_quiz_trial(
+    db: Session,
+    *,
+    parent_name: str,
+    parent_email: str,
+    child_name: str,
+    child_age: int | None = None,
+    phone: str | None = None,
+    trial_slug: str | None = None,
+    group_code: str | None = None,
+) -> dict[str, Any] | None:
+    """Early trial или бесплатный self_paced по slug урока из квиза."""
+    slug = (trial_slug or "").strip()
+    if not slug:
+        return None
+
+    early = grant_early_trial(
+        db,
+        parent_name=parent_name,
+        parent_email=parent_email,
+        child_name=child_name,
+        child_age=child_age,
+        phone=phone,
+        trial_slug=slug,
+        group_code=group_code,
+    )
+    if early:
+        return early
+
+    lesson = get_lesson(slug)
+    if not lesson:
+        return None
+    module_id = lesson.get("module_id")
+    if not module_id:
+        return None
+    module = get_module(int(module_id))
+    if not module or module.get("tariff_code") != "self_paced":
+        return None
+
+    family, child, _is_returning = repo.resolve_or_create_family_child(
+        db,
+        parent_name=parent_name,
+        parent_email=parent_email,
+        parent_telegram=None,
+        notification_channel="email",
+        child_name=child_name,
+        child_age=child_age,
+        child_birth_date=None,
+        telegram_chat_id=None,
+    )
+
+    stage = lesson.get("stage") or "stage-1"
+    existing = None
+    for enrollment in get_active_enrollments(child):
+        if enrollment.module_id == int(module_id):
+            existing = enrollment
+            break
+
+    if existing is None:
+        body = RegisterWebhook(
+            parent_name=parent_name,
+            parent_email=parent_email,
+            parent_telegram=None,
+            notification_channel="email",
+            child_name=child_name,
+            child_age=child_age,
+            module_id=int(module_id),
+            chosen_stage=stage,
+            chosen_tale_number=None,
+        )
+        create_enrollment_from_registration(db, child, body)
+        db.refresh(child)
+        logger.info(
+            "Quiz self_paced trial granted email=%s child=%s module=%s slug=%s",
+            parent_email,
+            child.id,
+            module_id,
+            slug,
+        )
+        enrollment = None
+        for e in get_active_enrollments(child):
+            if e.module_id == int(module_id):
+                enrollment = e
+                break
+    else:
+        enrollment = existing
+
+    lesson_title = lesson.get("title") or lesson.get("tale_title") or "Пробный урок"
+    progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
+    if enrollment:
+        lesson_url = build_lesson_url(child.id, slug, enrollment_id=enrollment.id)
+    else:
+        lesson_url = build_lesson_url(child.id, slug)
+
+    return {
+        "module_id": int(module_id),
+        "module_title": module.get("title"),
+        "lesson_slug": slug,
+        "lesson_title": lesson_title,
+        "progress_url": progress_url,
+        "lesson_url": lesson_url,
+        "child_id": str(child.id),
+        "family_id": str(family.id),
+    }
+
+
 def ensure_sibling_early_trial(
     db: Session,
     *,

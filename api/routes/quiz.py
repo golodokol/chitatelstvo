@@ -21,8 +21,10 @@ from notifications.email_templates import (
     build_quiz_auto_email,
     build_quiz_auto_email_html,
 )
-from services.early_trial import grant_early_trial, resolve_trial_module_id
+from services.early_trial import grant_quiz_trial, resolve_trial_module_id
+from services.founder_letter_queue import schedule_founder_letter
 from services.quiz_leads import LEADS_FILE, build_quiz_lead_rows, load_quiz_leads
+from services.recommendation_rules import match_recommendation_rule
 from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["quiz"])
@@ -89,15 +91,62 @@ def _answers_by_id(answers: list[QuizAnswer]) -> dict[str, str]:
     return out
 
 
+def _resolve_quiz_variant(body: QuizLeadRequest, answers_by_id: dict[str, str]) -> str:
+    variant = (body.quiz_variant or "").strip()
+    if variant:
+        return variant
+    if resolve_trial_module_id(trial_slug=body.trial_slug):
+        return "early"
+    if answers_by_id.get("grade") or answers_by_id.get("hard") or answers_by_id.get("format"):
+        return "reading"
+    if answers_by_id.get("readiness") or answers_by_id.get("interest"):
+        return "early"
+    return "any"
+
+
+def _schedule_founder_letter_for_lead(
+    *,
+    record: dict,
+    body: QuizLeadRequest,
+    answers_by_id: dict[str, str],
+    quiz_variant: str,
+    trial_access: dict | None,
+) -> None:
+    rule = match_recommendation_rule(
+        quiz_variant=quiz_variant,
+        child_age=body.child_age,
+        answers_by_id=answers_by_id,
+    )
+    if not rule:
+        return
+    try:
+        schedule_founder_letter(
+            lead_id=record["id"],
+            parent_email=str(body.parent_email),
+            payload={
+                "rule_id": rule.rule_id,
+                "parent_name": body.parent_name,
+                "child_name": body.child_name,
+                "child_age": body.child_age,
+                "trial_lesson_url": (trial_access or {}).get("lesson_url"),
+                "trial_progress_url": (trial_access or {}).get("progress_url"),
+                "trial_title": (trial_access or {}).get("lesson_title") or rule.trial_lesson_title,
+            },
+        )
+    except Exception:
+        logger.exception("Не удалось запланировать письмо основателя для %s", body.parent_email)
+
+
 def _send_quiz_auto_email(
     body: QuizLeadRequest,
     *,
     trial_access: dict | None = None,
+    quiz_variant: str | None = None,
 ) -> bool:
-    quiz_variant = (body.quiz_variant or "").strip() or None
-    if not quiz_variant and resolve_trial_module_id(trial_slug=body.trial_slug):
-        quiz_variant = "early"
-    is_early = quiz_variant == "early"
+    qv = (quiz_variant or body.quiz_variant or "").strip() or None
+    if not qv and resolve_trial_module_id(trial_slug=body.trial_slug):
+        qv = "early"
+    is_early = qv == "early"
     checklist_url = checklist_pdf_url(early=is_early)
     trial_title = body.trial_title
     trial_lesson_url = None
@@ -116,7 +165,7 @@ def _send_quiz_auto_email(
         trial_title=trial_title,
         trial_lesson_url=trial_lesson_url,
         trial_progress_url=trial_progress_url,
-        quiz_variant=quiz_variant,
+        quiz_variant=qv,
     )
     html_message = build_quiz_auto_email_html(
         parent_name=body.parent_name,
@@ -129,7 +178,7 @@ def _send_quiz_auto_email(
         trial_title=trial_title,
         trial_lesson_url=trial_lesson_url,
         trial_progress_url=trial_progress_url,
-        quiz_variant=quiz_variant,
+        quiz_variant=qv,
     )
     attachments = []
     pdf_path = checklist_pdf_path(early=is_early)
@@ -191,21 +240,29 @@ def quiz_lead(
     if not answers:
         raise HTTPException(422, "Ответьте хотя бы на один вопрос квиза")
     body = body.model_copy(update={"answers": answers})
+    answers_by_id = _answers_by_id(body.answers)
+    quiz_variant = _resolve_quiz_variant(body, answers_by_id)
 
     trial_access = None
-    if resolve_trial_module_id(trial_slug=body.trial_slug):
+    rule = match_recommendation_rule(
+        quiz_variant=quiz_variant,
+        child_age=body.child_age,
+        answers_by_id=answers_by_id,
+    )
+    trial_slug = (body.trial_slug or "").strip() or (rule.trial_lesson_slug if rule else "")
+    if trial_slug:
         try:
-            trial_access = grant_early_trial(
+            trial_access = grant_quiz_trial(
                 db,
                 parent_name=body.parent_name,
                 parent_email=str(body.parent_email),
                 child_name=body.child_name,
                 child_age=body.child_age,
                 phone=body.phone,
-                trial_slug=body.trial_slug,
+                trial_slug=trial_slug,
             )
         except Exception:
-            logger.exception("Не удалось выдать пробный early для %s", body.parent_email)
+            logger.exception("Не удалось выдать пробный урок для %s", body.parent_email)
 
     LEADS_FILE.parent.mkdir(parents=True, exist_ok=True)
     record = {
@@ -230,9 +287,19 @@ def quiz_lead(
 
     email_sent = False
     try:
-        email_sent = _send_quiz_auto_email(body, trial_access=trial_access)
+        email_sent = _send_quiz_auto_email(
+            body, trial_access=trial_access, quiz_variant=quiz_variant
+        )
     except Exception:
         logger.exception("Не удалось отправить автоматическое письмо квиза на %s", body.parent_email)
+
+    _schedule_founder_letter_for_lead(
+        record=record,
+        body=body,
+        answers_by_id=answers_by_id,
+        quiz_variant=quiz_variant,
+        trial_access=trial_access,
+    )
 
     if trial_access and trial_access.get("lesson_url"):
         if email_sent:
@@ -244,8 +311,8 @@ def quiz_lead(
     else:
         message = "Спасибо! Заявка принята."
 
-    is_early = (body.quiz_variant or "").strip() == "early" or bool(
-        resolve_trial_module_id(trial_slug=body.trial_slug)
+    is_early = quiz_variant == "early" or bool(
+        resolve_trial_module_id(trial_slug=body.trial_slug or trial_slug)
     )
     return {
         "ok": True,

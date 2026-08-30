@@ -2,6 +2,26 @@
 
 Файлы для ручной рассылки и персонализации текстов.
 
+## Письмо от основателя после квиза / пробника
+
+| Файл | Назначение |
+|------|------------|
+| `founder-trial-letter.html` | HTML-шаблон с плейсхолдерами |
+| `founder-trial-letter.txt` | Текстовая версия |
+| `founder-trial-letter-example.html` | Заполненный пример — откройте в браузере |
+| **`recommendation-rules.xlsx`** | **Таблица правил — открывать в Excel** |
+| `recommendation-rules.csv` | То же для git/кода (UTF-8; Excel на Windows может показать кракозябры) |
+| `email-triggers.xlsx` | Когда какое письмо отправлять (**founder_letter** — только 09:00–18:00 МСК) |
+| `founder-trial-letter-placeholders.xlsx` | Список плейсхолдеров |
+
+**Excel на Windows:** открывайте файлы **`.xlsx`**, не `.csv`. Если нужен csv — `*-excel.csv` (UTF-16).
+
+Заполните в `recommendation-rules.xlsx` столбец **`founder_note_template`**.
+
+Пересобрать xlsx после правки csv: `python scripts/_make_excel_tables.py`
+
+Тема по умолчанию: `{{CHILD_NAME}} и чтение — мои рекомендации от Ольги`
+
 ## Приветственное письмо
 
 | Файл | Назначение |

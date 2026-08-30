@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Добро пожаловать в Читательство</title>
+  <title>{{SUBJECT}}</title>
 </head>
 <body style="margin:0;padding:24px 16px;background:#F6F4F9;font-family:Nunito,'Segoe UI',Arial,sans-serif;color:#3D5266;">
   <!--
-    Шаблон приветственного письма от основателя (Ольга).
+    Письмо от Ольги после квиза / пробного урока.
     Замените {{ПЛЕЙСХОЛДЕРЫ}} перед отправкой.
-    {{FOUNDER_NOTE}} — ваш текст под конкретного родителя (можно оставить общий).
+    Превью: founder-trial-letter-example.html
   -->
   <div style="max-width:580px;margin:0 auto;">
     <div style="background:#ffffff;border:1px solid #E4E0EC;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(91,127,166,0.08);">
@@ -32,7 +32,6 @@
           {{PARENT_NAME}}, здравствуйте!
         </p>
 
-        <!-- Блок от Ольги -->
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 20px;">
           <tr>
             <td style="width:72px;vertical-align:top;padding-right:14px;">
@@ -50,34 +49,44 @@
         </p>
 
         <p style="margin:0 0 14px;font-size:16px;line-height:1.7;">
-          Я придумала Читательство, потому что вижу по своим детям: книга может конкурировать с гаджетами, если читать вместе интересно — без давления, без «прочитал — молодец, не прочитал — плохо». Нам важнее, чтобы ребёнок понял героя, его чувства и поступки, а не просто «прошёл глазами».
+          Я придумала Читательство, потому что вижу по своим детям: книга может конкурировать с гаджетами, если читать вместе интересно — без давления и без гонки «кто быстрее пролистал». Нам важнее, чтобы ребёнок понял героя, его чувства и поступки.
         </p>
 
         <p style="margin:0 0 14px;font-size:16px;line-height:1.7;">
           Все занятия я сначала проверяю дома. Если что-то скучно или непонятно — переделываем. Так что вы не одни: мы на вашей стороне.
         </p>
 
-        <!-- Персональный абзац под родителя -->
         <div style="margin:0 0 20px;padding:16px 18px;background:linear-gradient(135deg,#F6F4F9 0%,#fff 100%);border-left:4px solid #8F7DA3;border-radius:0 12px 12px 0;">
           <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#8F7DA3;">
-            Именно вам
+            Мои предложения именно вам
           </p>
           <p style="margin:0;font-size:16px;line-height:1.7;font-style:italic;color:#3D5266;">
             {{FOUNDER_NOTE}}
           </p>
         </div>
 
-        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#6B8499;">
-          <strong style="color:#3D5266;">Модуль:</strong> {{MODULE_TITLE}}
+        <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#6B8499;">
+          <strong style="color:#3D5266;">Рекомендую начать с:</strong> {{RECOMMENDED_COURSE}}
+        </p>
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3D5266;">
+          Пробный урок «{{TRIAL_TITLE}}» уже открыт — это полноценное занятие на платформе, не презентация.
         </p>
 
+        <div style="margin:0 0 20px;padding:16px 18px;background:#fff;border:1px solid #E4E0EC;border-radius:14px;text-align:center;">
+          <p style="margin:0 0 10px;font-size:13px;color:#6B8499;">Пробный урок</p>
+          <a href="{{TRIAL_LESSON_URL}}" style="display:inline-block;background:#8F7DA3;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:12px;font-weight:700;font-size:15px;">
+            Открыть «{{TRIAL_TITLE}}»
+          </a>
+        </div>
+
+        <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#3D5266;">Доступ к платформе:</p>
         <div style="margin:0 0 24px;padding:18px 20px;background:#F6F4F9;border:1px solid #E4E0EC;border-radius:14px;text-align:center;">
           <p style="margin:0 0 4px;font-size:13px;color:#6B8499;">Личная страница {{CHILD_NAME}}</p>
           <p style="margin:0 0 14px;font-size:15px;line-height:1.5;color:#3D5266;">
-            Здесь баллы, бейджи и кнопки уроков. Сохраните ссылку в закладки — она у вас одна.
+            Здесь баллы, Словики и кнопки уроков. Сохраните ссылку в закладки — она у вас одна.
           </p>
           <a href="{{PROGRESS_URL}}" style="display:inline-block;background:#5B7FA6;color:#ffffff;text-decoration:none;padding:13px 26px;border-radius:12px;font-weight:700;font-size:16px;">
-            Открыть прогресс
+            Открыть Читательство
           </a>
         </div>
 
@@ -103,16 +112,29 @@
           </tr>
         </table>
 
-        <!-- Telegram — удалите, если не нужен -->
+        <!-- Удалите блок, если альтернатива не нужна -->
         <div style="margin:0 0 20px;padding:14px 16px;background:#fff;border:1px dashed #D4E2EF;border-radius:12px;">
-          <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3D5266;">Telegram</p>
-          <p style="margin:0 0 10px;font-size:14px;line-height:1.55;color:#6B8499;">{{TELEGRAM_HINT}}</p>
-          <a href="{{LINK_TELEGRAM_PAGE}}" style="color:#5B7FA6;font-weight:700;font-size:14px;">Привязать Telegram →</a>
+          <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3D5266;">Если захотите другой формат</p>
+          <p style="margin:0;font-size:14px;line-height:1.55;color:#6B8499;">{{ALTERNATIVE_PARAGRAPH}}</p>
         </div>
 
-        <p style="margin:0 0 16px;font-size:16px;line-height:1.7;">
-          {{CLOSING_PARAGRAPH}}
+        <div style="margin:0 0 20px;padding:14px 16px;background:#FFFBF5;border:1px solid #F0E0C8;border-radius:12px;">
+          <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#8A6B3A;">Про пробный доступ</p>
+          <p style="margin:0;font-size:14px;line-height:1.6;color:#6B8499;">
+            Личная страница открыта бесплатно. Если {{CHILD_NAME}} не заходит на платформу <strong style="color:#3D5266;">30 дней подряд</strong>, пробный кабинет мы удаляем — чтобы не копить «забытые» ссылки. Любой урок или вход в кабинет обновляет этот срок.
+          </p>
+        </div>
+
+        <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#3D5266;">Дальше на сайте</p>
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.65;color:#3D5266;">
+          {{NEXT_OFFER_1}}<br>
+          <a href="{{PROGRAM_URL}}" style="color:#5B7FA6;font-weight:700;">{{PROGRAM_URL}}</a>
         </p>
+
+        <div style="margin:0 0 20px;padding:14px 16px;background:#F6F4F9;border:1px solid #E4E0EC;border-radius:12px;">
+          <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3D5266;">Ближайшие встречи</p>
+          <p style="margin:0;font-size:14px;line-height:1.6;color:#6B8499;">{{MEETING_ANNOUNCE}}</p>
+        </div>
 
         <p style="margin:0 0 4px;font-size:16px;line-height:1.65;">
           С теплом,
@@ -123,17 +145,15 @@
         </p>
 
         <p style="margin:18px 0 0;font-size:14px;line-height:1.55;color:#6B8499;">
-          Если что-то непонятно или хочется совета по сказке — просто ответьте на это письмо. Я читаю.
+          Если останутся вопросы — просто ответьте на это письмо. Я читаю.
         </p>
 
       </div>
     </div>
 
     <p style="margin:20px 0 0;text-align:center;font-size:13px;line-height:1.6;color:#7A8FA3;">
-      Письма с уроками:
-      <a href="mailto:lessons@chitatelstvo.ru" style="color:#5B7FA6;text-decoration:none;">lessons@chitatelstvo.ru</a><br>
-      По общим вопросам:
-      <a href="mailto:info@chitatelstvo.ru" style="color:#5B7FA3;text-decoration:none;">info@chitatelstvo.ru</a><br>
+      Письма с уроками: <a href="mailto:lessons@chitatelstvo.ru" style="color:#5B7FA6;text-decoration:none;">lessons@chitatelstvo.ru</a><br>
+      По общим вопросам: <a href="mailto:info@chitatelstvo.ru" style="color:#5B7FA3;text-decoration:none;">info@chitatelstvo.ru</a><br>
       <a href="https://chitatelstvo.ru" style="color:#7A8FA3;text-decoration:none;">chitatelstvo.ru</a>
     </p>
   </div>
