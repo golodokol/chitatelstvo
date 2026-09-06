@@ -117,6 +117,18 @@ def _signal_matches(rule: RecommendationRule, answers_by_id: dict[str, str]) -> 
     return answer == rule.quiz_signal_value
 
 
+def fallback_trial_slug(*, quiz_variant: str | None, child_age: int | None) -> str:
+    """Пробник, если у правила нет slug — квиз всё равно открывает урок сам."""
+    variant = (quiz_variant or "").strip()
+    if variant == "early":
+        if child_age is not None and child_age >= 6:
+            return "early-stories-trial-lesson-01"
+        return "early-letters-trial-lesson-01"
+    if child_age is not None and child_age >= 9:
+        return "extra-9-11-self_paced-stage-1-lesson-01"
+    return "extra-6-8-self_paced-stage-1-lesson-01"
+
+
 def match_recommendation_rule_by_trial_slug(trial_slug: str) -> RecommendationRule | None:
     slug = (trial_slug or "").strip()
     if not slug:

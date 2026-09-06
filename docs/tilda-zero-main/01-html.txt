@@ -15,6 +15,7 @@
       <a href="#programs">Программы</a>
       <a href="#support">Опоры</a>
       <a href="#platform">Платформа</a>
+      <a href="https://chitatelstvo.ru/o-shkole">О школе</a>
       <a href="#proof">Отзывы</a>
       <a href="#lead">Консультация</a>
     </nav>
@@ -612,7 +613,7 @@
 </section>
 
 <!-- ABOUT -->
-<section class="section reveal">
+<section class="section reveal" id="about">
   <div class="section__inner">
     <span class="section__chapter"><em>глава 4</em> · о школе</span>
     <h2 class="section__title">читательство — первая детская литературная школа онлайн</h2>
@@ -1211,7 +1212,7 @@
           <img class="qz-logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo-quiz.png?v=20260616a" alt="Читательство" width="220" height="220" loading="lazy">
           <div class="qz-intro-gift">
             <p class="qz-intro-gift__badge">Бесплатный доступ к платформе и один урок-сказка!</p>
-            <p class="qz-intro-gift__sub">Ответьте на 5 вопросов — получите чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email. А чуть позже откроем доступ к платформе и бесплатному полноценному уроку, чтобы вы прошли одно книжное приключение вместе с ребёнком.</p>
+            <p class="qz-intro-gift__sub">Ответьте на 5 вопросов — сразу откроем доступ к платформе и бесплатному уроку-сказке, а на email пришлём чек-лист «10 признаков, что ребёнок не понимает прочитанное».</p>
           </div>
           <h2 id="qz-modal-title" class="qz-visually-hidden">Подборка программы чтения</h2>
           <div class="qz-progress" aria-hidden="true">
@@ -1227,8 +1228,8 @@
             <p class="qz-sub">Оставьте контакты — пришлём PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email.</p>
             <div class="qz-gift">
               <p class="qz-gift__label">🎁 Что вы получите</p>
-              <p><strong>Сейчас:</strong> PDF-чек-лист на email — проверить понимание текста вместе с ребёнком.</p>
-              <p><strong>Чуть позже:</strong> бесплатный доступ к платформе, один полноценный урок-сказка и личное письмо от основателя с рекомендациями.</p>
+              <p><strong>Сейчас:</strong> PDF-чек-лист на email и доступ к платформе с одним полноценным уроком-сказкой.</p>
+              <p><strong>Чуть позже:</strong> личное письмо от основателя с рекомендациями под ваши ответы.</p>
             </div>
             <form id="qz-form" novalidate>
               <div class="qz-fields">
@@ -1265,7 +1266,7 @@
             <p class="qz-success__lead">Мы получили ваши ответы.</p>
             <div class="qz-success__note">
               <p class="qz-success__note-main" data-qz-success-pdf><strong>PDF-чек-лист уже на вашем email.</strong></p>
-              <p class="qz-success__note-sub" data-qz-gift-line>Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.</p>
+              <p class="qz-success__note-sub" data-qz-gift-line>Доступ к платформе открыт. Личное письмо от основателя с рекомендациями придёт чуть позже.</p>
             </div>
             <div class="qz-success__actions" data-qz-actions>
               <div class="qz-success__trial" data-qz-trial-slot hidden></div>

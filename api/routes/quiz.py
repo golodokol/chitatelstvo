@@ -24,7 +24,11 @@ from notifications.email_templates import (
 from services.early_trial import grant_quiz_trial, resolve_trial_module_id
 from services.founder_letter_queue import schedule_founder_letter
 from services.quiz_leads import LEADS_FILE, build_quiz_lead_rows, load_quiz_leads
-from services.recommendation_rules import match_recommendation_rule
+from services.recommendation_rules import (
+    fallback_trial_slug,
+    match_recommendation_rule,
+    match_recommendation_rule_by_trial_slug,
+)
 from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["quiz"])
@@ -117,6 +121,10 @@ def _schedule_founder_letter_for_lead(
         child_age=body.child_age,
         answers_by_id=answers_by_id,
     )
+    if not rule:
+        rule = match_recommendation_rule_by_trial_slug(
+            str((trial_access or {}).get("lesson_slug") or "")
+        )
     if not rule:
         return
     try:
@@ -250,6 +258,11 @@ def quiz_lead(
         answers_by_id=answers_by_id,
     )
     trial_slug = (body.trial_slug or "").strip() or (rule.trial_lesson_slug if rule else "")
+    if not trial_slug:
+        trial_slug = fallback_trial_slug(
+            quiz_variant=quiz_variant,
+            child_age=body.child_age,
+        )
     if trial_slug:
         try:
             trial_access = grant_quiz_trial(
@@ -303,9 +316,9 @@ def quiz_lead(
 
     if trial_access and trial_access.get("lesson_url"):
         if email_sent:
-            message = "Спасибо! Пробный урок открыт — ссылка и PDF уже на email."
+            message = "Спасибо! Пробный урок уже открыт — ссылка и PDF на email."
         else:
-            message = "Спасибо! Пробный урок открыт. Если письмо не пришло — откройте ссылку на этой странице."
+            message = "Спасибо! Пробный урок уже открыт. Если письмо не пришло — откройте ссылку на этой странице."
     elif email_sent:
         message = "Спасибо! PDF-чек-лист уже отправлен на email."
     else:
@@ -320,5 +333,6 @@ def quiz_lead(
         "checklist_url": checklist_pdf_url(early=is_early),
         "trial_lesson_url": (trial_access or {}).get("lesson_url"),
         "trial_progress_url": (trial_access or {}).get("progress_url"),
+        "trial_title": (trial_access or {}).get("lesson_title") or body.trial_title,
         "message": message,
     }

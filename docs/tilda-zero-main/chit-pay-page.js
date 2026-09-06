@@ -1,11 +1,26 @@
 /**
  * chitatelstvo.ru/oplata — вставить в HTML-блок на странице оплаты (один раз):
- * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=20260828e"></script>
+ * <script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=20260906b"></script>
  * Важно: только ОДИН HTML-блок со скриптом на странице /oplata (удалить старые версии).
  */
 (function () {
-  if (window._chitPayPageInited) return;
+  var PAY_PAGE_VER = '20260906b';
+  if (window._chitPayPageVersion === PAY_PAGE_VER) return;
+  window._chitPayPageVersion = PAY_PAGE_VER;
+  var alreadyStarted = !!window._chitPayPageInited;
   window._chitPayPageInited = true;
+
+  // Старый chit-zero.js на /oplata падает (classList на null) и оставлял белый экран.
+  // Замораживаем chitReady до загрузки отложенного chit-zero — homepage-init не стартует.
+  try {
+    if (String(location.pathname || '').indexOf('/oplata') >= 0) {
+      Object.defineProperty(window, 'chitReady', {
+        value: function () {},
+        writable: false,
+        configurable: false
+      });
+    }
+  } catch (e) {}
 
   var STORAGE_KEY = 'chit_checkout';
   var PROMO_FAIL_KEY = 'chit_promo_failed';
@@ -26,6 +41,10 @@
 
   var PAY_CSS = [
     'html.chit-pay-mode, body.chit-pay-mode { background:#F6F4F9 !important; }',
+    'html.chit-pay-mode, body.chit-pay-mode.t706__body_cartwinshowed {',
+    'height:auto!important;max-height:none!important;overflow:auto!important;',
+    '-webkit-overflow-scrolling:touch!important;',
+    '}',
     'body.chit-pay-mode #allrecords .t-rec[data-record-type="762"],',
     'body.chit-pay-mode #allrecords .t-rec[data-record-type="205"],',
     'body.chit-pay-mode #allrecords .t-rec[data-record-type="200"],',
@@ -39,6 +58,29 @@
     'body.chit-pay-mode .t706 .t-input-group_pc .chit-promo-label {',
     'display:block;margin:0 0 8px;font-size:16px;line-height:1.3;color:#000;',
     '}',
+    'body.chit-pay-mode .t706,',
+    'body.chit-pay-mode .t-rec[data-record-type="706"] {',
+    'display:block!important;visibility:visible!important;opacity:1!important;',
+    'height:auto!important;position:relative!important;left:auto!important;overflow:visible!important;',
+    'pointer-events:auto!important;',
+    '}',
+    'body.chit-pay-mode .t706__cartwin,',
+    'body.chit-pay-mode .t706__cartwin.t706__cartwin_showed {',
+    'display:block!important;visibility:visible!important;opacity:1!important;',
+    'pointer-events:auto!important;',
+    'position:fixed!important;inset:0!important;top:0!important;left:0!important;right:0!important;bottom:0!important;',
+    'width:100%!important;height:100%!important;max-height:100vh!important;max-height:100dvh!important;',
+    'overflow-x:hidden!important;overflow-y:scroll!important;-webkit-overflow-scrolling:touch!important;',
+    'touch-action:pan-y!important;overscroll-behavior:contain!important;',
+    'padding-bottom:48px!important;z-index:100000!important;',
+    '}',
+    'body.chit-pay-mode .t706__cartwin-content {',
+    'display:flex!important;flex-direction:column!important;',
+    'height:auto!important;max-height:none!important;overflow:visible!important;min-height:100%;',
+    '}',
+    'body.chit-pay-mode .t706__orderform { order:1!important; }',
+    'body.chit-pay-mode .t706__cartwin-products { order:2!important; }',
+    'body.chit-pay-mode .t706__cartwin-bottom { order:3!important; }',
     'body.chit-pay-mode .t706 .t-input-group_cb[data-field-name="legal_consent"],',
     'body.chit-pay-mode .t706 .t-input-group_cb:has(input[name="legal_consent"]) {',
     'display:block!important;visibility:visible!important;opacity:1!important;',
@@ -47,10 +89,12 @@
     'body.chit-pay-mode .t706 .t-input-group_cb input[name="legal_consent"] {',
     'position:static!important;opacity:1!important;width:18px!important;height:18px!important;',
     '}',
-    'body.chit-pay-mode .t706 .t-input-group_cb .t-checkbox__control,',
-    'body.chit-pay-mode .t706 .t-input-group_cb .t-checkbox__control span {',
+    'body.chit-pay-mode .t706 .t-input-group_cb .t-checkbox__control {',
     'display:flex!important;align-items:flex-start!important;gap:10px!important;',
     'font-size:14px!important;line-height:1.45!important;color:#2B2140!important;',
+    '}',
+    'body.chit-pay-mode .t706 .t-input-group_cb .t-checkbox__control span {',
+    'display:inline!important;white-space:normal!important;font-size:14px!important;line-height:1.45!important;',
     '}',
     '#chit-pay-shell {',
     'position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;',
@@ -117,11 +161,13 @@
   }
 
   function injectPayStyles() {
-    if (document.getElementById('chit-pay-hide')) return;
-    var style = document.createElement('style');
-    style.id = 'chit-pay-hide';
+    var style = document.getElementById('chit-pay-hide');
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'chit-pay-hide';
+      (document.head || document.documentElement).appendChild(style);
+    }
     style.textContent = PAY_CSS;
-    (document.head || document.documentElement).appendChild(style);
     document.documentElement.classList.add('chit-pay-mode');
     if (document.body) document.body.classList.add('chit-pay-mode');
   }
@@ -205,6 +251,11 @@
   function setField(name, value) {
     if (value === undefined || value === null) return;
     var v = String(value);
+    if (!v.trim() && (
+      name === 'parent_phone' || name === 'parent_telegram' ||
+      name === 'parent_name' || name === 'parent_email' || name === 'child_name' ||
+      name === 'child_birth_date' || name === 'child_age'
+    )) return;
     var aliases = {
       parent_name: ['parent_name'],
       parent_email: ['parent_email', 'email', 'Email'],
@@ -245,47 +296,201 @@
     });
   }
 
+  function phoneFieldNodes() {
+    return document.querySelectorAll(
+      '.t706 input[type="tel"],' +
+      '.t706 input[name="parent_phone"], .t706 input[name="parent_telegram"],' +
+      '.t706 input[name="Phone"], .t706 input[name="phone"], .t706 input[name="tel"],' +
+      '.t706 .t-input-phonemask__value, .t706 .t-input-phonemask input,' +
+      '.t706 .t-input-group_ph input, .t706 [data-field-type="ph"] input'
+    );
+  }
+
+  function readPhoneFromForm() {
+    var best = '';
+    phoneFieldNodes().forEach(function (el) {
+      if (el.type === 'checkbox' || el.type === 'radio') return;
+      var v = sanitizeTelegram(el.value || '');
+      if (v.replace(/\D/g, '').length >= 10 && v.replace(/\D/g, '').length > best.replace(/\D/g, '').length) {
+        best = v;
+      }
+    });
+    return best;
+  }
+
+  function writePhoneToForm(phone) {
+    phone = sanitizeTelegram(phone || '');
+    if (!phone) return;
+    var digits = digits11(phone);
+    var pretty = prettyRuPhone(digits || phone);
+    phoneFieldNodes().forEach(function (el) {
+      if (el.type === 'checkbox' || el.type === 'radio') return;
+      var isHiddenMask = (el.className || '').indexOf('t-input-phonemask__value') >= 0 ||
+        el.classList.contains('js-phonemask-result') ||
+        el.type === 'hidden';
+      el.value = isHiddenMask && digits.length >= 10 ? digits : pretty;
+    });
+    exposePhoneForTilda(pretty);
+  }
+
+  function digits11(phone) {
+    var d = String(phone || '').replace(/\D/g, '');
+    if (d.length === 11 && (d.charAt(0) === '8' || d.charAt(0) === '7')) d = '7' + d.slice(1);
+    else if (d.length === 10) d = '7' + d;
+    return d;
+  }
+
+  function prettyRuPhone(phone) {
+    var d = digits11(phone);
+    if (d.length === 11 && d.charAt(0) === '7') {
+      return '+7 (' + d.slice(1, 4) + ') ' + d.slice(4, 7) + '-' + d.slice(7, 9) + '-' + d.slice(9, 11);
+    }
+    return String(phone || '').trim();
+  }
+
+  function ensureHiddenInput(form, name, value) {
+    if (!form || !name) return null;
+    var vis = form.querySelector('input.t-input[name="' + name + '"], .t-input[name="' + name + '"]');
+    var hidden = null;
+    form.querySelectorAll('input[name="' + name + '"]').forEach(function (el) {
+      if (el !== vis && el.type !== 'checkbox' && el.type !== 'radio') hidden = el;
+    });
+    if (!hidden) {
+      hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = name;
+      form.appendChild(hidden);
+    }
+    if (value) hidden.value = value;
+    return hidden;
+  }
+
+  function exposePhoneForTilda(phone) {
+    var form = document.querySelector('.t706 form, form[data-formcart="y"]');
+    if (!form) return;
+    var d = digits11(phone || readPhoneFromForm());
+    if (d.length < 10) return;
+    var pretty = prettyRuPhone(d);
+    var vis = form.querySelector(
+      'input.t-input[name="Phone"], input.t-input[name="parent_phone"], input.t-input[name="parent_telegram"], input[type="tel"].js-tilda-rule'
+    );
+    if (vis) {
+      vis.setAttribute('name', 'Phone');
+      vis.setAttribute('autocomplete', 'tel');
+      vis.setAttribute('data-tilda-rule', 'phone');
+      vis.value = pretty;
+      var group = vis.closest('[data-field-name]');
+      if (group) group.setAttribute('data-field-name', 'Phone');
+    }
+    ensureHiddenInput(form, 'parent_phone', pretty);
+    ensureHiddenInput(form, 'parent_telegram', pretty);
+    form.querySelectorAll('input[name="Phone"]').forEach(function (el) {
+      if (el === vis) return;
+      if (el.type === 'hidden' || el.classList.contains('js-phonemask-result') || (el.className || '').indexOf('phonemask') >= 0) {
+        el.value = d;
+      }
+    });
+  }
+
+  function syncPhoneFields(data) {
+    var phone = readPhone(data) || readPhoneFromForm();
+    writePhoneToForm(phone);
+  }
+
+  function renamePhoneField() {
+    document.querySelectorAll(
+      '.t706 [name="parent_telegram"], .t706 [name="parent_phone"], form[data-formcart="y"] [name="parent_telegram"], form[data-formcart="y"] [name="parent_phone"]'
+    ).forEach(function (el) {
+      el.setAttribute('name', 'Phone');
+      el.setAttribute('autocomplete', 'tel');
+      if (el.getAttribute('type') === 'text') el.setAttribute('type', 'tel');
+      var group = el.closest('[data-field-name]');
+      if (group) group.setAttribute('data-field-name', 'Phone');
+      var label = group && group.querySelector('label, .t-input-title');
+      if (label && /telegram/i.test(label.textContent || '')) {
+        label.textContent = (label.textContent || '').replace(/telegram/ig, 'Телефон');
+        if (!/\S/.test(label.textContent)) label.textContent = 'Телефон';
+      }
+    });
+  }
+
+  function dedupeFormServices() {
+    document.querySelectorAll('.t706 form, form[data-formcart="y"]').forEach(function (form) {
+      var seen = {};
+      form.querySelectorAll('input[name="formservices[]"]').forEach(function (el) {
+        var v = String(el.value || '');
+        if (seen[v]) el.parentNode.removeChild(el);
+        else seen[v] = true;
+      });
+    });
+  }
+
+  function injectLegalConsent(form) {
+    if (!form || form.querySelector('input[name="legal_consent"]')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 't-input-group t-input-group_cb';
+    wrap.setAttribute('data-field-name', 'legal_consent');
+    wrap.setAttribute('data-field-type', 'cb');
+    wrap.innerHTML =
+      '<label class="t-checkbox__control">' +
+      '<input type="checkbox" name="legal_consent" value="yes" data-tilda-req="1" aria-required="true">' +
+      '<div class="t-checkbox__indicator"></div>' +
+      '<span>Я соглашаюсь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">публичной офертой</a></span>' +
+      '</label>';
+    var submit = form.querySelector('.t-submit, button[type="submit"]');
+    var box = form.querySelector('.t-form__inputsbox') || form;
+    if (submit && submit.parentNode) submit.parentNode.insertBefore(wrap, submit);
+    else box.appendChild(wrap);
+  }
+
   function ensureLegalConsent(opts) {
     var forceUnchecked = !opts || opts.forceUnchecked !== false;
     var CONSENT_HTML =
       'Я соглашаюсь с <a href="https://api.chitatelstvo.ru/legal/politika" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="https://api.chitatelstvo.ru/legal/oferta" target="_blank" rel="noopener">публичной офертой</a>';
+    document.querySelectorAll('.t706 form, form[data-formcart="y"]').forEach(function (form) {
+      injectLegalConsent(form);
+    });
     document.querySelectorAll('.t706 input[name="legal_consent"]').forEach(function (el) {
-      if (el.type === 'checkbox') {
-        if (forceUnchecked && !window._chitConsentTouched) {
-          el.checked = false;
-          el.removeAttribute('checked');
-        }
-        el.setAttribute('data-tilda-req', '1');
-        el.setAttribute('aria-required', 'true');
-        if (!el._chitConsentBound) {
-          el._chitConsentBound = true;
-          el.addEventListener('change', function () {
-            window._chitConsentTouched = true;
-          });
-        }
-        var group = el.closest('.t-input-group');
-        if (group) {
-          group.style.removeProperty('display');
-          group.style.removeProperty('visibility');
-          group.style.removeProperty('height');
-          group.style.removeProperty('overflow');
-          group.style.setProperty('display', 'block', 'important');
-        }
-        var label = el.closest('label');
-        var span = label && label.querySelector('span');
-        if (span) {
-          var text = (span.textContent || '').replace(/\s+/g, ' ').trim();
-          if (!text || text.length < 8) span.innerHTML = CONSENT_HTML;
-        } else if (label && !(label.textContent || '').replace(/\s+/g, ' ').trim()) {
-          var s = document.createElement('span');
-          s.innerHTML = CONSENT_HTML;
-          label.appendChild(s);
-        }
+      if (el.type !== 'checkbox') {
+        if (el.parentNode) el.parentNode.removeChild(el);
         return;
       }
-      if (!el.value) el.value = 'yes';
+      if (forceUnchecked && !window._chitConsentTouched) {
+        el.checked = false;
+        el.removeAttribute('checked');
+      }
+      el.setAttribute('data-tilda-req', '1');
+      el.setAttribute('aria-required', 'true');
+      el.required = true;
+      if (!el._chitConsentBound) {
+        el._chitConsentBound = true;
+        el.addEventListener('change', function () {
+          window._chitConsentTouched = true;
+        });
+      }
+      var group = el.closest('.t-input-group');
+      if (group) {
+        group.style.setProperty('display', 'block', 'important');
+        group.style.setProperty('visibility', 'visible', 'important');
+        group.style.setProperty('opacity', '1', 'important');
+        group.style.setProperty('height', 'auto', 'important');
+        group.style.setProperty('overflow', 'visible', 'important');
+        group.style.setProperty('position', 'static', 'important');
+      }
+      var label = el.closest('label');
+      var span = label && label.querySelector('span');
+      if (span) {
+        var text = (span.textContent || '').replace(/\s+/g, ' ').trim();
+        if (!text || text.length < 8) span.innerHTML = CONSENT_HTML;
+      } else if (label && !(label.textContent || '').replace(/\s+/g, ' ').trim()) {
+        var s = document.createElement('span');
+        s.innerHTML = CONSENT_HTML;
+        label.appendChild(s);
+      }
     });
     clearJunkFormFields();
+    renamePhoneField();
+    dedupeFormServices();
   }
 
   function hasLegalConsent() {
@@ -340,6 +545,131 @@
       el.style.removeProperty('height');
       el.style.removeProperty('overflow');
     });
+    hoistOrderForm();
+  }
+
+  function hoistOrderForm() {
+    var content = document.querySelector('.t706__cartwin-content') || document.querySelector('.t706__cartwin');
+    if (!content) return;
+    var form = document.querySelector('.t706__orderform') || document.querySelector('.t706 form[data-formcart="y"]');
+    var products = document.querySelector('.t706__cartwin-products');
+    if (!form || !products || !products.parentNode) return;
+    if (products.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING) {
+      products.parentNode.insertBefore(form, products);
+    }
+  }
+
+  function captureFormIntoCheckout() {
+    var data = readCheckout() || {};
+    ['parent_name', 'parent_email', 'parent_phone', 'child_name', 'child_birth_date', 'child_age', 'promo_code'].forEach(function (name) {
+      var el = document.querySelector('.t706 [name="' + name + '"]');
+      if (!el || el.type === 'checkbox' || el.type === 'radio') return;
+      var v = String(el.value || '').trim();
+      if (v) data[name] = v;
+    });
+    var phone = readPhoneFromForm();
+    if (phone) {
+      data.parent_phone = phone;
+      data.parent_telegram = phone;
+    }
+    var emailEl = document.querySelector('.t706 input[type="email"]');
+    if (emailEl && String(emailEl.value || '').trim()) data.parent_email = String(emailEl.value).trim();
+    saveCheckout(data);
+    return data;
+  }
+
+  function fieldLabel(el) {
+    var n = (el && el.getAttribute && el.getAttribute('name')) || '';
+    var map = {
+      parent_name: 'имя родителя',
+      parent_email: 'email',
+      Email: 'email',
+      email: 'email',
+      parent_phone: 'телефон',
+      parent_telegram: 'телефон',
+      Phone: 'телефон',
+      phone: 'телефон',
+      child_name: 'имя ребёнка',
+      legal_consent: 'согласие с офертой'
+    };
+    if (map[n]) return map[n];
+    var g = el && el.closest && el.closest('.t-input-group');
+    var t = g && g.querySelector('.t-input-title, .t-input-subtitle, label');
+    var text = t && String(t.textContent || '').replace(/\s+/g, ' ').trim();
+    return text || n || 'обязательное поле';
+  }
+
+  function isPhoneInput(el) {
+    if (!el) return false;
+    if (el.type === 'tel') return true;
+    var n = el.name || '';
+    return /phone|Phone|tel|telegram/i.test(n) || (el.className || '').indexOf('phonemask') >= 0;
+  }
+
+  function requiredEmptyFields() {
+    var empty = [];
+    var phoneOk = (readPhoneFromForm() || '').replace(/\D/g, '').length >= 10;
+    var consentOk = hasLegalConsent();
+    document.querySelectorAll('.t706 .js-tilda-rule[data-tilda-req="1"], .t706 input[data-tilda-req="1"]').forEach(function (el) {
+      if (el.disabled) return;
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        if (el.name === 'legal_consent' && consentOk) return;
+        if (!el.checked) empty.push(el);
+        return;
+      }
+      if (isPhoneInput(el)) {
+        if (!phoneOk) empty.push(el);
+        return;
+      }
+      if (!String(el.value || '').trim()) empty.push(el);
+    });
+    return empty;
+  }
+
+  function scrollCartTo(el) {
+    var win = document.querySelector('.t706__cartwin');
+    if (el && typeof el.focus === 'function') {
+      try { el.focus({ preventScroll: true }); } catch (err) { try { el.focus(); } catch (err2) {} }
+    }
+    if (win && el) {
+      var wr = win.getBoundingClientRect();
+      var er = el.getBoundingClientRect();
+      win.scrollTop = Math.max(0, win.scrollTop + (er.top - wr.top) - 72);
+    }
+    if (el && el.scrollIntoView) {
+      try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (err3) {}
+    }
+  }
+
+  function showRequiredError(fields) {
+    var names = [];
+    (fields || []).forEach(function (el) {
+      var l = fieldLabel(el);
+      if (names.indexOf(l) < 0) names.push(l);
+    });
+    var msg = names.length
+      ? ('Заполните: ' + names.join(', '))
+      : 'Пожалуйста, заполните все обязательные поля';
+    document.querySelectorAll(
+      '.t706 .js-errorbox-all, .t706 .t-form__errorbox-text, .t706 .t-form__errorbox-middle, .t706 .t-form__errorbox-wrapper'
+    ).forEach(function (box) {
+      box.style.display = 'block';
+      box.textContent = msg;
+    });
+  }
+
+  function syncLegalConsentFromUi() {
+    document.querySelectorAll('.t706 input[name="legal_consent"][type="checkbox"]').forEach(function (el) {
+      var group = el.closest('.t-input-group');
+      var control = el.closest('.t-checkbox__control') || el.parentElement;
+      var looksChecked = !!(
+        el.checked ||
+        el.getAttribute('checked') ||
+        (control && /checked/i.test(control.className || '')) ||
+        (group && /checked/i.test(group.className || ''))
+      );
+      if (looksChecked) el.checked = true;
+    });
   }
 
   function applyCheckoutFields(data) {
@@ -351,17 +681,13 @@
       'parent_name', 'parent_email', 'parent_phone', 'parent_telegram', 'child_name',
       'child_birth_date', 'child_age', 'promo_code', 'notification_channel'
     ].forEach(function (name) { setField(name, data[name]); });
-    var phone = readPhone(data);
-    if (phone) {
-      setField('parent_phone', phone);
-      document.querySelectorAll('.t706 input[type="tel"], .t706 .t-input-phonemask__value').forEach(function (el) {
-        el.value = phone;
-      });
-    }
     mirrorEmailForKassa(data);
-    ensureLegalConsent();
+    ensureLegalConsent({ forceUnchecked: false });
+    syncPhoneFields(data);
+    exposePhoneForTilda(readPhone(data) || readPhoneFromForm());
     configurePromoField(data);
     fixFormLayout();
+    hoistOrderForm();
   }
 
   function syncPaymentSystem() {
@@ -438,12 +764,54 @@
   }
 
   function openCartModal() {
+    revealPaymentUi();
     if (typeof window.tcart__openCart === 'function') {
       window.tcart__openCart();
       return;
     }
     var icon = document.querySelector('.t706__carticon');
     if (icon) icon.click();
+  }
+
+  function revealPaymentUi() {
+    document.documentElement.classList.add('chit-pay-mode');
+    if (document.body) document.body.classList.add('chit-pay-mode');
+    document.querySelectorAll('.t-rec[data-record-type="706"], .t-rec:has(.t706), .t706').forEach(function (el) {
+      var rec = el.classList.contains('t-rec') ? el : el.closest('.t-rec');
+      if (rec) {
+        rec.classList.remove('chit-store-hidden');
+        rec.removeAttribute('aria-hidden');
+        ['display', 'position', 'left', 'height', 'min-height', 'max-height', 'padding', 'margin', 'overflow', 'visibility', 'opacity', 'pointer-events'].forEach(function (prop) {
+          rec.style.removeProperty(prop);
+        });
+      }
+    });
+    var win = document.querySelector('.t706__cartwin');
+    if (win) {
+      win.classList.add('t706__cartwin_showed');
+      win.classList.add('t706__cartwin_opened');
+      win.style.setProperty('display', 'block', 'important');
+      win.style.setProperty('visibility', 'visible', 'important');
+      win.style.setProperty('opacity', '1', 'important');
+      win.style.setProperty('pointer-events', 'auto', 'important');
+      win.style.setProperty('position', 'fixed', 'important');
+      win.style.setProperty('inset', '0', 'important');
+      win.style.setProperty('top', '0', 'important');
+      win.style.setProperty('left', '0', 'important');
+      win.style.setProperty('width', '100%', 'important');
+      win.style.setProperty('height', '100%', 'important');
+      win.style.setProperty('max-height', '100vh', 'important');
+      win.style.setProperty('overflow-x', 'hidden', 'important');
+      win.style.setProperty('overflow-y', 'scroll', 'important');
+      win.style.setProperty('z-index', '100000', 'important');
+    }
+    var cart = document.querySelector('.t706');
+    if (cart) {
+      cart.style.setProperty('display', 'block', 'important');
+      cart.style.setProperty('visibility', 'visible', 'important');
+      cart.style.setProperty('opacity', '1', 'important');
+    }
+    hoistOrderForm();
   }
 
   function hasActivePromo() {
@@ -572,12 +940,11 @@
   }
 
   function bindPayHandlers(tariff) {
-    if (window._chitPayGuard) return;
-    window._chitPayGuard = true;
+    if (window._chitPayGuard === PAY_PAGE_VER) return;
+    window._chitPayGuard = PAY_PAGE_VER;
     function onPayAttempt(e) {
-      var checkout = readCheckout();
+      var checkout = captureFormIntoCheckout();
       if (checkout && checkout.tariff) prepareCartForPayment(checkout.tariff);
-      // Не сбрасываем галочку согласия при повторном apply
       if (checkout) {
         normalizeCheckout(checkout);
         if (!checkout.notification_channel) checkout.notification_channel = 'email';
@@ -586,31 +953,35 @@
           'parent_name', 'parent_email', 'parent_phone', 'parent_telegram', 'child_name',
           'child_birth_date', 'child_age', 'promo_code', 'notification_channel'
         ].forEach(function (name) { setField(name, checkout[name]); });
-        var phone = readPhone(checkout);
+        var phone = readPhone(checkout) || readPhoneFromForm();
         if (phone) {
           setField('parent_phone', phone);
-          document.querySelectorAll('.t706 input[type="tel"], .t706 .t-input-phonemask__value').forEach(function (el) {
-            el.value = phone;
-          });
+          writePhoneToForm(phone);
         }
         mirrorEmailForKassa(checkout);
         ensureLegalConsent({ forceUnchecked: false });
+        syncPhoneFields(checkout);
+        exposePhoneForTilda(readPhone(checkout) || readPhoneFromForm());
         configurePromoField(checkout);
         fixFormLayout();
       }
       clearJunkFormFields();
-      if (!hasLegalConsent()) {
+      syncLegalConsentFromUi();
+      hoistOrderForm();
+      var missing = requiredEmptyFields();
+      if (missing.length || !hasLegalConsent()) {
         if (e) {
           e.preventDefault();
-          e.stopPropagation();
+          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+          else e.stopPropagation();
         }
         ensureLegalConsent({ forceUnchecked: false });
-        var box = document.querySelector('.t706 input[name="legal_consent"][type="checkbox"]');
-        if (box) {
-          box.focus();
-          var group = box.closest('.t-input-group');
-          if (group) group.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (!hasLegalConsent()) {
+          var box = document.querySelector('.t706 input[name="legal_consent"][type="checkbox"]');
+          if (box) missing.unshift(box);
         }
+        showRequiredError(missing);
+        scrollCartTo(missing[0]);
         return false;
       }
       return true;
@@ -619,6 +990,10 @@
       if (!e.target.closest('.t706 .t-submit, .t706 button[type="submit"]')) return;
       onPayAttempt(e);
     }, true);
+    document.addEventListener('pointerdown', function (e) {
+      if (!e.target.closest('.t706 .t-submit, .t706 button[type="submit"]')) return;
+      syncPhoneFields(readCheckout());
+    }, true);
     document.addEventListener('submit', function (e) {
       if (!e.target || !e.target.closest || !e.target.closest('.t706')) return;
       onPayAttempt(e);
@@ -626,6 +1001,15 @@
     document.addEventListener('change', function (e) {
       if (!e.target.matches || !e.target.matches('.t706 .t-radio_payment[name="paymentsystem"]')) return;
       syncPaymentSystem();
+    }, true);
+    document.addEventListener('change', function (e) {
+      if (!e.target.closest || !e.target.closest('.t706')) return;
+      if (e.target.name === 'legal_consent') window._chitConsentTouched = true;
+      captureFormIntoCheckout();
+    }, true);
+    document.addEventListener('input', function (e) {
+      if (!e.target.closest || !e.target.closest('.t706')) return;
+      captureFormIntoCheckout();
     }, true);
   }
 
@@ -666,7 +1050,7 @@
       refreshTcartTotals();
       openCartModal();
       hidePayShell();
-      setTimeout(function () { applyCheckoutFields(data); fixFormLayout(); }, 500);
+      setTimeout(function () { applyCheckoutFields(data); fixFormLayout(); revealPaymentUi(); }, 500);
     });
   }
 
@@ -713,8 +1097,30 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runCheckout);
+    document.addEventListener('DOMContentLoaded', start);
   } else {
-    runCheckout();
+    start();
+  }
+
+  function start() {
+    revealPaymentUi();
+    waitForSt100(function () {
+      revealPaymentUi();
+      ensureLegalConsent();
+      renamePhoneField();
+      dedupeFormServices();
+      if (alreadyStarted) {
+        var data = readCheckout();
+        if (data && data.tariff) {
+          bindPayHandlers(data.tariff);
+          applyCheckoutFields(data);
+        }
+        openCartModal();
+        hidePayShell();
+        setTimeout(revealPaymentUi, 400);
+        return;
+      }
+      runCheckout();
+    });
   }
 })();

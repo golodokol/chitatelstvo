@@ -17,12 +17,7 @@
 
   var API_BASE = window.CHIT_QUIZ_API || 'https://api.chitatelstvo.ru';
   var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf?v=20260615b';
-  var AUTO_CFG = window.CHIT_QUIZ_AUTO || {};
-  var AUTO_ENABLED = AUTO_CFG.enabled === true;
-  var AUTO_DELAY_MS = Number(AUTO_CFG.delayMs) > 0 ? Number(AUTO_CFG.delayMs) : 12000;
-  var AUTO_ONCE_PER_SESSION = AUTO_CFG.oncePerSession !== false;
   var AUTO_STORAGE_KEY = 'chit_quiz_popup';
-  var autoOpenTimer = null;
   var activeVariant = 'reading';
 
   var QUESTIONS_READING = [
@@ -134,16 +129,16 @@
   var COPY = {
     reading: {
       introBadge: 'Бесплатный доступ к платформе и один урок-сказка!',
-      introSub: 'Ответьте на 5 вопросов — получите чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email. А чуть позже откроем доступ к платформе и бесплатному полноценному уроку, чтобы вы прошли одно книжное приключение вместе с ребёнком.',
-      formSub: 'Оставьте контакты — пришлём PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email.',
-      giftNow: '<strong>Сейчас:</strong> PDF-чек-лист на email — проверить понимание текста вместе с ребёнком.',
-      giftLater: '<strong>Чуть позже:</strong> бесплатный доступ к платформе, один полноценный урок-сказка и личное письмо от основателя с рекомендациями.',
+      introSub: 'Ответьте на 5 вопросов — сразу откроем доступ к платформе и бесплатному уроку-сказке, а на email пришлём чек-лист «10 признаков, что ребёнок не понимает прочитанное».',
+      formSub: 'Оставьте контакты — откроем урок и пришлём PDF-чек-лист «10 признаков, что ребёнок не понимает прочитанное» на email.',
+      giftNow: '<strong>Сейчас:</strong> PDF-чек-лист на email и доступ к платформе с одним полноценным уроком-сказкой.',
+      giftLater: '<strong>Чуть позже:</strong> личное письмо от основателя с рекомендациями под ваши ответы.',
       ageNote: 'Наши программы для читающих детей — примерно 6–11 лет',
       submit: 'Получить PDF-чек-лист',
       successPdf: '<strong>PDF-чек-лист уже на вашем email.</strong>',
-      successDefaultGift: 'Личное письмо от основателя с рекомендациями и подарком придёт чуть позже.',
+      successDefaultGift: 'Доступ к платформе открыт. Личное письмо от основателя с рекомендациями придёт чуть позже.',
       successTrialGift: function (title) {
-        return 'Бесплатный урок «' + title + '» откроем чуть позже — ссылка придёт отдельным письмом.';
+        return 'Пробный урок «' + title + '» уже открыт — кнопка ниже и ссылка в письме на email. Личное письмо от основателя с рекомендациями придёт чуть позже.';
       },
       showChecklistLink: true,
       checklistUrl: CHECKLIST_URL,
@@ -363,66 +358,12 @@
     refreshSteps();
   }
 
-  function quizStorageGet() {
-    if (!AUTO_ONCE_PER_SESSION) return null;
+  function markQuizPopup(reason) {
     try {
-      return sessionStorage.getItem(AUTO_STORAGE_KEY);
-    } catch (err) {
-      return null;
-    }
-  }
-
-  function quizStorageSet(value) {
-    if (!AUTO_ONCE_PER_SESSION) return;
-    try {
-      sessionStorage.setItem(AUTO_STORAGE_KEY, value);
+      sessionStorage.setItem(AUTO_STORAGE_KEY, reason || 'seen');
     } catch (err) {
       /* ignore */
     }
-  }
-
-  function quizPopupSeen() {
-    return !!quizStorageGet();
-  }
-
-  function markQuizPopup(reason) {
-    quizStorageSet(reason || 'seen');
-  }
-
-  function cancelAutoOpen() {
-    if (autoOpenTimer) {
-      clearTimeout(autoOpenTimer);
-      autoOpenTimer = null;
-    }
-  }
-
-  function shouldAutoOpen() {
-    if (!AUTO_ENABLED) return false;
-    if (!document.getElementById('qz-modal')) return false;
-    if (window.location.hash === '#quiz') return false;
-    if (quizPopupSeen()) return false;
-    return true;
-  }
-
-  function scheduleAutoOpen() {
-    cancelAutoOpen();
-    if (!shouldAutoOpen()) return;
-    autoOpenTimer = window.setTimeout(function () {
-      autoOpenTimer = null;
-      if (!shouldAutoOpen()) return;
-      if (document.hidden) {
-        document.addEventListener('visibilitychange', function onVisible() {
-          if (document.hidden) return;
-          document.removeEventListener('visibilitychange', onVisible);
-          if (!shouldAutoOpen()) return;
-          openQuizModal('auto');
-        });
-        return;
-      }
-      var modal = document.getElementById('qz-modal');
-      if (modal && modal.classList.contains('is-open')) return;
-      openQuizModal('auto');
-    }, AUTO_DELAY_MS);
   }
 
   function applyTrialAgeHint() {
@@ -480,12 +421,19 @@
         if (trial && trial.title) title = String(trial.title);
       }
     } catch (err) {}
-    if (giftLine) {
-      giftLine.textContent = title ? c.successTrialGift(title) : c.successDefaultGift;
-    }
     var oldLink = success.querySelector('.qz-success-trial-link');
     if (oldLink) oldLink.remove();
     var lessonUrl = apiData && apiData.trial_lesson_url;
+    if (!title && apiData && apiData.trial_title) {
+      title = String(apiData.trial_title);
+    }
+    if (giftLine) {
+      if (lessonUrl || title) {
+        giftLine.textContent = c.successTrialGift(title || 'сказка');
+      } else {
+        giftLine.textContent = c.successDefaultGift;
+      }
+    }
     if (slot) {
       if (lessonUrl) {
         slot.hidden = false;
@@ -516,7 +464,6 @@
   function openQuizModal(source, fromEl) {
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
-    cancelAutoOpen();
     markQuizPopup(source || 'open');
     activeVariant = resolveVariant(fromEl);
     resetQuiz();

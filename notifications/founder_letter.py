@@ -20,8 +20,8 @@ DEFAULT_STEPS = (
 )
 
 DEFAULT_ALTERNATIVE = (
-    "Если удобнее заниматься с живым преподавателем — напишите, поставим в лист ожидания "
-    "на модуль с педагогом. Или начните с одной сказки на сайте — без обязательств на весь модуль."
+    "Если захотите другую программу — на сайте есть курсы по классам и внеклассное чтение. "
+    "Можно начать с одной сказки, без обязательств на весь модуль."
 )
 
 
@@ -87,12 +87,18 @@ def build_founder_letter(
     if not progress_url and lesson_url:
         progress_url = lesson_url
 
+    if has_trial:
+        start_with = f"пробного урока «{title}»"
+    else:
+        start_with = rule.recommended_course_title or "программы на сайте"
+
     mapping = {
         "SUBJECT": subject,
         "PARENT_NAME": parent_name,
         "CHILD_NAME": child_name,
         "INTRO_PARAGRAPH": build_intro_paragraph(child_name=child_name),
         "FOUNDER_NOTE": founder_note,
+        "START_WITH": start_with,
         "RECOMMENDED_COURSE": rule.recommended_course_title,
         "TRIAL_TITLE": title or "пробный урок",
         "TRIAL_LESSON_URL": lesson_url or rule.program_url,

@@ -201,55 +201,45 @@
           </div>
         </section>
 
-        {% macro render_chest(track, child, loop_index, treasury_href=none, chest=none) %}
-        {% set c = chest if chest is not none else track.chest %}
+        {% macro render_chest(track, child, loop_index, treasury_href=none) %}
         {% set chest_treasury_href = treasury_href if treasury_href else ('#treasury-' ~ loop_index) %}
-        <section class="chit-panel chit-panel--chest{% if c.ready %} is-ready{% endif %}{% if c.claimed %} is-claimed{% endif %}{% if c.visual == 'opening' %} is-opening{% endif %}" id="chest-{{ loop_index }}"
+        <section class="chit-panel chit-panel--chest{% if track.chest.ready %} is-ready{% endif %}{% if track.chest.claimed %} is-claimed{% endif %}{% if track.chest.visual == 'opening' %} is-opening{% endif %}" id="chest-{{ loop_index }}"
           data-treasury-href="{{ chest_treasury_href }}"
           data-child-id="{{ child.id }}"
-          data-tale-slug="{{ c.tale_slug }}"
+          data-tale-slug="{{ track.chest.tale_slug }}"
           data-progress-token="{{ progress_token }}"
-          data-chest-closed="{{ c.image_closed }}"
-          data-chest-opening="{{ c.image_opening }}"
-          data-chest-open="{{ c.image_open }}"
-          data-chest-ready="{{ '1' if c.ready else '0' }}"
-          data-chest-claimed="{{ '1' if c.claimed else '0' }}"
-          data-auto-open="{{ '1' if c.ready and not c.claimed and ((chest_tale and c.tale_slug == chest_tale) or (open_chest and (not chest_tale or c.tale_slug == chest_tale) and (loop_index|string == '1' or loop_index|string.endswith('-1')))) else '0' }}">
-          <script type="application/json" class="chit-chest-data">{{ {"items": c["items"], "tale_title": c.tale_title or track.missions_subtitle or c["title"]} | tojson }}</script>
+          data-chest-closed="{{ track.chest.image_closed }}"
+          data-chest-opening="{{ track.chest.image_opening }}"
+          data-chest-open="{{ track.chest.image_open }}"
+          data-chest-ready="{{ '1' if track.chest.ready else '0' }}"
+          data-chest-claimed="{{ '1' if track.chest.claimed else '0' }}"
+          data-auto-open="{{ '1' if track.chest.ready and not track.chest.claimed and ((chest_tale and track.chest.tale_slug == chest_tale) or (open_chest and (not chest_tale or track.chest.tale_slug == chest_tale) and loop_index == 1)) else '0' }}">
+          <script type="application/json" class="chit-chest-data">{{ {"items": track.chest["items"], "tale_title": track.missions_subtitle or track.chest["title"]} | tojson }}</script>
           <div class="chit-chest">
             <div class="chit-chest__visual" aria-hidden="true">
-              <img class="chit-chest__box" src="{{ c.image_url }}" alt="" width="112" height="112" data-chest-img>
+              <img class="chit-chest__box" src="{{ track.chest.image_url }}" alt="" width="112" height="112" data-chest-img>
               <div class="chit-chest__glow"></div>
             </div>
             <div class="chit-chest__body">
-              <h2 class="chit-chest__title">{{ c.title }}</h2>
-              <p class="chit-chest__sub">{{ c.subtitle }}</p>
-              <p class="chit-chest__reward">Внутри: {{ c.reward }}.</p>
+              <h2 class="chit-chest__title">{{ track.chest.title }}</h2>
+              <p class="chit-chest__sub">{{ track.chest.subtitle }}</p>
+              <p class="chit-chest__reward">Внутри: {{ track.chest.reward }}.</p>
               <div class="chit-chest__progress">
                 <div class="chit-progress__bar chit-progress__bar--gold">
-                  <div class="chit-progress__fill" style="width: {{ c.pct }}%"></div>
+                  <div class="chit-progress__fill" style="width: {{ track.chest.pct }}%"></div>
                 </div>
-                <p class="chit-chest__hint">{{ c.hint }}</p>
+                <p class="chit-chest__hint">{{ track.chest.hint }}</p>
               </div>
-              {% if c.claimed %}
+              {% if track.chest.claimed %}
               <a class="chit-btn chit-btn--chest" href="{{ chest_treasury_href }}">В сокровищницу</a>
               {% else %}
-              <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not c.ready %} disabled{% endif %}>
-                {% if c.ready %}Открыть сундук{% else %}Сундук закрыт{% endif %}
+              <button type="button" class="chit-btn chit-btn--chest" data-chest-open{% if not track.chest.ready %} disabled{% endif %}>
+                {% if track.chest.ready %}Открыть сундук{% else %}Сундук закрыт{% endif %}
               </button>
               {% endif %}
             </div>
           </div>
         </section>
-        {% endmacro %}
-
-        {% macro render_track_chests(track, child, track_index, treasury_href='#treasury-all') %}
-        {% set chest_list = track.chests if track.chests else ([track.chest] if track.chest else []) %}
-        {% for c in chest_list %}
-          {% if not c.claimed %}
-          {{ render_chest(track, child, track_index ~ '-' ~ loop.index, treasury_href, c) }}
-          {% endif %}
-        {% endfor %}
         {% endmacro %}
 
         {% macro render_treasury(track, loop_index) %}
@@ -371,7 +361,9 @@
               </section>
               {% endif %}
               {{ render_weekly_lessons(track, intro_weeks) }}
-              {{ render_track_chests(track, child, loop.index, '#treasury-all') }}
+              {% if not track.chest.claimed %}
+              {{ render_chest(track, child, loop.index, '#treasury-all') }}
+              {% endif %}
               {% if track.upcoming_lessons %}
               <section class="chit-panel chit-panel--stories chit-panel--upcoming">
                 <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
@@ -451,12 +443,7 @@
           {% endfor %}
           {% set active_weeks = ns.active if ns.active else (track.weekly_lessons or []) %}
           {% set current_lesson = active_weeks[0] if active_weeks else none %}
-          {% if active_weeks|length > 1 and track.group_label %}
-          <section class="chit-current-lesson">
-            <p class="chit-section-sub chit-section-sub--track">{{ track.group_label }}</p>
-            <h2 class="chit-current-lesson__title">{{ track.weekly_lessons_label or 'Сказки этой недели' }}</h2>
-          </section>
-          {% elif current_lesson and (current_lesson.headline or current_lesson.title) %}
+          {% if current_lesson and (current_lesson.headline or current_lesson.title) %}
           <section class="chit-current-lesson">
             {% if track.group_label %}
             <p class="chit-section-sub chit-section-sub--track">{{ track.group_label }}</p>
@@ -469,7 +456,10 @@
           </section>
           {% endif %}
           {{ render_weekly_lessons(track, active_weeks) }}
-          {{ render_track_chests(track, child, loop.index, '#treasury-all') }}
+          {# Забранный сундук не держим сверху — награды уже в сокровищнице. #}
+          {% if not track.chest.claimed %}
+          {{ render_chest(track, child, loop.index, '#treasury-all') }}
+          {% endif %}
           {% if track.upcoming_lessons %}
           <section class="chit-panel chit-panel--stories chit-panel--upcoming">
             <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>

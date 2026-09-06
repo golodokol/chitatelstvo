@@ -3,10 +3,24 @@
 
   Как вставить:
   1. Страница /oplata → добавить блок «HTML-код» (или открыть существующий).
-  2. Ctrl+A → удалить старое содержимое (особенно скрипты с ?v=26 и старыми версиями).
+  2. Ctrl+A → удалить старое содержимое (особенно скрипты chit-zero.js и старые ?v=).
   3. Вставить ВЕСЬ этот файл целиком.
   4. Опубликовать страницу.
 
-  На странице должен остаться ровно ОДИН такой блок со скриптом chit-pay-page.js.
+  На странице не должно быть chit-zero.js — только этот блок.
+  Если в шапке сайта всё же подключается старый chit-zero.js, скрипт оплаты
+  глушит его homepage-init, чтобы страница не оставалась белой.
 -->
-<script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=20260828e"></script>
+<script>
+(function () {
+  if (String(location.pathname || '').indexOf('/oplata') < 0) return;
+  try {
+    Object.defineProperty(window, 'chitReady', {
+      value: function () {},
+      writable: false,
+      configurable: false
+    });
+  } catch (e) {}
+})();
+</script>
+<script src="https://api.chitatelstvo.ru/assets/chit-pay-page.js?v=20260906b"></script>

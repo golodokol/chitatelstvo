@@ -43,7 +43,7 @@
   if (window.__chitTrialLoaderBound) return;
   window.__chitTrialLoaderBound = true;
   var A = 'https://api.chitatelstvo.ru/assets/';
-  var V = '20260829a';
+  var V = '20260905a';
   var busy = 0;
   var done = 0;
   var q = [];
@@ -150,7 +150,12 @@
   } catch (err) {}
 })();
 
+function chitIsPayPage() {
+  return String(window.location.pathname || '').replace(/\/+$/, '').indexOf('/oplata') >= 0;
+}
+
 function chitReady(fn) {
+  if (chitIsPayPage()) return;
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', fn);
   } else {
@@ -393,6 +398,8 @@ function chitStartLayoutPin() {
 }
 
 chitReady(function() {
+  if (chitIsPayPage()) return;
+  try {
   chitStartLayoutPin();
 
 var COURSE_PAGES = {
@@ -669,6 +676,7 @@ function buildAccordion(containerId, items) {
     var head = e.target.closest('.acc-head');
     if (!head) return;
     var body = head.nextElementSibling;
+    if (!body || !body.classList) return;
     var open = body.classList.contains('is-open');
     el.querySelectorAll('.acc-head').forEach(function(h) { h.classList.remove('is-open'); });
     el.querySelectorAll('.acc-body').forEach(function(b) { b.classList.remove('is-open'); });
@@ -691,6 +699,7 @@ if (faqList) {
     var q = e.target.closest('.faq-q');
     if (!q) return;
     var a = q.nextElementSibling;
+    if (!a || !a.classList) return;
     var open = q.classList.contains('is-open');
     document.querySelectorAll('.faq-q').forEach(function(x) { x.classList.remove('is-open'); });
     document.querySelectorAll('.faq-a').forEach(function(x) { x.classList.remove('is-open'); });
@@ -1349,9 +1358,10 @@ if (faqList) {
   function isStoreRec(rec) {
     if (!rec || !rec.classList || !rec.classList.contains('t-rec')) return false;
     if (rec.closest('#chit-main') || rec.querySelector('#chit-main')) return false;
-    if (rec.getAttribute('data-record-type') === '396') return false;
-    if (STORE_REC_IDS.indexOf(rec.id) >= 0) return true;
     var recType = rec.getAttribute('data-record-type');
+    if (recType === '396' || recType === '706') return false;
+    if (rec.querySelector('.t706, form[data-formcart="y"]')) return false;
+    if (STORE_REC_IDS.indexOf(rec.id) >= 0) return true;
     if (recType && STORE_REC_TYPES.indexOf(recType) >= 0) return true;
     if (rec.querySelector('.t-store, .js-store-product, .js-product[data-product-gen-uid], .t-store__card-one')) return true;
     var text = rec.textContent || '';
@@ -1376,6 +1386,7 @@ if (faqList) {
   }
 
   function hideCatalogBlocks() {
+    if (isOnPayPage()) return;
     chitEnsureMainVisible();
     document.querySelectorAll('#allrecords .t-rec').forEach(function(rec) {
       if (isStoreRec(rec)) applyStoreHide(rec);
@@ -3121,4 +3132,7 @@ if (faqList) {
   window.addEventListener('resize', fixTildaLayout);
   window.addEventListener('load', fixTildaLayout);
 })();
+  } catch (err) {
+    if (window.console && console.error) console.error('chit-zero', err);
+  }
 });
