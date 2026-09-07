@@ -9,14 +9,21 @@ from sqlalchemy.orm import Session
 
 from api.lesson_signing import build_lesson_url
 from api.schemas import RegisterWebhook
-from catalog.loader import get_module
+from catalog.loader import find_module, get_module
 from config.settings import PUBLIC_BASE_URL
 from db import repository as repo
-from lessons.enrollment_access import find_enrollment_for_lesson, get_active_enrollments, list_lessons_for_enrollment
+from lessons.enrollment_access import (
+    find_enrollment_for_lesson,
+    get_active_enrollments,
+    list_lessons_for_enrollment,
+    normalize_stage,
+)
 from lessons.loader import get_lesson
 from services.enrollment import create_enrollment_from_registration
 
 logger = logging.getLogger(__name__)
+
+QUIZ_TRIAL_PROMO = "quiz-trial"
 
 TRIAL_BY_SLUG = {
     "early-letters-trial-lesson-01": 20,
@@ -150,6 +157,27 @@ def grant_early_trial(
     }
 
 
+def resolve_quiz_single_grant(lesson: dict[str, Any]) -> tuple[int, str, int] | None:
+    """Квиз дарит одну сказку: модуль single + этап + номер, не весь self_paced."""
+    group = (lesson.get("group_code") or "").strip()
+    stage = normalize_stage(lesson.get("stage")) or "stage-1"
+    tale_number = lesson.get("tale_number")
+    if tale_number is None:
+        return None
+    tariff = lesson.get("tariff_code")
+    if tariff == "single":
+        module_id = lesson.get("module_id")
+        if not module_id:
+            return None
+        return int(module_id), stage, int(tale_number)
+    if tariff != "self_paced" or not group:
+        return None
+    module = find_module(group_code=group, tariff_code="single")
+    if not module:
+        return None
+    return int(module["id"]), stage, int(tale_number)
+
+
 def grant_quiz_trial(
     db: Session,
     *,
@@ -161,7 +189,7 @@ def grant_quiz_trial(
     trial_slug: str | None = None,
     group_code: str | None = None,
 ) -> dict[str, Any] | None:
-    """Early trial или бесплатный self_paced по slug урока из квиза."""
+    """Early trial или одна сказка (разовое), не весь индивидуальный модуль."""
     slug = (trial_slug or "").strip()
     if not slug:
         return None
@@ -182,11 +210,13 @@ def grant_quiz_trial(
     lesson = get_lesson(slug)
     if not lesson:
         return None
-    module_id = lesson.get("module_id")
-    if not module_id:
+    grant = resolve_quiz_single_grant(lesson)
+    if not grant:
+        logger.warning("Quiz trial skipped: no single module for slug=%s", slug)
         return None
-    module = get_module(int(module_id))
-    if not module or module.get("tariff_code") != "self_paced":
+    module_id, stage, tale_number = grant
+    module = get_module(module_id)
+    if not module:
         return None
 
     family, child, _is_returning = repo.resolve_or_create_family_child(
@@ -201,14 +231,34 @@ def grant_quiz_trial(
         telegram_chat_id=None,
     )
 
-    stage = lesson.get("stage") or "stage-1"
-    existing = None
-    for enrollment in get_active_enrollments(child):
-        if enrollment.module_id == int(module_id):
-            existing = enrollment
+    group = module.get("group_code") or lesson.get("group_code")
+    enrollment = None
+    for existing in get_active_enrollments(child):
+        existing_mod = get_module(existing.module_id)
+        if not existing_mod:
+            continue
+        if existing_mod.get("group_code") != group:
+            continue
+        tariff = existing_mod.get("tariff_code")
+        if tariff in ("self_paced", "with_teacher"):
+            enrollment = existing
+            logger.info(
+                "Quiz trial skipped full course already active email=%s child=%s module=%s",
+                parent_email,
+                child.id,
+                existing.module_id,
+            )
+            break
+        if (
+            tariff == "single"
+            and existing.module_id == module_id
+            and normalize_stage(existing.chosen_stage) == stage
+            and existing.chosen_tale_number == tale_number
+        ):
+            enrollment = existing
             break
 
-    if existing is None:
+    if enrollment is None:
         body = RegisterWebhook(
             parent_name=parent_name,
             parent_email=parent_email,
@@ -216,26 +266,29 @@ def grant_quiz_trial(
             notification_channel="email",
             child_name=child_name,
             child_age=child_age,
-            module_id=int(module_id),
+            module_id=module_id,
             chosen_stage=stage,
-            chosen_tale_number=None,
+            chosen_tale_number=tale_number,
+            promo_code=QUIZ_TRIAL_PROMO,
         )
         create_enrollment_from_registration(db, child, body)
         db.refresh(child)
         logger.info(
-            "Quiz self_paced trial granted email=%s child=%s module=%s slug=%s",
+            "Quiz single trial granted email=%s child=%s module=%s tale=%s slug=%s",
             parent_email,
             child.id,
             module_id,
+            tale_number,
             slug,
         )
-        enrollment = None
-        for e in get_active_enrollments(child):
-            if e.module_id == int(module_id):
-                enrollment = e
+        for existing in get_active_enrollments(child):
+            if (
+                existing.module_id == module_id
+                and existing.chosen_tale_number == tale_number
+                and normalize_stage(existing.chosen_stage) == stage
+            ):
+                enrollment = existing
                 break
-    else:
-        enrollment = existing
 
     lesson_title = lesson.get("title") or lesson.get("tale_title") or "Пробный урок"
     progress_url = f"{PUBLIC_BASE_URL}/progress/{family.progress_token}"
@@ -245,7 +298,7 @@ def grant_quiz_trial(
         lesson_url = build_lesson_url(child.id, slug)
 
     return {
-        "module_id": int(module_id),
+        "module_id": module_id,
         "module_title": module.get("title"),
         "lesson_slug": slug,
         "lesson_title": lesson_title,

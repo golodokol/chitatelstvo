@@ -44,6 +44,28 @@ def get_active_enrollment(child: Child) -> Enrollment | None:
     return active[-1]
 
 
+def single_enrollment_covers_content(
+    enrollment: Enrollment,
+    lesson: dict[str, Any],
+) -> bool:
+    """Разовое открывает контент той же сказки в self_paced (письмо квиза / старый URL)."""
+    module = get_module(enrollment.module_id)
+    if not module or module.get("tariff_code") != "single":
+        return False
+    if lesson.get("tariff_code") != "self_paced":
+        return False
+    if (lesson.get("group_code") or "") != (module.get("group_code") or ""):
+        return False
+    stage = normalize_stage(enrollment.chosen_stage)
+    lesson_stage = normalize_stage(lesson.get("stage"))
+    if stage and lesson_stage and stage != lesson_stage:
+        return False
+    tale_number = enrollment.chosen_tale_number
+    if tale_number is None or lesson.get("tale_number") is None:
+        return False
+    return int(lesson["tale_number"]) == int(tale_number)
+
+
 def find_enrollment_for_lesson(
     child: Child,
     lesson: dict[str, Any],
@@ -60,7 +82,8 @@ def find_enrollment_for_lesson(
                 if str(enrollment.id) != want:
                     continue
                 if module_id is not None and enrollment.module_id != module_id:
-                    return None
+                    if not single_enrollment_covers_content(enrollment, lesson):
+                        return None
                 return enrollment
             return None
 
@@ -68,6 +91,8 @@ def find_enrollment_for_lesson(
         return get_active_enrollment(child)
 
     matches = [e for e in enrollments if e.module_id == module_id]
+    if not matches:
+        matches = [e for e in enrollments if single_enrollment_covers_content(e, lesson)]
     if not matches:
         return None
     if len(matches) == 1:
@@ -110,9 +135,9 @@ def child_can_access_lesson(
     if active is None or active.status != "active":
         return False
     if active.module_id != module_id:
-        return False
+        return single_enrollment_covers_content(active, lesson)
 
-    module = get_module(module_id)
+    module = get_module(active.module_id)
     if not module:
         return False
 

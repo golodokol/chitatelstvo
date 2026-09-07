@@ -24,6 +24,17 @@ def get_module(module_id: int) -> dict[str, Any] | None:
     return None
 
 
+def find_module(*, group_code: str, tariff_code: str) -> dict[str, Any] | None:
+    group = (group_code or "").strip()
+    tariff = (tariff_code or "").strip()
+    if not group or not tariff:
+        return None
+    for module in load_modules():
+        if module.get("group_code") == group and module.get("tariff_code") == tariff:
+            return module
+    return None
+
+
 def get_tale(group_code: str, stage: str, tale_number: int) -> dict[str, Any] | None:
     for tale in load_tales():
         if (
