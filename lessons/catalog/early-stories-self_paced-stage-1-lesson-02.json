@@ -18,124 +18,255 @@
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Каркас станций модуля 1.",
+  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
   "lesson_format": "quest",
   "stations": [
     {
       "id": "hello",
-      "title": "Приветствие",
+      "title": "Окно",
       "kind": "intro_video",
-      "slovik_line": "Сегодня: Читаем слог без остановки",
+      "slovik_line": "Посмотри в окно вместе со мной.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
       "audio": "ph-m1-l02-hi",
+      "cta_label": "Начать",
       "spark": false
     },
     {
-      "id": "warm",
-      "title": "Разминка",
-      "kind": "find",
-      "slovik_line": "Вспомним прошлое.",
-      "audio": "ph-m1-l02-warm",
-      "spark": false,
-      "rounds": [
+      "id": "screen",
+      "title": "Слово ДОЖДЬ",
+      "kind": "word_picture",
+      "mechanic": "word_screen",
+      "slovik_line": "Это слово: дождь.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-screen",
+      "items": [
         {
-          "correct": "A",
-          "options": [
-            "A",
-            "M",
-            "O"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "new",
-      "title": "Новое",
-      "kind": "repeat_sound",
-      "slovik_line": "Новый навык.",
-      "audio": "ph-m1-l02-new",
-      "sound": "ph-m1-l02-sound",
-      "spark": false
-    },
-    {
-      "id": "game1",
-      "title": "Игра 1",
-      "kind": "listen_pick",
-      "slovik_line": "Поиграем!",
-      "audio": "ph-m1-l02-g1",
-      "spark": true,
-      "rounds": [
-        {
-          "correct": "yes",
+          "word": "ДОЖДЬ",
+          "correct": "rain",
           "options": [
             {
-              "id": "yes",
-              "label": "Да"
+              "id": "rain",
+              "label": "Дождь",
+              "image": "/static/early/letters/rain.png"
             },
             {
-              "id": "no",
-              "label": "Нет"
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/bird.png"
             }
           ]
         }
-      ]
+      ],
+      "spark": false
     },
     {
-      "id": "break",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Отойдём от экрана.",
-      "audio": "shared-pause-start",
-      "spark": false,
-      "hint": "Короткая пауза без экрана."
-    },
-    {
-      "id": "game2",
-      "title": "Игра 2",
-      "kind": "find",
-      "slovik_line": "Ещё практика.",
-      "audio": "ph-m1-l02-g2",
-      "spark": true,
+      "id": "weather",
+      "title": "Дождь или солнце",
+      "chapter": "Искорка 1",
+      "kind": "listen_pick",
+      "slovik_line": "Дождь или солнце?",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-weather",
+      "picture_only": true,
       "rounds": [
         {
-          "correct": "A",
+          "correct": "rain",
           "options": [
-            "A",
-            "M",
-            "S"
+            {
+              "id": "rain",
+              "label": "Дождь",
+              "image": "/static/early/letters/rain.png"
+            },
+            {
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/bird.png"
+            }
           ]
         }
-      ]
+      ],
+      "spark": true,
+      "spark_kind": "word",
+      "spark_group": "word"
     },
     {
-      "id": "quest",
-      "title": "Мини-квест",
-      "kind": "mini_quest",
-      "slovik_line": "Почти финиш!",
-      "audio": "ph-m1-l02-quest",
-      "spark": false,
-      "steps": [
+      "id": "who",
+      "title": "Кто у окна?",
+      "kind": "find",
+      "slovik_line": "Кто у окна?",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-who",
+      "rounds": [
         {
-          "kind": "find",
-          "correct": "A",
+          "correct": "kot",
           "options": [
-            "A",
-            "O"
+            {
+              "id": "mama",
+              "label": "МАМА",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ",
+              "image": "/static/early/letters/kot.png"
+            },
+            {
+              "id": "ball",
+              "label": "МЯЧ",
+              "image": "/static/early/letters/ball.png"
+            }
           ]
         }
-      ]
+      ],
+      "spark": false
     },
     {
-      "id": "reward",
-      "title": "Награда",
+      "id": "drag",
+      "title": "Слова к картинкам",
+      "kind": "match_pairs",
+      "mechanic": "drag_match",
+      "slovik_line": "Слово к картинке.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-drag",
+      "pairs": [
+        {
+          "id": "okno",
+          "label": "ОКНО",
+          "image": "/static/early/letters/house.png"
+        },
+        {
+          "id": "dozhd",
+          "label": "ДОЖДЬ",
+          "image": "/static/early/letters/rain.png"
+        },
+        {
+          "id": "kot",
+          "label": "КОТ",
+          "image": "/static/early/letters/kot.png"
+        }
+      ],
+      "spark": false
+    },
+    {
+      "id": "slots",
+      "title": "Кот у окна",
+      "kind": "slot_build",
+      "mechanic": "phrase_slots",
+      "slovik_line": "Собери: кот у окна.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-slots",
+      "targets": [
+        "КОТ",
+        "У",
+        "ОКНА"
+      ],
+      "options": [
+        "МЯЧ",
+        "КОТ",
+        "СЫР",
+        "У",
+        "ОКНА"
+      ],
+      "result_label": "КОТ У ОКНА",
+      "spark": true,
+      "spark_kind": "phrase",
+      "spark_group": "phrase"
+    },
+    {
+      "id": "extra",
+      "title": "Лишнее слово",
+      "kind": "find",
+      "slovik_line": "Какое слово лишнее?",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-extra",
+      "rounds": [
+        {
+          "prompt_text": "Слова про окно и дождь.",
+          "correct": "syr",
+          "options": [
+            {
+              "id": "okno",
+              "label": "ОКНО"
+            },
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            }
+          ]
+        }
+      ],
+      "spark": false
+    },
+    {
+      "id": "book",
+      "title": "Дождь за окном",
+      "kind": "book_page",
+      "slovik_line": "Книжка про дождь. Читай.",
+      "scene_image": "/static/early/stories/scene-book.jpg",
+      "audio": "ph-m1-l02-book",
+      "book_title": "Дождь за окном",
+      "cta_label": "Я прочитал!",
+      "lines": [
+        {
+          "text": "ИДЁТ ДОЖДЬ.",
+          "image": "/static/early/letters/rain.png",
+          "audio": "ph-m1-l02-p1"
+        },
+        {
+          "text": "КОТ У ОКНА.",
+          "image": "/static/early/letters/kot.png",
+          "audio": "ph-m1-l02-p2"
+        },
+        {
+          "text": "ТИХО ДОМА.",
+          "image": "/static/early/letters/house.png",
+          "audio": "ph-m1-l02-p3"
+        },
+        {
+          "text": "КОТ СПИТ.",
+          "image": "/static/early/stories/kot-sleep.png",
+          "audio": "ph-m1-l02-p4"
+        },
+        {
+          "text": "НОЧЬ.",
+          "image": "/static/early/stories/scene-night-sleep.jpg",
+          "audio": "ph-m1-l02-p5"
+        }
+      ],
+      "spark": false
+    },
+    {
+      "id": "chest",
+      "title": "Награда Словика",
+      "chapter": "Три искорки",
       "kind": "reward",
-      "slovik_line": "Молодец!",
-      "audio": "shared-reward",
+      "slovik_line": "Ещё одна книжка на полке.",
+      "slovik_pose": "chest",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "spark_image": "/static/early/letters/spark.png",
+      "audio": "ph-m1-l02-reward",
+      "fail_audio": "vo-retry",
       "spark": false,
-      "parent_note": "Урок «Читаем слог без остановки» пройден. Повторите дома главный навык."
+      "fail_title": "Ещё чуть-чуть",
+      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_pose": "worry",
+      "retry_cta": "Попробовать ещё раз",
+      "parent_note": "Урок «Дождь за окном». Дома: ИДЁТ ДОЖДЬ. КОТ У ОКНА.",
+      "chest_cta": "Открыть сундук",
+      "tech_msg": "Книжка на полке"
     }
   ],
   "quest": {
-    "goal_label": "слоги на тропе",
+    "goal_label": "искорки",
     "goal_count": 3
   }
 }

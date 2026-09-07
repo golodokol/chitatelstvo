@@ -91,6 +91,15 @@ VIDEO_UNLOCK_SECONDS = int(os.getenv("VIDEO_UNLOCK_SECONDS", "180"))
 VIDEO_WATCH_THRESHOLD = float(os.getenv("VIDEO_WATCH_THRESHOLD", str(VIDEO_BADGE_THRESHOLD)))
 # Секрет для /test/urok/{secret} — приватная страница теста урока (пусто = выключено)
 TEST_LESSON_SECRET = os.getenv("TEST_LESSON_SECRET", "").strip()
+# Кабинеты, где можно играть черновики уроков 1–4 ранних курсов (токен из /progress/…)
+STAFF_PREVIEW_PROGRESS_TOKENS = frozenset(
+    t.strip()
+    for t in os.getenv(
+        "STAFF_PREVIEW_PROGRESS_TOKENS",
+        "rPUXWKEkXj21YesZFgR3Zx9bX73GP3Dq-SSRauOZVPg",
+    ).split(",")
+    if t.strip()
+)
 # Новая сказка открывается каждые N дней (обычно 7 = понедельник)
 LESSON_WEEK_DAYS = int(os.getenv("LESSON_WEEK_DAYS", "7"))
 # Общий старт модуля для всех семей (понедельник): YYYY-MM-DD

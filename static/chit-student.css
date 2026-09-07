@@ -3699,6 +3699,290 @@ a.chit-lesson-companion--link.is-disabled {
   color: var(--accent);
 }
 
+.chit-panel--trail {
+  overflow: hidden;
+}
+
+.chit-trail {
+  margin-top: 8px;
+}
+
+.chit-trail__land {
+  position: relative;
+  height: 420px;
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 90%, #7eb56a 0%, transparent 55%),
+    radial-gradient(ellipse 70% 45% at 80% 85%, #6aa85c 0%, transparent 50%),
+    linear-gradient(180deg, #9fd4f0 0%, #c8e8a8 42%, #8fce72 100%);
+  border: 1.5px solid rgba(90, 140, 100, 0.28);
+  pointer-events: none;
+}
+
+.chit-trail__hill {
+  position: absolute;
+  border-radius: 50%;
+  background: #5f9a52;
+  opacity: 0.55;
+}
+
+.chit-trail__hill--a { width: 180px; height: 90px; left: -30px; bottom: 40px; }
+.chit-trail__hill--b { width: 220px; height: 110px; right: -40px; bottom: 70px; background: #4e8750; }
+
+.chit-trail__tree {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 36px solid #2f6b3a;
+  filter: drop-shadow(0 8px 0 #2a5a34);
+}
+
+.chit-trail__tree--1 { left: 28%; top: 18%; }
+.chit-trail__tree--2 { left: 58%; top: 10%; border-bottom-color: #348046; }
+.chit-trail__tree--3 { left: 8%; top: 36%; transform: scale(0.8); }
+
+.chit-trail__flower {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f4a4c0;
+  box-shadow: 12px 8px 0 #f6d56a, -8px 10px 0 #f4a4c0;
+}
+
+.chit-trail__flower--1 { left: 40%; bottom: 18%; }
+.chit-trail__flower--2 { right: 22%; bottom: 28%; }
+
+.chit-trail__path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.chit-trail__chest {
+  position: absolute;
+  width: 28px;
+  height: 22px;
+  background: #8b5a2b;
+  border-radius: 4px 4px 3px 3px;
+  box-shadow: inset 0 -6px 0 #6e4520;
+}
+
+.chit-trail__chest::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 7px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: #d4af37;
+}
+
+.chit-trail__chest--mid { left: 49%; top: 28%; }
+.chit-trail__chest--end { right: 6%; top: 14%; }
+
+.chit-trail__flag {
+  position: absolute;
+  right: 4%;
+  top: 8%;
+  width: 3px;
+  height: 34px;
+  background: #3d5266;
+}
+
+.chit-trail__flag::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 16px;
+  height: 12px;
+  background: #fff;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  box-shadow: inset -6px 0 0 #111;
+}
+
+.chit-trail__node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.chit-trail__node.is-playable {
+  pointer-events: auto;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.chit-trail__node--1 { left: 8%; top: 84%; }
+.chit-trail__node--2 { left: 20%; top: 56%; }
+.chit-trail__node--3 { left: 36%; top: 48%; }
+.chit-trail__node--4 { left: 52%; top: 38%; }
+.chit-trail__node--5 { left: 64%; top: 54%; }
+.chit-trail__node--6 { left: 78%; top: 40%; }
+.chit-trail__node--7 { left: 80%; top: 68%; }
+.chit-trail__node--8 { left: 92%; top: 26%; }
+
+.chit-trail__dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #3d5266;
+  background: #f7f1e4;
+  border: 3px solid #d9c49a;
+}
+
+.chit-trail__node.is-open .chit-trail__dot,
+.chit-trail__node.is-playable .chit-trail__dot {
+  background: #fff;
+  border-color: #3d9b5a;
+  box-shadow: 0 0 0 6px rgba(61, 155, 90, 0.22);
+  color: #246b38;
+}
+
+.chit-trail__node.is-locked .chit-trail__dot {
+  background: #c8b89a;
+  color: #5a5144;
+  border-color: #8f7b5a;
+}
+
+.chit-trail__tip {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  width: max-content;
+  max-width: 92px;
+  text-align: center;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #246b38;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.chit-trail__node.is-locked .chit-trail__tip {
+  display: none;
+}
+
+.chit-trail__node.is-playable .chit-trail__tip {
+  display: block;
+}
+
+.chit-trail__tip strong {
+  display: none;
+}
+
+.chit-trail__legend {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+.chit-trail__legend-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0;
+  min-width: 0;
+}
+
+.chit-trail__legend-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: var(--cream-warm);
+  color: var(--muted);
+}
+
+.chit-trail__legend-item.is-open .chit-trail__legend-num,
+.chit-trail__legend-item.is-playable .chit-trail__legend-num {
+  background: #e4f4e8;
+  color: #246b38;
+}
+
+.chit-trail__legend-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chit-trail__legend-text strong {
+  font-size: 0.82rem;
+  line-height: 1.25;
+  color: var(--text-warm);
+}
+
+.chit-trail__legend-text a {
+  font-size: 0.82rem;
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--blue-deep);
+  text-decoration: none;
+}
+
+.chit-trail__legend-item:not(.is-open):not(.is-playable) .chit-trail__legend-text strong {
+  color: var(--muted);
+}
+
+.chit-trail__legend-text span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--blue-deep);
+}
+
+.chit-trail__legend-item:not(.is-open):not(.is-playable) .chit-trail__legend-text span {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.chit-trail__buy {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.chit-trail__cta {
+  margin-top: 0;
+  max-width: 420px;
+}
+
+.chit-trail__cta-note {
+  margin: 10px auto 0;
+  max-width: 440px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .chit-trail__land { height: 300px; }
+  .chit-trail__dot { width: 30px; height: 30px; font-size: 0.75rem; }
+  .chit-trail__legend { grid-template-columns: 1fr; }
+}
+
 .chit-panel--schedule summary { cursor: pointer; list-style: none; }
 .chit-panel--schedule summary::-webkit-details-marker { display: none; }
 .chit-tg-box--compact { padding: 10px 14px; margin-bottom: 12px; }

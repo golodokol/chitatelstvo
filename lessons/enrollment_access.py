@@ -153,14 +153,31 @@ def child_can_access_lesson(
     return True
 
 
+def _usable_stored_title(value: str | None) -> str | None:
+    text = (value or "").strip()
+    if not text:
+        return None
+    if not (set(text) - {"?", " "}):
+        return None
+    return text
+
+
+def _single_display_title(lesson: dict[str, Any], enrollment: Enrollment | None) -> str:
+    title = lesson.get("title") or "Сказка"
+    if not enrollment or lesson.get("tariff_code") != "single":
+        return title
+    group = (lesson.get("group_code") or "").strip()
+    stage = normalize_stage(enrollment.chosen_stage) or normalize_stage(lesson.get("stage"))
+    number = enrollment.chosen_tale_number
+    if group and stage and number is not None:
+        tale = get_tale(group, stage, int(number))
+        if tale and tale.get("tale_title"):
+            return str(tale["tale_title"])
+    return _usable_stored_title(enrollment.chosen_tale_title) or title
+
+
 def _lesson_summary(lesson: dict[str, Any], enrollment: Enrollment | None) -> dict[str, Any]:
-    title = lesson["title"]
-    if (
-        enrollment
-        and enrollment.chosen_tale_title
-        and lesson.get("tariff_code") == "single"
-    ):
-        title = enrollment.chosen_tale_title
+    title = _single_display_title(lesson, enrollment)
 
     stage = lesson.get("stage")
     if enrollment and lesson.get("tariff_code") == "single":

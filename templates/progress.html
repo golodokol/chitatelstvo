@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260826m">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260907b">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -339,6 +339,86 @@
         {% endif %}
         {% endmacro %}
 
+        {% macro render_upcoming_trail(track) %}
+        {% if track.upcoming_lessons %}
+        <section class="chit-panel chit-panel--stories chit-panel--upcoming chit-panel--trail">
+          <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
+          {% if track.stories_subtitle %}
+          <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
+          {% endif %}
+          <div class="chit-trail" role="group" aria-label="Карта модуля. Уроки для всех пока «скоро».">
+            <div class="chit-trail__land">
+              <span class="chit-trail__hill chit-trail__hill--a" aria-hidden="true"></span>
+              <span class="chit-trail__hill chit-trail__hill--b" aria-hidden="true"></span>
+              <span class="chit-trail__tree chit-trail__tree--1" aria-hidden="true"></span>
+              <span class="chit-trail__tree chit-trail__tree--2" aria-hidden="true"></span>
+              <span class="chit-trail__tree chit-trail__tree--3" aria-hidden="true"></span>
+              <span class="chit-trail__flower chit-trail__flower--1" aria-hidden="true"></span>
+              <span class="chit-trail__flower chit-trail__flower--2" aria-hidden="true"></span>
+              <svg class="chit-trail__path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 8 84 C 14 70, 16 62, 20 56 S 30 46, 36 48 S 46 34, 52 38 S 58 50, 64 54 S 72 42, 78 40 S 84 58, 80 68 S 86 36, 92 26" fill="none" stroke="#f4ead2" stroke-width="4.2" stroke-linecap="round"/>
+                <path d="M 8 84 C 14 70, 16 62, 20 56 S 30 46, 36 48 S 46 34, 52 38 S 58 50, 64 54 S 72 42, 78 40 S 84 58, 80 68 S 86 36, 92 26" fill="none" stroke="#d9c49a" stroke-width="1.2" stroke-dasharray="3 4" stroke-linecap="round"/>
+              </svg>
+              <span class="chit-trail__chest chit-trail__chest--mid" aria-hidden="true"></span>
+              <span class="chit-trail__flag" aria-hidden="true"></span>
+              <span class="chit-trail__chest chit-trail__chest--end" aria-hidden="true"></span>
+              {% for tale in track.upcoming_lessons %}
+              {% if tale.url %}
+              <a
+                class="chit-trail__node chit-trail__node--{{ tale.week_in_stage }} is-playable"
+                href="{{ tale.url }}"
+                aria-label="{{ tale.title }} · проверка"
+              >
+                <span class="chit-trail__dot">{{ tale.week_in_stage }}</span>
+                <span class="chit-trail__tip">
+                  <strong>{{ tale.title }}</strong>
+                  <em>{{ tale.overlay_label or 'скоро' }}</em>
+                </span>
+              </a>
+              {% else %}
+              <div
+                class="chit-trail__node chit-trail__node--{{ tale.week_in_stage }} is-locked"
+                aria-hidden="true"
+              >
+                <span class="chit-trail__dot">{{ tale.week_in_stage }}</span>
+                <span class="chit-trail__tip">
+                  <strong>{{ tale.title }}</strong>
+                  <em>{{ tale.overlay_label or 'скоро' }}</em>
+                </span>
+              </div>
+              {% endif %}
+              {% endfor %}
+            </div>
+            <ol class="chit-trail__legend">
+              {% for tale in track.upcoming_lessons %}
+              <li class="chit-trail__legend-item{% if tale.url %} is-playable{% endif %}">
+                <span class="chit-trail__legend-num">{{ tale.week_in_stage }}</span>
+                <span class="chit-trail__legend-text">
+                  {% if tale.url %}
+                  <a href="{{ tale.url }}">{{ tale.title }}</a>
+                  {% else %}
+                  <strong>{{ tale.title }}</strong>
+                  {% endif %}
+                  <span>{{ tale.overlay_label or 'скоро' }}</span>
+                </span>
+              </li>
+              {% endfor %}
+            </ol>
+          </div>
+          {% if track.buy_url %}
+          <div class="chit-trail__buy">
+            <a class="chit-btn chit-btn--hero chit-trail__cta" href="{{ track.buy_url }}" target="_blank" rel="noopener">
+              {{ track.map_cta_label or 'Купить продолжение' }}
+            </a>
+            {% if track.map_cta_note %}
+            <p class="chit-trail__cta-note">{{ track.map_cta_note }}</p>
+            {% endif %}
+          </div>
+          {% endif %}
+        </section>
+        {% endif %}
+        {% endmacro %}
+
         {% if cab.tracks %}
           {# Открытые вводные early — выше сокровищницы и сказок. #}
           {% for track in cab.tracks %}
@@ -364,37 +444,7 @@
               {% if not track.chest.claimed %}
               {{ render_chest(track, child, loop.index, '#treasury-all') }}
               {% endif %}
-              {% if track.upcoming_lessons %}
-              <section class="chit-panel chit-panel--stories chit-panel--upcoming">
-                <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
-                {% if track.stories_subtitle %}
-                <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
-                {% endif %}
-                <div class="chit-story-grid">
-                  {% for tale in track.upcoming_lessons %}
-                  <article class="chit-story-card chit-story-card--soon">
-                    <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
-                      <div class="chit-story-card__cover chit-story-card__cover--soon">
-                        {% if tale.cover_url %}
-                        <img src="{{ tale.cover_url }}" alt="" loading="lazy">
-                        {% else %}
-                        <div class="chit-story-card__placeholder" aria-hidden="true"></div>
-                        {% endif %}
-                        <div class="chit-story-card__overlay">
-                          <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
-                        </div>
-                      </div>
-                      <div class="chit-story-card__meta">
-                        <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
-                        <h4 class="chit-story-card__title">{{ tale.title }}</h4>
-                        <span class="chit-story-card__buy">Выбрать тариф</span>
-                      </div>
-                    </a>
-                  </article>
-                  {% endfor %}
-                </div>
-              </section>
-              {% endif %}
+              {{ render_upcoming_trail(track) }}
             {% endif %}
           {% endfor %}
 
@@ -460,37 +510,8 @@
           {% if not track.chest.claimed %}
           {{ render_chest(track, child, loop.index, '#treasury-all') }}
           {% endif %}
-          {% if track.upcoming_lessons %}
-          <section class="chit-panel chit-panel--stories chit-panel--upcoming">
-            <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
-            {% if track.stories_subtitle %}
-            <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
-            {% endif %}
-            <div class="chit-story-grid">
-              {% for tale in track.upcoming_lessons %}
-              <article class="chit-story-card chit-story-card--soon">
-                <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
-                  <div class="chit-story-card__cover chit-story-card__cover--soon">
-                    {% if tale.cover_url %}
-                    <img src="{{ tale.cover_url }}" alt="" loading="lazy">
-                    {% else %}
-                    <div class="chit-story-card__placeholder" aria-hidden="true"></div>
-                    {% endif %}
-                    <div class="chit-story-card__overlay">
-                      <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
-                    </div>
-                  </div>
-                  <div class="chit-story-card__meta">
-                    <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
-                    <h4 class="chit-story-card__title">{{ tale.title }}</h4>
-                    <span class="chit-story-card__buy">Выбрать тариф</span>
-                  </div>
-                </a>
-              </article>
-              {% endfor %}
-            </div>
-          </section>
-          {% elif track.story_stages %}
+          {{ render_upcoming_trail(track) }}
+          {% if track.story_stages %}
           <section class="chit-panel chit-panel--stories">
             <h2 class="chit-section-title">{{ track.stories_title or (('Мои уроки · ' if track.is_early else 'Мои сказки · ') ~ track.group_label) }}</h2>
             {% for stage in track.story_stages %}
