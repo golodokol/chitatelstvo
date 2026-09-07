@@ -1,7 +1,7 @@
 {
   "slug": "early-letters-with_teacher-stage-1-lesson-01",
-  "title": "Мотор на поляне",
-  "tale_title": "Мотор на поляне",
+  "title": "Круглая О",
+  "tale_title": "Круглая О",
   "module_id": 22,
   "group_code": "early-letters",
   "group_label": "Буквы оживают",
@@ -14,373 +14,124 @@
   "tale_slug": "early-letters-stage1-tale-01",
   "module_week": 1,
   "meeting_number": 2,
-  "badge": "Знаю букву М",
+  "badge": "Первый шаг",
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
+  "note": "Каркас станций модуля 1.",
   "lesson_format": "quest",
   "stations": [
     {
-      "id": "trail",
-      "title": "Тропа букв",
+      "id": "hello",
+      "title": "Приветствие",
       "kind": "intro_video",
-      "slovik_line": "На тропе зажглась новая буква. Помнишь мотор? Он говорит: м-м-м. Познакомься с буквой М.",
-      "slovik_pose": "wave",
-      "scene_image": "/static/early/letters/scene-gate.jpg",
-      "audio": "bo-m1-l01-hi",
-      "cta_label": "Начать",
+      "slovik_line": "Сегодня: Буква А — голос открывается",
+      "audio": "bo-m1-l03-hi",
       "spark": false
     },
     {
-      "id": "meet",
-      "title": "Буква М",
-      "chapter": "Знакомство",
-      "kind": "meet_letter",
-      "mechanic": "meet_letter",
-      "slovik_line": "Это буква М. Нажми — услышишь м-м-м. Большая и маленькая — одна буква.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-meet",
-      "sound": "snd-m",
-      "letter": "М",
-      "hint": "Нажми на букву — услышишь звук.",
-      "spark": false
-    },
-    {
-      "id": "motor",
-      "title": "Кто гудит?",
-      "chapter": "Искорка 1 · Звук",
-      "kind": "listen_pick",
-      "slovik_line": "Что гудит м-м-м? Мотор или дождь?",
-      "slovik_pose": "listen",
-      "scene_image": "/static/early/letters/scene-missing.jpg",
-      "audio": "bo-m1-l01-motor",
-      "picture_only": true,
+      "id": "warm",
+      "title": "Разминка",
+      "kind": "find",
+      "slovik_line": "Вспомним прошлое.",
+      "audio": "bo-m1-l03-warm",
+      "spark": false,
       "rounds": [
         {
-          "sound": "snd-m",
-          "correct": "motor",
+          "correct": "A",
           "options": [
-            {
-              "id": "motor",
-              "label": "Мотор",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "rain",
-              "label": "Дождь",
-              "image": "/static/early/letters/rain.png"
-            }
-          ]
-        }
-      ],
-      "spark": true,
-      "spark_kind": "sound",
-      "spark_group": "sound"
-    },
-    {
-      "id": "hop",
-      "title": "Прыжки по кустам",
-      "chapter": "Буква",
-      "kind": "letter_maze",
-      "mechanic": "letter_hop",
-      "slovik_line": "Прыгай только на букву, которая говорит м-м-м. Чужие кусты — не туда.",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l01-hop",
-      "letter": "М",
-      "start": [
-        0,
-        0
-      ],
-      "end": [
-        3,
-        2
-      ],
-      "grid": [
-        [
-          "М",
-          "А",
-          "У"
-        ],
-        [
-          "М",
-          "О",
-          "С"
-        ],
-        [
-          "М",
-          "М",
-          "М"
-        ],
-        [
-          "А",
-          "С",
-          "М"
-        ]
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "build",
-      "title": "Собери М",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "build_letter",
-      "slovik_line": "Собери М: две стойки и перекладина посередине.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l01-build",
-      "letter": "М",
-      "hint": "Нажми на часть, потом на её место.",
-      "success_msg": "Буква М собралась!",
-      "spark": true,
-      "spark_kind": "letter",
-      "spark_group": "letter"
-    },
-    {
-      "id": "grid",
-      "title": "Найди все М",
-      "chapter": "Буква",
-      "kind": "letter_puzzle",
-      "mechanic": "letter_grid",
-      "slovik_line": "Найди на доске все буквы М. Их несколько.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l01-grid",
-      "slots": 4,
-      "pieces": [
-        {
-          "id": "m1",
-          "label": "М",
-          "correct": true
-        },
-        {
-          "id": "a1",
-          "label": "А",
-          "correct": false
-        },
-        {
-          "id": "m2",
-          "label": "М",
-          "correct": true
-        },
-        {
-          "id": "u1",
-          "label": "У",
-          "correct": false
-        },
-        {
-          "id": "m3",
-          "label": "М",
-          "correct": true
-        },
-        {
-          "id": "o1",
-          "label": "О",
-          "correct": false
-        },
-        {
-          "id": "s1",
-          "label": "С",
-          "correct": false
-        },
-        {
-          "id": "m4",
-          "label": "М",
-          "correct": true
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "pause",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Встань. Погуди как мотор: м-м-м. Без экрана.",
-      "audio": "bo-m1-l01-pause",
-      "spark": false,
-      "hint": "Встань и тихо скажи м-м-м, как мотор. Потом вернёмся."
-    },
-    {
-      "id": "slot_ma",
-      "title": "Слог МА",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Сложим слоги. Сначала ма — это уже знакомо.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-slots",
-      "result_sound": "snd-ma",
-      "targets": [
-        "М",
-        "А"
-      ],
-      "options": [
-        "О",
-        "М",
-        "У",
-        "А"
-      ],
-      "result_label": "МА",
-      "result_image": "/static/early/letters/mama.png",
-      "spark": false,
-      "spark_group": "syllable"
-    },
-    {
-      "id": "slot_mo",
-      "title": "Слоги МО и МУ",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Теперь мо. Потом му.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-slots",
-      "result_sound": "snd-mo",
-      "targets": [
-        "М",
-        "О"
-      ],
-      "options": [
-        "М",
-        "А",
-        "О",
-        "У"
-      ],
-      "result_label": "МО",
-      "result_image": "/static/early/letters/motor.png",
-      "spark": true,
-      "spark_kind": "syllable",
-      "spark_group": "syllable"
-    },
-    {
-      "id": "spread",
-      "title": "Книжечка звука",
-      "chapter": "Слог",
-      "kind": "book_page",
-      "mechanic": "letter_spread",
-      "slovik_line": "В книжке сначала звук мотора. Потом слово мама: ма-ма.",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-spread",
-      "book_label": "Разворот",
-      "book_title": "М",
-      "cta_label": "Дальше",
-      "lines": [
-        {
-          "text": "м-м-м",
-          "image": "/static/early/letters/motor.png",
-          "alt": "Мотор"
-        },
-        {
-          "text": "МАМА",
-          "image": "/static/early/letters/mama.png",
-          "alt": "Мама"
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "or",
-      "title": "Мотор или солнце",
-      "chapter": "Звук",
-      "kind": "listen_pick",
-      "mechanic": "or_choice",
-      "slovik_line": "Буква М. Кто говорит м-м-м — мотор или солнце?",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-or",
-      "picture_only": true,
-      "rounds": [
-        {
-          "sound": "snd-m",
-          "correct": "motor",
-          "options": [
-            {
-              "id": "motor",
-              "label": "Мотор",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "sun",
-              "label": "Солнце",
-              "image": "/static/early/letters/bird.png"
-            }
-          ]
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "quest",
-      "title": "Слог МА",
-      "chapter": "Мини-квест",
-      "kind": "mini_quest",
-      "slovik_line": "Где слог ма? Выбери ма, не мо.",
-      "slovik_pose": "joy",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-quest",
-      "spark": false,
-      "show_all_steps": true,
-      "hint": "Картинка «мама» и слог МА.",
-      "steps": [
-        {
-          "kind": "find",
-          "prompt": "Картинка",
-          "correct": "mama",
-          "options": [
-            {
-              "id": "mama",
-              "label": "Мама",
-              "image": "/static/early/letters/mama.png"
-            },
-            {
-              "id": "motor",
-              "label": "Мотор",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "kot",
-              "label": "Кот",
-              "image": "/static/early/letters/kot.png"
-            }
-          ]
-        },
-        {
-          "kind": "find",
-          "prompt": "Слог",
-          "correct": "МА",
-          "options": [
-            "МО",
-            "МА",
-            "МУ",
-            "АМ"
+            "A",
+            "M",
+            "O"
           ]
         }
       ]
     },
     {
-      "id": "chest",
-      "title": "Награда Словика",
-      "chapter": "Три искорки",
-      "kind": "reward",
-      "slovik_line": "Буква М с нами! Три искорки. Ты знаешь букву М.",
-      "slovik_pose": "chest",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "spark_image": "/static/early/letters/spark.png",
-      "audio": "bo-m1-l01-reward",
-      "fail_audio": "vo-retry",
+      "id": "new",
+      "title": "Новое",
+      "kind": "repeat_sound",
+      "slovik_line": "Новый навык.",
+      "audio": "bo-m1-l03-new",
+      "sound": "bo-m1-l03-sound",
+      "spark": false
+    },
+    {
+      "id": "game1",
+      "title": "Игра 1",
+      "kind": "listen_pick",
+      "slovik_line": "Поиграем!",
+      "audio": "bo-m1-l03-g1",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "yes",
+          "options": [
+            {
+              "id": "yes",
+              "label": "Да"
+            },
+            {
+              "id": "no",
+              "label": "Нет"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "break",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Отойдём от экрана.",
+      "audio": "shared-pause-start",
       "spark": false,
-      "fail_title": "Ещё чуть-чуть",
-      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_pose": "worry",
-      "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Урок «Мотор на поляне». Дома: м-м-м и слог МА. Слово МАМА можно прочитать вместе.",
-      "chest_cta": "Открыть сундук",
-      "tech_msg": "Знаю букву М"
+      "hint": "Короткая пауза без экрана."
+    },
+    {
+      "id": "game2",
+      "title": "Игра 2",
+      "kind": "find",
+      "slovik_line": "Ещё практика.",
+      "audio": "bo-m1-l03-g2",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "A",
+          "options": [
+            "A",
+            "M",
+            "S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quest",
+      "title": "Мини-квест",
+      "kind": "mini_quest",
+      "slovik_line": "Почти финиш!",
+      "audio": "bo-m1-l03-quest",
+      "spark": false,
+      "steps": [
+        {
+          "kind": "find",
+          "correct": "A",
+          "options": [
+            "A",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reward",
+      "title": "Награда",
+      "kind": "reward",
+      "slovik_line": "Молодец!",
+      "audio": "shared-reward",
+      "spark": false,
+      "parent_note": "Урок «Буква А — голос открывается» пройден. Повторите дома главный навык."
     }
   ],
   "quest": {

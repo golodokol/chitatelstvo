@@ -1,7 +1,7 @@
 {
   "slug": "early-letters-self_paced-stage-1-lesson-03",
-  "title": "Круглая О",
-  "tale_title": "Круглая О",
+  "title": "Мотор на поляне",
+  "tale_title": "Мотор на поляне",
   "module_id": 21,
   "group_code": "early-letters",
   "group_label": "Буквы оживают",
@@ -14,316 +14,124 @@
   "tale_slug": "early-letters-stage1-tale-03",
   "module_week": 3,
   "meeting_number": 0,
-  "badge": "Знаю букву О",
+  "badge": "Первый шаг",
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
+  "note": "Каркас станций модуля 1.",
   "lesson_format": "quest",
   "stations": [
     {
-      "id": "trail",
-      "title": "Тропа букв",
+      "id": "hello",
+      "title": "Приветствие",
       "kind": "intro_video",
-      "slovik_line": "Круглая буква О. Она тоже поёт: о-о-о.",
-      "slovik_pose": "wave",
-      "scene_image": "/static/early/letters/scene-gate.jpg",
-      "audio": "bo-m1-l03-hi",
-      "cta_label": "Начать",
+      "slovik_line": "Сегодня: Мир звуков",
+      "audio": "bo-m1-l01-hi",
       "spark": false
     },
     {
-      "id": "meet",
-      "title": "Буква О",
-      "kind": "meet_letter",
-      "slovik_line": "Нажми на О. Скажи о-о-о.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-meet",
-      "sound": "snd-o",
-      "letter": "О",
-      "spark": false
-    },
-    {
-      "id": "round",
-      "title": "Круглое на поляне",
-      "chapter": "Искорка 1 · Звук",
-      "kind": "scene_hunt",
-      "slovik_line": "Найди на поляне всё круглое. Как буква О.",
-      "slovik_pose": "listen",
-      "scene_image": "/static/early/letters/scene-missing.jpg",
-      "audio": "bo-m1-l03-round",
-      "layout": "grid",
-      "grid_cols": 3,
-      "correct_ids": [
-        "ball",
-        "cup"
-      ],
-      "wrong_msg": "Это не круглое. Ищи ещё.",
-      "hotspots": [
-        {
-          "id": "ball",
-          "label": "Мяч",
-          "image": "/static/early/letters/ball.png",
-          "x": 20,
-          "y": 28
-        },
-        {
-          "id": "house",
-          "label": "Дом",
-          "image": "/static/early/letters/house.png",
-          "x": 50,
-          "y": 28
-        },
-        {
-          "id": "cup",
-          "label": "Чашка",
-          "image": "/static/early/letters/cup.png",
-          "x": 80,
-          "y": 28
-        },
-        {
-          "id": "tree",
-          "label": "Дерево",
-          "image": "/static/early/letters/tree.png",
-          "x": 20,
-          "y": 72
-        },
-        {
-          "id": "motor",
-          "label": "Мотор",
-          "image": "/static/early/letters/motor.png",
-          "x": 50,
-          "y": 72
-        },
-        {
-          "id": "bird",
-          "label": "Птица",
-          "image": "/static/early/letters/bird.png",
-          "x": 80,
-          "y": 72
-        }
-      ],
-      "spark": true,
-      "spark_kind": "sound",
-      "spark_group": "sound"
-    },
-    {
-      "id": "hop",
-      "title": "Прыжки",
-      "kind": "letter_maze",
-      "mechanic": "letter_hop",
-      "slovik_line": "Прыгай на круглую О.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l03-hop",
-      "letter": "О",
-      "start": [
-        0,
-        0
-      ],
-      "end": [
-        3,
-        2
-      ],
-      "grid": [
-        [
-          "О",
-          "А",
-          "У"
-        ],
-        [
-          "О",
-          "М",
-          "О"
-        ],
-        [
-          "О",
-          "О",
-          "О"
-        ],
-        [
-          "М",
-          "У",
-          "О"
-        ]
-      ],
-      "spark": false
-    },
-    {
-      "id": "sort",
-      "title": "Большая и маленькая О",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "sort_two",
-      "slovik_line": "Большая О и маленькая о — одна буква. Разложи.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-build",
-      "left": {
-        "label": "О",
-        "correct": [
-          "O1",
-          "O2",
-          "O3"
-        ]
-      },
-      "right": {
-        "label": "о",
-        "correct": [
-          "o1",
-          "o2",
-          "o3"
-        ]
-      },
-      "options": [
-        {
-          "id": "O1",
-          "label": "О"
-        },
-        {
-          "id": "o1",
-          "label": "о"
-        },
-        {
-          "id": "O2",
-          "label": "О"
-        },
-        {
-          "id": "o2",
-          "label": "о"
-        },
-        {
-          "id": "O3",
-          "label": "О"
-        },
-        {
-          "id": "o3",
-          "label": "о"
-        }
-      ],
-      "spark": true,
-      "spark_kind": "letter",
-      "spark_group": "letter"
-    },
-    {
-      "id": "count",
-      "title": "Шесть О",
-      "kind": "catch_letter",
-      "mechanic": "letter_count",
-      "slovik_line": "Поймай шесть букв О. Считай вместе со мной.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l03-count",
-      "letter": "О",
-      "letters": [
-        "О",
-        "А",
-        "У",
-        "М"
-      ],
-      "letter_sounds": {
-        "О": "snd-o",
-        "А": "snd-a",
-        "У": "snd-u",
-        "М": "snd-m"
-      },
-      "catches": 6,
-      "spark": false
-    },
-    {
-      "id": "pause",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Найди дома что-то круглое. Потом вернёмся.",
-      "audio": "bo-m1-l03-pause",
+      "id": "warm",
+      "title": "Разминка",
+      "kind": "find",
+      "slovik_line": "Вспомним прошлое.",
+      "audio": "bo-m1-l01-warm",
       "spark": false,
-      "hint": "Найди дома круглую вещь и скажи о-о-о."
-    },
-    {
-      "id": "slots",
-      "title": "Слоги МО и ОС",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Слоги: мо и ос.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-slots",
-      "result_sound": "snd-mo",
-      "targets": [
-        "М",
-        "О"
-      ],
-      "options": [
-        "С",
-        "М",
-        "О",
-        "А"
-      ],
-      "result_label": "МО",
-      "result_image": "/static/early/letters/motor.png",
-      "spark": true,
-      "spark_kind": "syllable",
-      "spark_group": "syllable"
-    },
-    {
-      "id": "spread",
-      "title": "Круг и слог",
-      "kind": "book_page",
-      "mechanic": "letter_spread",
-      "slovik_line": "Смотри: круглый мяч — и буква О. Потом слог мо.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-spread",
-      "book_title": "О",
-      "cta_label": "Дальше",
-      "lines": [
+      "rounds": [
         {
-          "text": "О",
-          "image": "/static/early/letters/ball.png",
-          "alt": "Мяч"
-        },
-        {
-          "text": "МО",
-          "image": "/static/early/letters/motor.png",
-          "alt": "Мотор"
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "quest",
-      "title": "МО — к мотору",
-      "kind": "mini_quest",
-      "slovik_line": "Слог мо — к мотору.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-quest",
-      "spark": false,
-      "steps": [
-        {
-          "kind": "find",
-          "correct": "МО",
+          "correct": "A",
           "options": [
-            "МА",
-            "МО",
-            "МУ"
+            "A",
+            "M",
+            "O"
           ]
         }
       ]
     },
     {
-      "id": "chest",
-      "title": "Награда Словика",
-      "chapter": "Три искорки",
-      "kind": "reward",
-      "slovik_line": "Круглая О зажглась на тропе!",
-      "slovik_pose": "chest",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "spark_image": "/static/early/letters/spark.png",
-      "audio": "bo-m1-l03-reward",
-      "fail_audio": "vo-retry",
+      "id": "new",
+      "title": "Новое",
+      "kind": "repeat_sound",
+      "slovik_line": "Новый навык.",
+      "audio": "bo-m1-l01-new",
+      "sound": "bo-m1-l01-sound",
+      "spark": false
+    },
+    {
+      "id": "game1",
+      "title": "Игра 1",
+      "kind": "listen_pick",
+      "slovik_line": "Поиграем!",
+      "audio": "bo-m1-l01-g1",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "yes",
+          "options": [
+            {
+              "id": "yes",
+              "label": "Да"
+            },
+            {
+              "id": "no",
+              "label": "Нет"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "break",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Отойдём от экрана.",
+      "audio": "shared-pause-start",
       "spark": false,
-      "fail_title": "Ещё чуть-чуть",
-      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_pose": "worry",
-      "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Урок «Круглая О». Дома найдите круглое и скажите о-о-о.",
-      "chest_cta": "Открыть сундук",
-      "tech_msg": "Знаю букву О"
+      "hint": "Короткая пауза без экрана."
+    },
+    {
+      "id": "game2",
+      "title": "Игра 2",
+      "kind": "find",
+      "slovik_line": "Ещё практика.",
+      "audio": "bo-m1-l01-g2",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "A",
+          "options": [
+            "A",
+            "M",
+            "S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quest",
+      "title": "Мини-квест",
+      "kind": "mini_quest",
+      "slovik_line": "Почти финиш!",
+      "audio": "bo-m1-l01-quest",
+      "spark": false,
+      "steps": [
+        {
+          "kind": "find",
+          "correct": "A",
+          "options": [
+            "A",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reward",
+      "title": "Награда",
+      "kind": "reward",
+      "slovik_line": "Молодец!",
+      "audio": "shared-reward",
+      "spark": false,
+      "parent_note": "Урок «Мир звуков» пройден. Повторите дома главный навык."
     }
   ],
   "quest": {

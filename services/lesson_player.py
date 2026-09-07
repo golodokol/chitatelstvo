@@ -76,11 +76,6 @@ def require_lesson_unlocked(
         return get_child_or_404(db, child_id)
 
     child = get_child_or_404(db, child_id)
-    from lessons.staff_preview import is_staff_preview_child, is_staff_preview_draft_lesson
-
-    if is_staff_preview_child(child) and is_staff_preview_draft_lesson(lesson):
-        return child
-
     ensure_sibling_early_trial(db, child=child, lesson_slug=str(lesson.get("slug") or ""))
     child = get_child_or_404(db, child_id)
     enrollment = find_enrollment_for_lesson(child, lesson, enrollment_id=enrollment_id)

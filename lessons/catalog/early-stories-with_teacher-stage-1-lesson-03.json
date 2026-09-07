@@ -18,247 +18,124 @@
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
+  "note": "Каркас станций модуля 1.",
   "lesson_format": "quest",
   "stations": [
     {
       "id": "hello",
-      "title": "Мяч пропал",
+      "title": "Приветствие",
       "kind": "intro_video",
-      "slovik_line": "Мяч снова пропал! Поищем по дому.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "slovik_line": "Сегодня: Из слогов — слова",
       "audio": "ph-m1-l03-hi",
-      "cta_label": "Начать",
       "spark": false
     },
     {
-      "id": "hunt",
-      "title": "Где мяч?",
-      "chapter": "Искорка 1",
-      "kind": "scene_hunt",
-      "slovik_line": "Где мяч? Загляни в комнаты.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l03-hunt",
-      "layout": "grid",
-      "grid_cols": 3,
-      "correct_ids": [
-        "hall"
-      ],
-      "wrong_msg": "Не тут.",
-      "success_msg": "Вот мяч!",
-      "hotspots": [
-        {
-          "id": "kitchen",
-          "label": "Кухня",
-          "image": "/static/early/letters/syr.png",
-          "x": 20,
-          "y": 50
-        },
-        {
-          "id": "room",
-          "label": "Комната",
-          "image": "/static/early/stories/kot-sleep.png",
-          "x": 50,
-          "y": 50
-        },
-        {
-          "id": "hall",
-          "label": "Коридор",
-          "image": "/static/early/letters/ball.png",
-          "x": 80,
-          "y": 50
-        }
-      ],
-      "spark": true,
-      "spark_kind": "word",
-      "spark_group": "word"
-    },
-    {
-      "id": "under",
-      "title": "Под стулом",
+      "id": "warm",
+      "title": "Разминка",
       "kind": "find",
-      "slovik_line": "Мяч под стулом или на диване?",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l03-under",
+      "slovik_line": "Вспомним прошлое.",
+      "audio": "ph-m1-l03-warm",
+      "spark": false,
       "rounds": [
         {
-          "prompt_text": "ПОД",
-          "correct": "under",
+          "correct": "A",
           "options": [
-            {
-              "id": "sofa",
-              "label": "НА диване",
-              "image": "/static/early/stories/kot-sleep.png"
-            },
-            {
-              "id": "under",
-              "label": "ПОД стулом",
-              "image": "/static/early/letters/ball.png"
-            }
+            "A",
+            "M",
+            "O"
           ]
         }
-      ],
+      ]
+    },
+    {
+      "id": "new",
+      "title": "Новое",
+      "kind": "repeat_sound",
+      "slovik_line": "Новый навык.",
+      "audio": "ph-m1-l03-new",
+      "sound": "ph-m1-l03-sound",
       "spark": false
     },
     {
-      "id": "slots",
-      "title": "Где мяч — вот мяч",
-      "kind": "slot_build",
-      "mechanic": "phrase_slots",
-      "slovik_line": "Собери вопрос: где мяч? Потом: вот мяч!",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l03-slots",
-      "targets": [
-        "ГДЕ",
-        "МЯЧ"
-      ],
-      "options": [
-        "ВОТ",
-        "ГДЕ",
-        "КОТ",
-        "МЯЧ"
-      ],
-      "result_label": "ГДЕ МЯЧ",
-      "spark": false
-    },
-    {
-      "id": "run",
-      "title": "Бежит, ловит, рад",
-      "kind": "mini_quest",
-      "slovik_line": "Кот бежит. Кот ловит. Кот рад.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l03-run",
+      "id": "game1",
+      "title": "Игра 1",
+      "kind": "listen_pick",
+      "slovik_line": "Поиграем!",
+      "audio": "ph-m1-l03-g1",
       "spark": true,
-      "spark_kind": "phrase",
-      "spark_group": "phrase",
-      "steps": [
+      "rounds": [
         {
-          "kind": "phrase_picture",
-          "phrase": "КОТ БЕЖИТ",
-          "correct": "run",
+          "correct": "yes",
           "options": [
             {
-              "id": "sleep",
-              "label": "Спит",
-              "image": "/static/early/stories/kot-sleep.png"
+              "id": "yes",
+              "label": "Да"
             },
             {
-              "id": "run",
-              "label": "Бежит",
-              "image": "/static/early/letters/kot.png"
-            }
-          ]
-        },
-        {
-          "kind": "phrase_picture",
-          "phrase": "КОТ РАД",
-          "correct": "happy",
-          "options": [
-            {
-              "id": "eat",
-              "label": "Ест",
-              "image": "/static/early/stories/kot-eat.png"
-            },
-            {
-              "id": "happy",
-              "label": "Рад",
-              "image": "/static/early/letters/kot.png"
+              "id": "no",
+              "label": "Нет"
             }
           ]
         }
       ]
     },
     {
-      "id": "where",
-      "title": "Картинка к вопросу",
-      "kind": "phrase_picture",
-      "slovik_line": "Где мяч? Выбери картинку.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l03-where",
-      "phrase": "ГДЕ МЯЧ?",
-      "correct": "ball",
-      "picture_only": true,
-      "options": [
-        {
-          "id": "kot",
-          "label": "Кот",
-          "image": "/static/early/letters/kot.png"
-        },
-        {
-          "id": "ball",
-          "label": "Мяч",
-          "image": "/static/early/letters/ball.png"
-        },
-        {
-          "id": "house",
-          "label": "Дом",
-          "image": "/static/early/letters/house.png"
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "book",
-      "title": "Где мяч?",
-      "kind": "book_page",
-      "slovik_line": "История про мяч. Читай.",
-      "scene_image": "/static/early/stories/scene-book.jpg",
-      "audio": "ph-m1-l03-book",
-      "book_title": "Где мяч?",
-      "cta_label": "Я прочитал!",
-      "lines": [
-        {
-          "text": "ГДЕ МЯЧ?",
-          "image": "/static/early/letters/kot.png",
-          "audio": "ph-m1-l03-p1"
-        },
-        {
-          "text": "НЕ ТУТ.",
-          "image": "/static/early/letters/syr.png",
-          "audio": "ph-m1-l03-p2"
-        },
-        {
-          "text": "НЕ ТУТ.",
-          "image": "/static/early/stories/kot-sleep.png",
-          "audio": "ph-m1-l03-p3"
-        },
-        {
-          "text": "ВОТ МЯЧ!",
-          "image": "/static/early/letters/ball.png",
-          "audio": "ph-m1-l03-p4"
-        },
-        {
-          "text": "КОТ РАД.",
-          "image": "/static/early/letters/kot.png",
-          "audio": "ph-m1-l03-p5"
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "chest",
-      "title": "Награда Словика",
-      "chapter": "Три искорки",
-      "kind": "reward",
-      "slovik_line": "Мяч нашёлся. Книжка на полке.",
-      "slovik_pose": "chest",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "spark_image": "/static/early/letters/spark.png",
-      "audio": "ph-m1-l03-reward",
-      "fail_audio": "vo-retry",
+      "id": "break",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Отойдём от экрана.",
+      "audio": "shared-pause-start",
       "spark": false,
-      "fail_title": "Ещё чуть-чуть",
-      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_pose": "worry",
-      "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Урок «Где мяч?». Дома: ГДЕ МЯЧ? НЕ ТУТ. ВОТ МЯЧ!",
-      "chest_cta": "Открыть сундук",
-      "tech_msg": "Книжка на полке"
+      "hint": "Короткая пауза без экрана."
+    },
+    {
+      "id": "game2",
+      "title": "Игра 2",
+      "kind": "find",
+      "slovik_line": "Ещё практика.",
+      "audio": "ph-m1-l03-g2",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "A",
+          "options": [
+            "A",
+            "M",
+            "S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quest",
+      "title": "Мини-квест",
+      "kind": "mini_quest",
+      "slovik_line": "Почти финиш!",
+      "audio": "ph-m1-l03-quest",
+      "spark": false,
+      "steps": [
+        {
+          "kind": "find",
+          "correct": "A",
+          "options": [
+            "A",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reward",
+      "title": "Награда",
+      "kind": "reward",
+      "slovik_line": "Молодец!",
+      "audio": "shared-reward",
+      "spark": false,
+      "parent_note": "Урок «Из слогов — слова» пройден. Повторите дома главный навык."
     }
   ],
   "quest": {
-    "goal_label": "искорки",
+    "goal_label": "слоги на тропе",
     "goal_count": 3
   },
   "live_lesson": {

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from catalog.loader import get_tale
 from db.models import Enrollment
 from lessons.stages import normalize_stage
 from lessons.loader import get_lesson
@@ -104,19 +103,9 @@ def _apply_single_labels(
     stage = normalize_stage(enrollment.chosen_stage) or lesson.get("stage")
     tale_number = enrollment.chosen_tale_number or lesson.get("tale_number")
     result = dict(lesson)
-    group = (lesson.get("group_code") or "").strip()
-    catalog_title = None
-    if group and stage and tale_number:
-        tale = get_tale(group, stage, int(tale_number))
-        if tale and tale.get("tale_title"):
-            catalog_title = str(tale["tale_title"])
-    stored = (enrollment.chosen_tale_title or "").strip()
-    if stored and not (set(stored) - {"?", " "}):
-        stored = ""
-    label = catalog_title or stored
-    if label:
-        result["title"] = label
-        result["tale_title"] = label
+    if enrollment.chosen_tale_title:
+        result["title"] = enrollment.chosen_tale_title
+        result["tale_title"] = enrollment.chosen_tale_title
     if enrollment.chosen_tale_slug:
         result["tale_slug"] = enrollment.chosen_tale_slug
     if stage:

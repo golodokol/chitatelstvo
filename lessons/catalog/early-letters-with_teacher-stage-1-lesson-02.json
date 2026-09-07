@@ -14,281 +14,124 @@
   "tale_slug": "early-letters-stage1-tale-02",
   "module_week": 2,
   "meeting_number": 1,
-  "badge": "Знаю букву У",
+  "badge": "Первый шаг",
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
+  "note": "Каркас станций модуля 1.",
   "lesson_format": "quest",
   "stations": [
     {
-      "id": "trail",
-      "title": "Тропа букв",
+      "id": "hello",
+      "title": "Приветствие",
       "kind": "intro_video",
-      "slovik_line": "Новая буква на тропе. Она любит петь: у-у-у.",
-      "slovik_pose": "wave",
-      "scene_image": "/static/early/letters/scene-gate.jpg",
+      "slovik_line": "Сегодня: Первый звук слова",
       "audio": "bo-m1-l02-hi",
-      "cta_label": "Начать",
       "spark": false
     },
     {
-      "id": "meet",
-      "title": "Буква У",
-      "kind": "meet_letter",
-      "slovik_line": "Это У. Нажми и пропой вместе: у-у-у.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l02-meet",
-      "sound": "snd-u",
-      "letter": "У",
-      "spark": false
-    },
-    {
-      "id": "echo",
-      "title": "Эхо",
-      "chapter": "Искорка 1 · Звук",
-      "kind": "repeat_sound",
-      "slovik_line": "Как в пещере эха. Повтори: у-у-у.",
-      "slovik_pose": "listen",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l02-echo",
-      "sound": "snd-u",
-      "spark": true,
-      "spark_kind": "sound",
-      "spark_group": "sound"
-    },
-    {
-      "id": "hop",
-      "title": "Прыжки",
-      "kind": "letter_maze",
-      "mechanic": "letter_hop",
-      "slovik_line": "Прыгай на букву, которая поёт у-у-у.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l02-hop",
-      "letter": "У",
-      "start": [
-        0,
-        0
-      ],
-      "end": [
-        3,
-        3
-      ],
-      "grid": [
-        [
-          "У",
-          "У",
-          "У",
-          "О"
-        ],
-        [
-          "М",
-          "А",
-          "У",
-          "М"
-        ],
-        [
-          "А",
-          "О",
-          "У",
-          "У"
-        ],
-        [
-          "М",
-          "А",
-          "М",
-          "У"
-        ]
-      ],
+      "id": "warm",
+      "title": "Разминка",
+      "kind": "find",
+      "slovik_line": "Вспомним прошлое.",
+      "audio": "bo-m1-l02-warm",
       "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "maze",
-      "title": "Лабиринт У и А",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "letter_maze",
-      "slovik_line": "Иди только по У и А. Другие буквы — стена.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l02-maze",
-      "letter": "У",
-      "start": [
-        0,
-        0
-      ],
-      "end": [
-        2,
-        2
-      ],
-      "grid": [
-        [
-          "У",
-          "М",
-          "А"
-        ],
-        [
-          "У",
-          "У",
-          "У"
-        ],
-        [
-          "А",
-          "М",
-          "У"
-        ]
-      ],
-      "spark": true,
-      "spark_kind": "letter",
-      "spark_group": "letter"
-    },
-    {
-      "id": "grid",
-      "title": "Найди все У",
-      "kind": "letter_puzzle",
-      "mechanic": "letter_grid",
-      "slovik_line": "Найди все буквы У.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l02-grid",
-      "slots": 3,
-      "pieces": [
-        {
-          "id": "u1",
-          "label": "У",
-          "correct": true
-        },
-        {
-          "id": "m1",
-          "label": "М",
-          "correct": false
-        },
-        {
-          "id": "u2",
-          "label": "У",
-          "correct": true
-        },
-        {
-          "id": "a1",
-          "label": "А",
-          "correct": false
-        },
-        {
-          "id": "o1",
-          "label": "О",
-          "correct": false
-        },
-        {
-          "id": "u3",
-          "label": "У",
-          "correct": true
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "pause",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Отойди. Пропой у-у-у тихо, как ветер.",
-      "audio": "bo-m1-l02-pause",
-      "spark": false,
-      "hint": "Тихо пропой у-у-у у окна. Потом вернёмся."
-    },
-    {
-      "id": "slots",
-      "title": "МУ и УМ",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Склеим: му и ум.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l02-slots",
-      "result_sound": "snd-mu",
-      "targets": [
-        "М",
-        "У"
-      ],
-      "options": [
-        "М",
-        "А",
-        "У",
-        "О"
-      ],
-      "result_label": "МУ",
-      "spark": true,
-      "spark_kind": "syllable",
-      "spark_group": "syllable"
-    },
-    {
-      "id": "or",
-      "title": "Кто поёт?",
-      "kind": "listen_pick",
-      "mechanic": "or_choice",
-      "slovik_line": "Кто поёт у-у-у? Не спутай с мотором.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l02-or",
-      "picture_only": true,
       "rounds": [
         {
-          "sound": "snd-u",
-          "correct": "wind",
+          "correct": "A",
           "options": [
-            {
-              "id": "wind",
-              "label": "Ветер",
-              "image": "/static/early/letters/tree.png"
-            },
-            {
-              "id": "motor",
-              "label": "Мотор",
-              "image": "/static/early/letters/motor.png"
-            }
-          ]
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "quest",
-      "title": "Слог УМ",
-      "kind": "mini_quest",
-      "slovik_line": "Где слог ум?",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l02-quest",
-      "spark": false,
-      "steps": [
-        {
-          "kind": "find",
-          "prompt": "Слог",
-          "correct": "УМ",
-          "options": [
-            "МУ",
-            "УМ",
-            "МА",
-            "МО"
+            "A",
+            "M",
+            "O"
           ]
         }
       ]
     },
     {
-      "id": "chest",
-      "title": "Награда Словика",
-      "chapter": "Три искорки",
-      "kind": "reward",
-      "slovik_line": "Буква У умеет петь — и ты тоже. Искорки с нами!",
-      "slovik_pose": "chest",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "spark_image": "/static/early/letters/spark.png",
-      "audio": "bo-m1-l02-reward",
-      "fail_audio": "vo-retry",
+      "id": "new",
+      "title": "Новое",
+      "kind": "repeat_sound",
+      "slovik_line": "Новый навык.",
+      "audio": "bo-m1-l02-new",
+      "sound": "bo-m1-l02-sound",
+      "spark": false
+    },
+    {
+      "id": "game1",
+      "title": "Игра 1",
+      "kind": "listen_pick",
+      "slovik_line": "Поиграем!",
+      "audio": "bo-m1-l02-g1",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "yes",
+          "options": [
+            {
+              "id": "yes",
+              "label": "Да"
+            },
+            {
+              "id": "no",
+              "label": "Нет"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "break",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Отойдём от экрана.",
+      "audio": "shared-pause-start",
       "spark": false,
-      "fail_title": "Ещё чуть-чуть",
-      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_pose": "worry",
-      "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Урок «Поющая У». Дома протяните у-у-у и сложите МУ.",
-      "chest_cta": "Открыть сундук",
-      "tech_msg": "Знаю букву У"
+      "hint": "Короткая пауза без экрана."
+    },
+    {
+      "id": "game2",
+      "title": "Игра 2",
+      "kind": "find",
+      "slovik_line": "Ещё практика.",
+      "audio": "bo-m1-l02-g2",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "A",
+          "options": [
+            "A",
+            "M",
+            "S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quest",
+      "title": "Мини-квест",
+      "kind": "mini_quest",
+      "slovik_line": "Почти финиш!",
+      "audio": "bo-m1-l02-quest",
+      "spark": false,
+      "steps": [
+        {
+          "kind": "find",
+          "correct": "A",
+          "options": [
+            "A",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reward",
+      "title": "Награда",
+      "kind": "reward",
+      "slovik_line": "Молодец!",
+      "audio": "shared-reward",
+      "spark": false,
+      "parent_note": "Урок «Первый звук слова» пройден. Повторите дома главный навык."
     }
   ],
   "quest": {

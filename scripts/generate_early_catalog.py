@@ -6,12 +6,9 @@ import json
 from copy import deepcopy
 from pathlib import Path
 
-from lessons.early_module1_lessons import stations_for
-
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "catalog"
 LESSONS = ROOT / "lessons" / "catalog"
-
 
 LETTERS_TITLES = [
     "Мотор на поляне",
@@ -300,27 +297,23 @@ def main() -> None:
     ):
         for i, title in enumerate(LETTERS_TITLES, start=1):
             slug = f"early-letters-{tariff_code}-stage-1-lesson-{i:02d}"
-            stations = stations_for("letters", i) or skeleton_stations("letters", i, title)
             write_json(LESSONS / f"{slug}.json", lesson_meta(
                 slug=slug, title=title, module_id=mid_letters,
                 group_code="early-letters", group_label="Буквы оживают",
                 tariff_code=tariff_code, tariff_label=tariff_label,
                 lesson_number=i, tale_number=i, tale_slug=f"early-letters-stage1-tale-{i:02d}",
-                module_week=i, stations=stations,
-                active=False,
-                note="Станции модуля 1 · уроки 1–4." if i <= 4 else "Каркас станций модуля 1.",
+                module_week=i, stations=skeleton_stations("letters", i, title),
+                active=False, note="Каркас станций модуля 1.",
             ))
         for i, title in enumerate(STORIES_TITLES, start=1):
             slug = f"early-stories-{tariff_code}-stage-1-lesson-{i:02d}"
-            stations = stations_for("stories", i) or skeleton_stations("stories", i, title)
             write_json(LESSONS / f"{slug}.json", lesson_meta(
                 slug=slug, title=title, module_id=mid_stories,
                 group_code="early-stories", group_label="Первые истории",
                 tariff_code=tariff_code, tariff_label=tariff_label,
                 lesson_number=i, tale_number=i, tale_slug=f"early-stories-stage1-tale-{i:02d}",
-                module_week=i, stations=stations,
-                active=False,
-                note="Станции модуля 1 · уроки 1–4." if i <= 4 else "Каркас станций модуля 1.",
+                module_week=i, stations=skeleton_stations("stories", i, title),
+                active=False, note="Каркас станций модуля 1.",
             ))
 
     print("OK modules", len(modules_data["modules"]))

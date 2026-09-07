@@ -18,285 +18,124 @@
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
+  "note": "Каркас станций модуля 1.",
   "lesson_format": "quest",
   "stations": [
     {
       "id": "hello",
-      "title": "Короб на полу",
+      "title": "Приветствие",
       "kind": "intro_video",
-      "slovik_line": "В доме что-то новое. Посмотрим!",
-      "slovik_pose": "wave",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "slovik_line": "Сегодня: Как буквы становятся слогом",
       "audio": "ph-m1-l01-hi",
-      "cta_label": "Начать",
       "spark": false
     },
     {
-      "id": "screen",
-      "title": "Слово КОРОБ",
-      "chapter": "Слово",
-      "kind": "word_picture",
-      "mechanic": "word_screen",
-      "slovik_line": "Прочитай слово. Короб.",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l01-screen",
+      "id": "warm",
+      "title": "Разминка",
+      "kind": "find",
+      "slovik_line": "Вспомним прошлое.",
+      "audio": "ph-m1-l01-warm",
       "spark": false,
-      "items": [
+      "rounds": [
         {
-          "word": "КОРОБ",
-          "correct": "box",
+          "correct": "A",
+          "options": [
+            "A",
+            "M",
+            "O"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "new",
+      "title": "Новое",
+      "kind": "repeat_sound",
+      "slovik_line": "Новый навык.",
+      "audio": "ph-m1-l01-new",
+      "sound": "ph-m1-l01-sound",
+      "spark": false
+    },
+    {
+      "id": "game1",
+      "title": "Игра 1",
+      "kind": "listen_pick",
+      "slovik_line": "Поиграем!",
+      "audio": "ph-m1-l01-g1",
+      "spark": true,
+      "rounds": [
+        {
+          "correct": "yes",
           "options": [
             {
-              "id": "box",
-              "label": "Короб",
-              "image": "/static/early/letters/house.png"
+              "id": "yes",
+              "label": "Да"
             },
             {
-              "id": "kot",
-              "label": "Кот",
-              "image": "/static/early/letters/kot.png"
-            },
-            {
-              "id": "ball",
-              "label": "Мяч",
-              "image": "/static/early/letters/ball.png"
+              "id": "no",
+              "label": "Нет"
             }
           ]
         }
       ]
     },
     {
-      "id": "what",
-      "title": "Что там?",
+      "id": "break",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Отойдём от экрана.",
+      "audio": "shared-pause-start",
+      "spark": false,
+      "hint": "Короткая пауза без экрана."
+    },
+    {
+      "id": "game2",
+      "title": "Игра 2",
       "kind": "find",
-      "slovik_line": "Что там? Выбери картинку.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l01-what",
+      "slovik_line": "Ещё практика.",
+      "audio": "ph-m1-l01-g2",
+      "spark": true,
       "rounds": [
         {
-          "prompt_text": "Сначала короб пустой.",
-          "correct": "empty",
+          "correct": "A",
           "options": [
-            {
-              "id": "empty",
-              "label": "ПУСТО"
-            },
-            {
-              "id": "kot",
-              "label": "КОТ",
-              "image": "/static/early/letters/kot.png"
-            },
-            {
-              "id": "ball",
-              "label": "МЯЧ",
-              "image": "/static/early/letters/ball.png"
-            }
+            "A",
+            "M",
+            "S"
           ]
         }
-      ],
-      "spark": false
+      ]
     },
     {
-      "id": "drag",
-      "title": "Слово к картинке",
-      "kind": "match_pairs",
-      "mechanic": "drag_match",
-      "slovik_line": "Перетащи слово к картинке.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l01-drag",
-      "hint": "Нажми на слово, потом на картинку.",
-      "pairs": [
-        {
-          "id": "korob",
-          "label": "КОРОБ",
-          "image": "/static/early/letters/house.png"
-        },
-        {
-          "id": "kot",
-          "label": "КОТ",
-          "image": "/static/early/letters/kot.png"
-        },
-        {
-          "id": "myach",
-          "label": "МЯЧ",
-          "image": "/static/early/letters/ball.png"
-        }
-      ],
-      "spark": true,
-      "spark_kind": "word",
-      "spark_group": "word"
-    },
-    {
-      "id": "open",
-      "title": "Открой короб",
+      "id": "quest",
+      "title": "Мини-квест",
       "kind": "mini_quest",
-      "slovik_line": "Открой короб. Смотри… вот мяч!",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l01-open",
+      "slovik_line": "Почти финиш!",
+      "audio": "ph-m1-l01-quest",
       "spark": false,
       "steps": [
         {
           "kind": "find",
-          "prompt": "СМОТРИ",
-          "correct": "look",
+          "correct": "A",
           "options": [
-            {
-              "id": "look",
-              "label": "СМОТРИ"
-            },
-            {
-              "id": "sleep",
-              "label": "СПИТ"
-            }
-          ]
-        },
-        {
-          "kind": "find",
-          "prompt": "Что в коробе?",
-          "correct": "ball",
-          "options": [
-            {
-              "id": "empty",
-              "label": "ПУСТО"
-            },
-            {
-              "id": "ball",
-              "label": "ВОТ МЯЧ",
-              "image": "/static/early/letters/ball.png"
-            },
-            {
-              "id": "syr",
-              "label": "СЫР",
-              "image": "/static/early/letters/syr.png"
-            }
+            "A",
+            "O"
           ]
         }
       ]
     },
     {
-      "id": "slots",
-      "title": "Вот мяч",
-      "kind": "slot_build",
-      "mechanic": "phrase_slots",
-      "slovik_line": "Собери: вот мяч.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l01-slots",
-      "targets": [
-        "ВОТ",
-        "МЯЧ"
-      ],
-      "options": [
-        "ДОМ",
-        "ВОТ",
-        "СЫР",
-        "МЯЧ"
-      ],
-      "result_label": "ВОТ МЯЧ",
-      "spark": false,
-      "spark_group": "phrase"
-    },
-    {
-      "id": "feel",
-      "title": "Кот рад",
-      "kind": "phrase_picture",
-      "slovik_line": "Кот рад. Где такая картинка?",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
-      "audio": "ph-m1-l01-feel",
-      "phrase": "КОТ РАД",
-      "correct": "happy",
-      "picture_only": true,
-      "options": [
-        {
-          "id": "sleep",
-          "label": "Спит",
-          "image": "/static/early/stories/kot-sleep.png"
-        },
-        {
-          "id": "happy",
-          "label": "Рад",
-          "image": "/static/early/letters/kot.png"
-        },
-        {
-          "id": "eat",
-          "label": "Ест",
-          "image": "/static/early/stories/kot-eat.png"
-        }
-      ],
-      "spark": true,
-      "spark_kind": "phrase",
-      "spark_group": "phrase"
-    },
-    {
-      "id": "book",
-      "title": "Кот и коробка",
-      "kind": "book_page",
-      "slovik_line": "Теперь книжка. Читай сам. Я рядом.",
-      "slovik_pose": "joy",
-      "scene_image": "/static/early/stories/scene-book.jpg",
-      "audio": "ph-m1-l01-book",
-      "book_title": "Кот и коробка",
-      "cta_label": "Я прочитал!",
-      "lines": [
-        {
-          "text": "ВОТ КОРОБ.",
-          "image": "/static/early/letters/house.png",
-          "alt": "Короб",
-          "audio": "ph-m1-l01-p1"
-        },
-        {
-          "text": "ЧТО ТАМ?",
-          "image": "/static/early/letters/kot.png",
-          "alt": "Кот смотрит",
-          "audio": "ph-m1-l01-p2"
-        },
-        {
-          "text": "НЕ ТУТ.",
-          "image": "/static/early/letters/house.png",
-          "alt": "Пусто",
-          "audio": "ph-m1-l01-p3"
-        },
-        {
-          "text": "ВОТ МЯЧ!",
-          "image": "/static/early/letters/ball.png",
-          "alt": "Мяч",
-          "audio": "ph-m1-l01-p4"
-        },
-        {
-          "text": "КОТ РАД.",
-          "image": "/static/early/letters/kot.png",
-          "alt": "Кот рад",
-          "audio": "ph-m1-l01-p5"
-        }
-      ],
-      "finale": "Книжка прочитана!",
-      "spark": false
-    },
-    {
-      "id": "chest",
-      "title": "Награда Словика",
-      "chapter": "Три искорки",
+      "id": "reward",
+      "title": "Награда",
       "kind": "reward",
-      "slovik_line": "Книжка встала на полку. Молодец!",
-      "slovik_pose": "chest",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "spark_image": "/static/early/letters/spark.png",
-      "audio": "ph-m1-l01-reward",
-      "fail_audio": "vo-retry",
+      "slovik_line": "Молодец!",
+      "audio": "shared-reward",
       "spark": false,
-      "fail_title": "Ещё чуть-чуть",
-      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
-      "fail_pose": "worry",
-      "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Урок «Кот и коробка». Дома ещё раз: ВОТ КОРОБ. ВОТ МЯЧ. КОТ РАД.",
-      "chest_cta": "Открыть сундук",
-      "tech_msg": "Книжка на полке"
+      "parent_note": "Урок «Как буквы становятся слогом» пройден. Повторите дома главный навык."
     }
   ],
   "quest": {
-    "goal_label": "искорки",
+    "goal_label": "слоги на тропе",
     "goal_count": 3
   },
   "live_lesson": {

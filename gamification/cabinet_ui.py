@@ -588,15 +588,8 @@ def _upcoming_module_lessons(
     *,
     group_code: str,
     assets_base: str,
-    staff_preview: bool = False,
-    child_id: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Плейсхолдеры уроков 1–8 модуля: для всех «скоро», без перехода.
-
-    В staff-кабинете уроки 1–4 получают ссылку на черновик.
-    """
-    from lessons.staff_preview import STAFF_PREVIEW_LESSON_MAX, staff_preview_lesson_slug
-
+    """Плейсхолдеры уроков 1–8 модуля для пробного кабинета (даты сентября + покупка)."""
     titles = EARLY_MODULE_LESSON_TITLES.get(group_code) or [f"Урок {i}" for i in range(1, 9)]
     cover = _course_cover_url(assets_base, group_code)
     buy_url = _buy_url_for_group(group_code)
@@ -607,11 +600,6 @@ def _upcoming_module_lessons(
             if idx <= len(EARLY_MODULE_OPEN_LABELS)
             else "после покупки"
         )
-        url = None
-        if staff_preview and child_id and idx <= STAFF_PREVIEW_LESSON_MAX:
-            from api.lesson_signing import build_lesson_url
-
-            url = build_lesson_url(child_id, staff_preview_lesson_slug(group_code, idx))
         rows.append(
             {
                 "week_in_stage": idx,
@@ -619,12 +607,10 @@ def _upcoming_module_lessons(
                 "cover_url": cover,
                 "cover_state": "soon",
                 "opens_on_label": date_label,
-                "overlay_label": "скоро",
-                "preview_open": False,
                 "buy_url": buy_url,
                 "group_code": group_code,
-                "url": url,
-                "unlocked": bool(url),
+                "url": None,
+                "unlocked": False,
             }
         )
     return rows
@@ -1684,7 +1670,6 @@ def _build_track_section(
     assets_base: str,
     cabinet_mode: str,
     child_id: str | None = None,
-    staff_preview: bool = False,
 ) -> dict[str, Any]:
     group_code = str(track.get("group_code") or "")
     lesson_links = _ensure_early_intro_trial(
@@ -1714,28 +1699,11 @@ def _build_track_section(
 
     missions = _missions(events, lesson, points, chest)
     is_trial_track = cabinet_mode == "trial_early" or str(track.get("tariff_code") or "") == "trial"
-    show_upcoming = early and (is_trial_track or staff_preview)
-    if show_upcoming:
-        if is_trial_track:
-            story_stages = []
-        else:
-            story_stages = _story_stages(lesson_links, claimed_slugs=claimed)
-        upcoming_lessons = _upcoming_module_lessons(
-            group_code=group_code,
-            assets_base=assets_base,
-            staff_preview=staff_preview,
-            child_id=child_id,
-        )
+    if is_trial_track and early:
+        story_stages: list[dict] = []
+        upcoming_lessons = _upcoming_module_lessons(group_code=group_code, assets_base=assets_base)
         stories_title = f"Дальше в программе · {track.get('group_label') or ''}".strip(" ·")
-        stories_subtitle = "Тропа из 8 уроков · вторник и четверг с 1 сентября"
-        map_cta_label = "Купить продолжение"
-        if staff_preview:
-            map_cta_note = (
-                "Режим проверки: точки 1–4 открывают черновик урока. "
-                "У остальных семей на карте только «скоро»."
-            )
-        else:
-            map_cta_note = "Уроки на карте пока закрыты. Купите модуль — Словик поведёт по тропе."
+        stories_subtitle = "8 уроков модуля — по вторникам и четвергам с 1 сентября"
     else:
         story_stages = _story_stages(lesson_links, claimed_slugs=claimed)
         upcoming_lessons = []
@@ -1745,8 +1713,6 @@ def _build_track_section(
             else f"Мои сказки · {track.get('group_label') or ''}".strip(" ·")
         )
         stories_subtitle = None
-        map_cta_label = None
-        map_cta_note = None
     treasury = _treasury_for_track(claims, lesson_links)
     weekly_cards = _weekly_lesson_cards(weekly_source, claimed_slugs=claimed)
 
@@ -1767,8 +1733,6 @@ def _build_track_section(
         "upcoming_lessons": upcoming_lessons,
         "stories_title": stories_title,
         "stories_subtitle": stories_subtitle,
-        "map_cta_label": map_cta_label,
-        "map_cta_note": map_cta_note,
         "buy_url": _buy_url_for_group(group_code) if early else None,
         "missions": missions,
         "missions_title": "Миссии на эту неделю",
@@ -1917,12 +1881,8 @@ def build_child_cabinet(
     chest_claims: list[Any] | None = None,
     assets_base: str,
     child_id: str | None = None,
-    progress_token: str | None = None,
 ) -> dict[str, Any]:
     """Собирает контекст игрового кабинета для одного ребёнка."""
-    from lessons.staff_preview import is_staff_preview_token
-
-    staff_preview = is_staff_preview_token(progress_token)
     earned_set = set(earned_badges)
     # Для toast — реальные бейджи из БД до trial-фильтра (иначе «Читатель»
     # каждый раз выглядит как новый и снова всплывает).
@@ -1955,7 +1915,6 @@ def build_child_cabinet(
                     assets_base=assets_base,
                     cabinet_mode=cabinet_mode,
                     child_id=child_id,
-                    staff_preview=staff_preview,
                 )
             )
         if cabinet_mode == "full":
