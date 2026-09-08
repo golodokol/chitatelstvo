@@ -3589,6 +3589,15 @@ a.chit-lesson-companion--link.is-disabled {
   display: block;
 }
 
+.chit-story-card__cover--map {
+  aspect-ratio: 16 / 9;
+}
+
+.chit-story-card__cover--map img {
+  object-fit: cover;
+  object-position: center;
+}
+
 .chit-story-card__placeholder {
   width: 100%;
   height: 100%;

@@ -152,7 +152,7 @@ _POST_VIDEO_CHEST_STEPS = (
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260823c"
+EARLY_ASSETS_VERSION = "20260909a"
 
 INTRO_TRIAL_COVERS: dict[str, str] = {
     "early-letters": "course-cover-letters-intro.jpg",
@@ -454,6 +454,12 @@ def _course_cover_url(assets_base: str, group_code: str) -> str | None:
     return f"{assets_base.rstrip('/')}/assets/{filename}?v={EARLY_ASSETS_VERSION}"
 
 
+def _early_letters_where_map_url(lesson_n: int) -> str:
+    """Карта «где сейчас» для урока 1–8 курса «Буквы оживают»."""
+    n = max(1, min(8, int(lesson_n)))
+    return f"/static/early/letters/scene-map-sounds-where-{n:02d}.png?v={EARLY_ASSETS_VERSION}"
+
+
 def _intro_trial_cover_url(assets_base: str, group_code: str) -> str | None:
     filename = INTRO_TRIAL_COVERS.get(group_code)
     if not filename:
@@ -598,7 +604,7 @@ def _upcoming_module_lessons(
     from lessons.staff_preview import STAFF_PREVIEW_LESSON_MAX, staff_preview_lesson_slug
 
     titles = EARLY_MODULE_LESSON_TITLES.get(group_code) or [f"Урок {i}" for i in range(1, 9)]
-    cover = _course_cover_url(assets_base, group_code)
+    fallback_cover = _course_cover_url(assets_base, group_code)
     buy_url = _buy_url_for_group(group_code)
     rows: list[dict[str, Any]] = []
     for idx, title in enumerate(titles, start=1):
@@ -612,6 +618,10 @@ def _upcoming_module_lessons(
             from api.lesson_signing import build_lesson_url
 
             url = build_lesson_url(child_id, staff_preview_lesson_slug(group_code, idx))
+        if group_code == "early-letters":
+            cover = _early_letters_where_map_url(idx)
+        else:
+            cover = fallback_cover
         rows.append(
             {
                 "week_in_stage": idx,

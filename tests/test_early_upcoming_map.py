@@ -25,6 +25,12 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertTrue(all(row["url"] is None for row in rows))
         self.assertTrue(all(row["unlocked"] is False for row in rows))
         self.assertEqual(rows[0]["title"], "Машина на поляне")
+        self.assertIn("scene-map-sounds-where-01.png", rows[0]["cover_url"])
+        self.assertIn("scene-map-sounds-where-08.png", rows[7]["cover_url"])
+        self.assertEqual(
+            cabinet_ui._early_letters_where_map_url(3),
+            "/static/early/letters/scene-map-sounds-where-03.png?v=20260909a",
+        )
 
     def test_upcoming_opens_first_four_for_staff_preview(self):
         rows = cabinet_ui._upcoming_module_lessons(

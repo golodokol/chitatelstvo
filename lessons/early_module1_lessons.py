@@ -24,6 +24,12 @@ SCENE_HOME = f"{ST}/scene-home-floor.jpg"
 SCENE_RAIN = f"{ST}/scene-window-rain.jpg"
 SPARK = f"{L}/spark.png"
 
+
+def where_map(lesson_n: int) -> str:
+    """Карта «где сейчас» для входа в урок букв (площадка 1–8)."""
+    n = max(1, min(8, int(lesson_n)))
+    return f"{L}/scene-map-sounds-where-{n:02d}.png"
+
 IMG = {
     "motor": f"{L}/motor.png",
     "rain": f"{L}/rain.png",
@@ -112,7 +118,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "kind": "intro_video",
             "slovik_line": "На тропе зажглась новая буква. Помнишь машину? Она говорит: м-м-м. Познакомься с буквой М.",
             "slovik_pose": "wave",
-            "scene_image": f"{L}/scene-gate.jpg",
+            "scene_image": where_map(1),
             "audio": "bo-m1-l01-hi",
             "cta_label": "Начать",
             "spark": False,
@@ -484,7 +490,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "kind": "intro_video",
             "slovik_line": "Новая буква на тропе. Она любит петь: у-у-у.",
             "slovik_pose": "wave",
-            "scene_image": f"{L}/scene-gate.jpg",
+            "scene_image": where_map(2),
             "audio": "bo-m1-l02-hi",
             "cta_label": "Начать",
             "spark": False,
@@ -670,7 +676,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "kind": "intro_video",
             "slovik_line": "Круглая буква О. Она тоже поёт: о-о-о.",
             "slovik_pose": "wave",
-            "scene_image": f"{L}/scene-gate.jpg",
+            "scene_image": where_map(3),
             "audio": "bo-m1-l03-hi",
             "cta_label": "Начать",
             "spark": False,
@@ -867,7 +873,7 @@ def _letters_4() -> list[dict[str, Any]]:
             "kind": "intro_video",
             "slovik_line": "Ш-ш-ш… то не наш звук. А вот с-с-с — это буква С.",
             "slovik_pose": "wave",
-            "scene_image": f"{L}/scene-gate.jpg",
+            "scene_image": where_map(4),
             "audio": "bo-m1-l04-hi",
             "cta_label": "Начать",
             "spark": False,

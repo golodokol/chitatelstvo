@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260826m">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260909a">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -372,12 +372,13 @@
                 {% endif %}
                 <div class="chit-story-grid">
                   {% for tale in track.upcoming_lessons %}
+                  {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
                   <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
                     {% if tale.unlocked and tale.url %}
                     <a class="chit-story-card__link" href="{{ tale.url }}">
-                      <div class="chit-story-card__cover">
+                      <div class="chit-story-card__cover{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
                         {% if tale.cover_url %}
-                        <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                        <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
                         {% else %}
                         <div class="chit-story-card__placeholder" aria-hidden="true"></div>
                         {% endif %}
@@ -393,9 +394,9 @@
                     </a>
                     {% else %}
                     <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
-                      <div class="chit-story-card__cover chit-story-card__cover--soon">
+                      <div class="chit-story-card__cover chit-story-card__cover--soon{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
                         {% if tale.cover_url %}
-                        <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                        <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
                         {% else %}
                         <div class="chit-story-card__placeholder" aria-hidden="true"></div>
                         {% endif %}
@@ -488,12 +489,13 @@
             {% endif %}
             <div class="chit-story-grid">
               {% for tale in track.upcoming_lessons %}
+              {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
               <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
                 {% if tale.unlocked and tale.url %}
                 <a class="chit-story-card__link" href="{{ tale.url }}">
-                  <div class="chit-story-card__cover">
+                  <div class="chit-story-card__cover{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
                     {% if tale.cover_url %}
-                    <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                    <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
                     {% else %}
                     <div class="chit-story-card__placeholder" aria-hidden="true"></div>
                     {% endif %}
@@ -509,9 +511,9 @@
                 </a>
                 {% else %}
                 <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
-                  <div class="chit-story-card__cover chit-story-card__cover--soon">
+                  <div class="chit-story-card__cover chit-story-card__cover--soon{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
                     {% if tale.cover_url %}
-                    <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                    <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
                     {% else %}
                     <div class="chit-story-card__placeholder" aria-hidden="true"></div>
                     {% endif %}
