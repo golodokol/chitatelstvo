@@ -301,27 +301,48 @@
     },
     {
       "id": "spread",
-      "title": "Книжечка звука",
+      "title": "Первая азбука",
       "chapter": "Слог",
-      "kind": "book_page",
-      "mechanic": "letter_spread",
-      "slovik_line": "В книжке сначала звук машины. Потом слово мама: ма-ма.",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи первую азбуку. Выбери картинки, которые начинаются на букву М.",
       "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l01-spread",
-      "book_label": "Разворот",
-      "book_title": "М",
-      "cta_label": "Дальше",
-      "lines": [
+      "letter": "М",
+      "picture_only": true,
+      "hint": "Картинка должна начинаться на М.",
+      "success_msg": "Страница М готова!",
+      "rounds": [
         {
-          "text": "м-м-м",
-          "image": "/static/early/letters/motor.png",
-          "alt": "Машина"
+          "correct": "motor",
+          "options": [
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/bird.png"
+            }
+          ]
         },
         {
-          "text": "МАМА",
-          "image": "/static/early/letters/mama.png",
-          "alt": "Мама"
+          "correct": "mama",
+          "options": [
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            }
+          ]
         }
       ],
       "spark": false

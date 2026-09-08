@@ -239,20 +239,33 @@ def _letters_1() -> list[dict[str, Any]]:
         },
         {
             "id": "spread",
-            "title": "Книжечка звука",
+            "title": "Первая азбука",
             "chapter": "Слог",
-            "kind": "book_page",
-            "mechanic": "letter_spread",
-            "slovik_line": "В книжке сначала звук машины. Потом слово мама: ма-ма.",
+            "kind": "alphabet_book",
+            "mechanic": "azbuka_fill",
+            "slovik_line": "Сложи первую азбуку. Выбери картинки, которые начинаются на букву М.",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
             "audio": "bo-m1-l01-spread",
-            "book_label": "Разворот",
-            "book_title": "М",
-            "cta_label": "Дальше",
-            "lines": [
-                {"text": "м-м-м", "image": IMG["motor"], "alt": "Машина"},
-                {"text": "МАМА", "image": IMG["mama"], "alt": "Мама"},
+            "letter": "М",
+            "picture_only": True,
+            "hint": "Картинка должна начинаться на М.",
+            "success_msg": "Страница М готова!",
+            "rounds": [
+                {
+                    "correct": "motor",
+                    "options": [
+                        _opt("motor", "Машина", IMG["motor"]),
+                        _opt("sun", "Солнце", IMG["bird"]),
+                    ],
+                },
+                {
+                    "correct": "mama",
+                    "options": [
+                        _opt("mama", "Мама", IMG["mama"]),
+                        _opt("kot", "Кот", IMG["kot"]),
+                    ],
+                },
             ],
             "spark": False,
         },

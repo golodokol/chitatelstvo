@@ -3338,6 +3338,161 @@
     showStep();
   }
 
+  function renderAlphabetBook(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) field.classList.add("quest-playfield--book", "quest-playfield--azbuka");
+    enableNext(false);
+
+    var letter = station.letter || "М";
+    var rounds = station.rounds || [];
+    var rIdx = 0;
+    var locked = false;
+
+    var wrap = document.createElement("div");
+    wrap.className = "quest-azbuka";
+
+    var book = document.createElement("div");
+    book.className = "quest-book quest-book--azbuka";
+    book.setAttribute("role", "region");
+    book.setAttribute("aria-label", "Азбука · буква " + letter);
+
+    var cover = document.createElement("div");
+    cover.className = "quest-book__cover";
+    var spread = document.createElement("div");
+    spread.className = "quest-book__spread quest-azbuka__spread";
+
+    var pageLetter = document.createElement("div");
+    pageLetter.className = "quest-book__page quest-azbuka__letter-page";
+    var letterEl = document.createElement("div");
+    letterEl.className = "quest-azbuka__letter";
+    letterEl.textContent = letter;
+    pageLetter.appendChild(letterEl);
+
+    var pageSlot = document.createElement("div");
+    pageSlot.className = "quest-book__page quest-azbuka__slot-page";
+    var slot = document.createElement("div");
+    slot.className = "quest-azbuka__slot";
+    slot.setAttribute("aria-label", "Место для картинки на " + letter);
+    var slotHint = document.createElement("span");
+    slotHint.className = "quest-azbuka__slot-hint";
+    slotHint.textContent = "?";
+    slot.appendChild(slotHint);
+    var slotImg = document.createElement("img");
+    slotImg.className = "quest-azbuka__slot-img";
+    slotImg.alt = "";
+    slotImg.hidden = true;
+    slot.appendChild(slotImg);
+    pageSlot.appendChild(slot);
+
+    spread.appendChild(pageLetter);
+    spread.appendChild(pageSlot);
+    cover.appendChild(spread);
+    book.appendChild(cover);
+    wrap.appendChild(book);
+
+    var stars = document.createElement("div");
+    stars.className = "quest-azbuka__stars";
+    stars.setAttribute("aria-hidden", "true");
+    rounds.forEach(function (_, i) {
+      var s = document.createElement("span");
+      s.className = "quest-azbuka__star";
+      s.dataset.i = String(i);
+      stars.appendChild(s);
+    });
+    wrap.appendChild(stars);
+
+    var choices = document.createElement("div");
+    choices.className = "quest-azbuka__choices";
+    wrap.appendChild(choices);
+
+    var foot = document.createElement("p");
+    foot.className = "quest-azbuka__hint";
+    foot.textContent = station.hint || "Выбери картинку на букву " + letter + ".";
+    wrap.appendChild(foot);
+
+    function paintStars() {
+      Array.prototype.forEach.call(stars.children, function (el, i) {
+        el.classList.toggle("is-on", i < rIdx);
+        el.classList.toggle("is-current", i === rIdx);
+      });
+    }
+
+    function findOpt(id) {
+      var opts = (rounds[rIdx] && rounds[rIdx].options) || [];
+      for (var i = 0; i < opts.length; i++) {
+        var o = opts[i];
+        if ((typeof o === "string" ? o : o.id) === id) return o;
+      }
+      return null;
+    }
+
+    function clearSlot() {
+      slot.classList.remove("is-filled", "is-wrong");
+      slotImg.hidden = true;
+      slotImg.removeAttribute("src");
+      slotHint.hidden = false;
+    }
+
+    function fillSlot(opt) {
+      if (!opt || !opt.image) return;
+      slotHint.hidden = true;
+      slotImg.hidden = false;
+      slotImg.src = assetUrl(opt.image);
+      slotImg.alt = opt.label || opt.id || "";
+      slot.classList.add("is-filled");
+    }
+
+    function renderRound() {
+      locked = false;
+      clearSlot();
+      paintStars();
+      choices.innerHTML = "";
+      var round = rounds[rIdx] || {};
+      choices.appendChild(renderOptions(round.options || [], onPick, false, {
+        picture_only: !!(station.picture_only || round.picture_only)
+      }));
+    }
+
+    function onPick(id, btn) {
+      if (locked) return;
+      var round = rounds[rIdx] || {};
+      var correct = round.correct;
+      if (id !== correct) {
+        btn.classList.add("is-wrong");
+        slot.classList.add("is-wrong");
+        coachReact("wrong", false);
+        setTimeout(function () {
+          btn.classList.remove("is-wrong");
+          slot.classList.remove("is-wrong");
+        }, 420);
+        return;
+      }
+      locked = true;
+      btn.classList.add("is-correct");
+      fillSlot(findOpt(id));
+      coachReact(rIdx >= rounds.length - 1 ? "good" : "yes", true);
+      setTimeout(function () {
+        rIdx += 1;
+        paintStars();
+        if (rIdx >= rounds.length) {
+          Array.prototype.forEach.call(stars.children, function (el) {
+            el.classList.add("is-on");
+            el.classList.remove("is-current");
+          });
+          foot.textContent = station.success_msg || "Азбука собрана!";
+          foot.classList.add("is-done");
+          choices.querySelectorAll("button").forEach(function (b) { b.disabled = true; });
+          enableNext(true);
+          return;
+        }
+        renderRound();
+      }, 700);
+    }
+
+    renderRound();
+    root().appendChild(wrap);
+  }
+
   function renderBookPage(station) {
     var field = elBody.querySelector(".quest-playfield");
     if (field) field.classList.add("quest-playfield--book");
@@ -3754,6 +3909,8 @@
         renderMatchPairs(station);
       } else if (kind === "phrase_picture") {
         renderPhrase(station);
+      } else if (kind === "alphabet_book") {
+        renderAlphabetBook(station);
       } else if (kind === "book_page") {
         renderBookPage(station);
       } else {
