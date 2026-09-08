@@ -49,6 +49,56 @@
       "spark": false
     },
     {
+      "id": "spread",
+      "title": "Первая азбука",
+      "chapter": "Буква",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи свою первую азбуку. Выбери картинки, которые начинаются на букву М.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l01-spread",
+      "letter": "М",
+      "letter_image": "/static/early/letters/letter-m-hero.png",
+      "picture_only": true,
+      "hint": "Картинка должна начинаться на М.",
+      "success_msg": "Страница М готова!",
+      "rounds": [
+        {
+          "correct": "motor",
+          "options": [
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/bird.png"
+            }
+          ]
+        },
+        {
+          "correct": "mama",
+          "options": [
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
       "id": "motor",
       "title": "Кто гудит?",
       "chapter": "Искорка 1 · Звук",
@@ -233,55 +283,6 @@
           "id": "m4",
           "label": "М",
           "correct": true
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "spread",
-      "title": "Первая азбука",
-      "chapter": "Буква",
-      "kind": "alphabet_book",
-      "mechanic": "azbuka_fill",
-      "slovik_line": "Сложи первую азбуку. Выбери картинки, которые начинаются на букву М.",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-spread",
-      "letter": "М",
-      "picture_only": true,
-      "hint": "Картинка должна начинаться на М.",
-      "success_msg": "Страница М готова!",
-      "rounds": [
-        {
-          "correct": "motor",
-          "options": [
-            {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "sun",
-              "label": "Солнце",
-              "image": "/static/early/letters/bird.png"
-            }
-          ]
-        },
-        {
-          "correct": "mama",
-          "options": [
-            {
-              "id": "mama",
-              "label": "Мама",
-              "image": "/static/early/letters/mama.png"
-            },
-            {
-              "id": "kot",
-              "label": "Кот",
-              "image": "/static/early/letters/kot.png"
-            }
-          ]
         }
       ],
       "spark": false,

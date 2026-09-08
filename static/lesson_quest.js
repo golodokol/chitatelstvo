@@ -3375,10 +3375,18 @@
 
     var pageLetter = document.createElement("div");
     pageLetter.className = "quest-book__page quest-azbuka__letter-page";
-    var letterEl = document.createElement("div");
-    letterEl.className = "quest-azbuka__letter";
-    letterEl.textContent = letter;
-    pageLetter.appendChild(letterEl);
+    if (station.letter_image) {
+      var letterImg = document.createElement("img");
+      letterImg.className = "quest-azbuka__letter-img";
+      letterImg.src = assetUrl(station.letter_image);
+      letterImg.alt = letter;
+      pageLetter.appendChild(letterImg);
+    } else {
+      var letterEl = document.createElement("div");
+      letterEl.className = "quest-azbuka__letter";
+      letterEl.textContent = letter;
+      pageLetter.appendChild(letterEl);
+    }
 
     var pageSlot = document.createElement("div");
     pageSlot.className = "quest-book__page quest-azbuka__slot-page";
@@ -3415,12 +3423,20 @@
 
     var choices = document.createElement("div");
     choices.className = "quest-azbuka__choices";
-    wrap.appendChild(choices);
 
     var foot = document.createElement("p");
     foot.className = "quest-azbuka__hint";
     foot.textContent = station.hint || "Выбери картинку на букву " + letter + ".";
     wrap.appendChild(foot);
+
+    var dock = field && field.querySelector(".quest-playfield__dock");
+    if (dock) {
+      var footer = dock.querySelector(".quest-footer");
+      if (footer) dock.insertBefore(choices, footer);
+      else dock.appendChild(choices);
+    } else {
+      wrap.appendChild(choices);
+    }
 
     function paintStars() {
       Array.prototype.forEach.call(stars.children, function (el, i) {
