@@ -334,9 +334,9 @@
     {
       "id": "slot_ma",
       "title": "Слог МА",
-      "chapter": "Слог",
+      "chapter": "Искорка 3 · Слог",
       "kind": "slot_build",
-      "slovik_line": "Сложим слоги. Сначала ма — это уже знакомо.",
+      "slovik_line": "Сложим слог ма. М и А рядом — получается ма.",
       "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l01-slots",
@@ -353,31 +353,6 @@
       ],
       "result_label": "МА",
       "result_image": "/static/early/letters/mama.png",
-      "spark": false,
-      "spark_group": "syllable"
-    },
-    {
-      "id": "slot_mo",
-      "title": "Слоги МО и МУ",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Теперь мо. Потом му.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-slots",
-      "result_sound": "snd-mo",
-      "targets": [
-        "М",
-        "О"
-      ],
-      "options": [
-        "М",
-        "А",
-        "О",
-        "У"
-      ],
-      "result_label": "МО",
-      "result_image": "/static/early/letters/motor.png",
       "spark": true,
       "spark_kind": "syllable",
       "spark_group": "syllable"
@@ -387,7 +362,7 @@
       "title": "Слог МА",
       "chapter": "Мини-квест",
       "kind": "mini_quest",
-      "slovik_line": "Где слог ма? Выбери ма, не мо.",
+      "slovik_line": "Найди картинку «мама» и слог ма.",
       "slovik_pose": "joy",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l01-quest",
@@ -407,7 +382,7 @@
             },
             {
               "id": "motor",
-              "label": "Мотор",
+              "label": "Машина",
               "image": "/static/early/letters/motor.png"
             },
             {
@@ -422,10 +397,10 @@
           "prompt": "Слог",
           "correct": "МА",
           "options": [
-            "МО",
+            "АМ",
             "МА",
-            "МУ",
-            "АМ"
+            "М",
+            "А"
           ]
         }
       ]
