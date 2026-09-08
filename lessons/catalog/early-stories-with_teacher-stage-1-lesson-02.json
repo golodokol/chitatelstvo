@@ -52,7 +52,7 @@
             {
               "id": "sun",
               "label": "Солнце",
-              "image": "/static/early/letters/bird.png"
+              "image": "/static/early/letters/sun-smile.png"
             }
           ]
         }
@@ -80,7 +80,7 @@
             {
               "id": "sun",
               "label": "Солнце",
-              "image": "/static/early/letters/bird.png"
+              "image": "/static/early/letters/sun-smile.png"
             }
           ]
         }

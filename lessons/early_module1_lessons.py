@@ -28,6 +28,7 @@ IMG = {
     "house": f"{L}/house.png",
     "syr": f"{L}/syr.png",
     "bird": f"{L}/bird.png",
+    "sun": f"{L}/sun-smile.png",
     "tree": f"{L}/tree.png",
     "aist": f"{L}/aist.png",
     "sleep": f"{ST}/kot-sleep.png",
@@ -118,7 +119,7 @@ def _letters_1() -> list[dict[str, Any]]:
                     "correct": "motor",
                     "options": [
                         _opt("motor", "Машина", IMG["motor"]),
-                        _opt("sun", "Солнце", IMG["bird"]),
+                        _opt("sun", "Солнце", IMG["sun"]),
                     ],
                 },
                 {
@@ -232,7 +233,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "chapter": "Искорка 2 · Буква",
             "kind": "listen_pick",
             "mechanic": "or_choice",
-            "slovik_line": "Буква М. Кто говорит м-м-м — машина или солнце?",
+            "slovik_line": "Буква М. Что начинается на букву М — машина или солнце?",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
             "audio": "bo-m1-l01-or",
@@ -243,7 +244,7 @@ def _letters_1() -> list[dict[str, Any]]:
                     "correct": "motor",
                     "options": [
                         _opt("motor", "Машина", IMG["motor"]),
-                        _opt("sun", "Солнце", IMG["bird"]),
+                        _opt("sun", "Солнце", IMG["sun"]),
                     ],
                 }
             ],
@@ -1031,7 +1032,7 @@ def _stories_2() -> list[dict[str, Any]]:
                     "correct": "rain",
                     "options": [
                         _opt("rain", "Дождь", IMG["rain"]),
-                        _opt("sun", "Солнце", IMG["bird"]),
+                        _opt("sun", "Солнце", IMG["sun"]),
                     ],
                 }
             ],
@@ -1046,7 +1047,7 @@ def _stories_2() -> list[dict[str, Any]]:
             "scene_image": SCENE_ST,
             "audio": "ph-m1-l02-weather",
             "picture_only": True,
-            "rounds": [{"correct": "rain", "options": [_opt("rain", "Дождь", IMG["rain"]), _opt("sun", "Солнце", IMG["bird"])]}],
+            "rounds": [{"correct": "rain", "options": [_opt("rain", "Дождь", IMG["rain"]), _opt("sun", "Солнце", IMG["sun"])]}],
             "spark": True,
             "spark_kind": "word",
             "spark_group": "word",
