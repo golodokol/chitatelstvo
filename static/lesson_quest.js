@@ -1545,7 +1545,99 @@
     return fallback[letter] || "";
   }
 
+  function renderCatchOnScene(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) {
+      field.classList.add("quest-playfield--catch", "quest-playfield--hunt", "quest-playfield--letter-pop");
+      field.classList.remove("quest-playfield--meet", "quest-playfield--around", "quest-playfield--puzzle", "quest-playfield--build");
+    }
+    var surface = root();
+    if (surface) surface.innerHTML = "";
+    var gen = playGen;
+    var target = station.letter || "М";
+    var need = station.catches || 3;
+    var got = 0;
+    var done = false;
+    var lastIdx = -1;
+    var spots = (station.spots && station.spots.length)
+      ? station.spots
+      : [
+          { x: 22, y: 28 },
+          { x: 74, y: 26 },
+          { x: 48, y: 40 },
+          { x: 18, y: 58 },
+          { x: 78, y: 56 },
+          { x: 58, y: 70 },
+          { x: 34, y: 66 }
+        ];
+
+    var scene = document.createElement("div");
+    scene.className = "quest-scene quest-scene--letter-pop";
+    var count = document.createElement("p");
+    count.className = "quest-echo__count quest-scene__count";
+    count.textContent = "Поймано: 0 / " + need;
+    scene.appendChild(count);
+
+    var chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "quest-letter-pop";
+    chip.textContent = target;
+    chip.setAttribute("aria-label", "Буква " + target);
+    scene.appendChild(chip);
+    root().appendChild(scene);
+
+    function alive() {
+      return !done && gen === playGen;
+    }
+
+    function place() {
+      if (!alive()) return;
+      var idx = Math.floor(Math.random() * spots.length);
+      if (spots.length > 1) {
+        var guard = 0;
+        while (idx === lastIdx && guard < 8) {
+          idx = Math.floor(Math.random() * spots.length);
+          guard += 1;
+        }
+      }
+      lastIdx = idx;
+      var spot = spots[idx] || { x: 50, y: 50 };
+      chip.style.left = Number(spot.x) + "%";
+      chip.style.top = sceneFieldY(spot.y) + "%";
+      chip.classList.remove("is-hit", "is-pop");
+      void chip.offsetWidth;
+      chip.classList.add("is-pop");
+      chip.hidden = false;
+      playSfx(letterSoundId(station, target) || "snd-m");
+    }
+
+    chip.addEventListener("click", function () {
+      if (!alive() || chip.hidden) return;
+      got += 1;
+      count.textContent = "Поймано: " + got + " / " + need;
+      chip.classList.add("is-hit");
+      if (got >= need) {
+        done = true;
+        coachReact("good", true);
+        enableNext(true);
+        return;
+      }
+      coachReact("yes", true);
+      setTimeout(function () {
+        if (alive()) place();
+      }, 380);
+    });
+
+    afterStationVoice(function () {
+      if (alive()) place();
+    });
+  }
+
   function renderCatchLetter(station) {
+    if (station.appear_on_scene) {
+      renderCatchOnScene(station);
+      return;
+    }
     var field = elBody.querySelector(".quest-playfield");
     if (field) {
       field.classList.add("quest-playfield--catch");
@@ -1722,7 +1814,8 @@
       btn.type = "button";
       btn.className = "quest-hotspot" + (hs.image ? " quest-hotspot--pic" : "") + (hs.size === "sm" ? " is-sm" : "") + (moving ? " quest-hotspot--wander" : "");
       var startX = (spots && spots[i] ? spots[i].x : hs.x) || 50;
-      var startY = sceneFieldY((spots && spots[i] ? spots[i].y : hs.y) || 50);
+      var rawY = (spots && spots[i] ? spots[i].y : hs.y) || 50;
+      var startY = (layoutGrid || station.keep_y) ? Number(rawY) : sceneFieldY(rawY);
       if (!useGrid) {
         btn.style.left = startX + "%";
         btn.style.top = startY + "%";
@@ -2464,202 +2557,70 @@
   }
 
   function renderJoin(station) {
-    var field = elBody.querySelector(".quest-playfield");
-    if (field) field.classList.add("quest-playfield--join");
-    var gen = playGen;
-    var done = false;
-    var dragging = false;
-    var startX = 0;
-    var startY = 0;
-    var moved = false;
-    var picked = false;
-    var leftSpec = station.left || { label: "М", id: "M" };
-    var rightSpec = station.right || { label: "А", id: "A" };
-    var resultSpec = station.result || {
-      label: station.result_label || "МА",
-      sound: station.result_sound || "snd-ma",
-      image: station.result_image
-    };
-
     var wrap = document.createElement("div");
-    wrap.className = "quest-join quest-join--bridge";
-
-    var stage = document.createElement("div");
-    stage.className = "quest-join__stage";
-
-    var bridge = document.createElement("div");
-    bridge.className = "quest-join__bridge";
-    bridge.setAttribute("aria-hidden", "true");
-    var rails = document.createElement("span");
-    rails.className = "quest-join__rails";
-    bridge.appendChild(rails);
-    var i;
-    for (i = 0; i < 6; i++) {
-      var plank = document.createElement("span");
-      plank.className = "quest-join__plank";
-      bridge.appendChild(plank);
-    }
-
-    var home = document.createElement("div");
-    home.className = "quest-join__home";
-
+    wrap.className = "quest-join";
     var left = document.createElement("button");
     left.type = "button";
-    left.className = "quest-join__chip quest-join__chip--drag";
-    left.setAttribute("aria-label", "Перетащи " + ((leftSpec && leftSpec.label) || "М"));
-    if (leftSpec && leftSpec.image) {
+    left.className = "quest-join__chip";
+    if (station.left && station.left.image) {
       var li = document.createElement("img");
-      li.src = assetUrl(leftSpec.image);
+      li.src = assetUrl(station.left.image);
       li.alt = "";
       left.appendChild(li);
     }
-    left.appendChild(document.createTextNode((leftSpec && leftSpec.label) || "М"));
-
-    var right = document.createElement("div");
-    right.className = "quest-join__chip quest-join__chip--drop";
-    right.setAttribute("aria-label", (rightSpec && rightSpec.label) || "А");
-    if (rightSpec && rightSpec.image) {
+    left.appendChild(document.createTextNode((station.left && station.left.label) || "М"));
+    var arrow = document.createElement("span");
+    arrow.textContent = "→";
+    var right = document.createElement("button");
+    right.type = "button";
+    right.className = "quest-join__chip";
+    if (station.right && station.right.image) {
       var ri = document.createElement("img");
-      ri.src = assetUrl(rightSpec.image);
+      ri.src = assetUrl(station.right.image);
       ri.alt = "";
       right.appendChild(ri);
     }
-    right.appendChild(document.createTextNode((rightSpec && rightSpec.label) || "А"));
-
-    home.appendChild(left);
-    stage.appendChild(bridge);
-    stage.appendChild(home);
-    stage.appendChild(right);
-    wrap.appendChild(stage);
-
-    var hint = document.createElement("p");
-    hint.className = "quest-hint quest-join__hint";
-    hint.textContent = station.hint || "Перетащи букву по мостику";
-    wrap.appendChild(hint);
+    right.appendChild(document.createTextNode((station.right && station.right.label) || "А"));
+    wrap.appendChild(left);
+    wrap.appendChild(arrow);
+    wrap.appendChild(right);
     root().appendChild(wrap);
-
-    function alive() {
-      return gen === playGen && !done;
-    }
-
-    function point(e) {
-      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      if (e.changedTouches && e.changedTouches[0]) {
-        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-      }
-      return { x: e.clientX, y: e.clientY };
-    }
-
-    function overlaps() {
-      var a = left.getBoundingClientRect();
-      var b = right.getBoundingClientRect();
-      var pad = 18;
-      return !(a.right < b.left + pad || a.left > b.right - pad || a.bottom < b.top + pad || a.top > b.bottom - pad);
-    }
-
-    function resetChip() {
-      left.style.transform = "";
-      left.classList.remove("is-dragging");
-      right.classList.remove("is-hot");
-      bridge.classList.remove("is-active");
-    }
-
+    var step = 0;
     function finish() {
-      if (done || gen !== playGen) return;
-      done = true;
-      resetChip();
-      left.classList.add("is-done", "is-joined");
-      left.setAttribute("aria-hidden", "true");
-      left.tabIndex = -1;
-      right.classList.add("is-done", "is-joined");
-      right.textContent = (resultSpec && resultSpec.label) || "МА";
-      bridge.classList.add("is-joined");
-      hint.textContent = (resultSpec && resultSpec.label) || "МА";
-      hint.classList.add("is-result");
-      if (resultSpec && resultSpec.image) {
+      if (station.result && station.result.sound) playId(station.result.sound);
+      left.classList.add("is-done");
+      right.classList.add("is-done");
+      if (station.result && station.result.image) {
         var img = document.createElement("img");
         img.className = "quest-spark-fly";
-        img.src = assetUrl(resultSpec.image);
+        img.src = assetUrl(station.result.image);
         img.alt = "";
-        wrap.appendChild(img);
+        root().appendChild(img);
       }
+      var res = document.createElement("p");
+      res.className = "quest-letter";
+      res.style.textAlign = "center";
+      res.textContent = (station.result && station.result.label) || "МА";
+      root().appendChild(res);
       coachReact("good", true);
-      var sound = (resultSpec && resultSpec.sound) || "snd-ma";
-      playId(sound, function () {
-        if (gen !== playGen) return;
-        enableNext(true);
-      });
+      enableNext(true);
     }
-
-    function onDown(e) {
-      if (!alive() || left.classList.contains("is-joined")) return;
-      dragging = true;
-      moved = false;
-      var p = point(e);
-      startX = p.x;
-      startY = p.y;
-      left.classList.add("is-dragging");
-      bridge.classList.add("is-active");
-      if (leftSpec && leftSpec.sound) playId(leftSpec.sound);
-      if (e.pointerId != null && left.setPointerCapture) {
-        try { left.setPointerCapture(e.pointerId); } catch (err) {}
-      }
-      e.preventDefault();
-    }
-
-    function onMove(e) {
-      if (!dragging || !alive()) return;
-      var p = point(e);
-      var dx = p.x - startX;
-      var dy = p.y - startY;
-      if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
-      left.style.transform = "translate(" + dx + "px," + dy + "px)";
-      right.classList.toggle("is-hot", overlaps());
-      e.preventDefault();
-    }
-
-    function onUp(e) {
-      if (!dragging) return;
-      dragging = false;
-      if (!alive()) {
-        resetChip();
-        return;
-      }
-      if (overlaps()) {
-        finish();
-        return;
-      }
-      if (!moved) {
-        // Тап: взять М, потом тапнуть А
-        picked = true;
-        left.classList.add("is-picked");
-        bridge.classList.add("is-active");
-        left.style.transform = "";
-        left.classList.remove("is-dragging");
-        coachReact("yes", true);
-        return;
-      }
-      resetChip();
-      left.classList.remove("is-picked");
-      picked = false;
-      coachReact("try", false);
-    }
-
-    left.addEventListener("pointerdown", onDown);
-    left.addEventListener("pointermove", onMove);
-    left.addEventListener("pointerup", onUp);
-    left.addEventListener("pointercancel", onUp);
-    left.addEventListener("click", function (e) {
-      if (moved) e.preventDefault();
+    left.addEventListener("click", function () {
+      if (station.left && station.left.sound) playId(station.left.sound);
+      step = Math.max(step, 1);
+      left.classList.add("is-done");
+      if (step >= 2) finish();
+      else coachReact("yes", true);
     });
-
-    right.addEventListener("pointerup", function () {
-      if (!alive()) return;
-      if (picked || left.classList.contains("is-picked")) {
-        finish();
-      } else if (!dragging) {
+    right.addEventListener("click", function () {
+      if (station.right && station.right.sound) playId(station.right.sound);
+      if (step < 1) {
         coachReact("try", false);
+        return;
       }
+      step = 2;
+      right.classList.add("is-done");
+      finish();
     });
   }
 
@@ -3408,29 +3369,19 @@
             prompt.textContent = one.prompt;
             block.appendChild(prompt);
           }
-          var needIds = (Array.isArray(one.correct) ? one.correct : [one.correct]).map(String);
-          var pickedIds = [];
           var grid = renderOptions(one.options || [], function (id, btn) {
             if (doneMap[i]) return;
-            var sid = String(id);
-            if (needIds.indexOf(sid) >= 0) {
-              if (pickedIds.indexOf(sid) >= 0) return;
-              pickedIds.push(sid);
-              btn.classList.add("is-correct");
-              btn.disabled = true;
-              if (pickedIds.length < needIds.length) {
-                coachReact("yes");
-                return;
-              }
+            if (String(id) === String(one.correct)) {
               doneMap[i] = true;
+              btn.classList.add("is-correct");
               block.querySelectorAll(".quest-opt").forEach(function (el) {
-                if (!el.classList.contains("is-correct")) el.disabled = true;
+                if (el !== btn) el.disabled = true;
               });
               var left = steps.filter(function (_, k) { return !doneMap[k]; });
               if (!left.length) finishMini(true);
             } else {
               coachReact("wrong", false);
-              checkSingle(needIds[0], id, btn);
+              checkSingle(one.correct, id, btn);
             }
           }, false, { picture_only: !!one.picture_only });
           block.appendChild(grid);
@@ -3512,12 +3463,6 @@
 
     var cover = document.createElement("div");
     cover.className = "quest-book__cover";
-    if (station.book_title) {
-      var bookTitle = document.createElement("p");
-      bookTitle.className = "quest-azbuka__title";
-      bookTitle.textContent = station.book_title;
-      cover.appendChild(bookTitle);
-    }
     var spread = document.createElement("div");
     spread.className = "quest-book__spread quest-azbuka__spread";
 
@@ -3545,6 +3490,10 @@
     slotHint.className = "quest-azbuka__slot-hint";
     slotHint.textContent = "?";
     slot.appendChild(slotHint);
+    var slotWord = document.createElement("span");
+    slotWord.className = "quest-azbuka__slot-word";
+    slotWord.hidden = true;
+    slot.appendChild(slotWord);
     var slotImg = document.createElement("img");
     slotImg.className = "quest-azbuka__slot-img";
     slotImg.alt = "";
@@ -3606,6 +3555,8 @@
       slot.classList.remove("is-filled", "is-wrong");
       slotImg.hidden = true;
       slotImg.removeAttribute("src");
+      slotWord.hidden = true;
+      slotWord.textContent = "";
       slotHint.hidden = false;
     }
 
@@ -3615,6 +3566,14 @@
       slotImg.hidden = false;
       slotImg.src = assetUrl(opt.image);
       slotImg.alt = opt.label || opt.id || "";
+      var word = String(opt.label || "").trim();
+      if (word) {
+        slotWord.hidden = false;
+        slotWord.textContent = word;
+      } else {
+        slotWord.hidden = true;
+        slotWord.textContent = "";
+      }
       slot.classList.add("is-filled");
     }
 

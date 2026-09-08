@@ -61,7 +61,7 @@
       "letter": "М",
       "letter_image": "/static/early/letters/letter-m-hero.png",
       "book_title": "Мама и Машина",
-      "picture_only": true,
+      "picture_only": false,
       "hint": "Картинка должна начинаться на М.",
       "success_msg": "Страница М готова!",
       "rounds": [
@@ -70,12 +70,12 @@
           "options": [
             {
               "id": "motor",
-              "label": "Машина",
+              "label": "машина",
               "image": "/static/early/letters/motor.png"
             },
             {
               "id": "sun",
-              "label": "Солнце",
+              "label": "солнце",
               "image": "/static/early/letters/sun-smile.png"
             }
           ]
@@ -85,12 +85,12 @@
           "options": [
             {
               "id": "mama",
-              "label": "Мама",
+              "label": "мама",
               "image": "/static/early/letters/mama.png"
             },
             {
               "id": "kot",
-              "label": "Кот",
+              "label": "кот",
               "image": "/static/early/letters/kot.png"
             }
           ]
@@ -320,6 +320,255 @@
       ],
       "spark": true,
       "spark_kind": "letter",
+      "spark_group": "letter"
+    },
+    {
+      "id": "first_letter",
+      "title": "Первая буква",
+      "chapter": "Буква",
+      "kind": "find",
+      "mechanic": "picture_first_letter",
+      "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-workshop",
+      "spark": false,
+      "spark_group": "letter",
+      "hint": "Скажи слово вслух и найди первую букву.",
+      "rounds": [
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/mama.png",
+          "prompt_alt": "мама",
+          "correct": "М",
+          "options": [
+            "А",
+            "О",
+            "М",
+            "У"
+          ]
+        },
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/motor.png",
+          "prompt_alt": "машина",
+          "correct": "М",
+          "options": [
+            "С",
+            "М",
+            "А",
+            "О"
+          ]
+        },
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/carrot.png",
+          "prompt_alt": "морковка",
+          "correct": "М",
+          "options": [
+            "У",
+            "А",
+            "М",
+            "О"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "board",
+      "title": "Доска букв",
+      "chapter": "Буква",
+      "kind": "scene_hunt",
+      "mechanic": "letter_board",
+      "slovik_line": "Найди на доске все буквы М. Их несколько.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
+      "audio": "bo-m1-l01-grid",
+      "layout": "grid",
+      "grid_cols": 5,
+      "moving": false,
+      "correct_ids": [
+        "m1",
+        "m2",
+        "m3",
+        "m4",
+        "m5",
+        "m6"
+      ],
+      "hotspots": [
+        {
+          "id": "a1",
+          "label": "А",
+          "size": "sm"
+        },
+        {
+          "id": "m1",
+          "label": "М",
+          "size": "sm"
+        },
+        {
+          "id": "o1",
+          "label": "О",
+          "size": "sm"
+        },
+        {
+          "id": "u1",
+          "label": "У",
+          "size": "sm"
+        },
+        {
+          "id": "s1",
+          "label": "С",
+          "size": "sm"
+        },
+        {
+          "id": "m2",
+          "label": "М",
+          "size": "sm"
+        },
+        {
+          "id": "k1",
+          "label": "К",
+          "size": "sm"
+        },
+        {
+          "id": "n1",
+          "label": "Н",
+          "size": "sm"
+        },
+        {
+          "id": "m3",
+          "label": "М",
+          "size": "sm"
+        },
+        {
+          "id": "a2",
+          "label": "А",
+          "size": "sm"
+        },
+        {
+          "id": "o2",
+          "label": "О",
+          "size": "sm"
+        },
+        {
+          "id": "m4",
+          "label": "М",
+          "size": "sm"
+        },
+        {
+          "id": "u2",
+          "label": "У",
+          "size": "sm"
+        },
+        {
+          "id": "s2",
+          "label": "С",
+          "size": "sm"
+        },
+        {
+          "id": "a3",
+          "label": "А",
+          "size": "sm"
+        },
+        {
+          "id": "m5",
+          "label": "М",
+          "size": "sm"
+        },
+        {
+          "id": "o3",
+          "label": "О",
+          "size": "sm"
+        },
+        {
+          "id": "k2",
+          "label": "К",
+          "size": "sm"
+        },
+        {
+          "id": "u3",
+          "label": "У",
+          "size": "sm"
+        },
+        {
+          "id": "m6",
+          "label": "М",
+          "size": "sm"
+        },
+        {
+          "id": "s3",
+          "label": "С",
+          "size": "sm"
+        },
+        {
+          "id": "a4",
+          "label": "А",
+          "size": "sm"
+        },
+        {
+          "id": "n2",
+          "label": "Н",
+          "size": "sm"
+        },
+        {
+          "id": "o4",
+          "label": "О",
+          "size": "sm"
+        },
+        {
+          "id": "u4",
+          "label": "У",
+          "size": "sm"
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "catch",
+      "title": "Поймай М",
+      "chapter": "Буква",
+      "kind": "catch_letter",
+      "mechanic": "letter_meadow",
+      "slovik_line": "На поляне появится буква М. Нажми на неё — три раза в разных местах!",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-catch",
+      "letter": "М",
+      "appear_on_scene": true,
+      "catches": 3,
+      "spots": [
+        {
+          "x": 22,
+          "y": 28
+        },
+        {
+          "x": 74,
+          "y": 26
+        },
+        {
+          "x": 48,
+          "y": 40
+        },
+        {
+          "x": 18,
+          "y": 58
+        },
+        {
+          "x": 78,
+          "y": 56
+        },
+        {
+          "x": 58,
+          "y": 70
+        },
+        {
+          "x": 34,
+          "y": 66
+        }
+      ],
+      "spark": false,
       "spark_group": "letter"
     },
     {
