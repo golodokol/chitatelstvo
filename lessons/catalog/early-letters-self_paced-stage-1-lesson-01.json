@@ -140,16 +140,49 @@
     },
     {
       "id": "build",
-      "title": "Собери М",
+      "title": "Обведи М",
       "chapter": "Искорка 2 · Буква",
-      "kind": "build_letter",
-      "slovik_line": "Собери М: две стойки и перекладина посередине.",
+      "kind": "dot_connect",
+      "mechanic": "dot_connect",
+      "slovik_line": "Соедини точки по порядку — получится буква М.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-sparks.jpg",
       "audio": "bo-m1-l01-build",
       "letter": "М",
-      "hint": "Нажми на часть, потом на её место.",
-      "success_msg": "Буква М собралась!",
+      "hint": "Жми точки по номерам: 1, 2, 3…",
+      "success_msg": "Буква М получилась!",
+      "dots": [
+        {
+          "n": 1,
+          "x": 18,
+          "y": 12
+        },
+        {
+          "n": 2,
+          "x": 18,
+          "y": 50
+        },
+        {
+          "n": 3,
+          "x": 18,
+          "y": 88
+        },
+        {
+          "n": 4,
+          "x": 50,
+          "y": 58
+        },
+        {
+          "n": 5,
+          "x": 82,
+          "y": 88
+        },
+        {
+          "n": 6,
+          "x": 82,
+          "y": 12
+        }
+      ],
       "spark": true,
       "spark_kind": "letter",
       "spark_group": "letter"

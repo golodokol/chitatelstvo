@@ -1386,6 +1386,140 @@
     if (station.hint) showMsg(station.hint, true);
   }
 
+  function defaultDotPath(letter) {
+    var L = String(letter || "М").toUpperCase();
+    if (L === "М" || L === "M") {
+      return [
+        { n: 1, x: 18, y: 12 },
+        { n: 2, x: 18, y: 50 },
+        { n: 3, x: 18, y: 88 },
+        { n: 4, x: 50, y: 58 },
+        { n: 5, x: 82, y: 88 },
+        { n: 6, x: 82, y: 12 }
+      ];
+    }
+    if (L === "О" || L === "O") {
+      return [
+        { n: 1, x: 50, y: 10 },
+        { n: 2, x: 82, y: 28 },
+        { n: 3, x: 88, y: 55 },
+        { n: 4, x: 70, y: 86 },
+        { n: 5, x: 30, y: 86 },
+        { n: 6, x: 12, y: 55 },
+        { n: 7, x: 18, y: 28 },
+        { n: 8, x: 50, y: 10 }
+      ];
+    }
+    return [
+      { n: 1, x: 20, y: 20 },
+      { n: 2, x: 50, y: 50 },
+      { n: 3, x: 80, y: 80 }
+    ];
+  }
+
+  function renderDotConnect(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) field.classList.add("quest-playfield--dots");
+    var letter = String(station.letter || "М");
+    var dots = (station.dots && station.dots.length ? station.dots : defaultDotPath(letter)).map(function (d, i) {
+      return {
+        n: Number(d.n || d.id || (i + 1)),
+        x: Number(d.x),
+        y: Number(d.y)
+      };
+    }).sort(function (a, b) { return a.n - b.n; });
+    var nextIdx = 0;
+    var done = false;
+    var wrap = document.createElement("div");
+    wrap.className = "quest-dots";
+    wrap.setAttribute("aria-label", "Соедини точки и получи букву " + letter);
+
+    var stage = document.createElement("div");
+    stage.className = "quest-dots__stage";
+
+    var svgNS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("class", "quest-dots__lines");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("preserveAspectRatio", "none");
+    var poly = document.createElementNS(svgNS, "polyline");
+    poly.setAttribute("class", "quest-dots__stroke");
+    poly.setAttribute("fill", "none");
+    poly.setAttribute("points", "");
+    svg.appendChild(poly);
+    stage.appendChild(svg);
+
+    var ghost = document.createElement("div");
+    ghost.className = "quest-dots__ghost";
+    ghost.textContent = letter;
+    ghost.setAttribute("aria-hidden", "true");
+    stage.appendChild(ghost);
+
+    var points = [];
+    function pointAttr() {
+      return points.map(function (p) { return p.x + "," + p.y; }).join(" ");
+    }
+
+    function finish() {
+      if (done) return;
+      done = true;
+      wrap.classList.add("is-done");
+      coachReact("good", true);
+      enableNext(true);
+    }
+
+    dots.forEach(function (dot, idx) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "quest-dots__dot";
+      btn.style.left = dot.x + "%";
+      btn.style.top = dot.y + "%";
+      btn.setAttribute("aria-label", "Точка " + dot.n);
+      var num = document.createElement("span");
+      num.className = "quest-dots__num";
+      num.textContent = String(dot.n);
+      btn.appendChild(num);
+      if (idx === 0) btn.classList.add("is-next");
+      btn.addEventListener("click", function () {
+        if (done) return;
+        if (idx < nextIdx) {
+          // Откат до этой точки.
+          nextIdx = idx;
+          points = points.slice(0, idx);
+          poly.setAttribute("points", pointAttr());
+          wrap.querySelectorAll(".quest-dots__dot").forEach(function (el, j) {
+            el.classList.toggle("is-done", j < nextIdx);
+            el.classList.toggle("is-next", j === nextIdx);
+          });
+          return;
+        }
+        if (idx !== nextIdx) {
+          btn.classList.add("is-wrong");
+          coachReact("wrong", false);
+          setTimeout(function () { btn.classList.remove("is-wrong"); }, 450);
+          return;
+        }
+        points.push({ x: dot.x, y: dot.y });
+        poly.setAttribute("points", pointAttr());
+        btn.classList.add("is-done");
+        btn.classList.remove("is-next");
+        nextIdx += 1;
+        if (nextIdx < dots.length) {
+          var nxt = wrap.querySelectorAll(".quest-dots__dot")[nextIdx];
+          if (nxt) nxt.classList.add("is-next");
+          coachReact("yes");
+        } else {
+          finish();
+        }
+      });
+      stage.appendChild(btn);
+    });
+
+    wrap.appendChild(stage);
+    root().appendChild(wrap);
+    if (station.hint) showMsg(station.hint, true);
+  }
+
   function letterSoundId(station, letter) {
     var map = station.letter_sounds || {};
     if (map[letter]) return map[letter];
@@ -3594,6 +3728,8 @@
         renderMeetLetter(station);
       } else if (kind === "build_letter") {
         renderBuildLetter(station);
+      } else if (kind === "dot_connect") {
+        renderDotConnect(station);
       } else if (kind === "catch_letter") {
         renderCatchLetter(station);
       } else if (kind === "letter_maze") {
