@@ -2848,9 +2848,11 @@
 
     var center = document.createElement("div");
     center.className = "quest-intro__center";
-    center.appendChild(play);
-    center.appendChild(pause);
-    box.appendChild(center);
+    if (src) {
+      center.appendChild(play);
+      center.appendChild(pause);
+      box.appendChild(center);
+    }
 
     var endUi = document.createElement("div");
     endUi.className = "quest-intro__end";
@@ -2895,6 +2897,11 @@
       if (window.visualViewport) {
         window.visualViewport.addEventListener("resize", onIntroViewport);
       }
+    } else {
+      // Черновик без ролика: сцена + CTA (+ аудио Словика, если есть).
+      ended = true;
+      setState("is-ended");
+      if (station.audio) playId(station.audio);
     }
 
     box.addEventListener("click", function (e) {
