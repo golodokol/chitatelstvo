@@ -3276,19 +3276,29 @@
             prompt.textContent = one.prompt;
             block.appendChild(prompt);
           }
+          var needIds = (Array.isArray(one.correct) ? one.correct : [one.correct]).map(String);
+          var pickedIds = [];
           var grid = renderOptions(one.options || [], function (id, btn) {
             if (doneMap[i]) return;
-            if (String(id) === String(one.correct)) {
-              doneMap[i] = true;
+            var sid = String(id);
+            if (needIds.indexOf(sid) >= 0) {
+              if (pickedIds.indexOf(sid) >= 0) return;
+              pickedIds.push(sid);
               btn.classList.add("is-correct");
+              btn.disabled = true;
+              if (pickedIds.length < needIds.length) {
+                coachReact("yes");
+                return;
+              }
+              doneMap[i] = true;
               block.querySelectorAll(".quest-opt").forEach(function (el) {
-                if (el !== btn) el.disabled = true;
+                if (!el.classList.contains("is-correct")) el.disabled = true;
               });
               var left = steps.filter(function (_, k) { return !doneMap[k]; });
               if (!left.length) finishMini(true);
             } else {
               coachReact("wrong", false);
-              checkSingle(one.correct, id, btn);
+              checkSingle(needIds[0], id, btn);
             }
           }, false, { picture_only: !!one.picture_only });
           block.appendChild(grid);

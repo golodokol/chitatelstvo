@@ -285,18 +285,18 @@ def _letters_1() -> list[dict[str, Any]]:
             "title": "Слог МА",
             "chapter": "Мини-квест",
             "kind": "mini_quest",
-            "slovik_line": "Найди картинку «мама» и слог ма.",
+            "slovik_line": "Мама и машина — в обоих есть слог ма. Найди обе картинки и слог ма.",
             "slovik_pose": "joy",
             "scene_image": SCENE_L,
             "audio": "bo-m1-l01-quest",
             "spark": False,
             "show_all_steps": True,
-            "hint": "Картинка «мама» и слог МА.",
+            "hint": "Две картинки на ма: мама и машина. Потом слог МА.",
             "steps": [
                 {
                     "kind": "find",
-                    "prompt": "Картинка",
-                    "correct": "mama",
+                    "prompt": "Картинки на ма",
+                    "correct": ["mama", "motor"],
                     "options": [
                         _opt("mama", "Мама", IMG["mama"]),
                         _opt("motor", "Машина", IMG["motor"]),
