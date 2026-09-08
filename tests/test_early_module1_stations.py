@@ -39,10 +39,13 @@ class Module1StationsTests(unittest.TestCase):
             self.assertGreaterEqual(len(stories), 7)
             self.assertEqual(letters[-1]["kind"], "reward")
             self.assertEqual(letters[0]["id"], "trail")
-            self.assertEqual(
-                letters[0]["scene_image"],
-                f"/static/early/letters/scene-map-sounds-where-{n:02d}.png",
-            )
+            expected_scene = {
+                1: "/static/early/letters/scene-m-meadow-intro.jpg",
+                2: "/static/early/letters/scene-u-echo-intro.jpg",
+                3: "/static/early/letters/scene-o-pond-intro.jpg",
+                4: "/static/early/letters/scene-map-sounds-where-04.png",
+            }[n]
+            self.assertEqual(letters[0]["scene_image"], expected_scene)
             self.assertEqual(stories[-1]["kind"], "reward")
 
     def test_letter_mazes_have_path(self):

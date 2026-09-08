@@ -27,7 +27,7 @@
       "kind": "intro_video",
       "slovik_line": "Новая буква на тропе. Она любит петь: у-у-у.",
       "slovik_pose": "wave",
-      "scene_image": "/static/early/letters/scene-map-sounds-where-02.png",
+      "scene_image": "/static/early/letters/scene-u-echo-intro.jpg",
       "audio": "bo-m1-l02-hi",
       "cta_label": "Начать",
       "spark": false
@@ -35,7 +35,9 @@
     {
       "id": "meet",
       "title": "Буква У",
+      "chapter": "Знакомство",
       "kind": "meet_letter",
+      "mechanic": "meet_letter",
       "slovik_line": "Это У. Нажми и пропой вместе: у-у-у.",
       "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
@@ -44,7 +46,59 @@
       "letter": "У",
       "letter_image": "/static/early/letters/letter-u-hero.png",
       "hint": "Нажми на букву — услышишь звук.",
+      "coach_success": "У-у-у! Это буква У. Дальше соберём искорки.",
       "spark": false
+    },
+    {
+      "id": "azbuka",
+      "title": "Азбука У",
+      "chapter": "Буква",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи страницу У. Выбери картинки, которые начинаются на букву У.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l02-or",
+      "letter": "У",
+      "letter_image": "/static/early/letters/letter-u-hero.png",
+      "book_title": "Ветер",
+      "picture_only": false,
+      "hint": "Картинка должна начинаться на У.",
+      "success_msg": "Страница У готова!",
+      "rounds": [
+        {
+          "correct": "wind",
+          "options": [
+            {
+              "id": "wind",
+              "label": "ветер",
+              "image": "/static/early/letters/wind-howl.png"
+            },
+            {
+              "id": "rain",
+              "label": "дождь",
+              "image": "/static/early/letters/rain.png"
+            }
+          ]
+        },
+        {
+          "correct": "wind2",
+          "options": [
+            {
+              "id": "wind2",
+              "label": "ветер",
+              "image": "/static/early/letters/wind-howl.png"
+            },
+            {
+              "id": "sun",
+              "label": "солнце",
+              "image": "/static/early/letters/sun-smile.png"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
     },
     {
       "id": "echo",
@@ -102,6 +156,44 @@
           "М",
           "У"
         ]
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "build",
+      "title": "Обведи У",
+      "chapter": "Буква",
+      "kind": "dot_connect",
+      "mechanic": "dot_connect",
+      "slovik_line": "Соедини точки по порядку — получится буква У.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l02-hop",
+      "letter": "У",
+      "hint": "Жми точки по номерам: 1, 2, 3…",
+      "success_msg": "Буква У получилась!",
+      "dots": [
+        {
+          "n": 1,
+          "x": 22,
+          "y": 12
+        },
+        {
+          "n": 2,
+          "x": 50,
+          "y": 48
+        },
+        {
+          "n": 3,
+          "x": 78,
+          "y": 12
+        },
+        {
+          "n": 4,
+          "x": 50,
+          "y": 88
+        }
       ],
       "spark": false,
       "spark_group": "letter"
@@ -189,6 +281,209 @@
       "spark_group": "letter"
     },
     {
+      "id": "first_letter",
+      "title": "Первая буква",
+      "chapter": "Буква",
+      "kind": "find",
+      "mechanic": "picture_first_letter",
+      "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-workshop",
+      "spark": false,
+      "spark_group": "letter",
+      "hint": "Скажи слово вслух и найди первую букву.",
+      "rounds": [
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/wind-howl.png",
+          "prompt_alt": "ветер",
+          "correct": "У",
+          "options": [
+            "А",
+            "О",
+            "У",
+            "М"
+          ]
+        },
+        {
+          "prompt_text": "Какая буква поёт у-у-у?",
+          "sound": "snd-u",
+          "correct": "У",
+          "options": [
+            "М",
+            "У",
+            "А",
+            "О"
+          ]
+        },
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/wind-howl.png",
+          "prompt_alt": "ветер",
+          "correct": "У",
+          "options": [
+            "С",
+            "А",
+            "У",
+            "О"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "board",
+      "title": "Доска букв",
+      "chapter": "Буква",
+      "kind": "scene_hunt",
+      "mechanic": "letter_board",
+      "board_panel": true,
+      "slovik_line": "Найди на доске все буквы У. Их несколько.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
+      "audio": "bo-m1-l02-grid",
+      "layout": "grid",
+      "grid_cols": 5,
+      "moving": false,
+      "correct_ids": [
+        "u1",
+        "u2",
+        "u3",
+        "u4",
+        "u5"
+      ],
+      "hotspots": [
+        {
+          "id": "a1",
+          "label": "А"
+        },
+        {
+          "id": "u1",
+          "label": "У"
+        },
+        {
+          "id": "o1",
+          "label": "О"
+        },
+        {
+          "id": "m1",
+          "label": "М"
+        },
+        {
+          "id": "s1",
+          "label": "С"
+        },
+        {
+          "id": "k1",
+          "label": "К"
+        },
+        {
+          "id": "u2",
+          "label": "У"
+        },
+        {
+          "id": "n1",
+          "label": "Н"
+        },
+        {
+          "id": "a2",
+          "label": "А"
+        },
+        {
+          "id": "o2",
+          "label": "О"
+        },
+        {
+          "id": "m2",
+          "label": "М"
+        },
+        {
+          "id": "u3",
+          "label": "У"
+        },
+        {
+          "id": "s2",
+          "label": "С"
+        },
+        {
+          "id": "k2",
+          "label": "К"
+        },
+        {
+          "id": "a3",
+          "label": "А"
+        },
+        {
+          "id": "o3",
+          "label": "О"
+        },
+        {
+          "id": "u4",
+          "label": "У"
+        },
+        {
+          "id": "m3",
+          "label": "М"
+        },
+        {
+          "id": "n2",
+          "label": "Н"
+        },
+        {
+          "id": "u5",
+          "label": "У"
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "catch",
+      "title": "Поймай У",
+      "chapter": "Буква",
+      "kind": "catch_letter",
+      "mechanic": "letter_meadow",
+      "slovik_line": "На поляне появится буква У. Нажми на неё — три раза в разных местах!",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-catch",
+      "letter": "У",
+      "appear_on_scene": true,
+      "catches": 3,
+      "spots": [
+        {
+          "x": 22,
+          "y": 28
+        },
+        {
+          "x": 74,
+          "y": 26
+        },
+        {
+          "x": 48,
+          "y": 40
+        },
+        {
+          "x": 18,
+          "y": 58
+        },
+        {
+          "x": 78,
+          "y": 56
+        },
+        {
+          "x": 58,
+          "y": 70
+        },
+        {
+          "x": 34,
+          "y": 66
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
       "id": "pause",
       "title": "Пауза",
       "kind": "break",
@@ -196,6 +491,31 @@
       "audio": "bo-m1-l02-pause",
       "spark": false,
       "hint": "Тихо пропой у-у-у у окна. Потом вернёмся."
+    },
+    {
+      "id": "join_mu",
+      "title": "Мост дружбы",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "drag_join",
+      "slovik_line": "Познакомь М и У. Веди М по мостику к У — получится му.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-bridge",
+      "hint": "Перетащи М к У по мостику",
+      "left": {
+        "id": "M",
+        "label": "М"
+      },
+      "right": {
+        "id": "U",
+        "label": "У"
+      },
+      "result": {
+        "label": "МУ",
+        "sound": "snd-mu"
+      },
+      "spark": false,
+      "spark_group": "syllable"
     },
     {
       "id": "slots",

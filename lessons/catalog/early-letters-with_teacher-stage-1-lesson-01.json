@@ -27,7 +27,7 @@
       "kind": "intro_video",
       "slovik_line": "На тропе зажглась новая буква. Помнишь машину? Она говорит: м-м-м. Познакомься с буквой М.",
       "slovik_pose": "wave",
-      "scene_image": "/static/early/letters/scene-map-sounds-where-01.png",
+      "scene_image": "/static/early/letters/scene-m-meadow-intro.jpg",
       "audio": "bo-m1-l01-hi",
       "cta_label": "Начать",
       "spark": false
@@ -61,7 +61,7 @@
       "audio": "bo-m1-l01-spread",
       "letter": "М",
       "letter_image": "/static/early/letters/letter-m-hero.png",
-      "book_title": "Мама и Машина",
+      "book_title": "Медведь и Машина",
       "picture_only": false,
       "hint": "Картинка должна начинаться на М.",
       "success_msg": "Страница М готова!",
@@ -82,12 +82,12 @@
           ]
         },
         {
-          "correct": "mama",
+          "correct": "bear",
           "options": [
             {
-              "id": "mama",
-              "label": "мама",
-              "image": "/static/early/letters/mama.png"
+              "id": "bear",
+              "label": "медведь",
+              "image": "/static/early/letters/bear-wise.png"
             },
             {
               "id": "kot",
@@ -339,8 +339,8 @@
       "rounds": [
         {
           "prompt_text": "С какой буквы?",
-          "prompt_image": "/static/early/letters/mama.png",
-          "prompt_alt": "мама",
+          "prompt_image": "/static/early/letters/bear-wise.png",
+          "prompt_alt": "медведь",
           "correct": "М",
           "options": [
             "А",
@@ -583,7 +583,7 @@
         "А"
       ],
       "result_label": "МА",
-      "result_image": "/static/early/letters/mama.png",
+      "result_image": "/static/early/letters/motor.png",
       "spark": false,
       "spark_group": "syllable"
     },
@@ -592,26 +592,26 @@
       "title": "Слог МА",
       "chapter": "Мини-квест",
       "kind": "mini_quest",
-      "slovik_line": "Мама и машина — в обоих есть слог ма. Найди обе картинки и слог ма.",
+      "slovik_line": "Медведь и машина начинаются на М. Найди обе картинки. Потом слог ма.",
       "slovik_pose": "joy",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l01-quest",
       "spark": false,
       "show_all_steps": true,
-      "hint": "Две картинки на ма: мама и машина. Потом слог МА.",
+      "hint": "Две картинки на М: медведь и машина. Потом слог МА.",
       "steps": [
         {
           "kind": "find",
-          "prompt": "Картинки на ма",
+          "prompt": "Картинки на М",
           "correct": [
-            "mama",
+            "bear",
             "motor"
           ],
           "options": [
             {
-              "id": "mama",
-              "label": "Мама",
-              "image": "/static/early/letters/mama.png"
+              "id": "bear",
+              "label": "Медведь",
+              "image": "/static/early/letters/bear-wise.png"
             },
             {
               "id": "motor",
@@ -655,7 +655,7 @@
       "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
       "fail_pose": "worry",
       "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Урок «Машина на поляне». Дома: м-м-м и слог МА. Слово МАМА можно прочитать вместе.",
+      "parent_note": "Урок «Машина на поляне». Дома: м-м-м и слог МА.",
       "chest_cta": "Открыть сундук",
       "tech_msg": "Знаю букву М"
     }

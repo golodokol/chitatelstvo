@@ -27,7 +27,7 @@
       "kind": "intro_video",
       "slovik_line": "Круглая буква О. Она тоже поёт: о-о-о.",
       "slovik_pose": "wave",
-      "scene_image": "/static/early/letters/scene-map-sounds-where-03.png",
+      "scene_image": "/static/early/letters/scene-o-pond-intro.jpg",
       "audio": "bo-m1-l03-hi",
       "cta_label": "Начать",
       "spark": false
@@ -35,15 +35,70 @@
     {
       "id": "meet",
       "title": "Буква О",
+      "chapter": "Знакомство",
       "kind": "meet_letter",
+      "mechanic": "meet_letter",
       "slovik_line": "Нажми на О. Скажи о-о-о.",
+      "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l03-meet",
       "sound": "snd-o",
       "letter": "О",
       "letter_image": "/static/early/letters/letter-o-hero.png",
       "hint": "Нажми на букву — услышишь звук.",
+      "coach_success": "О-о-о! Это буква О. Дальше соберём искорки.",
       "spark": false
+    },
+    {
+      "id": "azbuka",
+      "title": "Азбука О",
+      "chapter": "Буква",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи страницу О. Выбери картинки, которые начинаются на букву О.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l03-spread",
+      "letter": "О",
+      "letter_image": "/static/early/letters/letter-o-hero.png",
+      "book_title": "Окно",
+      "picture_only": false,
+      "hint": "Картинка должна начинаться на О.",
+      "success_msg": "Страница О готова!",
+      "rounds": [
+        {
+          "correct": "window",
+          "options": [
+            {
+              "id": "window",
+              "label": "окно",
+              "image": "/static/early/stories/window-frame.png"
+            },
+            {
+              "id": "tree",
+              "label": "дерево",
+              "image": "/static/early/letters/tree.png"
+            }
+          ]
+        },
+        {
+          "correct": "window2",
+          "options": [
+            {
+              "id": "window2",
+              "label": "окно",
+              "image": "/static/early/stories/window-frame.png"
+            },
+            {
+              "id": "motor",
+              "label": "машина",
+              "image": "/static/early/letters/motor.png"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
     },
     {
       "id": "round",
@@ -152,6 +207,54 @@
       "spark_group": "letter"
     },
     {
+      "id": "build",
+      "title": "Обведи О",
+      "chapter": "Буква",
+      "kind": "dot_connect",
+      "mechanic": "dot_connect",
+      "slovik_line": "Соедини точки по порядку — получится буква О.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l03-hop",
+      "letter": "О",
+      "hint": "Жми точки по номерам: 1, 2, 3…",
+      "success_msg": "Буква О получилась!",
+      "dots": [
+        {
+          "n": 1,
+          "x": 50,
+          "y": 12
+        },
+        {
+          "n": 2,
+          "x": 82,
+          "y": 30
+        },
+        {
+          "n": 3,
+          "x": 82,
+          "y": 70
+        },
+        {
+          "n": 4,
+          "x": 50,
+          "y": 88
+        },
+        {
+          "n": 5,
+          "x": 18,
+          "y": 70
+        },
+        {
+          "n": 6,
+          "x": 18,
+          "y": 30
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
       "id": "sort",
       "title": "Большая и маленькая О",
       "chapter": "Искорка 2 · Буква",
@@ -231,6 +334,209 @@
       "spark_group": "letter"
     },
     {
+      "id": "first_letter",
+      "title": "Первая буква",
+      "chapter": "Буква",
+      "kind": "find",
+      "mechanic": "picture_first_letter",
+      "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-workshop",
+      "spark": false,
+      "spark_group": "letter",
+      "hint": "Скажи слово вслух и найди первую букву.",
+      "rounds": [
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/stories/window-frame.png",
+          "prompt_alt": "окно",
+          "correct": "О",
+          "options": [
+            "А",
+            "О",
+            "М",
+            "У"
+          ]
+        },
+        {
+          "prompt_text": "Какая буква поёт о-о-о?",
+          "sound": "snd-o",
+          "correct": "О",
+          "options": [
+            "У",
+            "М",
+            "О",
+            "А"
+          ]
+        },
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/stories/window-frame.png",
+          "prompt_alt": "окно",
+          "correct": "О",
+          "options": [
+            "С",
+            "А",
+            "О",
+            "М"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "board",
+      "title": "Доска букв",
+      "chapter": "Буква",
+      "kind": "scene_hunt",
+      "mechanic": "letter_board",
+      "board_panel": true,
+      "slovik_line": "Найди на доске все буквы О. Их несколько.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
+      "audio": "bo-m1-l03-count",
+      "layout": "grid",
+      "grid_cols": 5,
+      "moving": false,
+      "correct_ids": [
+        "o1",
+        "o2",
+        "o3",
+        "o4",
+        "o5"
+      ],
+      "hotspots": [
+        {
+          "id": "a1",
+          "label": "А"
+        },
+        {
+          "id": "o1",
+          "label": "О"
+        },
+        {
+          "id": "m1",
+          "label": "М"
+        },
+        {
+          "id": "u1",
+          "label": "У"
+        },
+        {
+          "id": "s1",
+          "label": "С"
+        },
+        {
+          "id": "k1",
+          "label": "К"
+        },
+        {
+          "id": "o2",
+          "label": "О"
+        },
+        {
+          "id": "n1",
+          "label": "Н"
+        },
+        {
+          "id": "a2",
+          "label": "А"
+        },
+        {
+          "id": "m2",
+          "label": "М"
+        },
+        {
+          "id": "u2",
+          "label": "У"
+        },
+        {
+          "id": "o3",
+          "label": "О"
+        },
+        {
+          "id": "s2",
+          "label": "С"
+        },
+        {
+          "id": "k2",
+          "label": "К"
+        },
+        {
+          "id": "a3",
+          "label": "А"
+        },
+        {
+          "id": "m3",
+          "label": "М"
+        },
+        {
+          "id": "o4",
+          "label": "О"
+        },
+        {
+          "id": "u3",
+          "label": "У"
+        },
+        {
+          "id": "n2",
+          "label": "Н"
+        },
+        {
+          "id": "o5",
+          "label": "О"
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "catch",
+      "title": "Поймай О",
+      "chapter": "Буква",
+      "kind": "catch_letter",
+      "mechanic": "letter_meadow",
+      "slovik_line": "На поляне появится буква О. Нажми на неё — три раза в разных местах!",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-catch",
+      "letter": "О",
+      "appear_on_scene": true,
+      "catches": 3,
+      "spots": [
+        {
+          "x": 22,
+          "y": 28
+        },
+        {
+          "x": 74,
+          "y": 26
+        },
+        {
+          "x": 48,
+          "y": 40
+        },
+        {
+          "x": 18,
+          "y": 58
+        },
+        {
+          "x": 78,
+          "y": 56
+        },
+        {
+          "x": 58,
+          "y": 70
+        },
+        {
+          "x": 34,
+          "y": 66
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
       "id": "pause",
       "title": "Пауза",
       "kind": "break",
@@ -240,11 +546,36 @@
       "hint": "Найди дома круглую вещь и скажи о-о-о."
     },
     {
+      "id": "join_mo",
+      "title": "Мост дружбы",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "drag_join",
+      "slovik_line": "Познакомь М и О. Веди М по мостику к О — получится мо.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-bridge",
+      "hint": "Перетащи М к О по мостику",
+      "left": {
+        "id": "M",
+        "label": "М"
+      },
+      "right": {
+        "id": "O",
+        "label": "О"
+      },
+      "result": {
+        "label": "МО",
+        "sound": "snd-mo"
+      },
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
       "id": "slots",
-      "title": "Слоги МО и ОС",
+      "title": "Слог МО",
       "chapter": "Искорка 3 · Слог",
       "kind": "slot_build",
-      "slovik_line": "Слоги: мо и ос.",
+      "slovik_line": "Сложим слог мо. М и О рядом.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l03-slots",
       "result_sound": "snd-mo",
@@ -259,77 +590,77 @@
         "А"
       ],
       "result_label": "МО",
-      "result_image": "/static/early/letters/motor.png",
       "spark": true,
       "spark_kind": "syllable",
       "spark_group": "syllable"
     },
     {
       "id": "spread",
-      "title": "Круг и слог",
+      "title": "Буквы в книжке",
       "kind": "book_page",
       "mechanic": "letter_spread",
-      "slovik_line": "Смотри: круглый мяч — и буква О. Потом слог мо.",
+      "slovik_line": "Смотри: круглый мяч — и буква О. Потом вспомним буквы М, У и О.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l03-spread",
       "book_title": "О",
       "cta_label": "Дальше",
+      "read_hint": "Листай страницы и назови букву.",
+      "finale": "Буквы М, У и О с нами!",
       "lines": [
         {
           "text": "О",
           "spread_image": "/static/early/letters/spread-o-ball.jpg",
-          "image": "/static/early/letters/round-ball.png",
-          "alt": "Мяч"
+          "alt": "Мяч и буква О"
         },
         {
-          "text": "МО",
-          "spread_image": "/static/early/letters/spread-o-mo.jpg",
+          "text": "М",
           "image": "/static/early/letters/motor.png",
           "alt": "Машина"
+        },
+        {
+          "text": "У",
+          "image": "/static/early/letters/wind-howl.png",
+          "alt": "Ветер"
+        },
+        {
+          "text": "О",
+          "image": "/static/early/letters/round-ball.png",
+          "alt": "Мяч"
         }
       ],
       "spark": false
     },
     {
       "id": "quest",
-      "title": "МО — к машине",
+      "title": "Буквы М и О",
       "kind": "mini_quest",
-      "slovik_line": "Слог мо — к машине. Найди картинку и слог мо.",
+      "slovik_line": "Вспомним буквы. Найди М и О.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l03-quest",
       "spark": false,
       "show_all_steps": true,
+      "hint": "Сначала буква М, потом О.",
       "steps": [
         {
           "kind": "find",
-          "prompt": "Картинка",
-          "correct": "motor",
+          "prompt": "Буква М",
+          "correct": "М",
           "options": [
-            {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "ball",
-              "label": "Мяч",
-              "image": "/static/early/letters/ball.png"
-            },
-            {
-              "id": "kot",
-              "label": "Кот",
-              "image": "/static/early/letters/kot.png"
-            }
+            "М",
+            "У",
+            "О",
+            "А"
           ]
         },
         {
           "kind": "find",
-          "prompt": "Слог",
-          "correct": "МО",
+          "prompt": "Буква О",
+          "correct": "О",
           "options": [
-            "МА",
-            "МО",
-            "МУ"
+            "А",
+            "О",
+            "М",
+            "У"
           ]
         }
       ]
