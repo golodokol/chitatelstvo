@@ -75,7 +75,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "id": "trail",
             "title": "Тропа букв",
             "kind": "intro_video",
-            "slovik_line": "На тропе зажглась новая буква. Помнишь мотор? Он говорит: м-м-м. Познакомься с буквой М.",
+            "slovik_line": "На тропе зажглась новая буква. Помнишь машину? Она говорит: м-м-м. Познакомься с буквой М.",
             "slovik_pose": "wave",
             "scene_image": f"{L}/scene-gate.jpg",
             "audio": "bo-m1-l01-hi",
@@ -94,6 +94,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "audio": "bo-m1-l01-meet",
             "sound": "snd-m",
             "letter": "М",
+            "letter_image": f"{L}/letter-m-hero.png",
             "hint": "Нажми на букву — услышишь звук.",
             "spark": False,
         },
@@ -102,7 +103,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "title": "Кто гудит?",
             "chapter": "Искорка 1 · Звук",
             "kind": "listen_pick",
-            "slovik_line": "Что гудит м-м-м? Мотор или дождь?",
+            "slovik_line": "Что гудит м-м-м? Машина или дождь?",
             "slovik_pose": "listen",
             "scene_image": SCENE_MISS,
             "audio": "bo-m1-l01-motor",
@@ -112,7 +113,7 @@ def _letters_1() -> list[dict[str, Any]]:
                     "sound": "snd-m",
                     "correct": "motor",
                     "options": [
-                        _opt("motor", "Мотор", IMG["motor"]),
+                        _opt("motor", "Машина", IMG["motor"]),
                         _opt("rain", "Дождь", IMG["rain"]),
                     ],
                 }
@@ -197,10 +198,10 @@ def _letters_1() -> list[dict[str, Any]]:
             "id": "pause",
             "title": "Пауза",
             "kind": "break",
-            "slovik_line": "Встань. Погуди как мотор: м-м-м. Без экрана.",
+            "slovik_line": "Встань. Погуди как машина: м-м-м. Без экрана.",
             "audio": "bo-m1-l01-pause",
             "spark": False,
-            "hint": "Встань и тихо скажи м-м-м, как мотор. Потом вернёмся.",
+            "hint": "Встань и тихо скажи м-м-м, как машина. Потом вернёмся.",
         },
         {
             "id": "slot_ma",
@@ -243,7 +244,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "chapter": "Слог",
             "kind": "book_page",
             "mechanic": "letter_spread",
-            "slovik_line": "В книжке сначала звук мотора. Потом слово мама: ма-ма.",
+            "slovik_line": "В книжке сначала звук машины. Потом слово мама: ма-ма.",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
             "audio": "bo-m1-l01-spread",
@@ -251,18 +252,18 @@ def _letters_1() -> list[dict[str, Any]]:
             "book_title": "М",
             "cta_label": "Дальше",
             "lines": [
-                {"text": "м-м-м", "image": IMG["motor"], "alt": "Мотор"},
+                {"text": "м-м-м", "image": IMG["motor"], "alt": "Машина"},
                 {"text": "МАМА", "image": IMG["mama"], "alt": "Мама"},
             ],
             "spark": False,
         },
         {
             "id": "or",
-            "title": "Мотор или солнце",
+            "title": "Машина или солнце",
             "chapter": "Звук",
             "kind": "listen_pick",
             "mechanic": "or_choice",
-            "slovik_line": "Буква М. Кто говорит м-м-м — мотор или солнце?",
+            "slovik_line": "Буква М. Кто говорит м-м-м — машина или солнце?",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
             "audio": "bo-m1-l01-or",
@@ -272,7 +273,7 @@ def _letters_1() -> list[dict[str, Any]]:
                     "sound": "snd-m",
                     "correct": "motor",
                     "options": [
-                        _opt("motor", "Мотор", IMG["motor"]),
+                        _opt("motor", "Машина", IMG["motor"]),
                         _opt("sun", "Солнце", IMG["bird"]),
                     ],
                 }
@@ -313,7 +314,7 @@ def _letters_1() -> list[dict[str, Any]]:
         _reward(
             audio="bo-m1-l01-reward",
             line="Буква М с нами! Три искорки. Ты знаешь букву М.",
-            parent="Урок «Мотор на поляне». Дома: м-м-м и слог МА. Слово МАМА можно прочитать вместе.",
+            parent="Урок «Машина на поляне». Дома: м-м-м и слог МА. Слово МАМА можно прочитать вместе.",
             badge_line="Знаю букву М",
         ),
     ]
@@ -1420,7 +1421,7 @@ STORIES: dict[int, list[dict[str, Any]]] = {
 }
 
 LETTERS_META = {
-    1: {"title": "Мотор на поляне", "badge": "Знаю букву М"},
+    1: {"title": "Машина на поляне", "badge": "Знаю букву М"},
     2: {"title": "Поющая У", "badge": "Знаю букву У"},
     3: {"title": "Круглая О", "badge": "Знаю букву О"},
     4: {"title": "Змейка: с-с-с!", "badge": "Знаю букву С"},

@@ -24,7 +24,7 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(len(rows), 8)
         self.assertTrue(all(row["url"] is None for row in rows))
         self.assertTrue(all(row["unlocked"] is False for row in rows))
-        self.assertEqual(rows[0]["title"], "Мотор на поляне")
+        self.assertEqual(rows[0]["title"], "Машина на поляне")
 
     def test_upcoming_opens_first_four_for_staff_preview(self):
         rows = cabinet_ui._upcoming_module_lessons(
