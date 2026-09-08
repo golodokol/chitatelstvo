@@ -14,124 +14,300 @@
   "tale_slug": "early-letters-stage1-tale-04",
   "module_week": 4,
   "meeting_number": 2,
-  "badge": "Первый шаг",
+  "badge": "Знаю букву С",
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Каркас станций модуля 1.",
+  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
   "lesson_format": "quest",
   "stations": [
     {
-      "id": "hello",
-      "title": "Приветствие",
+      "id": "trail",
+      "title": "Тропа букв",
       "kind": "intro_video",
-      "slovik_line": "Сегодня: Буква М — звук мотора",
+      "slovik_line": "Ш-ш-ш… то не наш звук. А вот с-с-с — это буква С.",
+      "slovik_pose": "wave",
+      "scene_image": "/static/early/letters/scene-gate.jpg",
       "audio": "bo-m1-l04-hi",
+      "cta_label": "Начать",
       "spark": false
     },
     {
-      "id": "warm",
-      "title": "Разминка",
-      "kind": "find",
-      "slovik_line": "Вспомним прошлое.",
-      "audio": "bo-m1-l04-warm",
-      "spark": false,
-      "rounds": [
-        {
-          "correct": "A",
-          "options": [
-            "A",
-            "M",
-            "O"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "new",
-      "title": "Новое",
-      "kind": "repeat_sound",
-      "slovik_line": "Новый навык.",
-      "audio": "bo-m1-l04-new",
-      "sound": "bo-m1-l04-sound",
+      "id": "meet",
+      "title": "Буква С",
+      "kind": "meet_letter",
+      "slovik_line": "Буква С. Тихо: с-с-с. Как тонкая струйка воздуха.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l04-meet",
+      "sound": "snd-s",
+      "letter": "С",
       "spark": false
     },
     {
-      "id": "game1",
-      "title": "Игра 1",
+      "id": "hiss",
+      "title": "с-с-с или м-м-м",
+      "chapter": "Искорка 1 · Звук",
       "kind": "listen_pick",
-      "slovik_line": "Поиграем!",
-      "audio": "bo-m1-l04-g1",
-      "spark": true,
+      "slovik_line": "Что слышишь: с-с-с или м-м-м?",
+      "scene_image": "/static/early/letters/scene-missing.jpg",
+      "audio": "bo-m1-l04-hiss",
+      "picture_only": true,
       "rounds": [
         {
-          "correct": "yes",
+          "sound": "snd-s",
+          "correct": "tree",
           "options": [
             {
-              "id": "yes",
-              "label": "Да"
+              "id": "tree",
+              "label": "Ветер в траве",
+              "image": "/static/early/letters/tree.png"
             },
             {
-              "id": "no",
-              "label": "Нет"
+              "id": "motor",
+              "label": "Мотор",
+              "image": "/static/early/letters/motor.png"
             }
           ]
         }
-      ]
+      ],
+      "spark": true,
+      "spark_kind": "sound",
+      "spark_group": "sound"
     },
     {
-      "id": "break",
+      "id": "hop",
+      "title": "Прыжки",
+      "kind": "letter_maze",
+      "mechanic": "letter_hop",
+      "slovik_line": "Прыгай на С. Она говорит с-с-с.",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l04-hop",
+      "letter": "С",
+      "start": [
+        0,
+        0
+      ],
+      "end": [
+        3,
+        3
+      ],
+      "grid": [
+        [
+          "С",
+          "М",
+          "А",
+          "У"
+        ],
+        [
+          "С",
+          "С",
+          "С",
+          "О"
+        ],
+        [
+          "А",
+          "М",
+          "С",
+          "С"
+        ],
+        [
+          "О",
+          "У",
+          "М",
+          "С"
+        ]
+      ],
+      "spark": false
+    },
+    {
+      "id": "grid",
+      "title": "Найди все С",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "letter_puzzle",
+      "mechanic": "letter_grid",
+      "slovik_line": "Найди все буквы С на доске.",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l04-grid",
+      "slots": 5,
+      "pieces": [
+        {
+          "id": "s1",
+          "label": "С",
+          "correct": true
+        },
+        {
+          "id": "m1",
+          "label": "М",
+          "correct": false
+        },
+        {
+          "id": "s2",
+          "label": "С",
+          "correct": true
+        },
+        {
+          "id": "a1",
+          "label": "А",
+          "correct": false
+        },
+        {
+          "id": "s3",
+          "label": "С",
+          "correct": true
+        },
+        {
+          "id": "o1",
+          "label": "О",
+          "correct": false
+        },
+        {
+          "id": "s4",
+          "label": "С",
+          "correct": true
+        },
+        {
+          "id": "u1",
+          "label": "У",
+          "correct": false
+        },
+        {
+          "id": "s5",
+          "label": "С",
+          "correct": true
+        }
+      ],
+      "spark": true,
+      "spark_kind": "letter",
+      "spark_group": "letter"
+    },
+    {
+      "id": "count",
+      "title": "Шесть С",
+      "kind": "catch_letter",
+      "mechanic": "letter_count",
+      "slovik_line": "Собери шесть С у воды.",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l04-count",
+      "letter": "С",
+      "letters": [
+        "С",
+        "М",
+        "А",
+        "О",
+        "У"
+      ],
+      "letter_sounds": {
+        "С": "snd-s",
+        "М": "snd-m",
+        "А": "snd-a",
+        "О": "snd-o",
+        "У": "snd-u"
+      },
+      "catches": 6,
+      "spark": false
+    },
+    {
+      "id": "pause",
       "title": "Пауза",
       "kind": "break",
-      "slovik_line": "Отойдём от экрана.",
-      "audio": "shared-pause-start",
+      "slovik_line": "Тихое с-с-с, как ветер в траве.",
+      "audio": "bo-m1-l04-pause",
       "spark": false,
-      "hint": "Короткая пауза без экрана."
+      "hint": "Тихо скажи с-с-с. Не путай с ш-ш-ш."
     },
     {
-      "id": "game2",
-      "title": "Игра 2",
-      "kind": "find",
-      "slovik_line": "Ещё практика.",
-      "audio": "bo-m1-l04-g2",
+      "id": "slots",
+      "title": "СА, СО, ОС",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Слоги: са, со, ос.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l04-slots",
+      "targets": [
+        "С",
+        "А"
+      ],
+      "options": [
+        "С",
+        "О",
+        "А",
+        "М"
+      ],
+      "result_label": "СА",
       "spark": true,
+      "spark_kind": "syllable",
+      "spark_group": "syllable"
+    },
+    {
+      "id": "or",
+      "title": "Змейка или мотор",
+      "kind": "listen_pick",
+      "mechanic": "or_choice",
+      "slovik_line": "Кто говорит с-с-с — змейка или мотор?",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l04-or",
+      "picture_only": true,
       "rounds": [
         {
-          "correct": "A",
+          "sound": "snd-s",
+          "correct": "snake",
           "options": [
-            "A",
-            "M",
-            "S"
+            {
+              "id": "snake",
+              "label": "Змейка",
+              "image": "/static/early/letters/tree.png"
+            },
+            {
+              "id": "motor",
+              "label": "Мотор",
+              "image": "/static/early/letters/motor.png"
+            }
           ]
         }
-      ]
+      ],
+      "spark": false
     },
     {
       "id": "quest",
-      "title": "Мини-квест",
+      "title": "Слог СО",
       "kind": "mini_quest",
-      "slovik_line": "Почти финиш!",
+      "slovik_line": "Слог со. Где рыбка?",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l04-quest",
       "spark": false,
       "steps": [
         {
           "kind": "find",
-          "correct": "A",
+          "correct": "СО",
           "options": [
-            "A",
-            "O"
+            "СА",
+            "СО",
+            "ОС",
+            "МО"
           ]
         }
       ]
     },
     {
-      "id": "reward",
-      "title": "Награда",
+      "id": "chest",
+      "title": "Награда Словика",
+      "chapter": "Три искорки",
       "kind": "reward",
-      "slovik_line": "Молодец!",
-      "audio": "shared-reward",
+      "slovik_line": "Змейка С с нами! Ты знаешь букву С.",
+      "slovik_pose": "chest",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "spark_image": "/static/early/letters/spark.png",
+      "audio": "bo-m1-l04-reward",
+      "fail_audio": "vo-retry",
       "spark": false,
-      "parent_note": "Урок «Буква М — звук мотора» пройден. Повторите дома главный навык."
+      "fail_title": "Ещё чуть-чуть",
+      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_pose": "worry",
+      "retry_cta": "Попробовать ещё раз",
+      "parent_note": "Урок «Змейка: с-с-с!». Дома тихое с-с-с, не ш-ш-ш.",
+      "chest_cta": "Открыть сундук",
+      "tech_msg": "Знаю букву С"
     }
   ],
   "quest": {

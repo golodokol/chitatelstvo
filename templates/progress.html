@@ -372,7 +372,26 @@
                 {% endif %}
                 <div class="chit-story-grid">
                   {% for tale in track.upcoming_lessons %}
-                  <article class="chit-story-card chit-story-card--soon">
+                  <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
+                    {% if tale.unlocked and tale.url %}
+                    <a class="chit-story-card__link" href="{{ tale.url }}">
+                      <div class="chit-story-card__cover">
+                        {% if tale.cover_url %}
+                        <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                        {% else %}
+                        <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                        {% endif %}
+                        <div class="chit-story-card__overlay">
+                          <span class="chit-story-card__overlay-label">{{ tale.overlay_label or 'тест' }}</span>
+                        </div>
+                      </div>
+                      <div class="chit-story-card__meta">
+                        <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                        <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                        <span class="chit-story-card__buy">Открыть черновик</span>
+                      </div>
+                    </a>
+                    {% else %}
                     <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
                       <div class="chit-story-card__cover chit-story-card__cover--soon">
                         {% if tale.cover_url %}
@@ -390,6 +409,7 @@
                         <span class="chit-story-card__buy">Выбрать тариф</span>
                       </div>
                     </a>
+                    {% endif %}
                   </article>
                   {% endfor %}
                 </div>
@@ -468,7 +488,26 @@
             {% endif %}
             <div class="chit-story-grid">
               {% for tale in track.upcoming_lessons %}
-              <article class="chit-story-card chit-story-card--soon">
+              <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
+                {% if tale.unlocked and tale.url %}
+                <a class="chit-story-card__link" href="{{ tale.url }}">
+                  <div class="chit-story-card__cover">
+                    {% if tale.cover_url %}
+                    <img src="{{ tale.cover_url }}" alt="" loading="lazy">
+                    {% else %}
+                    <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                    {% endif %}
+                    <div class="chit-story-card__overlay">
+                      <span class="chit-story-card__overlay-label">{{ tale.overlay_label or 'тест' }}</span>
+                    </div>
+                  </div>
+                  <div class="chit-story-card__meta">
+                    <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                    <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                    <span class="chit-story-card__buy">Открыть черновик</span>
+                  </div>
+                </a>
+                {% else %}
                 <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
                   <div class="chit-story-card__cover chit-story-card__cover--soon">
                     {% if tale.cover_url %}
@@ -486,6 +525,7 @@
                     <span class="chit-story-card__buy">Выбрать тариф</span>
                   </div>
                 </a>
+                {% endif %}
               </article>
               {% endfor %}
             </div>

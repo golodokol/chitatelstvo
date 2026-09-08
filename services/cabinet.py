@@ -185,7 +185,13 @@ def _maybe_heal_first_step_badge(db: Session, child: Child) -> None:
         db.refresh(child)
 
 
-def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_BASE_URL) -> dict[str, Any]:
+def build_child_payload(
+    db: Session,
+    child: Child,
+    *,
+    assets_base: str = PUBLIC_BASE_URL,
+    progress_token: str | None = None,
+) -> dict[str, Any]:
     maybe_grant_birthday_gift(db, child)
     _maybe_heal_first_step_badge(db, child)
     events = repo.get_child_events(db, child.id, limit=120)
@@ -253,6 +259,8 @@ def build_child_payload(db: Session, child: Child, *, assets_base: str = PUBLIC_
             chest_claims=chest_claims,
             assets_base=assets_base,
             child_id=str(child.id),
+            progress_token=progress_token
+            or (getattr(child.family, "progress_token", None) if child.family else None),
         ),
         "events": [
             {
@@ -317,7 +325,10 @@ def build_family_cabinet(
             for n in notifications
         ],
         "selected_child_id": str(child_id) if child_id else None,
-        "children": [build_child_payload(db, child, assets_base=assets_base) for child in children_rows],
+        "children": [
+            build_child_payload(db, child, assets_base=assets_base, progress_token=token)
+            for child in children_rows
+        ],
         "parent_guide": {
             "steps": parent_lesson_guide_steps(),
             "points": parent_points_rows(),
