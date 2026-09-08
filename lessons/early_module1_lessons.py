@@ -111,6 +111,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "audio": "bo-m1-l01-spread",
             "letter": "М",
             "letter_image": f"{L}/letter-m-hero.png",
+            "book_title": "Мама и Машина",
             "picture_only": True,
             "hint": "Картинка должна начинаться на М.",
             "success_msg": "Страница М готова!",

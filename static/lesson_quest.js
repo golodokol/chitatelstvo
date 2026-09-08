@@ -3370,6 +3370,12 @@
 
     var cover = document.createElement("div");
     cover.className = "quest-book__cover";
+    if (station.book_title) {
+      var bookTitle = document.createElement("p");
+      bookTitle.className = "quest-azbuka__title";
+      bookTitle.textContent = station.book_title;
+      cover.appendChild(bookTitle);
+    }
     var spread = document.createElement("div");
     spread.className = "quest-book__spread quest-azbuka__spread";
 

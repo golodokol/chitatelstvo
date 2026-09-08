@@ -60,6 +60,7 @@
       "audio": "bo-m1-l01-spread",
       "letter": "М",
       "letter_image": "/static/early/letters/letter-m-hero.png",
+      "book_title": "Мама и Машина",
       "picture_only": true,
       "hint": "Картинка должна начинаться на М.",
       "success_msg": "Страница М готова!",
