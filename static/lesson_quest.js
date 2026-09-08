@@ -1389,13 +1389,13 @@
   function defaultDotPath(letter) {
     var L = String(letter || "М").toUpperCase();
     if (L === "М" || L === "M") {
+      // Печатная М: вверх по левой ножке, вниз к впадине, вверх к правой, вниз.
       return [
-        { n: 1, x: 18, y: 12 },
-        { n: 2, x: 18, y: 50 },
-        { n: 3, x: 18, y: 88 },
-        { n: 4, x: 50, y: 58 },
-        { n: 5, x: 82, y: 88 },
-        { n: 6, x: 82, y: 12 }
+        { n: 1, x: 18, y: 88 },
+        { n: 2, x: 18, y: 12 },
+        { n: 3, x: 50, y: 72 },
+        { n: 4, x: 82, y: 12 },
+        { n: 5, x: 82, y: 88 }
       ];
     }
     if (L === "О" || L === "O") {
@@ -1451,8 +1451,8 @@
 
     var ghost = document.createElement("div");
     ghost.className = "quest-dots__ghost";
-    ghost.textContent = letter;
     ghost.setAttribute("aria-hidden", "true");
+    // Не подставляем текстовую букву: она путает направление V у М.
     stage.appendChild(ghost);
 
     var points = [];
