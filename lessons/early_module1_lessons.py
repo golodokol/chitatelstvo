@@ -148,7 +148,7 @@ def _letters_1() -> list[dict[str, Any]]:
         {
             "id": "build",
             "title": "Обведи М",
-            "chapter": "Искорка 2 · Буква",
+            "chapter": "Буква",
             "kind": "dot_connect",
             "mechanic": "dot_connect",
             "slovik_line": "Соедини точки по порядку — получится буква М.",
@@ -165,8 +165,7 @@ def _letters_1() -> list[dict[str, Any]]:
                 {"n": 4, "x": 82, "y": 12},
                 {"n": 5, "x": 82, "y": 88},
             ],
-            "spark": True,
-            "spark_kind": "letter",
+            "spark": False,
             "spark_group": "letter",
         },
         {
@@ -194,6 +193,64 @@ def _letters_1() -> list[dict[str, Any]]:
             "spark_group": "letter",
         },
         {
+            "id": "spread",
+            "title": "Первая азбука",
+            "chapter": "Буква",
+            "kind": "alphabet_book",
+            "mechanic": "azbuka_fill",
+            "slovik_line": "Сложи первую азбуку. Выбери картинки, которые начинаются на букву М.",
+            "slovik_pose": "talk",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l01-spread",
+            "letter": "М",
+            "picture_only": True,
+            "hint": "Картинка должна начинаться на М.",
+            "success_msg": "Страница М готова!",
+            "rounds": [
+                {
+                    "correct": "motor",
+                    "options": [
+                        _opt("motor", "Машина", IMG["motor"]),
+                        _opt("sun", "Солнце", IMG["bird"]),
+                    ],
+                },
+                {
+                    "correct": "mama",
+                    "options": [
+                        _opt("mama", "Мама", IMG["mama"]),
+                        _opt("kot", "Кот", IMG["kot"]),
+                    ],
+                },
+            ],
+            "spark": False,
+            "spark_group": "letter",
+        },
+        {
+            "id": "or",
+            "title": "Машина или солнце",
+            "chapter": "Искорка 2 · Буква",
+            "kind": "listen_pick",
+            "mechanic": "or_choice",
+            "slovik_line": "Буква М. Кто говорит м-м-м — машина или солнце?",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l01-or",
+            "picture_only": True,
+            "rounds": [
+                {
+                    "sound": "snd-m",
+                    "correct": "motor",
+                    "options": [
+                        _opt("motor", "Машина", IMG["motor"]),
+                        _opt("sun", "Солнце", IMG["bird"]),
+                    ],
+                }
+            ],
+            "spark": True,
+            "spark_kind": "letter",
+            "spark_group": "letter",
+        },
+        {
             "id": "pause",
             "title": "Пауза",
             "kind": "break",
@@ -205,7 +262,7 @@ def _letters_1() -> list[dict[str, Any]]:
         {
             "id": "slot_ma",
             "title": "Слог МА",
-            "chapter": "Искорка 3 · Слог",
+            "chapter": "Слог",
             "kind": "slot_build",
             "slovik_line": "Сложим слоги. Сначала ма — это уже знакомо.",
             "slovik_pose": "invite",
@@ -236,61 +293,6 @@ def _letters_1() -> list[dict[str, Any]]:
             "spark": True,
             "spark_kind": "syllable",
             "spark_group": "syllable",
-        },
-        {
-            "id": "spread",
-            "title": "Первая азбука",
-            "chapter": "Слог",
-            "kind": "alphabet_book",
-            "mechanic": "azbuka_fill",
-            "slovik_line": "Сложи первую азбуку. Выбери картинки, которые начинаются на букву М.",
-            "slovik_pose": "talk",
-            "scene_image": SCENE_L,
-            "audio": "bo-m1-l01-spread",
-            "letter": "М",
-            "picture_only": True,
-            "hint": "Картинка должна начинаться на М.",
-            "success_msg": "Страница М готова!",
-            "rounds": [
-                {
-                    "correct": "motor",
-                    "options": [
-                        _opt("motor", "Машина", IMG["motor"]),
-                        _opt("sun", "Солнце", IMG["bird"]),
-                    ],
-                },
-                {
-                    "correct": "mama",
-                    "options": [
-                        _opt("mama", "Мама", IMG["mama"]),
-                        _opt("kot", "Кот", IMG["kot"]),
-                    ],
-                },
-            ],
-            "spark": False,
-        },
-        {
-            "id": "or",
-            "title": "Машина или солнце",
-            "chapter": "Звук",
-            "kind": "listen_pick",
-            "mechanic": "or_choice",
-            "slovik_line": "Буква М. Кто говорит м-м-м — машина или солнце?",
-            "slovik_pose": "hint",
-            "scene_image": SCENE_L,
-            "audio": "bo-m1-l01-or",
-            "picture_only": True,
-            "rounds": [
-                {
-                    "sound": "snd-m",
-                    "correct": "motor",
-                    "options": [
-                        _opt("motor", "Машина", IMG["motor"]),
-                        _opt("sun", "Солнце", IMG["bird"]),
-                    ],
-                }
-            ],
-            "spark": False,
         },
         {
             "id": "quest",

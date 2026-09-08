@@ -142,7 +142,7 @@
     {
       "id": "build",
       "title": "Обведи М",
-      "chapter": "Искорка 2 · Буква",
+      "chapter": "Буква",
       "kind": "dot_connect",
       "mechanic": "dot_connect",
       "slovik_line": "Соедини точки по порядку — получится буква М.",
@@ -179,8 +179,7 @@
           "y": 88
         }
       ],
-      "spark": true,
-      "spark_kind": "letter",
+      "spark": false,
       "spark_group": "letter"
     },
     {
@@ -240,6 +239,88 @@
       "spark_group": "letter"
     },
     {
+      "id": "spread",
+      "title": "Первая азбука",
+      "chapter": "Буква",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи первую азбуку. Выбери картинки, которые начинаются на букву М.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l01-spread",
+      "letter": "М",
+      "picture_only": true,
+      "hint": "Картинка должна начинаться на М.",
+      "success_msg": "Страница М готова!",
+      "rounds": [
+        {
+          "correct": "motor",
+          "options": [
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/bird.png"
+            }
+          ]
+        },
+        {
+          "correct": "mama",
+          "options": [
+            {
+              "id": "mama",
+              "label": "Мама",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "or",
+      "title": "Машина или солнце",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "listen_pick",
+      "mechanic": "or_choice",
+      "slovik_line": "Буква М. Кто говорит м-м-м — машина или солнце?",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l01-or",
+      "picture_only": true,
+      "rounds": [
+        {
+          "sound": "snd-m",
+          "correct": "motor",
+          "options": [
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/bird.png"
+            }
+          ]
+        }
+      ],
+      "spark": true,
+      "spark_kind": "letter",
+      "spark_group": "letter"
+    },
+    {
       "id": "pause",
       "title": "Пауза",
       "kind": "break",
@@ -251,7 +332,7 @@
     {
       "id": "slot_ma",
       "title": "Слог МА",
-      "chapter": "Искорка 3 · Слог",
+      "chapter": "Слог",
       "kind": "slot_build",
       "slovik_line": "Сложим слоги. Сначала ма — это уже знакомо.",
       "slovik_pose": "invite",
@@ -298,85 +379,6 @@
       "spark": true,
       "spark_kind": "syllable",
       "spark_group": "syllable"
-    },
-    {
-      "id": "spread",
-      "title": "Первая азбука",
-      "chapter": "Слог",
-      "kind": "alphabet_book",
-      "mechanic": "azbuka_fill",
-      "slovik_line": "Сложи первую азбуку. Выбери картинки, которые начинаются на букву М.",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-spread",
-      "letter": "М",
-      "picture_only": true,
-      "hint": "Картинка должна начинаться на М.",
-      "success_msg": "Страница М готова!",
-      "rounds": [
-        {
-          "correct": "motor",
-          "options": [
-            {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "sun",
-              "label": "Солнце",
-              "image": "/static/early/letters/bird.png"
-            }
-          ]
-        },
-        {
-          "correct": "mama",
-          "options": [
-            {
-              "id": "mama",
-              "label": "Мама",
-              "image": "/static/early/letters/mama.png"
-            },
-            {
-              "id": "kot",
-              "label": "Кот",
-              "image": "/static/early/letters/kot.png"
-            }
-          ]
-        }
-      ],
-      "spark": false
-    },
-    {
-      "id": "or",
-      "title": "Машина или солнце",
-      "chapter": "Звук",
-      "kind": "listen_pick",
-      "mechanic": "or_choice",
-      "slovik_line": "Буква М. Кто говорит м-м-м — машина или солнце?",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-or",
-      "picture_only": true,
-      "rounds": [
-        {
-          "sound": "snd-m",
-          "correct": "motor",
-          "options": [
-            {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "sun",
-              "label": "Солнце",
-              "image": "/static/early/letters/bird.png"
-            }
-          ]
-        }
-      ],
-      "spark": false
     },
     {
       "id": "quest",

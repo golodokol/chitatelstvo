@@ -510,10 +510,22 @@
     });
   }
 
+  function phaseKind(station) {
+    var kind = groupKind(station);
+    if (kind) return kind;
+    var chapter = String((station && station.chapter) || "");
+    if (/Звук/i.test(chapter)) return "sound";
+    if (/Буква/i.test(chapter)) return "letter";
+    if (/Слог/i.test(chapter)) return "syllable";
+    return "";
+  }
+
   function updateSparkHud() {
+    var curKind = phaseKind(stations[idx]);
     document.querySelectorAll(".quest-spark-chip").forEach(function (chip) {
       var kind = chip.getAttribute("data-spark");
       chip.classList.toggle("is-on", !!sparkKinds[kind]);
+      chip.classList.toggle("is-current", !!kind && kind === curKind);
     });
   }
 
