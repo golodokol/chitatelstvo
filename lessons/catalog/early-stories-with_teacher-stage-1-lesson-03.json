@@ -26,7 +26,7 @@
       "title": "Мяч пропал",
       "kind": "intro_video",
       "slovik_line": "Мяч снова пропал! Поищем по дому.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/cover-ball.jpg",
       "audio": "ph-m1-l03-hi",
       "cta_label": "Начать",
       "spark": false
@@ -37,7 +37,7 @@
       "chapter": "Искорка 1",
       "kind": "scene_hunt",
       "slovik_line": "Где мяч? Загляни в комнаты.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l03-hunt",
       "layout": "grid",
       "grid_cols": 3,
@@ -50,21 +50,21 @@
         {
           "id": "kitchen",
           "label": "Кухня",
-          "image": "/static/early/letters/syr.png",
+          "image": "/static/early/stories/scene-kitchen.jpg",
           "x": 20,
           "y": 50
         },
         {
           "id": "room",
           "label": "Комната",
-          "image": "/static/early/stories/kot-sleep.png",
+          "image": "/static/early/stories/scene-room.jpg",
           "x": 50,
           "y": 50
         },
         {
           "id": "hall",
           "label": "Коридор",
-          "image": "/static/early/letters/ball.png",
+          "image": "/static/early/stories/scene-hall.jpg",
           "x": 80,
           "y": 50
         }
@@ -78,7 +78,7 @@
       "title": "Под стулом",
       "kind": "find",
       "slovik_line": "Мяч под стулом или на диване?",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l03-under",
       "rounds": [
         {
@@ -88,12 +88,12 @@
             {
               "id": "sofa",
               "label": "НА диване",
-              "image": "/static/early/stories/kot-sleep.png"
+              "image": "/static/early/stories/ball-on-sofa.png"
             },
             {
               "id": "under",
               "label": "ПОД стулом",
-              "image": "/static/early/letters/ball.png"
+              "image": "/static/early/stories/ball-under-chair.png"
             }
           ]
         }
@@ -106,7 +106,7 @@
       "kind": "slot_build",
       "mechanic": "phrase_slots",
       "slovik_line": "Собери вопрос: где мяч? Потом: вот мяч!",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l03-slots",
       "targets": [
         "ГДЕ",
@@ -126,7 +126,7 @@
       "title": "Бежит, ловит, рад",
       "kind": "mini_quest",
       "slovik_line": "Кот бежит. Кот ловит. Кот рад.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l03-run",
       "spark": true,
       "spark_kind": "phrase",
@@ -145,7 +145,24 @@
             {
               "id": "run",
               "label": "Бежит",
-              "image": "/static/early/letters/kot.png"
+              "image": "/static/early/stories/cat-run.png"
+            }
+          ]
+        },
+        {
+          "kind": "phrase_picture",
+          "phrase": "КОТ ЛОВИТ",
+          "correct": "catch",
+          "options": [
+            {
+              "id": "eat",
+              "label": "Ест",
+              "image": "/static/early/stories/kot-eat.png"
+            },
+            {
+              "id": "catch",
+              "label": "Ловит",
+              "image": "/static/early/stories/cat-catch.png"
             }
           ]
         },
@@ -155,14 +172,14 @@
           "correct": "happy",
           "options": [
             {
-              "id": "eat",
-              "label": "Ест",
-              "image": "/static/early/stories/kot-eat.png"
+              "id": "sleep",
+              "label": "Спит",
+              "image": "/static/early/stories/kot-sleep.png"
             },
             {
               "id": "happy",
               "label": "Рад",
-              "image": "/static/early/letters/kot.png"
+              "image": "/static/early/stories/cat-happy.png"
             }
           ]
         }
@@ -173,26 +190,21 @@
       "title": "Картинка к вопросу",
       "kind": "phrase_picture",
       "slovik_line": "Где мяч? Выбери картинку.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l03-where",
       "phrase": "ГДЕ МЯЧ?",
-      "correct": "ball",
+      "correct": "under",
       "picture_only": true,
       "options": [
         {
-          "id": "kot",
-          "label": "Кот",
-          "image": "/static/early/letters/kot.png"
+          "id": "sofa",
+          "label": "На диване",
+          "image": "/static/early/stories/ball-on-sofa.png"
         },
         {
-          "id": "ball",
-          "label": "Мяч",
-          "image": "/static/early/letters/ball.png"
-        },
-        {
-          "id": "house",
-          "label": "Дом",
-          "image": "/static/early/letters/house.png"
+          "id": "under",
+          "label": "Под стулом",
+          "image": "/static/early/stories/ball-under-chair.png"
         }
       ],
       "spark": false
@@ -202,34 +214,34 @@
       "title": "Где мяч?",
       "kind": "book_page",
       "slovik_line": "История про мяч. Читай.",
-      "scene_image": "/static/early/stories/scene-book.jpg",
+      "scene_image": "/static/early/stories/cover-ball.jpg",
       "audio": "ph-m1-l03-book",
       "book_title": "Где мяч?",
       "cta_label": "Я прочитал!",
       "lines": [
         {
           "text": "ГДЕ МЯЧ?",
-          "image": "/static/early/letters/kot.png",
+          "spread_image": "/static/early/stories/book-ball-01.jpg",
           "audio": "ph-m1-l03-p1"
         },
         {
           "text": "НЕ ТУТ.",
-          "image": "/static/early/letters/syr.png",
+          "spread_image": "/static/early/stories/book-ball-02.jpg",
           "audio": "ph-m1-l03-p2"
         },
         {
           "text": "НЕ ТУТ.",
-          "image": "/static/early/stories/kot-sleep.png",
+          "spread_image": "/static/early/stories/book-ball-03.jpg",
           "audio": "ph-m1-l03-p3"
         },
         {
           "text": "ВОТ МЯЧ!",
-          "image": "/static/early/letters/ball.png",
+          "spread_image": "/static/early/stories/book-ball-04.jpg",
           "audio": "ph-m1-l03-p4"
         },
         {
           "text": "КОТ РАД.",
-          "image": "/static/early/letters/kot.png",
+          "spread_image": "/static/early/stories/book-ball-05.jpg",
           "audio": "ph-m1-l03-p5"
         }
       ],

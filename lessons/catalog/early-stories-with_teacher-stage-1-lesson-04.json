@@ -26,7 +26,7 @@
       "title": "Память",
       "kind": "intro_video",
       "slovik_line": "Сегодня без новой книжки. Проверим, что ты помнишь.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/shelf-four.jpg",
       "audio": "ph-m1-l04-hi",
       "cta_label": "Начать",
       "spark": false
@@ -37,7 +37,7 @@
       "chapter": "Искорка 1",
       "kind": "find",
       "slovik_line": "Какая это книжка? Найди обложку.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/shelf-four.jpg",
       "audio": "ph-m1-l04-which",
       "rounds": [
         {
@@ -53,17 +53,17 @@
             {
               "id": "box",
               "label": "Кот и коробка",
-              "image": "/static/early/letters/house.png"
+              "image": "/static/early/stories/cover-box.jpg"
             },
             {
               "id": "rain",
               "label": "Дождь за окном",
-              "image": "/static/early/letters/rain.png"
+              "image": "/static/early/stories/cover-rain.jpg"
             },
             {
               "id": "ball_book",
               "label": "Где мяч?",
-              "image": "/static/early/letters/ball.png"
+              "image": "/static/early/stories/cover-ball.jpg"
             }
           ]
         }
@@ -77,7 +77,7 @@
       "title": "Фраза к картинке",
       "kind": "phrase_picture",
       "slovik_line": "Какая фраза подходит к картинке?",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
       "audio": "ph-m1-l04-phrase",
       "phrase": "?",
       "prompt_image": "/static/early/letters/rain.png",
@@ -105,7 +105,7 @@
       "kind": "slot_build",
       "mechanic": "order_step",
       "slovik_line": "Расставь по порядку. Сначала первое, потом второе, потом третье.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-wave-stones.jpg",
       "audio": "ph-m1-l04-order",
       "targets": [
         "ГДЕ МЯЧ?",

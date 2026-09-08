@@ -41,6 +41,8 @@
       "audio": "bo-m1-l04-meet",
       "sound": "snd-s",
       "letter": "С",
+      "letter_image": "/static/early/letters/letter-s-hero.png",
+      "hint": "Нажми на букву — услышишь звук.",
       "spark": false
     },
     {
@@ -55,16 +57,16 @@
       "rounds": [
         {
           "sound": "snd-s",
-          "correct": "tree",
+          "correct": "snake",
           "options": [
             {
-              "id": "tree",
-              "label": "Ветер в траве",
-              "image": "/static/early/letters/tree.png"
+              "id": "snake",
+              "label": "Змейка",
+              "image": "/static/early/letters/snake-hiss.png"
             },
             {
               "id": "motor",
-              "label": "Мотор",
+              "label": "Машина",
               "image": "/static/early/letters/motor.png"
             }
           ]
@@ -80,7 +82,7 @@
       "kind": "letter_maze",
       "mechanic": "letter_hop",
       "slovik_line": "Прыгай на С. Она говорит с-с-с.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
       "audio": "bo-m1-l04-hop",
       "letter": "С",
       "start": [
@@ -117,7 +119,8 @@
           "С"
         ]
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "letter"
     },
     {
       "id": "grid",
@@ -126,7 +129,7 @@
       "kind": "letter_puzzle",
       "mechanic": "letter_grid",
       "slovik_line": "Найди все буквы С на доске.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
       "audio": "bo-m1-l04-grid",
       "slots": 5,
       "pieces": [
@@ -186,7 +189,7 @@
       "kind": "catch_letter",
       "mechanic": "letter_count",
       "slovik_line": "Собери шесть С у воды.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
       "audio": "bo-m1-l04-count",
       "letter": "С",
       "letters": [
@@ -243,8 +246,8 @@
       "title": "Змейка или мотор",
       "kind": "listen_pick",
       "mechanic": "or_choice",
-      "slovik_line": "Кто говорит с-с-с — змейка или мотор?",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "slovik_line": "Буква С. Кто говорит с-с-с — змейка или машина?",
+      "scene_image": "/static/early/letters/scene-comic-book.jpg",
       "audio": "bo-m1-l04-or",
       "picture_only": true,
       "rounds": [
@@ -255,11 +258,11 @@
             {
               "id": "snake",
               "label": "Змейка",
-              "image": "/static/early/letters/tree.png"
+              "image": "/static/early/letters/snake-hiss.png"
             },
             {
               "id": "motor",
-              "label": "Мотор",
+              "label": "Машина",
               "image": "/static/early/letters/motor.png"
             }
           ]
@@ -271,13 +274,37 @@
       "id": "quest",
       "title": "Слог СО",
       "kind": "mini_quest",
-      "slovik_line": "Слог со. Где рыбка?",
+      "slovik_line": "Слог со. Найди сома и слог со.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l04-quest",
       "spark": false,
+      "show_all_steps": true,
       "steps": [
         {
           "kind": "find",
+          "prompt": "Картинка",
+          "correct": "som",
+          "options": [
+            {
+              "id": "som",
+              "label": "Сом",
+              "image": "/static/early/letters/som-fish.png"
+            },
+            {
+              "id": "snake",
+              "label": "Змейка",
+              "image": "/static/early/letters/snake-hiss.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            }
+          ]
+        },
+        {
+          "kind": "find",
+          "prompt": "Слог",
           "correct": "СО",
           "options": [
             "СА",

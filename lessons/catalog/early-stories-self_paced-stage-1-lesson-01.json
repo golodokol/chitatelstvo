@@ -27,7 +27,7 @@
       "kind": "intro_video",
       "slovik_line": "В доме что-то новое. Посмотрим!",
       "slovik_pose": "wave",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-hi",
       "cta_label": "Начать",
       "spark": false
@@ -40,7 +40,7 @@
       "mechanic": "word_screen",
       "slovik_line": "Прочитай слово. Короб.",
       "slovik_pose": "talk",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/slovik-screen.png",
       "audio": "ph-m1-l01-screen",
       "spark": false,
       "items": [
@@ -51,7 +51,7 @@
             {
               "id": "box",
               "label": "Короб",
-              "image": "/static/early/letters/house.png"
+              "image": "/static/early/stories/box-closed.png"
             },
             {
               "id": "kot",
@@ -72,7 +72,7 @@
       "title": "Что там?",
       "kind": "find",
       "slovik_line": "Что там? Выбери картинку.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-what",
       "rounds": [
         {
@@ -81,7 +81,8 @@
           "options": [
             {
               "id": "empty",
-              "label": "ПУСТО"
+              "label": "ПУСТО",
+              "image": "/static/early/stories/box-empty.png"
             },
             {
               "id": "kot",
@@ -104,14 +105,14 @@
       "kind": "match_pairs",
       "mechanic": "drag_match",
       "slovik_line": "Перетащи слово к картинке.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-drag",
       "hint": "Нажми на слово, потом на картинку.",
       "pairs": [
         {
           "id": "korob",
           "label": "КОРОБ",
-          "image": "/static/early/letters/house.png"
+          "image": "/static/early/stories/box-closed.png"
         },
         {
           "id": "kot",
@@ -133,22 +134,24 @@
       "title": "Открой короб",
       "kind": "mini_quest",
       "slovik_line": "Открой короб. Смотри… вот мяч!",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-open",
       "spark": false,
       "steps": [
         {
           "kind": "find",
           "prompt": "СМОТРИ",
-          "correct": "look",
+          "correct": "empty",
           "options": [
             {
-              "id": "look",
-              "label": "СМОТРИ"
+              "id": "empty",
+              "label": "ПУСТО",
+              "image": "/static/early/stories/box-empty.png"
             },
             {
               "id": "sleep",
-              "label": "СПИТ"
+              "label": "СПИТ",
+              "image": "/static/early/stories/kot-sleep.png"
             }
           ]
         },
@@ -159,12 +162,13 @@
           "options": [
             {
               "id": "empty",
-              "label": "ПУСТО"
+              "label": "ПУСТО",
+              "image": "/static/early/stories/box-empty.png"
             },
             {
               "id": "ball",
               "label": "ВОТ МЯЧ",
-              "image": "/static/early/letters/ball.png"
+              "image": "/static/early/stories/box-ball.png"
             },
             {
               "id": "syr",
@@ -181,7 +185,7 @@
       "kind": "slot_build",
       "mechanic": "phrase_slots",
       "slovik_line": "Собери: вот мяч.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-slots",
       "targets": [
         "ВОТ",
@@ -194,6 +198,7 @@
         "МЯЧ"
       ],
       "result_label": "ВОТ МЯЧ",
+      "result_image": "/static/early/stories/box-ball.png",
       "spark": false,
       "spark_group": "phrase"
     },
@@ -202,7 +207,7 @@
       "title": "Кот рад",
       "kind": "phrase_picture",
       "slovik_line": "Кот рад. Где такая картинка?",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-feel",
       "phrase": "КОТ РАД",
       "correct": "happy",
@@ -216,7 +221,7 @@
         {
           "id": "happy",
           "label": "Рад",
-          "image": "/static/early/letters/kot.png"
+          "image": "/static/early/stories/cat-happy.png"
         },
         {
           "id": "eat",
@@ -234,38 +239,38 @@
       "kind": "book_page",
       "slovik_line": "Теперь книжка. Читай сам. Я рядом.",
       "slovik_pose": "joy",
-      "scene_image": "/static/early/stories/scene-book.jpg",
+      "scene_image": "/static/early/stories/cover-box.jpg",
       "audio": "ph-m1-l01-book",
       "book_title": "Кот и коробка",
       "cta_label": "Я прочитал!",
       "lines": [
         {
           "text": "ВОТ КОРОБ.",
-          "image": "/static/early/letters/house.png",
+          "spread_image": "/static/early/stories/book-box-01.jpg",
           "alt": "Короб",
           "audio": "ph-m1-l01-p1"
         },
         {
           "text": "ЧТО ТАМ?",
-          "image": "/static/early/letters/kot.png",
+          "spread_image": "/static/early/stories/book-box-02.jpg",
           "alt": "Кот смотрит",
           "audio": "ph-m1-l01-p2"
         },
         {
           "text": "НЕ ТУТ.",
-          "image": "/static/early/letters/house.png",
+          "spread_image": "/static/early/stories/book-box-03.jpg",
           "alt": "Пусто",
           "audio": "ph-m1-l01-p3"
         },
         {
           "text": "ВОТ МЯЧ!",
-          "image": "/static/early/letters/ball.png",
+          "spread_image": "/static/early/stories/book-box-04.jpg",
           "alt": "Мяч",
           "audio": "ph-m1-l01-p4"
         },
         {
           "text": "КОТ РАД.",
-          "image": "/static/early/letters/kot.png",
+          "spread_image": "/static/early/stories/book-box-05.jpg",
           "alt": "Кот рад",
           "audio": "ph-m1-l01-p5"
         }

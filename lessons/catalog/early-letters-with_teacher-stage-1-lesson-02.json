@@ -42,6 +42,8 @@
       "audio": "bo-m1-l02-meet",
       "sound": "snd-u",
       "letter": "У",
+      "letter_image": "/static/early/letters/letter-u-hero.png",
+      "hint": "Нажми на букву — услышишь звук.",
       "spark": false
     },
     {
@@ -64,7 +66,7 @@
       "kind": "letter_maze",
       "mechanic": "letter_hop",
       "slovik_line": "Прыгай на букву, которая поёт у-у-у.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
       "audio": "bo-m1-l02-hop",
       "letter": "У",
       "start": [
@@ -110,7 +112,7 @@
       "chapter": "Искорка 2 · Буква",
       "kind": "letter_maze",
       "slovik_line": "Иди только по У и А. Другие буквы — стена.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
       "audio": "bo-m1-l02-maze",
       "letter": "У",
       "start": [
@@ -138,8 +140,7 @@
           "У"
         ]
       ],
-      "spark": true,
-      "spark_kind": "letter",
+      "spark": false,
       "spark_group": "letter"
     },
     {
@@ -147,8 +148,8 @@
       "title": "Найди все У",
       "kind": "letter_puzzle",
       "mechanic": "letter_grid",
-      "slovik_line": "Найди все буквы У.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "slovik_line": "Найди на доске все буквы У. Их несколько.",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
       "audio": "bo-m1-l02-grid",
       "slots": 3,
       "pieces": [
@@ -183,7 +184,9 @@
           "correct": true
         }
       ],
-      "spark": false
+      "spark": true,
+      "spark_kind": "letter",
+      "spark_group": "letter"
     },
     {
       "id": "pause",
@@ -214,6 +217,7 @@
         "О"
       ],
       "result_label": "МУ",
+      "result_image": "/static/early/letters/bear-wise.png",
       "spark": true,
       "spark_kind": "syllable",
       "spark_group": "syllable"
@@ -223,8 +227,8 @@
       "title": "Кто поёт?",
       "kind": "listen_pick",
       "mechanic": "or_choice",
-      "slovik_line": "Кто поёт у-у-у? Не спутай с мотором.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "slovik_line": "Буква У. Что поёт у-у-у — ветер или машина?",
+      "scene_image": "/static/early/letters/scene-comic-book.jpg",
       "audio": "bo-m1-l02-or",
       "picture_only": true,
       "rounds": [
@@ -235,11 +239,11 @@
             {
               "id": "wind",
               "label": "Ветер",
-              "image": "/static/early/letters/tree.png"
+              "image": "/static/early/letters/wind-howl.png"
             },
             {
               "id": "motor",
-              "label": "Мотор",
+              "label": "Машина",
               "image": "/static/early/letters/motor.png"
             }
           ]
@@ -251,11 +255,35 @@
       "id": "quest",
       "title": "Слог УМ",
       "kind": "mini_quest",
-      "slovik_line": "Где слог ум?",
+      "slovik_line": "Слог ум. Найди умного медведя и слог ум.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l02-quest",
       "spark": false,
+      "show_all_steps": true,
+      "hint": "Картинка медведя и слог УМ.",
       "steps": [
+        {
+          "kind": "find",
+          "prompt": "Картинка",
+          "correct": "bear",
+          "options": [
+            {
+              "id": "bear",
+              "label": "Медведь",
+              "image": "/static/early/letters/bear-wise.png"
+            },
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            }
+          ]
+        },
         {
           "kind": "find",
           "prompt": "Слог",
@@ -264,7 +292,7 @@
             "МУ",
             "УМ",
             "МА",
-            "МО"
+            "АМ"
           ]
         }
       ]

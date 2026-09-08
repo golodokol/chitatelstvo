@@ -41,6 +41,8 @@
       "audio": "bo-m1-l03-meet",
       "sound": "snd-o",
       "letter": "О",
+      "letter_image": "/static/early/letters/letter-o-hero.png",
+      "hint": "Нажми на букву — услышишь звук.",
       "spark": false
     },
     {
@@ -63,21 +65,21 @@
         {
           "id": "ball",
           "label": "Мяч",
-          "image": "/static/early/letters/ball.png",
+          "image": "/static/early/letters/round-ball.png",
           "x": 20,
           "y": 28
         },
         {
-          "id": "house",
-          "label": "Дом",
-          "image": "/static/early/letters/house.png",
+          "id": "box",
+          "label": "Короб",
+          "image": "/static/early/letters/box-square.png",
           "x": 50,
           "y": 28
         },
         {
           "id": "cup",
           "label": "Чашка",
-          "image": "/static/early/letters/cup.png",
+          "image": "/static/early/letters/round-cup.png",
           "x": 80,
           "y": 28
         },
@@ -90,15 +92,15 @@
         },
         {
           "id": "motor",
-          "label": "Мотор",
+          "label": "Машина",
           "image": "/static/early/letters/motor.png",
           "x": 50,
           "y": 72
         },
         {
-          "id": "bird",
-          "label": "Птица",
-          "image": "/static/early/letters/bird.png",
+          "id": "house",
+          "label": "Дом",
+          "image": "/static/early/letters/house.png",
           "x": 80,
           "y": 72
         }
@@ -113,7 +115,7 @@
       "kind": "letter_maze",
       "mechanic": "letter_hop",
       "slovik_line": "Прыгай на круглую О.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
       "audio": "bo-m1-l03-hop",
       "letter": "О",
       "start": [
@@ -146,7 +148,8 @@
           "О"
         ]
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "letter"
     },
     {
       "id": "sort",
@@ -208,7 +211,7 @@
       "kind": "catch_letter",
       "mechanic": "letter_count",
       "slovik_line": "Поймай шесть букв О. Считай вместе со мной.",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
       "audio": "bo-m1-l03-count",
       "letter": "О",
       "letters": [
@@ -224,7 +227,8 @@
         "М": "snd-m"
       },
       "catches": 6,
-      "spark": false
+      "spark": false,
+      "spark_group": "letter"
     },
     {
       "id": "pause",
@@ -273,28 +277,54 @@
       "lines": [
         {
           "text": "О",
-          "image": "/static/early/letters/ball.png",
+          "spread_image": "/static/early/letters/spread-o-ball.jpg",
+          "image": "/static/early/letters/round-ball.png",
           "alt": "Мяч"
         },
         {
           "text": "МО",
+          "spread_image": "/static/early/letters/spread-o-mo.jpg",
           "image": "/static/early/letters/motor.png",
-          "alt": "Мотор"
+          "alt": "Машина"
         }
       ],
       "spark": false
     },
     {
       "id": "quest",
-      "title": "МО — к мотору",
+      "title": "МО — к машине",
       "kind": "mini_quest",
-      "slovik_line": "Слог мо — к мотору.",
+      "slovik_line": "Слог мо — к машине. Найди картинку и слог мо.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l03-quest",
       "spark": false,
+      "show_all_steps": true,
       "steps": [
         {
           "kind": "find",
+          "prompt": "Картинка",
+          "correct": "motor",
+          "options": [
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "ball",
+              "label": "Мяч",
+              "image": "/static/early/letters/ball.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
+            }
+          ]
+        },
+        {
+          "kind": "find",
+          "prompt": "Слог",
           "correct": "МО",
           "options": [
             "МА",

@@ -26,7 +26,7 @@
       "title": "Окно",
       "kind": "intro_video",
       "slovik_line": "Посмотри в окно вместе со мной.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
       "audio": "ph-m1-l02-hi",
       "cta_label": "Начать",
       "spark": false
@@ -37,7 +37,7 @@
       "kind": "word_picture",
       "mechanic": "word_screen",
       "slovik_line": "Это слово: дождь.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/slovik-screen.png",
       "audio": "ph-m1-l02-screen",
       "items": [
         {
@@ -52,7 +52,7 @@
             {
               "id": "sun",
               "label": "Солнце",
-              "image": "/static/early/letters/sun-smile.png"
+              "image": "/static/early/stories/sun-clear.png"
             }
           ]
         }
@@ -65,7 +65,7 @@
       "chapter": "Искорка 1",
       "kind": "listen_pick",
       "slovik_line": "Дождь или солнце?",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
       "audio": "ph-m1-l02-weather",
       "picture_only": true,
       "rounds": [
@@ -80,7 +80,7 @@
             {
               "id": "sun",
               "label": "Солнце",
-              "image": "/static/early/letters/sun-smile.png"
+              "image": "/static/early/stories/sun-clear.png"
             }
           ]
         }
@@ -94,7 +94,7 @@
       "title": "Кто у окна?",
       "kind": "find",
       "slovik_line": "Кто у окна?",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
       "audio": "ph-m1-l02-who",
       "rounds": [
         {
@@ -126,13 +126,13 @@
       "kind": "match_pairs",
       "mechanic": "drag_match",
       "slovik_line": "Слово к картинке.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
       "audio": "ph-m1-l02-drag",
       "pairs": [
         {
           "id": "okno",
           "label": "ОКНО",
-          "image": "/static/early/letters/house.png"
+          "image": "/static/early/stories/window-frame.png"
         },
         {
           "id": "dozhd",
@@ -153,7 +153,7 @@
       "kind": "slot_build",
       "mechanic": "phrase_slots",
       "slovik_line": "Собери: кот у окна.",
-      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
       "audio": "ph-m1-l02-slots",
       "targets": [
         "КОТ",
@@ -168,6 +168,7 @@
         "ОКНА"
       ],
       "result_label": "КОТ У ОКНА",
+      "result_image": "/static/early/stories/window-frame.png",
       "spark": true,
       "spark_kind": "phrase",
       "spark_group": "phrase"
@@ -210,34 +211,34 @@
       "title": "Дождь за окном",
       "kind": "book_page",
       "slovik_line": "Книжка про дождь. Читай.",
-      "scene_image": "/static/early/stories/scene-book.jpg",
+      "scene_image": "/static/early/stories/cover-rain.jpg",
       "audio": "ph-m1-l02-book",
       "book_title": "Дождь за окном",
       "cta_label": "Я прочитал!",
       "lines": [
         {
           "text": "ИДЁТ ДОЖДЬ.",
-          "image": "/static/early/letters/rain.png",
+          "spread_image": "/static/early/stories/book-rain-01.jpg",
           "audio": "ph-m1-l02-p1"
         },
         {
           "text": "КОТ У ОКНА.",
-          "image": "/static/early/letters/kot.png",
+          "spread_image": "/static/early/stories/book-rain-02.jpg",
           "audio": "ph-m1-l02-p2"
         },
         {
           "text": "ТИХО ДОМА.",
-          "image": "/static/early/letters/house.png",
+          "spread_image": "/static/early/stories/book-rain-03.jpg",
           "audio": "ph-m1-l02-p3"
         },
         {
           "text": "КОТ СПИТ.",
-          "image": "/static/early/stories/kot-sleep.png",
+          "spread_image": "/static/early/stories/book-rain-04.jpg",
           "audio": "ph-m1-l02-p4"
         },
         {
           "text": "НОЧЬ.",
-          "image": "/static/early/stories/scene-night-sleep.jpg",
+          "spread_image": "/static/early/stories/book-rain-05.jpg",
           "audio": "ph-m1-l02-p5"
         }
       ],
