@@ -1848,21 +1848,146 @@
   flex-wrap: wrap;
   margin: 8px 0;
 }
+.quest-join--bridge {
+  flex-direction: column;
+  width: min(100%, 420px);
+  margin: 4px auto;
+  gap: 10px;
+}
+.quest-join__stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 0 28px;
+  width: 100%;
+  min-height: 132px;
+  padding: 18px 10px 22px;
+  box-sizing: border-box;
+}
+.quest-join__bridge {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 50%;
+  height: 42px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(196, 154, 98, 0.95), rgba(158, 112, 62, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 205, 0.55),
+    0 8px 16px rgba(42, 38, 34, 0.14);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 7px 10px;
+  opacity: 0.88;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  z-index: 0;
+}
+.quest-join__bridge.is-active {
+  opacity: 1;
+  filter: saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 205, 0.7),
+    0 10px 20px rgba(42, 38, 34, 0.18),
+    0 0 0 3px rgba(233, 184, 91, 0.28);
+}
+.quest-join__bridge.is-joined {
+  opacity: 1;
+  background: linear-gradient(180deg, #7db894, #3d8b6e);
+}
+.quest-join__rails {
+  position: absolute;
+  inset: 4px 8px;
+  border-radius: 999px;
+  border: 2px solid rgba(90, 58, 28, 0.28);
+  border-left: 0;
+  border-right: 0;
+  pointer-events: none;
+}
+.quest-join__plank {
+  flex: 1;
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255, 236, 205, 0.35), rgba(90, 58, 28, 0.18));
+  box-shadow: inset 0 0 0 1px rgba(90, 58, 28, 0.12);
+}
+.quest-join__home {
+  position: relative;
+  z-index: 2;
+  min-height: 88px;
+  display: grid;
+  place-items: center;
+}
 .quest-join__chip {
   min-width: 78px;
+  min-height: 78px;
   padding: 16px;
   border-radius: 18px;
   border: 2px solid rgba(42, 38, 34, 0.12);
   background: rgba(255, 255, 255, 0.94);
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 800;
   text-align: center;
   box-shadow: 0 8px 18px rgba(42, 38, 34, 0.08);
   cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  color: #2a2622;
+  touch-action: none;
+  user-select: none;
+  position: relative;
+  z-index: 2;
 }
-.quest-join__chip.is-done {
+.quest-join__chip--drag {
+  cursor: grab;
+}
+.quest-join__chip--drag.is-dragging,
+.quest-join__chip--drag.is-picked {
+  cursor: grabbing;
+  border-color: #c46a4a;
+  background: #fff7f1;
+  box-shadow: 0 12px 24px rgba(42, 38, 34, 0.16);
+  z-index: 5;
+}
+.quest-join__chip--drop {
+  cursor: default;
+}
+.quest-join__chip--drop.is-hot {
+  border-color: #e9b85b;
+  background: #fff8e8;
+  transform: scale(1.06);
+}
+.quest-join__chip.is-done,
+.quest-join__chip.is-joined {
   border-color: #3d8b6e;
   background: #e8f6ef;
+}
+.quest-join__chip.is-joined {
+  min-width: 118px;
+  font-size: 2.1rem;
+  letter-spacing: 0.04em;
+}
+.quest-join__chip--drag.is-joined {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.4);
+}
+.quest-join__hint {
+  margin: 0;
+  text-align: center;
+}
+.quest-join__hint.is-result {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #2f6b52;
+}
+.quest-playfield--join .quest-playfield__surface {
+  justify-content: center;
+  align-items: center;
 }
 .quest-playfield--match .quest-playfield__surface {
   justify-content: center;
@@ -2116,6 +2241,70 @@
   font-weight: 800;
   color: #3a342c;
   pointer-events: none;
+}
+.quest-scene--board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  min-height: min(52vh, 420px);
+  position: relative;
+}
+.quest-scene--board .quest-scene__count {
+  top: 4px;
+  font-size: clamp(1.15rem, 4vw, 1.45rem);
+  padding: 7px 18px;
+  letter-spacing: 0.04em;
+  background: rgba(255, 252, 247, 0.97);
+  border: 2px solid rgba(120, 90, 50, 0.22);
+}
+.quest-letter-board {
+  width: min(86%, 460px);
+  aspect-ratio: 1.22 / 1;
+  max-height: min(58vh, 380px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 4% 5% 5%;
+}
+.quest-letter-board__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+  align-content: stretch;
+}
+.quest-hotspot--board {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 0;
+  font-size: clamp(1.15rem, 3.8vw, 1.75rem);
+  font-weight: 900;
+  background: rgba(255, 252, 247, 0.98);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 10px rgba(42, 38, 34, 0.14);
+}
+.quest-hotspot--board:active {
+  transform: scale(0.94) !important;
+}
+.quest-hotspot--board.is-correct {
+  background: #e8f6ef;
+  border-color: #3d8b6e;
+  box-shadow: 0 0 0 2px rgba(61, 139, 110, 0.28);
 }
 .quest-playfield--meet .quest-playfield__surface {
   justify-content: center;
@@ -2397,7 +2586,7 @@
 .quest-playfield--hunt .quest-catch,
 .quest-playfield--hunt .quest-meet,
 .quest-playfield--catch .quest-meet,
-.quest-playfield--catch .quest-scene {
+.quest-playfield--catch .quest-scene:not(.quest-scene--letter-pop) {
   display: none !important;
 }
 .quest-playfield--meet .quest-meet {

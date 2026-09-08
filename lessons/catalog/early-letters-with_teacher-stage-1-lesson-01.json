@@ -46,6 +46,7 @@
       "letter": "М",
       "letter_image": "/static/early/letters/letter-m-hero.png",
       "hint": "Нажми на букву — услышишь звук.",
+      "coach_success": "М-м-м! Это буква М. Дальше соберём искорки.",
       "spark": false
     },
     {
@@ -380,6 +381,7 @@
       "chapter": "Буква",
       "kind": "scene_hunt",
       "mechanic": "letter_board",
+      "board_panel": true,
       "slovik_line": "Найди на доске все буквы М. Их несколько.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-forest-board.jpg",
@@ -392,134 +394,88 @@
         "m2",
         "m3",
         "m4",
-        "m5",
-        "m6"
+        "m5"
       ],
       "hotspots": [
         {
           "id": "a1",
-          "label": "А",
-          "size": "sm"
+          "label": "А"
         },
         {
           "id": "m1",
-          "label": "М",
-          "size": "sm"
+          "label": "М"
         },
         {
           "id": "o1",
-          "label": "О",
-          "size": "sm"
+          "label": "О"
         },
         {
           "id": "u1",
-          "label": "У",
-          "size": "sm"
+          "label": "У"
         },
         {
           "id": "s1",
-          "label": "С",
-          "size": "sm"
-        },
-        {
-          "id": "m2",
-          "label": "М",
-          "size": "sm"
+          "label": "С"
         },
         {
           "id": "k1",
-          "label": "К",
-          "size": "sm"
+          "label": "К"
+        },
+        {
+          "id": "m2",
+          "label": "М"
         },
         {
           "id": "n1",
-          "label": "Н",
-          "size": "sm"
-        },
-        {
-          "id": "m3",
-          "label": "М",
-          "size": "sm"
+          "label": "Н"
         },
         {
           "id": "a2",
-          "label": "А",
-          "size": "sm"
+          "label": "А"
         },
         {
           "id": "o2",
-          "label": "О",
-          "size": "sm"
-        },
-        {
-          "id": "m4",
-          "label": "М",
-          "size": "sm"
+          "label": "О"
         },
         {
           "id": "u2",
-          "label": "У",
-          "size": "sm"
+          "label": "У"
+        },
+        {
+          "id": "m3",
+          "label": "М"
         },
         {
           "id": "s2",
-          "label": "С",
-          "size": "sm"
-        },
-        {
-          "id": "a3",
-          "label": "А",
-          "size": "sm"
-        },
-        {
-          "id": "m5",
-          "label": "М",
-          "size": "sm"
-        },
-        {
-          "id": "o3",
-          "label": "О",
-          "size": "sm"
+          "label": "С"
         },
         {
           "id": "k2",
-          "label": "К",
-          "size": "sm"
+          "label": "К"
+        },
+        {
+          "id": "a3",
+          "label": "А"
+        },
+        {
+          "id": "o3",
+          "label": "О"
+        },
+        {
+          "id": "m4",
+          "label": "М"
         },
         {
           "id": "u3",
-          "label": "У",
-          "size": "sm"
-        },
-        {
-          "id": "m6",
-          "label": "М",
-          "size": "sm"
-        },
-        {
-          "id": "s3",
-          "label": "С",
-          "size": "sm"
-        },
-        {
-          "id": "a4",
-          "label": "А",
-          "size": "sm"
+          "label": "У"
         },
         {
           "id": "n2",
-          "label": "Н",
-          "size": "sm"
+          "label": "Н"
         },
         {
-          "id": "o4",
-          "label": "О",
-          "size": "sm"
-        },
-        {
-          "id": "u4",
-          "label": "У",
-          "size": "sm"
+          "id": "m5",
+          "label": "М"
         }
       ],
       "spark": false,

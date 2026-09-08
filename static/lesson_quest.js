@@ -487,7 +487,7 @@
     var base = (cfg.assetsBase || "").replace(/\/$/, "");
     var url = base + path;
     if (/\.(png|jpe?g|webp)$/i.test(path) && url.indexOf("?") < 0) {
-      url += "?v=20260826g";
+      url += "?v=20260909e";
     }
     return url;
   }
@@ -1612,10 +1612,11 @@
     }
 
     chip.addEventListener("click", function () {
-      if (!alive() || chip.hidden) return;
+      if (!alive() || chip.hidden || !chip.classList.contains("is-pop")) return;
       got += 1;
       count.textContent = "Поймано: " + got + " / " + need;
       chip.classList.add("is-hit");
+      chip.classList.remove("is-pop");
       if (got >= need) {
         done = true;
         coachReact("good", true);
@@ -1628,9 +1629,15 @@
       }, 380);
     });
 
-    afterStationVoice(function () {
-      if (alive()) place();
-    });
+    var placedOnce = false;
+    function placeSoon() {
+      if (!alive() || placedOnce) return;
+      placedOnce = true;
+      place();
+    }
+    // Не зависеть только от конца VO: если аудио залипло — буква всё равно появится.
+    afterStationVoice(placeSoon);
+    setTimeout(placeSoon, 900);
   }
 
   function renderCatchLetter(station) {
@@ -1783,42 +1790,68 @@
     var found = {};
     var hotspots = station.hotspots || [];
     var letterTiles = hotspots.length && !hotspots.some(function (hs) { return hs.image; });
-    var moving = station.moving === true || (station.moving !== false && letterTiles);
+    var boardPanel = station.board_panel === true || station.mechanic === "letter_board";
+    var moving = !boardPanel && (station.moving === true || (station.moving !== false && letterTiles));
     if (moving && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       moving = false;
     }
     // Absolute % positions are more reliable than CSS-grid centering:
     // on some viewports the grid layer collapsed and tiles stacked/clipped on the left.
-    var layoutGrid = !moving && (station.layout === "grid" || (!letterTiles && hotspots.length >= 4));
+    var layoutGrid = !boardPanel && !moving && (station.layout === "grid" || (!letterTiles && hotspots.length >= 4));
     var useGrid = false;
     var spots = layoutGrid ? gridPositions(hotspots.length, station.grid_cols || 3) : null;
+    var inset = station.inset || null;
+    if (spots && inset) {
+      var left = Number(inset.left != null ? inset.left : 16);
+      var right = Number(inset.right != null ? inset.right : 84);
+      var top = Number(inset.top != null ? inset.top : 18);
+      var bottom = Number(inset.bottom != null ? inset.bottom : 70);
+      spots = spots.map(function (s) {
+        return {
+          x: left + (Number(s.x) / 100) * (right - left),
+          y: top + (Number(s.y) / 100) * (bottom - top)
+        };
+      });
+    }
     var scene = document.createElement("div");
-    scene.className = "quest-scene" + (moving ? " is-moving" : "");
+    scene.className = "quest-scene" + (moving ? " is-moving" : "") + (boardPanel ? " quest-scene--board" : "");
     var layer = document.createElement("div");
-    layer.className = "quest-scene__hotspots";
+    layer.className = boardPanel ? "quest-letter-board__grid" : "quest-scene__hotspots";
+    if (boardPanel && station.grid_cols) {
+      layer.style.gridTemplateColumns = "repeat(" + Number(station.grid_cols) + ", minmax(0, 1fr))";
+    }
+    var board = null;
+    if (boardPanel) {
+      board = document.createElement("div");
+      board.className = "quest-letter-board";
+      board.appendChild(layer);
+    }
     var wanderers = [];
     var count = null;
-    if (need.length > 1) {
+    if (need.length > 0) {
       count = document.createElement("p");
       count.className = "quest-echo__count quest-scene__count";
-      count.textContent = "0 / " + need.length;
+      count.textContent = "0/" + need.length;
       scene.appendChild(count);
     }
     function refreshCount() {
       if (!count) return;
       var got = need.filter(function (c) { return found[c]; }).length;
-      count.textContent = got + " / " + need.length;
+      count.textContent = got + "/" + need.length;
     }
     hotspots.forEach(function (hs, i) {
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "quest-hotspot" + (hs.image ? " quest-hotspot--pic" : "") + (hs.size === "sm" ? " is-sm" : "") + (moving ? " quest-hotspot--wander" : "");
-      var startX = (spots && spots[i] ? spots[i].x : hs.x) || 50;
-      var rawY = (spots && spots[i] ? spots[i].y : hs.y) || 50;
-      var startY = (layoutGrid || station.keep_y) ? Number(rawY) : sceneFieldY(rawY);
-      if (!useGrid) {
-        btn.style.left = startX + "%";
-        btn.style.top = startY + "%";
+      var sizeClass = boardPanel ? "" : (hs.size === "sm" ? " is-sm" : "");
+      btn.className = "quest-hotspot" + (hs.image ? " quest-hotspot--pic" : "") + sizeClass + (moving ? " quest-hotspot--wander" : "") + (boardPanel ? " quest-hotspot--board" : "");
+      if (!boardPanel) {
+        var startX = (spots && spots[i] ? spots[i].x : hs.x) || 50;
+        var rawY = (spots && spots[i] ? spots[i].y : hs.y) || 50;
+        var startY = (layoutGrid || station.keep_y) ? Number(rawY) : sceneFieldY(rawY);
+        if (!useGrid) {
+          btn.style.left = startX + "%";
+          btn.style.top = startY + "%";
+        }
       }
       btn.dataset.id = hs.id;
       if (hs.image) {
@@ -1848,8 +1881,8 @@
           found[id] = true;
           btn.classList.add("is-correct");
           refreshCount();
-          var left = need.filter(function (c) { return !found[c]; });
-          if (!left.length) {
+          var leftIds = need.filter(function (c) { return !found[c]; });
+          if (!leftIds.length) {
             if (gameRaf) {
               cancelAnimationFrame(gameRaf);
               gameRaf = null;
@@ -1873,16 +1906,19 @@
         var ang = Math.random() * Math.PI * 2;
         var base = Number(station.move_speed) > 0 ? Number(station.move_speed) : 5;
         var spd = base + Math.random() * (base * 0.35);
+        var sx = Number(btn.style.left) || 50;
+        var sy = Number(btn.style.top) || 50;
         wanderers.push({
           el: btn,
-          x: startX,
-          y: startY,
+          x: sx,
+          y: sy,
           vx: Math.cos(ang) * spd,
           vy: Math.sin(ang) * spd
         });
       }
     });
-    scene.appendChild(layer);
+    if (board) scene.appendChild(board);
+    else scene.appendChild(layer);
     root().appendChild(scene);
     if (!wanderers.length) return;
 
@@ -2557,70 +2593,202 @@
   }
 
   function renderJoin(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) field.classList.add("quest-playfield--join");
+    var gen = playGen;
+    var done = false;
+    var dragging = false;
+    var startX = 0;
+    var startY = 0;
+    var moved = false;
+    var picked = false;
+    var leftSpec = station.left || { label: "М", id: "M" };
+    var rightSpec = station.right || { label: "А", id: "A" };
+    var resultSpec = station.result || {
+      label: station.result_label || "МА",
+      sound: station.result_sound || "snd-ma",
+      image: station.result_image
+    };
+
     var wrap = document.createElement("div");
-    wrap.className = "quest-join";
+    wrap.className = "quest-join quest-join--bridge";
+
+    var stage = document.createElement("div");
+    stage.className = "quest-join__stage";
+
+    var bridge = document.createElement("div");
+    bridge.className = "quest-join__bridge";
+    bridge.setAttribute("aria-hidden", "true");
+    var rails = document.createElement("span");
+    rails.className = "quest-join__rails";
+    bridge.appendChild(rails);
+    var i;
+    for (i = 0; i < 6; i++) {
+      var plank = document.createElement("span");
+      plank.className = "quest-join__plank";
+      bridge.appendChild(plank);
+    }
+
+    var home = document.createElement("div");
+    home.className = "quest-join__home";
+
     var left = document.createElement("button");
     left.type = "button";
-    left.className = "quest-join__chip";
-    if (station.left && station.left.image) {
+    left.className = "quest-join__chip quest-join__chip--drag";
+    left.setAttribute("aria-label", "Перетащи " + ((leftSpec && leftSpec.label) || "М"));
+    if (leftSpec && leftSpec.image) {
       var li = document.createElement("img");
-      li.src = assetUrl(station.left.image);
+      li.src = assetUrl(leftSpec.image);
       li.alt = "";
       left.appendChild(li);
     }
-    left.appendChild(document.createTextNode((station.left && station.left.label) || "М"));
-    var arrow = document.createElement("span");
-    arrow.textContent = "→";
-    var right = document.createElement("button");
-    right.type = "button";
-    right.className = "quest-join__chip";
-    if (station.right && station.right.image) {
+    left.appendChild(document.createTextNode((leftSpec && leftSpec.label) || "М"));
+
+    var right = document.createElement("div");
+    right.className = "quest-join__chip quest-join__chip--drop";
+    right.setAttribute("aria-label", (rightSpec && rightSpec.label) || "А");
+    if (rightSpec && rightSpec.image) {
       var ri = document.createElement("img");
-      ri.src = assetUrl(station.right.image);
+      ri.src = assetUrl(rightSpec.image);
       ri.alt = "";
       right.appendChild(ri);
     }
-    right.appendChild(document.createTextNode((station.right && station.right.label) || "А"));
-    wrap.appendChild(left);
-    wrap.appendChild(arrow);
-    wrap.appendChild(right);
+    right.appendChild(document.createTextNode((rightSpec && rightSpec.label) || "А"));
+
+    home.appendChild(left);
+    stage.appendChild(bridge);
+    stage.appendChild(home);
+    stage.appendChild(right);
+    wrap.appendChild(stage);
+
+    var hint = document.createElement("p");
+    hint.className = "quest-hint quest-join__hint";
+    hint.textContent = station.hint || "Перетащи букву по мостику";
+    wrap.appendChild(hint);
     root().appendChild(wrap);
-    var step = 0;
+
+    function alive() {
+      return gen === playGen && !done;
+    }
+
+    function point(e) {
+      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches[0]) {
+        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      }
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function overlaps() {
+      var a = left.getBoundingClientRect();
+      var b = right.getBoundingClientRect();
+      var pad = 18;
+      return !(a.right < b.left + pad || a.left > b.right - pad || a.bottom < b.top + pad || a.top > b.bottom - pad);
+    }
+
+    function resetChip() {
+      left.style.transform = "";
+      left.classList.remove("is-dragging");
+      right.classList.remove("is-hot");
+      bridge.classList.remove("is-active");
+    }
+
     function finish() {
-      if (station.result && station.result.sound) playId(station.result.sound);
-      left.classList.add("is-done");
-      right.classList.add("is-done");
-      if (station.result && station.result.image) {
+      if (done || gen !== playGen) return;
+      done = true;
+      resetChip();
+      left.classList.add("is-done", "is-joined");
+      left.setAttribute("aria-hidden", "true");
+      left.tabIndex = -1;
+      right.classList.add("is-done", "is-joined");
+      right.textContent = (resultSpec && resultSpec.label) || "МА";
+      bridge.classList.add("is-joined");
+      hint.textContent = (resultSpec && resultSpec.label) || "МА";
+      hint.classList.add("is-result");
+      if (resultSpec && resultSpec.image) {
         var img = document.createElement("img");
         img.className = "quest-spark-fly";
-        img.src = assetUrl(station.result.image);
+        img.src = assetUrl(resultSpec.image);
         img.alt = "";
-        root().appendChild(img);
+        wrap.appendChild(img);
       }
-      var res = document.createElement("p");
-      res.className = "quest-letter";
-      res.style.textAlign = "center";
-      res.textContent = (station.result && station.result.label) || "МА";
-      root().appendChild(res);
       coachReact("good", true);
-      enableNext(true);
+      var sound = (resultSpec && resultSpec.sound) || "snd-ma";
+      playId(sound, function () {
+        if (gen !== playGen) return;
+        enableNext(true);
+      });
     }
-    left.addEventListener("click", function () {
-      if (station.left && station.left.sound) playId(station.left.sound);
-      step = Math.max(step, 1);
-      left.classList.add("is-done");
-      if (step >= 2) finish();
-      else coachReact("yes", true);
-    });
-    right.addEventListener("click", function () {
-      if (station.right && station.right.sound) playId(station.right.sound);
-      if (step < 1) {
-        coachReact("try", false);
+
+    function onDown(e) {
+      if (!alive() || left.classList.contains("is-joined")) return;
+      dragging = true;
+      moved = false;
+      var p = point(e);
+      startX = p.x;
+      startY = p.y;
+      left.classList.add("is-dragging");
+      bridge.classList.add("is-active");
+      if (leftSpec && leftSpec.sound) playId(leftSpec.sound);
+      if (e.pointerId != null && left.setPointerCapture) {
+        try { left.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      e.preventDefault();
+    }
+
+    function onMove(e) {
+      if (!dragging || !alive()) return;
+      var p = point(e);
+      var dx = p.x - startX;
+      var dy = p.y - startY;
+      if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+      left.style.transform = "translate(" + dx + "px," + dy + "px)";
+      right.classList.toggle("is-hot", overlaps());
+      e.preventDefault();
+    }
+
+    function onUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      if (!alive()) {
+        resetChip();
         return;
       }
-      step = 2;
-      right.classList.add("is-done");
-      finish();
+      if (overlaps()) {
+        finish();
+        return;
+      }
+      if (!moved) {
+        // ??????: ?????????? ??, ?????????? ?????????????? ??
+        picked = true;
+        left.classList.add("is-picked");
+        bridge.classList.add("is-active");
+        left.style.transform = "";
+        left.classList.remove("is-dragging");
+        coachReact("yes", true);
+        return;
+      }
+      resetChip();
+      left.classList.remove("is-picked");
+      picked = false;
+      coachReact("try", false);
+    }
+
+    left.addEventListener("pointerdown", onDown);
+    left.addEventListener("pointermove", onMove);
+    left.addEventListener("pointerup", onUp);
+    left.addEventListener("pointercancel", onUp);
+    left.addEventListener("click", function (e) {
+      if (moved) e.preventDefault();
+    });
+
+    right.addEventListener("pointerup", function () {
+      if (!alive()) return;
+      if (picked || left.classList.contains("is-picked")) {
+        finish();
+      } else if (!dragging) {
+        coachReact("try", false);
+      }
     });
   }
 
