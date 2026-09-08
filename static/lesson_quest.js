@@ -2464,70 +2464,202 @@
   }
 
   function renderJoin(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) field.classList.add("quest-playfield--join");
+    var gen = playGen;
+    var done = false;
+    var dragging = false;
+    var startX = 0;
+    var startY = 0;
+    var moved = false;
+    var picked = false;
+    var leftSpec = station.left || { label: "М", id: "M" };
+    var rightSpec = station.right || { label: "А", id: "A" };
+    var resultSpec = station.result || {
+      label: station.result_label || "МА",
+      sound: station.result_sound || "snd-ma",
+      image: station.result_image
+    };
+
     var wrap = document.createElement("div");
-    wrap.className = "quest-join";
+    wrap.className = "quest-join quest-join--bridge";
+
+    var stage = document.createElement("div");
+    stage.className = "quest-join__stage";
+
+    var bridge = document.createElement("div");
+    bridge.className = "quest-join__bridge";
+    bridge.setAttribute("aria-hidden", "true");
+    var rails = document.createElement("span");
+    rails.className = "quest-join__rails";
+    bridge.appendChild(rails);
+    var i;
+    for (i = 0; i < 6; i++) {
+      var plank = document.createElement("span");
+      plank.className = "quest-join__plank";
+      bridge.appendChild(plank);
+    }
+
+    var home = document.createElement("div");
+    home.className = "quest-join__home";
+
     var left = document.createElement("button");
     left.type = "button";
-    left.className = "quest-join__chip";
-    if (station.left && station.left.image) {
+    left.className = "quest-join__chip quest-join__chip--drag";
+    left.setAttribute("aria-label", "Перетащи " + ((leftSpec && leftSpec.label) || "М"));
+    if (leftSpec && leftSpec.image) {
       var li = document.createElement("img");
-      li.src = assetUrl(station.left.image);
+      li.src = assetUrl(leftSpec.image);
       li.alt = "";
       left.appendChild(li);
     }
-    left.appendChild(document.createTextNode((station.left && station.left.label) || "М"));
-    var arrow = document.createElement("span");
-    arrow.textContent = "→";
-    var right = document.createElement("button");
-    right.type = "button";
-    right.className = "quest-join__chip";
-    if (station.right && station.right.image) {
+    left.appendChild(document.createTextNode((leftSpec && leftSpec.label) || "М"));
+
+    var right = document.createElement("div");
+    right.className = "quest-join__chip quest-join__chip--drop";
+    right.setAttribute("aria-label", (rightSpec && rightSpec.label) || "А");
+    if (rightSpec && rightSpec.image) {
       var ri = document.createElement("img");
-      ri.src = assetUrl(station.right.image);
+      ri.src = assetUrl(rightSpec.image);
       ri.alt = "";
       right.appendChild(ri);
     }
-    right.appendChild(document.createTextNode((station.right && station.right.label) || "А"));
-    wrap.appendChild(left);
-    wrap.appendChild(arrow);
-    wrap.appendChild(right);
+    right.appendChild(document.createTextNode((rightSpec && rightSpec.label) || "А"));
+
+    home.appendChild(left);
+    stage.appendChild(bridge);
+    stage.appendChild(home);
+    stage.appendChild(right);
+    wrap.appendChild(stage);
+
+    var hint = document.createElement("p");
+    hint.className = "quest-hint quest-join__hint";
+    hint.textContent = station.hint || "Перетащи букву по мостику";
+    wrap.appendChild(hint);
     root().appendChild(wrap);
-    var step = 0;
+
+    function alive() {
+      return gen === playGen && !done;
+    }
+
+    function point(e) {
+      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches[0]) {
+        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      }
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function overlaps() {
+      var a = left.getBoundingClientRect();
+      var b = right.getBoundingClientRect();
+      var pad = 18;
+      return !(a.right < b.left + pad || a.left > b.right - pad || a.bottom < b.top + pad || a.top > b.bottom - pad);
+    }
+
+    function resetChip() {
+      left.style.transform = "";
+      left.classList.remove("is-dragging");
+      right.classList.remove("is-hot");
+      bridge.classList.remove("is-active");
+    }
+
     function finish() {
-      if (station.result && station.result.sound) playId(station.result.sound);
-      left.classList.add("is-done");
-      right.classList.add("is-done");
-      if (station.result && station.result.image) {
+      if (done || gen !== playGen) return;
+      done = true;
+      resetChip();
+      left.classList.add("is-done", "is-joined");
+      left.setAttribute("aria-hidden", "true");
+      left.tabIndex = -1;
+      right.classList.add("is-done", "is-joined");
+      right.textContent = (resultSpec && resultSpec.label) || "МА";
+      bridge.classList.add("is-joined");
+      hint.textContent = (resultSpec && resultSpec.label) || "МА";
+      hint.classList.add("is-result");
+      if (resultSpec && resultSpec.image) {
         var img = document.createElement("img");
         img.className = "quest-spark-fly";
-        img.src = assetUrl(station.result.image);
+        img.src = assetUrl(resultSpec.image);
         img.alt = "";
-        root().appendChild(img);
+        wrap.appendChild(img);
       }
-      var res = document.createElement("p");
-      res.className = "quest-letter";
-      res.style.textAlign = "center";
-      res.textContent = (station.result && station.result.label) || "МА";
-      root().appendChild(res);
       coachReact("good", true);
-      enableNext(true);
+      var sound = (resultSpec && resultSpec.sound) || "snd-ma";
+      playId(sound, function () {
+        if (gen !== playGen) return;
+        enableNext(true);
+      });
     }
-    left.addEventListener("click", function () {
-      if (station.left && station.left.sound) playId(station.left.sound);
-      step = Math.max(step, 1);
-      left.classList.add("is-done");
-      if (step >= 2) finish();
-      else coachReact("yes", true);
-    });
-    right.addEventListener("click", function () {
-      if (station.right && station.right.sound) playId(station.right.sound);
-      if (step < 1) {
-        coachReact("try", false);
+
+    function onDown(e) {
+      if (!alive() || left.classList.contains("is-joined")) return;
+      dragging = true;
+      moved = false;
+      var p = point(e);
+      startX = p.x;
+      startY = p.y;
+      left.classList.add("is-dragging");
+      bridge.classList.add("is-active");
+      if (leftSpec && leftSpec.sound) playId(leftSpec.sound);
+      if (e.pointerId != null && left.setPointerCapture) {
+        try { left.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      e.preventDefault();
+    }
+
+    function onMove(e) {
+      if (!dragging || !alive()) return;
+      var p = point(e);
+      var dx = p.x - startX;
+      var dy = p.y - startY;
+      if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+      left.style.transform = "translate(" + dx + "px," + dy + "px)";
+      right.classList.toggle("is-hot", overlaps());
+      e.preventDefault();
+    }
+
+    function onUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      if (!alive()) {
+        resetChip();
         return;
       }
-      step = 2;
-      right.classList.add("is-done");
-      finish();
+      if (overlaps()) {
+        finish();
+        return;
+      }
+      if (!moved) {
+        // Тап: взять М, потом тапнуть А
+        picked = true;
+        left.classList.add("is-picked");
+        bridge.classList.add("is-active");
+        left.style.transform = "";
+        left.classList.remove("is-dragging");
+        coachReact("yes", true);
+        return;
+      }
+      resetChip();
+      left.classList.remove("is-picked");
+      picked = false;
+      coachReact("try", false);
+    }
+
+    left.addEventListener("pointerdown", onDown);
+    left.addEventListener("pointermove", onMove);
+    left.addEventListener("pointerup", onUp);
+    left.addEventListener("pointercancel", onUp);
+    left.addEventListener("click", function (e) {
+      if (moved) e.preventDefault();
+    });
+
+    right.addEventListener("pointerup", function () {
+      if (!alive()) return;
+      if (picked || left.classList.contains("is-picked")) {
+        finish();
+      } else if (!dragging) {
+        coachReact("try", false);
+      }
     });
   }
 

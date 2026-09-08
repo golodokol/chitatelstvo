@@ -332,6 +332,32 @@
       "hint": "Встань и тихо скажи м-м-м, как машина. Потом вернёмся."
     },
     {
+      "id": "join_ma",
+      "title": "Мост дружбы",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "drag_join",
+      "slovik_line": "Познакомь М и А. Веди М по мостику к А — получится ма.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-bridge",
+      "hint": "Перетащи М к А по мостику",
+      "left": {
+        "id": "M",
+        "label": "М"
+      },
+      "right": {
+        "id": "A",
+        "label": "А"
+      },
+      "result": {
+        "label": "МА",
+        "sound": "snd-ma"
+      },
+      "spark": true,
+      "spark_kind": "syllable",
+      "spark_group": "syllable"
+    },
+    {
       "id": "slot_ma",
       "title": "Слог МА",
       "chapter": "Искорка 3 · Слог",
@@ -353,8 +379,7 @@
       ],
       "result_label": "МА",
       "result_image": "/static/early/letters/mama.png",
-      "spark": true,
-      "spark_kind": "syllable",
+      "spark": false,
       "spark_group": "syllable"
     },
     {

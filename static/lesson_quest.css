@@ -1791,21 +1791,146 @@
   flex-wrap: wrap;
   margin: 8px 0;
 }
+.quest-join--bridge {
+  flex-direction: column;
+  width: min(100%, 420px);
+  margin: 4px auto;
+  gap: 10px;
+}
+.quest-join__stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 0 28px;
+  width: 100%;
+  min-height: 132px;
+  padding: 18px 10px 22px;
+  box-sizing: border-box;
+}
+.quest-join__bridge {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 50%;
+  height: 42px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(196, 154, 98, 0.95), rgba(158, 112, 62, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 205, 0.55),
+    0 8px 16px rgba(42, 38, 34, 0.14);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 7px 10px;
+  opacity: 0.88;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  z-index: 0;
+}
+.quest-join__bridge.is-active {
+  opacity: 1;
+  filter: saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 205, 0.7),
+    0 10px 20px rgba(42, 38, 34, 0.18),
+    0 0 0 3px rgba(233, 184, 91, 0.28);
+}
+.quest-join__bridge.is-joined {
+  opacity: 1;
+  background: linear-gradient(180deg, #7db894, #3d8b6e);
+}
+.quest-join__rails {
+  position: absolute;
+  inset: 4px 8px;
+  border-radius: 999px;
+  border: 2px solid rgba(90, 58, 28, 0.28);
+  border-left: 0;
+  border-right: 0;
+  pointer-events: none;
+}
+.quest-join__plank {
+  flex: 1;
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255, 236, 205, 0.35), rgba(90, 58, 28, 0.18));
+  box-shadow: inset 0 0 0 1px rgba(90, 58, 28, 0.12);
+}
+.quest-join__home {
+  position: relative;
+  z-index: 2;
+  min-height: 88px;
+  display: grid;
+  place-items: center;
+}
 .quest-join__chip {
   min-width: 78px;
+  min-height: 78px;
   padding: 16px;
   border-radius: 18px;
   border: 2px solid rgba(42, 38, 34, 0.12);
   background: rgba(255, 255, 255, 0.94);
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 800;
   text-align: center;
   box-shadow: 0 8px 18px rgba(42, 38, 34, 0.08);
   cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  color: #2a2622;
+  touch-action: none;
+  user-select: none;
+  position: relative;
+  z-index: 2;
 }
-.quest-join__chip.is-done {
+.quest-join__chip--drag {
+  cursor: grab;
+}
+.quest-join__chip--drag.is-dragging,
+.quest-join__chip--drag.is-picked {
+  cursor: grabbing;
+  border-color: #c46a4a;
+  background: #fff7f1;
+  box-shadow: 0 12px 24px rgba(42, 38, 34, 0.16);
+  z-index: 5;
+}
+.quest-join__chip--drop {
+  cursor: default;
+}
+.quest-join__chip--drop.is-hot {
+  border-color: #e9b85b;
+  background: #fff8e8;
+  transform: scale(1.06);
+}
+.quest-join__chip.is-done,
+.quest-join__chip.is-joined {
   border-color: #3d8b6e;
   background: #e8f6ef;
+}
+.quest-join__chip.is-joined {
+  min-width: 118px;
+  font-size: 2.1rem;
+  letter-spacing: 0.04em;
+}
+.quest-join__chip--drag.is-joined {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.4);
+}
+.quest-join__hint {
+  margin: 0;
+  text-align: center;
+}
+.quest-join__hint.is-result {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #2f6b52;
+}
+.quest-playfield--join .quest-playfield__surface {
+  justify-content: center;
+  align-items: center;
 }
 .quest-playfield--match .quest-playfield__surface {
   justify-content: center;
