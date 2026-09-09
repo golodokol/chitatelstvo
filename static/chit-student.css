@@ -3664,7 +3664,12 @@ a.chit-lesson-companion--link.is-disabled {
 .chit-program-map__hit:focus-visible {
   transform: scale(1.08);
   outline: none;
-  z-index: 3;
+  z-index: 5;
+}
+
+.chit-program-map__pin:has(.chit-program-map__hit:hover),
+.chit-program-map__pin:has(.chit-program-map__hit:focus-visible) {
+  z-index: 6;
 }
 
 .chit-program-map__num {
@@ -3691,6 +3696,29 @@ a.chit-lesson-companion--link.is-disabled {
   pointer-events: none;
   transition: opacity 0.15s ease, visibility 0.15s ease;
   box-shadow: 0 10px 24px rgba(20, 16, 12, 0.28);
+  z-index: 4;
+}
+
+.chit-program-map__pin--tip-below .chit-program-map__tip {
+  bottom: auto;
+  top: calc(100% + 10px);
+}
+
+.chit-program-map__pin--tip-right .chit-program-map__tip {
+  left: calc(100% + 12px);
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: left;
+}
+
+.chit-program-map__pin--tip-left .chit-program-map__tip {
+  left: auto;
+  right: calc(100% + 12px);
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: left;
 }
 
 .chit-program-map__tip strong,

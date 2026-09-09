@@ -47,10 +47,12 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][0]["n"], 1)
         self.assertEqual(program_map["pins"][0]["x"], 16.09)
         self.assertEqual(program_map["pins"][0]["y"], 56.81)
+        self.assertEqual(program_map["pins"][0]["tip"], "right")
         self.assertEqual(program_map["pins"][0]["state"], "open")
         self.assertEqual(program_map["pins"][4]["state"], "soon")
         self.assertEqual(program_map["pins"][1]["x"], 20.7)
         self.assertEqual(program_map["pins"][1]["y"], 36.94)
+        self.assertEqual(program_map["pins"][1]["tip"], "left")
 
     def test_upcoming_opens_first_four_for_staff_preview(self):
         rows = cabinet_ui._upcoming_module_lessons(

@@ -167,6 +167,18 @@ EARLY_LETTERS_MAP_PADS: tuple[tuple[float, float], ...] = (
     (0.8734, 0.9333),  # 8 — сад / праздник
 )
 
+# Куда ставить подпись у пина, чтобы не наезжать на соседние площадки.
+EARLY_LETTERS_MAP_TIP: tuple[str, ...] = (
+    "right",   # 1 — иначе перекрывает пещеру (урок 2)
+    "left",    # 2
+    "above",   # 3
+    "above",   # 4
+    "left",    # 5
+    "above",   # 6
+    "above",   # 7
+    "left",    # 8 — у правого края
+)
+
 INTRO_TRIAL_COVERS: dict[str, str] = {
     "early-letters": "course-cover-letters-intro.jpg",
     "early-stories": "course-cover-stories-intro.jpg",
@@ -491,12 +503,14 @@ def _early_letters_program_map(lessons: list[dict[str, Any]]) -> dict[str, Any] 
         if n < 1 or n > len(EARLY_LETTERS_MAP_PADS):
             continue
         x, y = EARLY_LETTERS_MAP_PADS[n - 1]
+        tip = EARLY_LETTERS_MAP_TIP[n - 1]
         unlocked = bool(lesson.get("unlocked") and lesson.get("url"))
         pins.append(
             {
                 "n": n,
                 "x": round(x * 100, 2),
                 "y": round(y * 100, 2),
+                "tip": tip,
                 "title": lesson.get("title") or f"Урок {n}",
                 "label": (
                     lesson.get("overlay_label")

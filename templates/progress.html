@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260909c">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260909d">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -351,7 +351,7 @@
             <img class="chit-program-map__img" src="{{ track.program_map.image_url }}" alt="" loading="lazy" width="1280" height="720">
             <ul class="chit-program-map__pins">
               {% for pin in track.program_map.pins %}
-              <li class="chit-program-map__pin chit-program-map__pin--{{ pin.state }}" style="left: {{ pin.x }}%; top: {{ pin.y }}%;">
+              <li class="chit-program-map__pin chit-program-map__pin--{{ pin.state }} chit-program-map__pin--tip-{{ pin.tip or 'above' }}" style="left: {{ pin.x }}%; top: {{ pin.y }}%;">
                 {% if pin.unlocked and pin.url %}
                 <a class="chit-program-map__hit" href="{{ pin.url }}" aria-label="Урок {{ pin.n }} · {{ pin.title }}. {{ pin.label }}">
                   <span class="chit-program-map__num">{{ pin.n }}</span>
