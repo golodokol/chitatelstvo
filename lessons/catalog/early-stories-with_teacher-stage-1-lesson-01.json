@@ -35,7 +35,7 @@
     {
       "id": "screen",
       "title": "Слово КОРОБ",
-      "chapter": "Слово",
+      "chapter": "Искорка 1 · Слово",
       "kind": "word_picture",
       "mechanic": "word_screen",
       "slovik_line": "Прочитай слово. Короб.",
@@ -43,6 +43,7 @@
       "scene_image": "/static/early/stories/slovik-screen.png",
       "audio": "ph-m1-l01-screen",
       "spark": false,
+      "spark_group": "word",
       "items": [
         {
           "word": "КОРОБ",
@@ -68,12 +69,65 @@
       ]
     },
     {
+      "id": "twins",
+      "title": "Похожие слова",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "find",
+      "slovik_line": "Найди такое же слово.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
+      "audio": "ph-m1-l01-twins",
+      "spark": false,
+      "spark_group": "word",
+      "rounds": [
+        {
+          "prompt_text": "КОРОБ",
+          "correct": "korob",
+          "options": [
+            {
+              "id": "korob",
+              "label": "КОРОБ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "МЯЧ",
+          "correct": "myach",
+          "options": [
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            },
+            {
+              "id": "rad",
+              "label": "РАД"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "what",
       "title": "Что там?",
+      "chapter": "Искорка 1 · Слово",
       "kind": "find",
       "slovik_line": "Что там? Выбери картинку.",
       "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-what",
+      "spark": false,
+      "spark_group": "word",
       "rounds": [
         {
           "prompt_text": "Сначала короб пустой.",
@@ -96,12 +150,12 @@
             }
           ]
         }
-      ],
-      "spark": false
+      ]
     },
     {
       "id": "drag",
       "title": "Слово к картинке",
+      "chapter": "Искорка 1 · Слово",
       "kind": "match_pairs",
       "mechanic": "drag_match",
       "slovik_line": "Перетащи слово к картинке.",
@@ -125,18 +179,326 @@
           "image": "/static/early/letters/ball.png"
         }
       ],
-      "spark": true,
-      "spark_kind": "word",
+      "spark": false,
       "spark_group": "word"
+    },
+    {
+      "id": "rebus",
+      "title": "Ребус со словами",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "shape_rebus",
+      "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l01-rebus",
+      "spark": false,
+      "spark_group": "word",
+      "hint": "Ключ: фигура = буква. Расшифруй и выбери слово.",
+      "legend": [
+        {
+          "shape": "diamond",
+          "tone": "red",
+          "letter": "К"
+        },
+        {
+          "shape": "circle",
+          "tone": "violet",
+          "letter": "О"
+        },
+        {
+          "shape": "hourglass",
+          "tone": "blue",
+          "letter": "Т"
+        },
+        {
+          "shape": "pill",
+          "tone": "green",
+          "letter": "М"
+        },
+        {
+          "shape": "star",
+          "tone": "red",
+          "letter": "Я"
+        },
+        {
+          "shape": "triangle",
+          "tone": "blue",
+          "letter": "Ч"
+        },
+        {
+          "shape": "square",
+          "tone": "violet",
+          "letter": "Р"
+        },
+        {
+          "shape": "house",
+          "tone": "green",
+          "letter": "Б"
+        },
+        {
+          "shape": "circle",
+          "tone": "red",
+          "letter": "В"
+        }
+      ],
+      "rounds": [
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "К"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "hourglass",
+              "tone": "blue",
+              "letter": "Т"
+            }
+          ],
+          "correct": "kot",
+          "options": [
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            },
+            {
+              "id": "korob",
+              "label": "КОРОБ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "pill",
+              "tone": "green",
+              "letter": "М"
+            },
+            {
+              "shape": "star",
+              "tone": "red",
+              "letter": "Я"
+            },
+            {
+              "shape": "triangle",
+              "tone": "blue",
+              "letter": "Ч"
+            }
+          ],
+          "correct": "myach",
+          "options": [
+            {
+              "id": "korob",
+              "label": "КОРОБ"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "К"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "square",
+              "tone": "violet",
+              "letter": "Р"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "house",
+              "tone": "green",
+              "letter": "Б"
+            }
+          ],
+          "correct": "korob",
+          "options": [
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "korob",
+              "label": "КОРОБ"
+            },
+            {
+              "id": "vot",
+              "label": "ВОТ"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paths",
+      "title": "Дорожки слогов",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "path_word",
+      "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l01-paths",
+      "spark": false,
+      "spark_group": "word",
+      "hint": "Слева слог + справа слог.",
+      "rounds": [
+        {
+          "prompt_text": "Какие слова получились?",
+          "left": [
+            "КО",
+            "ВО",
+            "НЕ"
+          ],
+          "right": [
+            "РОБ",
+            "Т",
+            "ТУТ"
+          ],
+          "pairs": [
+            {
+              "from": 0,
+              "to": 0,
+              "color": "#6b4ea3"
+            },
+            {
+              "from": 1,
+              "to": 1,
+              "color": "#e06a2f"
+            },
+            {
+              "from": 2,
+              "to": 2,
+              "color": "#3f8f4a"
+            }
+          ],
+          "correct": [
+            "korob",
+            "vot",
+            "netut"
+          ],
+          "options": [
+            {
+              "id": "korob",
+              "label": "КОРОБ"
+            },
+            {
+              "id": "vot",
+              "label": "ВОТ"
+            },
+            {
+              "id": "netut",
+              "label": "НЕТУТ"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pads",
+      "title": "Найди слово",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "scene_hunt",
+      "mechanic": "word_pads",
+      "slovik_line": "Найди на плитках все слова МЯЧ.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
+      "audio": "ph-m1-l01-pads",
+      "layout": "grid",
+      "grid_cols": 3,
+      "captions": true,
+      "correct_ids": [
+        "w-мяч-1",
+        "w-мяч-2",
+        "w-мяч-3"
+      ],
+      "wrong_msg": "Это не то слово. Ищи дальше.",
+      "success_msg": "Нашёл: МЯЧ!",
+      "hotspots": [
+        {
+          "id": "w-кот-1",
+          "label": "КОТ"
+        },
+        {
+          "id": "w-мяч-1",
+          "label": "МЯЧ"
+        },
+        {
+          "id": "w-короб-1",
+          "label": "КОРОБ"
+        },
+        {
+          "id": "w-вот-1",
+          "label": "ВОТ"
+        },
+        {
+          "id": "w-мяч-2",
+          "label": "МЯЧ"
+        },
+        {
+          "id": "w-рад-1",
+          "label": "РАД"
+        },
+        {
+          "id": "w-не-1",
+          "label": "НЕ"
+        },
+        {
+          "id": "w-тут-1",
+          "label": "ТУТ"
+        },
+        {
+          "id": "w-мяч-3",
+          "label": "МЯЧ"
+        }
+      ],
+      "spark": true,
+      "spark_group": "word",
+      "spark_kind": "word"
     },
     {
       "id": "open",
       "title": "Открой короб",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "mini_quest",
       "slovik_line": "Открой короб. Смотри… вот мяч!",
       "scene_image": "/static/early/stories/scene-home-floor.jpg",
       "audio": "ph-m1-l01-open",
       "spark": false,
+      "spark_group": "phrase",
       "steps": [
         {
           "kind": "find",
@@ -180,8 +542,59 @@
       ]
     },
     {
+      "id": "fill",
+      "title": "Дополни фразу",
+      "chapter": "Искорка 2 · Фраза",
+      "kind": "find",
+      "slovik_line": "ВОТ ___. Какое слово подходит?",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
+      "audio": "ph-m1-l01-fill",
+      "spark": false,
+      "spark_group": "phrase",
+      "rounds": [
+        {
+          "prompt_text": "ВОТ ___",
+          "correct": "myach",
+          "options": [
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            }
+          ]
+        },
+        {
+          "prompt_text": "ВОТ ___",
+          "correct": "korob",
+          "options": [
+            {
+              "id": "rad",
+              "label": "РАД"
+            },
+            {
+              "id": "korob",
+              "label": "КОРОБ"
+            },
+            {
+              "id": "tut",
+              "label": "ТУТ"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "slots",
       "title": "Вот мяч",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "slot_build",
       "mechanic": "phrase_slots",
       "slovik_line": "Собери: вот мяч.",
@@ -203,8 +616,40 @@
       "spark_group": "phrase"
     },
     {
+      "id": "not_here",
+      "title": "Не тут",
+      "chapter": "Искорка 2 · Фраза",
+      "kind": "find",
+      "slovik_line": "Какая фраза говорит: не тут?",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
+      "audio": "ph-m1-l01-nothere",
+      "spark": false,
+      "spark_group": "phrase",
+      "rounds": [
+        {
+          "prompt_text": "Выбери фразу",
+          "correct": "netut",
+          "options": [
+            {
+              "id": "votmyach",
+              "label": "ВОТ МЯЧ"
+            },
+            {
+              "id": "netut",
+              "label": "НЕ ТУТ"
+            },
+            {
+              "id": "kotrad",
+              "label": "КОТ РАД"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "feel",
       "title": "Кот рад",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "phrase_picture",
       "slovik_line": "Кот рад. Где такая картинка?",
       "scene_image": "/static/early/stories/scene-home-floor.jpg",
@@ -234,8 +679,45 @@
       "spark_group": "phrase"
     },
     {
+      "id": "meaning",
+      "title": "Что в коробе?",
+      "chapter": "Искорка 3 · Смысл",
+      "kind": "find",
+      "slovik_line": "Подумай: что лежит в коробе в конце истории?",
+      "slovik_pose": "listen",
+      "scene_image": "/static/early/stories/scene-home-floor.jpg",
+      "audio": "ph-m1-l01-meaning",
+      "spark": true,
+      "spark_kind": "meaning",
+      "spark_group": "meaning",
+      "rounds": [
+        {
+          "prompt_text": "В коробе…",
+          "correct": "ball",
+          "options": [
+            {
+              "id": "ball",
+              "label": "МЯЧ",
+              "image": "/static/early/letters/ball.png"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР",
+              "image": "/static/early/letters/syr.png"
+            },
+            {
+              "id": "rain",
+              "label": "ДОЖДЬ",
+              "image": "/static/early/letters/rain.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "book",
       "title": "Кот и коробка",
+      "chapter": "Искорка 3 · Смысл",
       "kind": "book_page",
       "slovik_line": "Теперь книжка. Читай сам. Я рядом.",
       "slovik_pose": "joy",
@@ -276,7 +758,8 @@
         }
       ],
       "finale": "Книжка прочитана!",
-      "spark": false
+      "spark": false,
+      "spark_group": "meaning"
     },
     {
       "id": "chest",

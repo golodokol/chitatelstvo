@@ -34,11 +34,13 @@
     {
       "id": "which",
       "title": "Какая книжка?",
-      "chapter": "Искорка 1",
+      "chapter": "Искорка 1 · Слово",
       "kind": "find",
       "slovik_line": "Какая это книжка? Найди обложку.",
       "scene_image": "/static/early/stories/shelf-four.jpg",
       "audio": "ph-m1-l04-which",
+      "spark": false,
+      "spark_group": "word",
       "rounds": [
         {
           "prompt_image": "/static/early/letters/ball.png",
@@ -67,14 +69,61 @@
             }
           ]
         }
-      ],
-      "spark": true,
-      "spark_kind": "word",
-      "spark_group": "word"
+      ]
+    },
+    {
+      "id": "twins",
+      "title": "Похожие слова",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "find",
+      "slovik_line": "Найди такое же слово из наших книжек.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l04-twins",
+      "spark": false,
+      "spark_group": "word",
+      "rounds": [
+        {
+          "prompt_text": "ДОМ",
+          "correct": "dom",
+          "options": [
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            }
+          ]
+        },
+        {
+          "prompt_text": "СЫР",
+          "correct": "syr",
+          "options": [
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            },
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "phrase",
       "title": "Фраза к картинке",
+      "chapter": "Искорка 1 · Слово",
       "kind": "phrase_picture",
       "slovik_line": "Какая фраза подходит к картинке?",
       "scene_image": "/static/early/stories/scene-window-rain.jpg",
@@ -97,11 +146,360 @@
           "label": "ВОТ МЯЧ!"
         }
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "word"
+    },
+    {
+      "id": "rebus",
+      "title": "Ребус со словами",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "shape_rebus",
+      "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l04-rebus",
+      "spark": false,
+      "spark_group": "word",
+      "legend": [
+        {
+          "shape": "house",
+          "tone": "green",
+          "letter": "Д"
+        },
+        {
+          "shape": "circle",
+          "tone": "violet",
+          "letter": "О"
+        },
+        {
+          "shape": "pill",
+          "tone": "green",
+          "letter": "М"
+        },
+        {
+          "shape": "diamond",
+          "tone": "red",
+          "letter": "К"
+        },
+        {
+          "shape": "hourglass",
+          "tone": "blue",
+          "letter": "Т"
+        },
+        {
+          "shape": "star",
+          "tone": "red",
+          "letter": "С"
+        },
+        {
+          "shape": "triangle",
+          "tone": "blue",
+          "letter": "Ы"
+        },
+        {
+          "shape": "square",
+          "tone": "violet",
+          "letter": "Р"
+        },
+        {
+          "shape": "circle",
+          "tone": "red",
+          "letter": "Я"
+        },
+        {
+          "shape": "pill",
+          "tone": "blue",
+          "letter": "Ч"
+        }
+      ],
+      "rounds": [
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "house",
+              "tone": "green",
+              "letter": "Д"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "pill",
+              "tone": "green",
+              "letter": "М"
+            }
+          ],
+          "correct": "dom",
+          "options": [
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "К"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "hourglass",
+              "tone": "blue",
+              "letter": "Т"
+            }
+          ],
+          "correct": "kot",
+          "options": [
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "star",
+              "tone": "red",
+              "letter": "С"
+            },
+            {
+              "shape": "triangle",
+              "tone": "blue",
+              "letter": "Ы"
+            },
+            {
+              "shape": "square",
+              "tone": "violet",
+              "letter": "Р"
+            }
+          ],
+          "correct": "syr",
+          "options": [
+            {
+              "id": "syr",
+              "label": "СЫР"
+            },
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paths",
+      "title": "Дорожки слогов",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "path_word",
+      "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l04-paths",
+      "spark": false,
+      "spark_group": "word",
+      "rounds": [
+        {
+          "prompt_text": "Какие слова получились?",
+          "left": [
+            "ДО",
+            "КО",
+            "СЫ"
+          ],
+          "right": [
+            "М",
+            "Т",
+            "Р"
+          ],
+          "pairs": [
+            {
+              "from": 0,
+              "to": 0,
+              "color": "#6b4ea3"
+            },
+            {
+              "from": 1,
+              "to": 1,
+              "color": "#e06a2f"
+            },
+            {
+              "from": 2,
+              "to": 2,
+              "color": "#3f8f4a"
+            }
+          ],
+          "correct": [
+            "dom",
+            "kot",
+            "syr"
+          ],
+          "options": [
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pads",
+      "title": "Найди слово",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "scene_hunt",
+      "mechanic": "word_pads",
+      "slovik_line": "Найди на плитках все слова КОТ.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
+      "audio": "ph-m1-l04-pads",
+      "layout": "grid",
+      "grid_cols": 3,
+      "captions": true,
+      "correct_ids": [
+        "w-кот-1",
+        "w-кот-2",
+        "w-кот-3"
+      ],
+      "wrong_msg": "Это не то слово. Ищи дальше.",
+      "success_msg": "Нашёл: КОТ!",
+      "hotspots": [
+        {
+          "id": "w-дом-1",
+          "label": "ДОМ"
+        },
+        {
+          "id": "w-кот-1",
+          "label": "КОТ"
+        },
+        {
+          "id": "w-мяч-1",
+          "label": "МЯЧ"
+        },
+        {
+          "id": "w-сыр-1",
+          "label": "СЫР"
+        },
+        {
+          "id": "w-кот-2",
+          "label": "КОТ"
+        },
+        {
+          "id": "w-дождь-1",
+          "label": "ДОЖДЬ"
+        },
+        {
+          "id": "w-вот-1",
+          "label": "ВОТ"
+        },
+        {
+          "id": "w-мой-1",
+          "label": "МОЙ"
+        },
+        {
+          "id": "w-кот-3",
+          "label": "КОТ"
+        }
+      ],
+      "spark": true,
+      "spark_group": "word",
+      "spark_kind": "word"
+    },
+    {
+      "id": "fill",
+      "title": "Дополни фразу",
+      "chapter": "Искорка 2 · Фраза",
+      "kind": "find",
+      "slovik_line": "ВОТ МОЙ ___. Какое слово подходит?",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l04-fill",
+      "spark": false,
+      "spark_group": "phrase",
+      "rounds": [
+        {
+          "prompt_text": "ВОТ МОЙ ___",
+          "correct": "dom",
+          "options": [
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "syr",
+              "label": "СЫР"
+            },
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "ВОТ МОЙ ___",
+          "correct": "kot",
+          "options": [
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "okno",
+              "label": "ОКНО"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "order",
       "title": "По порядку",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "slot_build",
       "mechanic": "order_step",
       "slovik_line": "Расставь по порядку. Сначала первое, потом второе, потом третье.",
@@ -126,10 +524,13 @@
     {
       "id": "who",
       "title": "Кто? Что делает?",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "find",
       "slovik_line": "Кто? Что делает?",
       "scene_image": "/static/early/stories/scene-lesson.jpg",
       "audio": "ph-m1-l04-who",
+      "spark": false,
+      "spark_group": "phrase",
       "rounds": [
         {
           "prompt_text": "Кто?",
@@ -165,12 +566,12 @@
             }
           ]
         }
-      ],
-      "spark": false
+      ]
     },
     {
       "id": "drag",
       "title": "Слова из книжек",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "match_pairs",
       "mechanic": "drag_match",
       "slovik_line": "Слово к картинке. Ты это уже читал.",
@@ -198,11 +599,134 @@
           "image": "/static/early/letters/rain.png"
         }
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "phrase"
+    },
+    {
+      "id": "covers",
+      "title": "Обложка к фразе",
+      "chapter": "Искорка 3 · Смысл",
+      "kind": "find",
+      "slovik_line": "Какая книжка про эту фразу?",
+      "scene_image": "/static/early/stories/shelf-four.jpg",
+      "audio": "ph-m1-l04-covers",
+      "spark": false,
+      "spark_group": "meaning",
+      "rounds": [
+        {
+          "prompt_text": "ИДЁТ ДОЖДЬ",
+          "correct": "rain",
+          "options": [
+            {
+              "id": "box",
+              "label": "Кот и коробка",
+              "image": "/static/early/stories/cover-box.jpg"
+            },
+            {
+              "id": "rain",
+              "label": "Дождь за окном",
+              "image": "/static/early/stories/cover-rain.jpg"
+            },
+            {
+              "id": "ball",
+              "label": "Где мяч?",
+              "image": "/static/early/stories/cover-ball.jpg"
+            }
+          ]
+        },
+        {
+          "prompt_text": "ВОТ КОРОБ",
+          "correct": "box",
+          "options": [
+            {
+              "id": "box",
+              "label": "Кот и коробка",
+              "image": "/static/early/stories/cover-box.jpg"
+            },
+            {
+              "id": "home",
+              "label": "Дома",
+              "image": "/static/early/stories/book-cover-home.png"
+            },
+            {
+              "id": "ball",
+              "label": "Где мяч?",
+              "image": "/static/early/stories/cover-ball.jpg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eat",
+      "title": "Кот ест сыр",
+      "chapter": "Искорка 3 · Смысл",
+      "kind": "phrase_picture",
+      "slovik_line": "Кот ест сыр. Где такая картинка?",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l04-eat",
+      "phrase": "КОТ ЕСТ СЫР",
+      "correct": "eat",
+      "picture_only": true,
+      "options": [
+        {
+          "id": "eat",
+          "label": "Ест",
+          "image": "/static/early/stories/kot-eat.png"
+        },
+        {
+          "id": "sleep",
+          "label": "Спит",
+          "image": "/static/early/stories/kot-sleep.png"
+        },
+        {
+          "id": "happy",
+          "label": "Рад",
+          "image": "/static/early/stories/cat-happy.png"
+        }
+      ],
+      "spark": false,
+      "spark_group": "meaning"
+    },
+    {
+      "id": "meaning",
+      "title": "Что помнишь?",
+      "chapter": "Искорка 3 · Смысл",
+      "kind": "find",
+      "slovik_line": "Что ест кот в книжке «Дома»?",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l04-meaning",
+      "spark": true,
+      "spark_kind": "meaning",
+      "spark_group": "meaning",
+      "rounds": [
+        {
+          "prompt_text": "КОТ ЕСТ ___",
+          "correct": "syr",
+          "options": [
+            {
+              "id": "syr",
+              "label": "СЫР",
+              "image": "/static/early/letters/syr.png"
+            },
+            {
+              "id": "ball",
+              "label": "МЯЧ",
+              "image": "/static/early/letters/ball.png"
+            },
+            {
+              "id": "rain",
+              "label": "ДОЖДЬ",
+              "image": "/static/early/letters/rain.png"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "spread",
       "title": "Открой книжку",
+      "chapter": "Искорка 3 · Смысл",
       "kind": "book_page",
       "slovik_line": "Открой любую книжку и прочитай разворот.",
       "scene_image": "/static/early/stories/scene-book.jpg",
@@ -226,7 +750,8 @@
           "image": "/static/early/stories/kot-eat.png"
         }
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "meaning"
     },
     {
       "id": "chest",

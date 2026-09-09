@@ -34,11 +34,14 @@
     {
       "id": "screen",
       "title": "Слово ДОЖДЬ",
+      "chapter": "Искорка 1 · Слово",
       "kind": "word_picture",
       "mechanic": "word_screen",
       "slovik_line": "Это слово: дождь.",
       "scene_image": "/static/early/stories/slovik-screen.png",
       "audio": "ph-m1-l02-screen",
+      "spark": false,
+      "spark_group": "word",
       "items": [
         {
           "word": "ДОЖДЬ",
@@ -56,13 +59,61 @@
             }
           ]
         }
-      ],
-      "spark": false
+      ]
+    },
+    {
+      "id": "twins",
+      "title": "Похожие слова",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "find",
+      "slovik_line": "Найди такое же слово.",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
+      "audio": "ph-m1-l02-twins",
+      "spark": false,
+      "spark_group": "word",
+      "rounds": [
+        {
+          "prompt_text": "ДОЖДЬ",
+          "correct": "dozhd",
+          "options": [
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "НОЧЬ",
+          "correct": "noch",
+          "options": [
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "okno",
+              "label": "ОКНО"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "weather",
       "title": "Дождь или солнце",
-      "chapter": "Искорка 1",
+      "chapter": "Искорка 1 · Слово",
       "kind": "listen_pick",
       "slovik_line": "Дождь или солнце?",
       "scene_image": "/static/early/stories/scene-window-rain.jpg",
@@ -85,17 +136,19 @@
           ]
         }
       ],
-      "spark": true,
-      "spark_kind": "word",
+      "spark": false,
       "spark_group": "word"
     },
     {
       "id": "who",
       "title": "Кто у окна?",
+      "chapter": "Искорка 1 · Слово",
       "kind": "find",
       "slovik_line": "Кто у окна?",
       "scene_image": "/static/early/stories/scene-window-rain.jpg",
       "audio": "ph-m1-l02-who",
+      "spark": false,
+      "spark_group": "word",
       "rounds": [
         {
           "correct": "kot",
@@ -117,12 +170,12 @@
             }
           ]
         }
-      ],
-      "spark": false
+      ]
     },
     {
       "id": "drag",
       "title": "Слова к картинкам",
+      "chapter": "Искорка 1 · Слово",
       "kind": "match_pairs",
       "mechanic": "drag_match",
       "slovik_line": "Слово к картинке.",
@@ -145,11 +198,371 @@
           "image": "/static/early/letters/kot.png"
         }
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "word"
+    },
+    {
+      "id": "rebus",
+      "title": "Ребус со словами",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "shape_rebus",
+      "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-rebus",
+      "spark": false,
+      "spark_group": "word",
+      "hint": "Ключ: фигура = буква.",
+      "legend": [
+        {
+          "shape": "house",
+          "tone": "green",
+          "letter": "Д"
+        },
+        {
+          "shape": "circle",
+          "tone": "violet",
+          "letter": "О"
+        },
+        {
+          "shape": "diamond",
+          "tone": "red",
+          "letter": "Ж"
+        },
+        {
+          "shape": "pill",
+          "tone": "blue",
+          "letter": "Ь"
+        },
+        {
+          "shape": "star",
+          "tone": "red",
+          "letter": "К"
+        },
+        {
+          "shape": "hourglass",
+          "tone": "blue",
+          "letter": "Т"
+        },
+        {
+          "shape": "triangle",
+          "tone": "green",
+          "letter": "Н"
+        },
+        {
+          "shape": "square",
+          "tone": "violet",
+          "letter": "Ч"
+        },
+        {
+          "shape": "circle",
+          "tone": "red",
+          "letter": "И"
+        }
+      ],
+      "rounds": [
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "star",
+              "tone": "red",
+              "letter": "К"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "hourglass",
+              "tone": "blue",
+              "letter": "Т"
+            }
+          ],
+          "correct": "kot",
+          "options": [
+            {
+              "id": "kot",
+              "label": "КОТ"
+            },
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "triangle",
+              "tone": "green",
+              "letter": "Н"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "square",
+              "tone": "violet",
+              "letter": "Ч"
+            },
+            {
+              "shape": "pill",
+              "tone": "blue",
+              "letter": "Ь"
+            }
+          ],
+          "correct": "noch",
+          "options": [
+            {
+              "id": "dom",
+              "label": "ДОМ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "house",
+              "tone": "green",
+              "letter": "Д"
+            },
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "О"
+            },
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "Ж"
+            },
+            {
+              "shape": "house",
+              "tone": "green",
+              "letter": "Д"
+            },
+            {
+              "shape": "pill",
+              "tone": "blue",
+              "letter": "Ь"
+            }
+          ],
+          "correct": "dozhd",
+          "options": [
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "okno",
+              "label": "ОКНО"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paths",
+      "title": "Дорожки слогов",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "path_word",
+      "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова.",
+      "scene_image": "/static/early/stories/scene-lesson.jpg",
+      "audio": "ph-m1-l02-paths",
+      "spark": false,
+      "spark_group": "word",
+      "rounds": [
+        {
+          "prompt_text": "Какие слова получились?",
+          "left": [
+            "ДО",
+            "НО",
+            "ТИ"
+          ],
+          "right": [
+            "ЖДЬ",
+            "ЧЬ",
+            "ХО"
+          ],
+          "pairs": [
+            {
+              "from": 0,
+              "to": 0,
+              "color": "#6b4ea3"
+            },
+            {
+              "from": 1,
+              "to": 1,
+              "color": "#e06a2f"
+            },
+            {
+              "from": 2,
+              "to": 2,
+              "color": "#3f8f4a"
+            }
+          ],
+          "correct": [
+            "dozhd",
+            "noch",
+            "tiho"
+          ],
+          "options": [
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "tiho",
+              "label": "ТИХО"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pads",
+      "title": "Найди слово",
+      "chapter": "Искорка 1 · Слово",
+      "kind": "scene_hunt",
+      "mechanic": "word_pads",
+      "slovik_line": "Найди на плитках все слова ДОЖДЬ.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
+      "audio": "ph-m1-l02-pads",
+      "layout": "grid",
+      "grid_cols": 3,
+      "captions": true,
+      "correct_ids": [
+        "w-дождь-1",
+        "w-дождь-2",
+        "w-дождь-3"
+      ],
+      "wrong_msg": "Это не то слово. Ищи дальше.",
+      "success_msg": "Нашёл: ДОЖДЬ!",
+      "hotspots": [
+        {
+          "id": "w-кот-1",
+          "label": "КОТ"
+        },
+        {
+          "id": "w-дождь-1",
+          "label": "ДОЖДЬ"
+        },
+        {
+          "id": "w-ночь-1",
+          "label": "НОЧЬ"
+        },
+        {
+          "id": "w-дом-1",
+          "label": "ДОМ"
+        },
+        {
+          "id": "w-дождь-2",
+          "label": "ДОЖДЬ"
+        },
+        {
+          "id": "w-окно-1",
+          "label": "ОКНО"
+        },
+        {
+          "id": "w-спит-1",
+          "label": "СПИТ"
+        },
+        {
+          "id": "w-тихо-1",
+          "label": "ТИХО"
+        },
+        {
+          "id": "w-дождь-3",
+          "label": "ДОЖДЬ"
+        }
+      ],
+      "spark": true,
+      "spark_group": "word",
+      "spark_kind": "word"
+    },
+    {
+      "id": "fill",
+      "title": "Дополни фразу",
+      "chapter": "Искорка 2 · Фраза",
+      "kind": "find",
+      "slovik_line": "ИДЁТ ___. Какое слово подходит?",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
+      "audio": "ph-m1-l02-fill",
+      "spark": false,
+      "spark_group": "phrase",
+      "rounds": [
+        {
+          "prompt_text": "ИДЁТ ___",
+          "correct": "dozhd",
+          "options": [
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "kot",
+              "label": "КОТ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "КОТ У ___",
+          "correct": "okna",
+          "options": [
+            {
+              "id": "okna",
+              "label": "ОКНА"
+            },
+            {
+              "id": "doma",
+              "label": "ДОМА"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "slots",
       "title": "Кот у окна",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "slot_build",
       "mechanic": "phrase_slots",
       "slovik_line": "Собери: кот у окна.",
@@ -176,10 +589,13 @@
     {
       "id": "extra",
       "title": "Лишнее слово",
+      "chapter": "Искорка 2 · Фраза",
       "kind": "find",
       "slovik_line": "Какое слово лишнее?",
       "scene_image": "/static/early/stories/scene-lesson.jpg",
       "audio": "ph-m1-l02-extra",
+      "spark": false,
+      "spark_group": "phrase",
       "rounds": [
         {
           "prompt_text": "Слова про окно и дождь.",
@@ -203,12 +619,75 @@
             }
           ]
         }
+      ]
+    },
+    {
+      "id": "sleep",
+      "title": "Кот спит",
+      "chapter": "Искорка 3 · Смысл",
+      "kind": "phrase_picture",
+      "slovik_line": "Кот спит. Где такая картинка?",
+      "scene_image": "/static/early/stories/scene-window-rain.jpg",
+      "audio": "ph-m1-l02-sleep",
+      "phrase": "КОТ СПИТ",
+      "correct": "sleep",
+      "picture_only": true,
+      "options": [
+        {
+          "id": "sleep",
+          "label": "Спит",
+          "image": "/static/early/stories/kot-sleep.png"
+        },
+        {
+          "id": "happy",
+          "label": "Рад",
+          "image": "/static/early/stories/cat-happy.png"
+        },
+        {
+          "id": "run",
+          "label": "Бежит",
+          "image": "/static/early/stories/cat-run.png"
+        }
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "meaning"
+    },
+    {
+      "id": "meaning",
+      "title": "Когда это?",
+      "chapter": "Искорка 3 · Смысл",
+      "kind": "find",
+      "slovik_line": "В конце книжки — ночь. Выбери слово.",
+      "scene_image": "/static/early/stories/scene-night-sleep.jpg",
+      "audio": "ph-m1-l02-meaning",
+      "spark": true,
+      "spark_kind": "meaning",
+      "spark_group": "meaning",
+      "rounds": [
+        {
+          "prompt_text": "Конец истории",
+          "correct": "noch",
+          "options": [
+            {
+              "id": "noch",
+              "label": "НОЧЬ"
+            },
+            {
+              "id": "dozhd",
+              "label": "ДОЖДЬ"
+            },
+            {
+              "id": "myach",
+              "label": "МЯЧ"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "book",
       "title": "Дождь за окном",
+      "chapter": "Искорка 3 · Смысл",
       "kind": "book_page",
       "slovik_line": "Книжка про дождь. Читай.",
       "scene_image": "/static/early/stories/cover-rain.jpg",
@@ -242,7 +721,8 @@
           "audio": "ph-m1-l02-p5"
         }
       ],
-      "spark": false
+      "spark": false,
+      "spark_group": "meaning"
     },
     {
       "id": "chest",

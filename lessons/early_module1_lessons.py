@@ -1883,7 +1883,82 @@ def _letters_4() -> list[dict[str, Any]]:
     ]
 
 
+def _legend_entry(letter: str, shape: str, tone: str) -> dict[str, str]:
+    return {"shape": shape, "tone": tone, "letter": letter}
+
+
+def _cipher_letters(legend: list[dict[str, str]], word: str) -> list[dict[str, str]]:
+    by_letter = {row["letter"]: row for row in legend}
+    out: list[dict[str, str]] = []
+    for ch in word:
+        row = by_letter.get(ch)
+        if not row:
+            raise KeyError(f"legend missing letter {ch!r} for word {word!r}")
+        out.append({"shape": row["shape"], "tone": row["tone"], "letter": ch})
+    return out
+
+
+def _word_pads(
+    *,
+    sid: str,
+    title: str,
+    audio: str,
+    line: str,
+    target: str,
+    words: list[str],
+    scene: str,
+    chapter: str = "Искорка 1 · Слово",
+    spark: bool = False,
+    spark_kind: str | None = None,
+) -> dict[str, Any]:
+    """Плитки со словами на сцене — аналог «найди слово на льдинах/кувшинках»."""
+    correct_ids: list[str] = []
+    hotspots: list[dict[str, Any]] = []
+    counts: dict[str, int] = {}
+    for w in words:
+        counts[w] = counts.get(w, 0) + 1
+        hid = f"w-{w.lower()}-{counts[w]}"
+        hotspots.append({"id": hid, "label": w})
+        if w == target:
+            correct_ids.append(hid)
+    st: dict[str, Any] = {
+        "id": sid,
+        "title": title,
+        "chapter": chapter,
+        "kind": "scene_hunt",
+        "mechanic": "word_pads",
+        "slovik_line": line,
+        "slovik_pose": "hint",
+        "scene_image": scene,
+        "audio": audio,
+        "layout": "grid",
+        "grid_cols": 3,
+        "captions": True,
+        "correct_ids": correct_ids,
+        "wrong_msg": "Это не то слово. Ищи дальше.",
+        "success_msg": f"Нашёл: {target}!",
+        "hotspots": hotspots,
+        "spark": spark,
+        "spark_group": spark_kind or "word",
+    }
+    if spark and spark_kind:
+        st["spark_kind"] = spark_kind
+    return st
+
+
 def _stories_1() -> list[dict[str, Any]]:
+    # 16 станций. Книжка: ВОТ КОРОБ · ЧТО ТАМ? · НЕ ТУТ · ВОТ МЯЧ! · КОТ РАД
+    legend = [
+        _legend_entry("К", "diamond", "red"),
+        _legend_entry("О", "circle", "violet"),
+        _legend_entry("Т", "hourglass", "blue"),
+        _legend_entry("М", "pill", "green"),
+        _legend_entry("Я", "star", "red"),
+        _legend_entry("Ч", "triangle", "blue"),
+        _legend_entry("Р", "square", "violet"),
+        _legend_entry("Б", "house", "green"),
+        _legend_entry("В", "circle", "red"),
+    ]
     return [
         {
             "id": "hello",
@@ -1899,7 +1974,7 @@ def _stories_1() -> list[dict[str, Any]]:
         {
             "id": "screen",
             "title": "Слово КОРОБ",
-            "chapter": "Слово",
+            "chapter": "Искорка 1 · Слово",
             "kind": "word_picture",
             "mechanic": "word_screen",
             "slovik_line": "Прочитай слово. Короб.",
@@ -1907,6 +1982,7 @@ def _stories_1() -> list[dict[str, Any]]:
             "scene_image": IMG["slovik_screen"],
             "audio": "ph-m1-l01-screen",
             "spark": False,
+            "spark_group": "word",
             "items": [
                 {
                     "word": "КОРОБ",
@@ -1920,12 +1996,47 @@ def _stories_1() -> list[dict[str, Any]]:
             ],
         },
         {
+            "id": "twins",
+            "title": "Похожие слова",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "find",
+            "slovik_line": "Найди такое же слово.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l01-twins",
+            "spark": False,
+            "spark_group": "word",
+            "rounds": [
+                {
+                    "prompt_text": "КОРОБ",
+                    "correct": "korob",
+                    "options": [
+                        _opt("korob", "КОРОБ"),
+                        _opt("kot", "КОТ"),
+                        _opt("myach", "МЯЧ"),
+                    ],
+                },
+                {
+                    "prompt_text": "МЯЧ",
+                    "correct": "myach",
+                    "options": [
+                        _opt("kot", "КОТ"),
+                        _opt("myach", "МЯЧ"),
+                        _opt("rad", "РАД"),
+                    ],
+                },
+            ],
+        },
+        {
             "id": "what",
             "title": "Что там?",
+            "chapter": "Искорка 1 · Слово",
             "kind": "find",
             "slovik_line": "Что там? Выбери картинку.",
             "scene_image": SCENE_HOME,
             "audio": "ph-m1-l01-what",
+            "spark": False,
+            "spark_group": "word",
             "rounds": [
                 {
                     "prompt_text": "Сначала короб пустой.",
@@ -1937,11 +2048,11 @@ def _stories_1() -> list[dict[str, Any]]:
                     ],
                 }
             ],
-            "spark": False,
         },
         {
             "id": "drag",
             "title": "Слово к картинке",
+            "chapter": "Искорка 1 · Слово",
             "kind": "match_pairs",
             "mechanic": "drag_match",
             "slovik_line": "Перетащи слово к картинке.",
@@ -1953,18 +2064,96 @@ def _stories_1() -> list[dict[str, Any]]:
                 {"id": "kot", "label": "КОТ", "image": IMG["kot"]},
                 {"id": "myach", "label": "МЯЧ", "image": IMG["ball"]},
             ],
-            "spark": True,
-            "spark_kind": "word",
+            "spark": False,
             "spark_group": "word",
         },
         {
+            "id": "rebus",
+            "title": "Ребус со словами",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "shape_rebus",
+            "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l01-rebus",
+            "spark": False,
+            "spark_group": "word",
+            "hint": "Ключ: фигура = буква. Расшифруй и выбери слово.",
+            "legend": legend,
+            "rounds": [
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "КОТ"),
+                    "correct": "kot",
+                    "options": [_opt("kot", "КОТ"), _opt("myach", "МЯЧ"), _opt("korob", "КОРОБ")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "МЯЧ"),
+                    "correct": "myach",
+                    "options": [_opt("korob", "КОРОБ"), _opt("myach", "МЯЧ"), _opt("kot", "КОТ")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "КОРОБ"),
+                    "correct": "korob",
+                    "options": [_opt("kot", "КОТ"), _opt("korob", "КОРОБ"), _opt("vot", "ВОТ")],
+                },
+            ],
+        },
+        {
+            "id": "paths",
+            "title": "Дорожки слогов",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "path_word",
+            "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова.",
+            "slovik_pose": "talk",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l01-paths",
+            "spark": False,
+            "spark_group": "word",
+            "hint": "Слева слог + справа слог.",
+            "rounds": [
+                {
+                    "prompt_text": "Какие слова получились?",
+                    "left": ["КО", "ВО", "НЕ"],
+                    "right": ["РОБ", "Т", "ТУТ"],
+                    "pairs": [
+                        {"from": 0, "to": 0, "color": "#6b4ea3"},
+                        {"from": 1, "to": 1, "color": "#e06a2f"},
+                        {"from": 2, "to": 2, "color": "#3f8f4a"},
+                    ],
+                    "correct": ["korob", "vot", "netut"],
+                    "options": [
+                        _opt("korob", "КОРОБ"),
+                        _opt("vot", "ВОТ"),
+                        _opt("netut", "НЕТУТ"),
+                        _opt("myach", "МЯЧ"),
+                    ],
+                }
+            ],
+        },
+        _word_pads(
+            sid="pads",
+            title="Найди слово",
+            audio="ph-m1-l01-pads",
+            line="Найди на плитках все слова МЯЧ.",
+            target="МЯЧ",
+            words=["КОТ", "МЯЧ", "КОРОБ", "ВОТ", "МЯЧ", "РАД", "НЕ", "ТУТ", "МЯЧ"],
+            scene=SCENE_WATER,
+            spark=True,
+            spark_kind="word",
+        ),
+        {
             "id": "open",
             "title": "Открой короб",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "mini_quest",
             "slovik_line": "Открой короб. Смотри… вот мяч!",
             "scene_image": SCENE_HOME,
             "audio": "ph-m1-l01-open",
             "spark": False,
+            "spark_group": "phrase",
             "steps": [
                 {
                     "kind": "find",
@@ -1988,8 +2177,41 @@ def _stories_1() -> list[dict[str, Any]]:
             ],
         },
         {
+            "id": "fill",
+            "title": "Дополни фразу",
+            "chapter": "Искорка 2 · Фраза",
+            "kind": "find",
+            "slovik_line": "ВОТ ___. Какое слово подходит?",
+            "slovik_pose": "invite",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l01-fill",
+            "spark": False,
+            "spark_group": "phrase",
+            "rounds": [
+                {
+                    "prompt_text": "ВОТ ___",
+                    "correct": "myach",
+                    "options": [
+                        _opt("myach", "МЯЧ"),
+                        _opt("kot", "КОТ"),
+                        _opt("syr", "СЫР"),
+                    ],
+                },
+                {
+                    "prompt_text": "ВОТ ___",
+                    "correct": "korob",
+                    "options": [
+                        _opt("rad", "РАД"),
+                        _opt("korob", "КОРОБ"),
+                        _opt("tut", "ТУТ"),
+                    ],
+                },
+            ],
+        },
+        {
             "id": "slots",
             "title": "Вот мяч",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "slot_build",
             "mechanic": "phrase_slots",
             "slovik_line": "Собери: вот мяч.",
@@ -2003,8 +2225,31 @@ def _stories_1() -> list[dict[str, Any]]:
             "spark_group": "phrase",
         },
         {
+            "id": "not_here",
+            "title": "Не тут",
+            "chapter": "Искорка 2 · Фраза",
+            "kind": "find",
+            "slovik_line": "Какая фраза говорит: не тут?",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l01-nothere",
+            "spark": False,
+            "spark_group": "phrase",
+            "rounds": [
+                {
+                    "prompt_text": "Выбери фразу",
+                    "correct": "netut",
+                    "options": [
+                        _opt("votmyach", "ВОТ МЯЧ"),
+                        _opt("netut", "НЕ ТУТ"),
+                        _opt("kotrad", "КОТ РАД"),
+                    ],
+                }
+            ],
+        },
+        {
             "id": "feel",
             "title": "Кот рад",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "phrase_picture",
             "slovik_line": "Кот рад. Где такая картинка?",
             "scene_image": SCENE_HOME,
@@ -2022,8 +2267,33 @@ def _stories_1() -> list[dict[str, Any]]:
             "spark_group": "phrase",
         },
         {
+            "id": "meaning",
+            "title": "Что в коробе?",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "find",
+            "slovik_line": "Подумай: что лежит в коробе в конце истории?",
+            "slovik_pose": "listen",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l01-meaning",
+            "spark": True,
+            "spark_kind": "meaning",
+            "spark_group": "meaning",
+            "rounds": [
+                {
+                    "prompt_text": "В коробе…",
+                    "correct": "ball",
+                    "options": [
+                        _opt("ball", "МЯЧ", IMG["ball"]),
+                        _opt("syr", "СЫР", IMG["syr"]),
+                        _opt("rain", "ДОЖДЬ", IMG["rain"]),
+                    ],
+                }
+            ],
+        },
+        {
             "id": "book",
             "title": "Кот и коробка",
+            "chapter": "Искорка 3 · Смысл",
             "kind": "book_page",
             "slovik_line": "Теперь книжка. Читай сам. Я рядом.",
             "slovik_pose": "joy",
@@ -2040,6 +2310,7 @@ def _stories_1() -> list[dict[str, Any]]:
             ],
             "finale": "Книжка прочитана!",
             "spark": False,
+            "spark_group": "meaning",
         },
         _reward(
             audio="ph-m1-l01-reward",
@@ -2051,6 +2322,18 @@ def _stories_1() -> list[dict[str, Any]]:
 
 
 def _stories_2() -> list[dict[str, Any]]:
+    # 16 станций. Книжка: ИДЁТ ДОЖДЬ · КОТ У ОКНА · ТИХО ДОМА · КОТ СПИТ · НОЧЬ
+    legend = [
+        _legend_entry("Д", "house", "green"),
+        _legend_entry("О", "circle", "violet"),
+        _legend_entry("Ж", "diamond", "red"),
+        _legend_entry("Ь", "pill", "blue"),
+        _legend_entry("К", "star", "red"),
+        _legend_entry("Т", "hourglass", "blue"),
+        _legend_entry("Н", "triangle", "green"),
+        _legend_entry("Ч", "square", "violet"),
+        _legend_entry("И", "circle", "red"),
+    ]
     return [
         {
             "id": "hello",
@@ -2065,11 +2348,14 @@ def _stories_2() -> list[dict[str, Any]]:
         {
             "id": "screen",
             "title": "Слово ДОЖДЬ",
+            "chapter": "Искорка 1 · Слово",
             "kind": "word_picture",
             "mechanic": "word_screen",
             "slovik_line": "Это слово: дождь.",
             "scene_image": IMG["slovik_screen"],
             "audio": "ph-m1-l02-screen",
+            "spark": False,
+            "spark_group": "word",
             "items": [
                 {
                     "word": "ДОЖДЬ",
@@ -2080,29 +2366,61 @@ def _stories_2() -> list[dict[str, Any]]:
                     ],
                 }
             ],
+        },
+        {
+            "id": "twins",
+            "title": "Похожие слова",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "find",
+            "slovik_line": "Найди такое же слово.",
+            "scene_image": SCENE_RAIN,
+            "audio": "ph-m1-l02-twins",
             "spark": False,
+            "spark_group": "word",
+            "rounds": [
+                {
+                    "prompt_text": "ДОЖДЬ",
+                    "correct": "dozhd",
+                    "options": [
+                        _opt("dozhd", "ДОЖДЬ"),
+                        _opt("noch", "НОЧЬ"),
+                        _opt("dom", "ДОМ"),
+                    ],
+                },
+                {
+                    "prompt_text": "НОЧЬ",
+                    "correct": "noch",
+                    "options": [
+                        _opt("kot", "КОТ"),
+                        _opt("noch", "НОЧЬ"),
+                        _opt("okno", "ОКНО"),
+                    ],
+                },
+            ],
         },
         {
             "id": "weather",
             "title": "Дождь или солнце",
-            "chapter": "Искорка 1",
+            "chapter": "Искорка 1 · Слово",
             "kind": "listen_pick",
             "slovik_line": "Дождь или солнце?",
             "scene_image": SCENE_RAIN,
             "audio": "ph-m1-l02-weather",
             "picture_only": True,
             "rounds": [{"correct": "rain", "options": [_opt("rain", "Дождь", IMG["rain"]), _opt("sun", "Солнце", IMG["sun_clear"])]}],
-            "spark": True,
-            "spark_kind": "word",
+            "spark": False,
             "spark_group": "word",
         },
         {
             "id": "who",
             "title": "Кто у окна?",
+            "chapter": "Искорка 1 · Слово",
             "kind": "find",
             "slovik_line": "Кто у окна?",
             "scene_image": SCENE_RAIN,
             "audio": "ph-m1-l02-who",
+            "spark": False,
+            "spark_group": "word",
             "rounds": [
                 {
                     "correct": "kot",
@@ -2113,11 +2431,11 @@ def _stories_2() -> list[dict[str, Any]]:
                     ],
                 }
             ],
-            "spark": False,
         },
         {
             "id": "drag",
             "title": "Слова к картинкам",
+            "chapter": "Искорка 1 · Слово",
             "kind": "match_pairs",
             "mechanic": "drag_match",
             "slovik_line": "Слово к картинке.",
@@ -2129,10 +2447,117 @@ def _stories_2() -> list[dict[str, Any]]:
                 {"id": "kot", "label": "КОТ", "image": IMG["kot"]},
             ],
             "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "rebus",
+            "title": "Ребус со словами",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "shape_rebus",
+            "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l02-rebus",
+            "spark": False,
+            "spark_group": "word",
+            "hint": "Ключ: фигура = буква.",
+            "legend": legend,
+            "rounds": [
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "КОТ"),
+                    "correct": "kot",
+                    "options": [_opt("kot", "КОТ"), _opt("dozhd", "ДОЖДЬ"), _opt("noch", "НОЧЬ")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "НОЧЬ"),
+                    "correct": "noch",
+                    "options": [_opt("dom", "ДОМ"), _opt("noch", "НОЧЬ"), _opt("kot", "КОТ")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "ДОЖДЬ"),
+                    "correct": "dozhd",
+                    "options": [_opt("dozhd", "ДОЖДЬ"), _opt("noch", "НОЧЬ"), _opt("okno", "ОКНО")],
+                },
+            ],
+        },
+        {
+            "id": "paths",
+            "title": "Дорожки слогов",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "path_word",
+            "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова.",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l02-paths",
+            "spark": False,
+            "spark_group": "word",
+            "rounds": [
+                {
+                    "prompt_text": "Какие слова получились?",
+                    "left": ["ДО", "НО", "ТИ"],
+                    "right": ["ЖДЬ", "ЧЬ", "ХО"],
+                    "pairs": [
+                        {"from": 0, "to": 0, "color": "#6b4ea3"},
+                        {"from": 1, "to": 1, "color": "#e06a2f"},
+                        {"from": 2, "to": 2, "color": "#3f8f4a"},
+                    ],
+                    "correct": ["dozhd", "noch", "tiho"],
+                    "options": [
+                        _opt("dozhd", "ДОЖДЬ"),
+                        _opt("noch", "НОЧЬ"),
+                        _opt("tiho", "ТИХО"),
+                        _opt("kot", "КОТ"),
+                    ],
+                }
+            ],
+        },
+        _word_pads(
+            sid="pads",
+            title="Найди слово",
+            audio="ph-m1-l02-pads",
+            line="Найди на плитках все слова ДОЖДЬ.",
+            target="ДОЖДЬ",
+            words=["КОТ", "ДОЖДЬ", "НОЧЬ", "ДОМ", "ДОЖДЬ", "ОКНО", "СПИТ", "ТИХО", "ДОЖДЬ"],
+            scene=SCENE_WATER,
+            spark=True,
+            spark_kind="word",
+        ),
+        {
+            "id": "fill",
+            "title": "Дополни фразу",
+            "chapter": "Искорка 2 · Фраза",
+            "kind": "find",
+            "slovik_line": "ИДЁТ ___. Какое слово подходит?",
+            "scene_image": SCENE_RAIN,
+            "audio": "ph-m1-l02-fill",
+            "spark": False,
+            "spark_group": "phrase",
+            "rounds": [
+                {
+                    "prompt_text": "ИДЁТ ___",
+                    "correct": "dozhd",
+                    "options": [
+                        _opt("dozhd", "ДОЖДЬ"),
+                        _opt("noch", "НОЧЬ"),
+                        _opt("kot", "КОТ"),
+                    ],
+                },
+                {
+                    "prompt_text": "КОТ У ___",
+                    "correct": "okna",
+                    "options": [
+                        _opt("okna", "ОКНА"),
+                        _opt("doma", "ДОМА"),
+                        _opt("myach", "МЯЧ"),
+                    ],
+                },
+            ],
         },
         {
             "id": "slots",
             "title": "Кот у окна",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "slot_build",
             "mechanic": "phrase_slots",
             "slovik_line": "Собери: кот у окна.",
@@ -2149,10 +2574,13 @@ def _stories_2() -> list[dict[str, Any]]:
         {
             "id": "extra",
             "title": "Лишнее слово",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "find",
             "slovik_line": "Какое слово лишнее?",
             "scene_image": SCENE_ST,
             "audio": "ph-m1-l02-extra",
+            "spark": False,
+            "spark_group": "phrase",
             "rounds": [
                 {
                     "prompt_text": "Слова про окно и дождь.",
@@ -2165,11 +2593,53 @@ def _stories_2() -> list[dict[str, Any]]:
                     ],
                 }
             ],
+        },
+        {
+            "id": "sleep",
+            "title": "Кот спит",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "phrase_picture",
+            "slovik_line": "Кот спит. Где такая картинка?",
+            "scene_image": SCENE_RAIN,
+            "audio": "ph-m1-l02-sleep",
+            "phrase": "КОТ СПИТ",
+            "correct": "sleep",
+            "picture_only": True,
+            "options": [
+                _opt("sleep", "Спит", IMG["sleep"]),
+                _opt("happy", "Рад", IMG["happy"]),
+                _opt("run", "Бежит", IMG["run"]),
+            ],
             "spark": False,
+            "spark_group": "meaning",
+        },
+        {
+            "id": "meaning",
+            "title": "Когда это?",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "find",
+            "slovik_line": "В конце книжки — ночь. Выбери слово.",
+            "scene_image": IMG["night"],
+            "audio": "ph-m1-l02-meaning",
+            "spark": True,
+            "spark_kind": "meaning",
+            "spark_group": "meaning",
+            "rounds": [
+                {
+                    "prompt_text": "Конец истории",
+                    "correct": "noch",
+                    "options": [
+                        _opt("noch", "НОЧЬ"),
+                        _opt("dozhd", "ДОЖДЬ"),
+                        _opt("myach", "МЯЧ"),
+                    ],
+                }
+            ],
         },
         {
             "id": "book",
             "title": "Дождь за окном",
+            "chapter": "Искорка 3 · Смысл",
             "kind": "book_page",
             "slovik_line": "Книжка про дождь. Читай.",
             "scene_image": IMG["cover_rain"],
@@ -2184,6 +2654,7 @@ def _stories_2() -> list[dict[str, Any]]:
                 {"text": "НОЧЬ.", "spread_image": f"{ST}/book-rain-05.jpg", "audio": "ph-m1-l02-p5"},
             ],
             "spark": False,
+            "spark_group": "meaning",
         },
         _reward(
             audio="ph-m1-l02-reward",
@@ -2195,6 +2666,21 @@ def _stories_2() -> list[dict[str, Any]]:
 
 
 def _stories_3() -> list[dict[str, Any]]:
+    # 16 станций. Книжка: ГДЕ МЯЧ? · НЕ ТУТ · ВОТ МЯЧ! · КОТ РАД
+    legend = [
+        _legend_entry("Г", "house", "green"),
+        _legend_entry("Д", "diamond", "red"),
+        _legend_entry("Е", "circle", "violet"),
+        _legend_entry("М", "pill", "green"),
+        _legend_entry("Я", "star", "red"),
+        _legend_entry("Ч", "triangle", "blue"),
+        _legend_entry("К", "square", "violet"),
+        _legend_entry("О", "circle", "red"),
+        _legend_entry("Т", "hourglass", "blue"),
+        _legend_entry("Р", "star", "blue"),
+        _legend_entry("А", "pill", "red"),
+        _legend_entry("В", "triangle", "green"),
+    ]
     return [
         {
             "id": "hello",
@@ -2207,9 +2693,63 @@ def _stories_3() -> list[dict[str, Any]]:
             "spark": False,
         },
         {
+            "id": "screen",
+            "title": "Слово МЯЧ",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "word_picture",
+            "mechanic": "word_screen",
+            "slovik_line": "Прочитай слово. Мяч.",
+            "scene_image": IMG["slovik_screen"],
+            "audio": "ph-m1-l03-screen",
+            "spark": False,
+            "spark_group": "word",
+            "items": [
+                {
+                    "word": "МЯЧ",
+                    "correct": "ball",
+                    "options": [
+                        _opt("ball", "Мяч", IMG["ball"]),
+                        _opt("kot", "Кот", IMG["kot"]),
+                        _opt("box", "Короб", IMG["box"]),
+                    ],
+                }
+            ],
+        },
+        {
+            "id": "twins",
+            "title": "Похожие слова",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "find",
+            "slovik_line": "Найди такое же слово.",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l03-twins",
+            "spark": False,
+            "spark_group": "word",
+            "rounds": [
+                {
+                    "prompt_text": "МЯЧ",
+                    "correct": "myach",
+                    "options": [
+                        _opt("myach", "МЯЧ"),
+                        _opt("kot", "КОТ"),
+                        _opt("gde", "ГДЕ"),
+                    ],
+                },
+                {
+                    "prompt_text": "ГДЕ",
+                    "correct": "gde",
+                    "options": [
+                        _opt("vot", "ВОТ"),
+                        _opt("gde", "ГДЕ"),
+                        _opt("rad", "РАД"),
+                    ],
+                },
+            ],
+        },
+        {
             "id": "hunt",
             "title": "Где мяч?",
-            "chapter": "Искорка 1",
+            "chapter": "Искорка 1 · Слово",
             "kind": "scene_hunt",
             "slovik_line": "Где мяч? Загляни в комнаты.",
             "scene_image": SCENE_HOME,
@@ -2224,17 +2764,19 @@ def _stories_3() -> list[dict[str, Any]]:
                 {"id": "room", "label": "Комната", "image": IMG["room"], "x": 50, "y": 50},
                 {"id": "hall", "label": "Коридор", "image": IMG["hall"], "x": 80, "y": 50},
             ],
-            "spark": True,
-            "spark_kind": "word",
+            "spark": False,
             "spark_group": "word",
         },
         {
             "id": "under",
             "title": "Под стулом",
+            "chapter": "Искорка 1 · Слово",
             "kind": "find",
             "slovik_line": "Мяч под стулом или на диване?",
             "scene_image": SCENE_HOME,
             "audio": "ph-m1-l03-under",
+            "spark": False,
+            "spark_group": "word",
             "rounds": [
                 {
                     "prompt_text": "ПОД",
@@ -2245,11 +2787,115 @@ def _stories_3() -> list[dict[str, Any]]:
                     ],
                 }
             ],
+        },
+        {
+            "id": "rebus",
+            "title": "Ребус со словами",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "shape_rebus",
+            "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l03-rebus",
             "spark": False,
+            "spark_group": "word",
+            "legend": legend,
+            "rounds": [
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "МЯЧ"),
+                    "correct": "myach",
+                    "options": [_opt("myach", "МЯЧ"), _opt("kot", "КОТ"), _opt("gde", "ГДЕ")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "КОТ"),
+                    "correct": "kot",
+                    "options": [_opt("rad", "РАД"), _opt("kot", "КОТ"), _opt("vot", "ВОТ")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "ГДЕ"),
+                    "correct": "gde",
+                    "options": [_opt("gde", "ГДЕ"), _opt("myach", "МЯЧ"), _opt("tut", "ТУТ")],
+                },
+            ],
+        },
+        {
+            "id": "paths",
+            "title": "Дорожки слогов",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "path_word",
+            "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова.",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l03-paths",
+            "spark": False,
+            "spark_group": "word",
+            "rounds": [
+                {
+                    "prompt_text": "Какие слова получились?",
+                    "left": ["ВО", "НЕ", "КО"],
+                    "right": ["Т", "ТУТ", "Т"],
+                    "pairs": [
+                        {"from": 0, "to": 0, "color": "#6b4ea3"},
+                        {"from": 1, "to": 1, "color": "#e06a2f"},
+                        {"from": 2, "to": 2, "color": "#3f8f4a"},
+                    ],
+                    "correct": ["vot", "netut", "kot"],
+                    "options": [
+                        _opt("vot", "ВОТ"),
+                        _opt("netut", "НЕТУТ"),
+                        _opt("kot", "КОТ"),
+                        _opt("myach", "МЯЧ"),
+                    ],
+                }
+            ],
+        },
+        _word_pads(
+            sid="pads",
+            title="Найди слово",
+            audio="ph-m1-l03-pads",
+            line="Найди на плитках все слова МЯЧ.",
+            target="МЯЧ",
+            words=["ГДЕ", "МЯЧ", "КОТ", "ВОТ", "МЯЧ", "РАД", "НЕ", "ТУТ", "МЯЧ"],
+            scene=SCENE_WATER,
+            spark=True,
+            spark_kind="word",
+        ),
+        {
+            "id": "fill",
+            "title": "Дополни фразу",
+            "chapter": "Искорка 2 · Фраза",
+            "kind": "find",
+            "slovik_line": "ГДЕ ___. Какое слово подходит?",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l03-fill",
+            "spark": False,
+            "spark_group": "phrase",
+            "rounds": [
+                {
+                    "prompt_text": "ГДЕ ___?",
+                    "correct": "myach",
+                    "options": [
+                        _opt("myach", "МЯЧ"),
+                        _opt("kot", "КОТ"),
+                        _opt("dom", "ДОМ"),
+                    ],
+                },
+                {
+                    "prompt_text": "ВОТ ___!",
+                    "correct": "myach2",
+                    "options": [
+                        _opt("syr", "СЫР"),
+                        _opt("myach2", "МЯЧ"),
+                        _opt("noch", "НОЧЬ"),
+                    ],
+                },
+            ],
         },
         {
             "id": "slots",
             "title": "Где мяч — вот мяч",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "slot_build",
             "mechanic": "phrase_slots",
             "slovik_line": "Собери вопрос: где мяч? Потом: вот мяч!",
@@ -2259,10 +2905,12 @@ def _stories_3() -> list[dict[str, Any]]:
             "options": ["ВОТ", "ГДЕ", "КОТ", "МЯЧ"],
             "result_label": "ГДЕ МЯЧ",
             "spark": False,
+            "spark_group": "phrase",
         },
         {
             "id": "run",
             "title": "Бежит, ловит, рад",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "mini_quest",
             "slovik_line": "Кот бежит. Кот ловит. Кот рад.",
             "scene_image": SCENE_HOME,
@@ -2303,6 +2951,7 @@ def _stories_3() -> list[dict[str, Any]]:
         {
             "id": "where",
             "title": "Картинка к вопросу",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "phrase_picture",
             "slovik_line": "Где мяч? Выбери картинку.",
             "scene_image": SCENE_HOME,
@@ -2315,10 +2964,57 @@ def _stories_3() -> list[dict[str, Any]]:
                 _opt("under", "Под стулом", IMG["ball_under"]),
             ],
             "spark": False,
+            "spark_group": "phrase",
+        },
+        {
+            "id": "not_here",
+            "title": "Не тут",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "find",
+            "slovik_line": "Сначала мяча нет. Какая фраза?",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l03-nothere",
+            "spark": False,
+            "spark_group": "meaning",
+            "rounds": [
+                {
+                    "prompt_text": "Мяча нет",
+                    "correct": "netut",
+                    "options": [
+                        _opt("votmyach", "ВОТ МЯЧ!"),
+                        _opt("netut", "НЕ ТУТ"),
+                        _opt("kotrad", "КОТ РАД"),
+                    ],
+                }
+            ],
+        },
+        {
+            "id": "meaning",
+            "title": "Чем кончилось?",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "find",
+            "slovik_line": "Мяч нашёлся. Как чувствует себя кот?",
+            "scene_image": SCENE_HOME,
+            "audio": "ph-m1-l03-meaning",
+            "spark": True,
+            "spark_kind": "meaning",
+            "spark_group": "meaning",
+            "rounds": [
+                {
+                    "prompt_text": "КОТ ___",
+                    "correct": "happy",
+                    "options": [
+                        _opt("happy", "РАД", IMG["happy"]),
+                        _opt("sleep", "СПИТ", IMG["sleep"]),
+                        _opt("eat", "ЕСТ", IMG["eat"]),
+                    ],
+                }
+            ],
         },
         {
             "id": "book",
             "title": "Где мяч?",
+            "chapter": "Искорка 3 · Смысл",
             "kind": "book_page",
             "slovik_line": "История про мяч. Читай.",
             "scene_image": IMG["cover_ball"],
@@ -2333,6 +3029,7 @@ def _stories_3() -> list[dict[str, Any]]:
                 {"text": "КОТ РАД.", "spread_image": f"{ST}/book-ball-05.jpg", "audio": "ph-m1-l03-p5"},
             ],
             "spark": False,
+            "spark_group": "meaning",
         },
         _reward(
             audio="ph-m1-l03-reward",
@@ -2344,6 +3041,19 @@ def _stories_3() -> list[dict[str, Any]]:
 
 
 def _stories_4() -> list[dict[str, Any]]:
+    # 16 станций. Повторение: книжки 1–3 + ВОТ МОЙ ДОМ · ВОТ МОЙ КОТ · КОТ ЕСТ СЫР
+    legend = [
+        _legend_entry("Д", "house", "green"),
+        _legend_entry("О", "circle", "violet"),
+        _legend_entry("М", "pill", "green"),
+        _legend_entry("К", "diamond", "red"),
+        _legend_entry("Т", "hourglass", "blue"),
+        _legend_entry("С", "star", "red"),
+        _legend_entry("Ы", "triangle", "blue"),
+        _legend_entry("Р", "square", "violet"),
+        _legend_entry("Я", "circle", "red"),
+        _legend_entry("Ч", "pill", "blue"),
+    ]
     return [
         {
             "id": "hello",
@@ -2358,11 +3068,13 @@ def _stories_4() -> list[dict[str, Any]]:
         {
             "id": "which",
             "title": "Какая книжка?",
-            "chapter": "Искорка 1",
+            "chapter": "Искорка 1 · Слово",
             "kind": "find",
             "slovik_line": "Какая это книжка? Найди обложку.",
             "scene_image": IMG["shelf"],
             "audio": "ph-m1-l04-which",
+            "spark": False,
+            "spark_group": "word",
             "rounds": [
                 {
                     "prompt_image": IMG["ball"],
@@ -2376,13 +3088,34 @@ def _stories_4() -> list[dict[str, Any]]:
                     ],
                 }
             ],
-            "spark": True,
-            "spark_kind": "word",
+        },
+        {
+            "id": "twins",
+            "title": "Похожие слова",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "find",
+            "slovik_line": "Найди такое же слово из наших книжек.",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l04-twins",
+            "spark": False,
             "spark_group": "word",
+            "rounds": [
+                {
+                    "prompt_text": "ДОМ",
+                    "correct": "dom",
+                    "options": [_opt("dom", "ДОМ"), _opt("kot", "КОТ"), _opt("syr", "СЫР")],
+                },
+                {
+                    "prompt_text": "СЫР",
+                    "correct": "syr",
+                    "options": [_opt("myach", "МЯЧ"), _opt("syr", "СЫР"), _opt("dozhd", "ДОЖДЬ")],
+                },
+            ],
         },
         {
             "id": "phrase",
             "title": "Фраза к картинке",
+            "chapter": "Искорка 1 · Слово",
             "kind": "phrase_picture",
             "slovik_line": "Какая фраза подходит к картинке?",
             "scene_image": SCENE_RAIN,
@@ -2397,10 +3130,116 @@ def _stories_4() -> list[dict[str, Any]]:
                 _opt("ball", "ВОТ МЯЧ!"),
             ],
             "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "rebus",
+            "title": "Ребус со словами",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "shape_rebus",
+            "slovik_line": "Смотри на ключ: каждая фигурка — это буква. Прочитай шифр и выбери слово.",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l04-rebus",
+            "spark": False,
+            "spark_group": "word",
+            "legend": legend,
+            "rounds": [
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "ДОМ"),
+                    "correct": "dom",
+                    "options": [_opt("dom", "ДОМ"), _opt("kot", "КОТ"), _opt("syr", "СЫР")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "КОТ"),
+                    "correct": "kot",
+                    "options": [_opt("myach", "МЯЧ"), _opt("kot", "КОТ"), _opt("dom", "ДОМ")],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "СЫР"),
+                    "correct": "syr",
+                    "options": [_opt("syr", "СЫР"), _opt("dozhd", "ДОЖДЬ"), _opt("kot", "КОТ")],
+                },
+            ],
+        },
+        {
+            "id": "paths",
+            "title": "Дорожки слогов",
+            "chapter": "Искорка 1 · Слово",
+            "kind": "path_word",
+            "slovik_line": "Пройди по цветной дорожке: слева слог, справа слог. Выбери слова.",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l04-paths",
+            "spark": False,
+            "spark_group": "word",
+            "rounds": [
+                {
+                    "prompt_text": "Какие слова получились?",
+                    "left": ["ДО", "КО", "СЫ"],
+                    "right": ["М", "Т", "Р"],
+                    "pairs": [
+                        {"from": 0, "to": 0, "color": "#6b4ea3"},
+                        {"from": 1, "to": 1, "color": "#e06a2f"},
+                        {"from": 2, "to": 2, "color": "#3f8f4a"},
+                    ],
+                    "correct": ["dom", "kot", "syr"],
+                    "options": [
+                        _opt("dom", "ДОМ"),
+                        _opt("kot", "КОТ"),
+                        _opt("syr", "СЫР"),
+                        _opt("myach", "МЯЧ"),
+                    ],
+                }
+            ],
+        },
+        _word_pads(
+            sid="pads",
+            title="Найди слово",
+            audio="ph-m1-l04-pads",
+            line="Найди на плитках все слова КОТ.",
+            target="КОТ",
+            words=["ДОМ", "КОТ", "МЯЧ", "СЫР", "КОТ", "ДОЖДЬ", "ВОТ", "МОЙ", "КОТ"],
+            scene=SCENE_WATER,
+            spark=True,
+            spark_kind="word",
+        ),
+        {
+            "id": "fill",
+            "title": "Дополни фразу",
+            "chapter": "Искорка 2 · Фраза",
+            "kind": "find",
+            "slovik_line": "ВОТ МОЙ ___. Какое слово подходит?",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l04-fill",
+            "spark": False,
+            "spark_group": "phrase",
+            "rounds": [
+                {
+                    "prompt_text": "ВОТ МОЙ ___",
+                    "correct": "dom",
+                    "options": [
+                        _opt("dom", "ДОМ"),
+                        _opt("syr", "СЫР"),
+                        _opt("dozhd", "ДОЖДЬ"),
+                    ],
+                },
+                {
+                    "prompt_text": "ВОТ МОЙ ___",
+                    "correct": "kot",
+                    "options": [
+                        _opt("myach", "МЯЧ"),
+                        _opt("kot", "КОТ"),
+                        _opt("okno", "ОКНО"),
+                    ],
+                },
+            ],
         },
         {
             "id": "order",
             "title": "По порядку",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "slot_build",
             "mechanic": "order_step",
             "slovik_line": "Расставь по порядку. Сначала первое, потом второе, потом третье.",
@@ -2416,10 +3255,13 @@ def _stories_4() -> list[dict[str, Any]]:
         {
             "id": "who",
             "title": "Кто? Что делает?",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "find",
             "slovik_line": "Кто? Что делает?",
             "scene_image": SCENE_ST,
             "audio": "ph-m1-l04-who",
+            "spark": False,
+            "spark_group": "phrase",
             "rounds": [
                 {
                     "prompt_text": "Кто?",
@@ -2432,11 +3274,11 @@ def _stories_4() -> list[dict[str, Any]]:
                     "options": [_opt("sleep", "СПИТ"), _opt("wait", "ЖДЁТ"), _opt("run", "БЕЖИТ")],
                 },
             ],
-            "spark": False,
         },
         {
             "id": "drag",
             "title": "Слова из книжек",
+            "chapter": "Искорка 2 · Фраза",
             "kind": "match_pairs",
             "mechanic": "drag_match",
             "slovik_line": "Слово к картинке. Ты это уже читал.",
@@ -2449,10 +3291,85 @@ def _stories_4() -> list[dict[str, Any]]:
                 {"id": "dozhd", "label": "ДОЖДЬ", "image": IMG["rain"]},
             ],
             "spark": False,
+            "spark_group": "phrase",
+        },
+        {
+            "id": "covers",
+            "title": "Обложка к фразе",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "find",
+            "slovik_line": "Какая книжка про эту фразу?",
+            "scene_image": IMG["shelf"],
+            "audio": "ph-m1-l04-covers",
+            "spark": False,
+            "spark_group": "meaning",
+            "rounds": [
+                {
+                    "prompt_text": "ИДЁТ ДОЖДЬ",
+                    "correct": "rain",
+                    "options": [
+                        _opt("box", "Кот и коробка", IMG["cover_box"]),
+                        _opt("rain", "Дождь за окном", IMG["cover_rain"]),
+                        _opt("ball", "Где мяч?", IMG["cover_ball"]),
+                    ],
+                },
+                {
+                    "prompt_text": "ВОТ КОРОБ",
+                    "correct": "box",
+                    "options": [
+                        _opt("box", "Кот и коробка", IMG["cover_box"]),
+                        _opt("home", "Дома", IMG["cover_home"]),
+                        _opt("ball", "Где мяч?", IMG["cover_ball"]),
+                    ],
+                },
+            ],
+        },
+        {
+            "id": "eat",
+            "title": "Кот ест сыр",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "phrase_picture",
+            "slovik_line": "Кот ест сыр. Где такая картинка?",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l04-eat",
+            "phrase": "КОТ ЕСТ СЫР",
+            "correct": "eat",
+            "picture_only": True,
+            "options": [
+                _opt("eat", "Ест", IMG["eat"]),
+                _opt("sleep", "Спит", IMG["sleep"]),
+                _opt("happy", "Рад", IMG["happy"]),
+            ],
+            "spark": False,
+            "spark_group": "meaning",
+        },
+        {
+            "id": "meaning",
+            "title": "Что помнишь?",
+            "chapter": "Искорка 3 · Смысл",
+            "kind": "find",
+            "slovik_line": "Что ест кот в книжке «Дома»?",
+            "scene_image": SCENE_ST,
+            "audio": "ph-m1-l04-meaning",
+            "spark": True,
+            "spark_kind": "meaning",
+            "spark_group": "meaning",
+            "rounds": [
+                {
+                    "prompt_text": "КОТ ЕСТ ___",
+                    "correct": "syr",
+                    "options": [
+                        _opt("syr", "СЫР", IMG["syr"]),
+                        _opt("ball", "МЯЧ", IMG["ball"]),
+                        _opt("rain", "ДОЖДЬ", IMG["rain"]),
+                    ],
+                }
+            ],
         },
         {
             "id": "spread",
             "title": "Открой книжку",
+            "chapter": "Искорка 3 · Смысл",
             "kind": "book_page",
             "slovik_line": "Открой любую книжку и прочитай разворот.",
             "scene_image": f"{ST}/scene-book.jpg",
@@ -2465,6 +3382,7 @@ def _stories_4() -> list[dict[str, Any]]:
                 {"text": "КОТ ЕСТ СЫР.", "spread_image": f"{ST}/book-home-03.jpg", "image": IMG["eat"]},
             ],
             "spark": False,
+            "spark_group": "meaning",
         },
         _reward(
             audio="ph-m1-l04-reward",
