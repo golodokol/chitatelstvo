@@ -29,7 +29,7 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertIn("scene-map-sounds-where-08.png", rows[7]["cover_url"])
         self.assertEqual(
             cabinet_ui._early_letters_where_map_url(3),
-            "/static/early/letters/scene-map-sounds-where-03.png?v=20260909b",
+            "/static/early/letters/scene-map-sounds-where-03.png?v=20260909e",
         )
 
     def test_program_map_uses_single_base_and_eight_pins(self):
@@ -52,7 +52,8 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][4]["state"], "soon")
         self.assertEqual(program_map["pins"][1]["x"], 20.7)
         self.assertEqual(program_map["pins"][1]["y"], 36.94)
-        self.assertEqual(program_map["pins"][1]["tip"], "left")
+        self.assertEqual(program_map["pins"][1]["tip"], "above")
+        self.assertEqual(program_map["pins"][7]["tip"], "above")
 
     def test_upcoming_opens_first_four_for_staff_preview(self):
         rows = cabinet_ui._upcoming_module_lessons(

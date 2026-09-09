@@ -152,7 +152,7 @@ _POST_VIDEO_CHEST_STEPS = (
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260909b"
+EARLY_ASSETS_VERSION = "20260909e"
 
 # Площадки уроков 1–8 на единой карте «Страны звуков» (доли ширины/высоты 1280×720).
 # Порядок = номер урока, не порядок генерации старых where-кадров.
@@ -170,13 +170,13 @@ EARLY_LETTERS_MAP_PADS: tuple[tuple[float, float], ...] = (
 # Куда ставить подпись у пина, чтобы не наезжать на соседние площадки.
 EARLY_LETTERS_MAP_TIP: tuple[str, ...] = (
     "right",   # 1 — иначе перекрывает пещеру (урок 2)
-    "left",    # 2
+    "above",   # 2 — left уезжал за край карты
     "above",   # 3
     "above",   # 4
     "left",    # 5
     "above",   # 6
     "above",   # 7
-    "left",    # 8 — у правого края
+    "above",   # 8 — left наезжал на урок 7
 )
 
 INTRO_TRIAL_COVERS: dict[str, str] = {
