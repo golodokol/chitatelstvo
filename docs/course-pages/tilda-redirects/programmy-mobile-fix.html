@@ -1,0 +1,92 @@
+<!-- Вставить В САМОЕ НАЧАЛО HTML-атома Zero Block на странице /programmy, затем Опубликовать.
+     Чинит телефон: Tilda держит атом 1200px со сдвигом left:calc(50% - 160px). -->
+<style id="chit-programmy-tilda-fix">
+html, body, #allrecords { overflow-x: hidden !important; max-width: 100% !important; }
+#rec3328533401,
+#rec3328533401 .t396,
+#rec3328533401 .t396__artboard,
+#rec3328533401 .tn-elem,
+#rec3328533401 .tn-atom,
+#rec3328533401 .tn-atom__html {
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  display: block !important;
+  position: relative !important;
+  transform: none !important;
+  box-sizing: border-box !important;
+}
+#rec3328533401 .t396__artboard,
+#rec3328533401 .t396__filter,
+#rec3328533401 .t396__carrier {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+.chit-programmy {
+  width: 100% !important;
+  max-width: 1080px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+.chit-programmy__top {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+@media (max-width: 720px) {
+  .chit-programmy__grid { grid-template-columns: 1fr !important; }
+  .chit-programmy__title { max-width: 100% !important; overflow-wrap: break-word !important; }
+}
+</style>
+<script>
+(function () {
+  function patch() {
+    var root = document.querySelector('.chit-programmy');
+    var rec = (root && root.closest('.t-rec')) || document.getElementById('rec3328533401');
+    if (!rec) return;
+    rec.querySelectorAll('style').forEach(function (s) {
+      var t = s.textContent || '';
+      var n = t
+        .replace(/left:\s*calc\([^)]+\)/gi, 'left:0')
+        .replace(/width:\s*1200px/gi, 'width:100%')
+        .replace(/height:\s*329px/gi, 'height:auto')
+        .replace(/display:\s*table/gi, 'display:block');
+      if (n !== t) s.textContent = n;
+    });
+    var chain = [rec, rec.querySelector('.t396'), rec.querySelector('.t396__artboard'), rec.querySelector('.tn-elem'), rec.querySelector('.tn-atom'), rec.querySelector('.tn-atom__html')];
+    chain.forEach(function (el) {
+      if (!el) return;
+      el.style.setProperty('left', '0', 'important');
+      el.style.setProperty('top', '0', 'important');
+      el.style.setProperty('width', '100%', 'important');
+      el.style.setProperty('max-width', '100%', 'important');
+      el.style.setProperty('height', 'auto', 'important');
+      el.style.setProperty('display', 'block', 'important');
+      el.style.setProperty('position', 'relative', 'important');
+      el.style.setProperty('transform', 'none', 'important');
+    });
+    var m = root || rec.querySelector('.chit-programmy');
+    if (m) {
+      var h = Math.ceil(m.getBoundingClientRect().height);
+      var ab = rec.querySelector('.t396__artboard');
+      if (ab && h > 80) {
+        ab.style.setProperty('height', h + 'px', 'important');
+        ab.setAttribute('data-artboard-height', String(h));
+      }
+    }
+  }
+  patch();
+  setTimeout(patch, 80);
+  setTimeout(patch, 400);
+  window.addEventListener('load', patch);
+  window.addEventListener('resize', patch);
+})();
+</script>

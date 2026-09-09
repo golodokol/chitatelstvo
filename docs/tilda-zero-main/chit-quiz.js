@@ -10,6 +10,9 @@
       '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}' +
       '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}' +
       '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}' +
+      '#qz-modal .qz-modal__dialog{overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}' +
+      '@media(max-width:720px){#qz-modal{align-items:flex-start!important}' +
+      '#qz-modal .qz-modal--tight .qz-intro-gift{display:none!important}}' +
       '@media(max-width:480px){#qz-modal .qz-modal__dialog .qz-nav{flex-direction:column!important}' +
       '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back,#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{width:100%!important;min-width:0!important}}';
     (document.head || document.documentElement).appendChild(navFix);
@@ -220,17 +223,27 @@
     elSteps = root.querySelectorAll('.qz-step');
   }
 
+  function dialogMaxHeight(modal) {
+    var pad = window.innerWidth <= 720 ? 16 : 32;
+    var overlay = modal.clientHeight || 0;
+    var inner = window.innerHeight || 0;
+    var vis = (window.visualViewport && window.visualViewport.height) || inner;
+    var cap = overlay ? Math.min(overlay, vis || overlay) : (vis || inner);
+    return Math.max(280, cap - pad);
+  }
+
   function fitDialogHeight() {
     var dialog = root.closest('.qz-modal__dialog');
     var modal = dialog && dialog.closest('.qz-modal');
     if (!dialog || !modal || !modal.classList.contains('is-open')) return;
     dialog.style.height = 'auto';
     dialog.style.maxHeight = '';
+    dialog.style.overflow = '';
+    dialog.style.overflowY = '';
     dialog.classList.remove('qz-modal--tight', 'qz-modal--form-compact');
     var card = dialog.querySelector('.qz-card');
     if (!card) return;
-    var pad = window.innerWidth <= 720 ? 24 : 32;
-    var max = Math.max(280, window.innerHeight - pad);
+    var max = dialogMaxHeight(modal);
     var isForm = root.classList.contains('qz-form-step');
     var h = card.offsetHeight;
     if (h > max) {
@@ -238,17 +251,18 @@
       if (isForm) dialog.classList.add('qz-modal--form-compact');
       h = card.offsetHeight;
     }
-    if (isForm) {
-      dialog.style.overflow = 'hidden';
-      var fit = Math.min(Math.max(h, 280), max);
-      dialog.style.height = fit + 'px';
-      dialog.style.maxHeight = fit + 'px';
+    if (h > max) {
+      dialog.style.height = max + 'px';
+      dialog.style.maxHeight = max + 'px';
+      dialog.style.overflowX = 'hidden';
+      dialog.style.overflowY = 'auto';
+      dialog.style.webkitOverflowScrolling = 'touch';
       return;
     }
-    dialog.style.overflow = '';
-    var fit2 = Math.min(h, max);
-    dialog.style.height = fit2 + 'px';
-    dialog.style.maxHeight = fit2 + 'px';
+    dialog.style.height = h + 'px';
+    dialog.style.maxHeight = max + 'px';
+    dialog.style.overflowX = 'hidden';
+    dialog.style.overflowY = 'hidden';
   }
 
   function showStep(index) {
@@ -705,4 +719,7 @@
 
   updateProgress();
   window.addEventListener('resize', fitDialogHeight);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fitDialogHeight);
+  }
 })();

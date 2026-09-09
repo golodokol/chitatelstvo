@@ -2857,6 +2857,16 @@
   overflow: hidden;
   box-shadow: var(--shadow);
 }
+#chit-main .cabinet-mock__label {
+  margin: 0;
+  padding: 12px 14px 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+}
 #chit-main .cabinet-mock__chrome {
   display: flex;
   align-items: center;
