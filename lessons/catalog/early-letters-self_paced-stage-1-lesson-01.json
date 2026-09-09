@@ -235,6 +235,154 @@
       "spark_group": "letter"
     },
     {
+      "id": "sort",
+      "title": "Большая и маленькая М",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "sort_two",
+      "slovik_line": "Большая М и маленькая м — одна буква. Разложи.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l01-grid",
+      "left": {
+        "label": "М",
+        "correct": [
+          "М1",
+          "М2",
+          "М3"
+        ]
+      },
+      "right": {
+        "label": "м",
+        "correct": [
+          "м1",
+          "м2",
+          "м3"
+        ]
+      },
+      "options": [
+        {
+          "id": "М1",
+          "label": "М"
+        },
+        {
+          "id": "м1",
+          "label": "м"
+        },
+        {
+          "id": "М2",
+          "label": "М"
+        },
+        {
+          "id": "м2",
+          "label": "м"
+        },
+        {
+          "id": "М3",
+          "label": "М"
+        },
+        {
+          "id": "м3",
+          "label": "м"
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "chase",
+      "title": "Поймай М на поляне",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "scene_hunt",
+      "mechanic": "letter_chase",
+      "slovik_line": "Теперь поймай их на поляне. Найди большую М и маленькую м. Не спутай с другими буквами.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-catch",
+      "moving": true,
+      "move_speed": 5,
+      "success_msg": "Поймал и М, и маленькую м!",
+      "wrong_msg": "Это не М и не м. Ищи дальше.",
+      "correct_ids": [
+        "М1",
+        "м1",
+        "М2",
+        "м2",
+        "М3"
+      ],
+      "hotspots": [
+        {
+          "id": "М1",
+          "label": "М",
+          "x": 14,
+          "y": 10
+        },
+        {
+          "id": "А1",
+          "label": "А",
+          "x": 34,
+          "y": 8
+        },
+        {
+          "id": "У1",
+          "label": "У",
+          "x": 54,
+          "y": 12
+        },
+        {
+          "id": "О1",
+          "label": "О",
+          "x": 74,
+          "y": 9
+        },
+        {
+          "id": "м1",
+          "label": "м",
+          "x": 91,
+          "y": 20,
+          "size": "sm"
+        },
+        {
+          "id": "А2",
+          "label": "А",
+          "x": 10,
+          "y": 42
+        },
+        {
+          "id": "У2",
+          "label": "У",
+          "x": 90,
+          "y": 46
+        },
+        {
+          "id": "М2",
+          "label": "М",
+          "x": 12,
+          "y": 78
+        },
+        {
+          "id": "м2",
+          "label": "м",
+          "x": 48,
+          "y": 86,
+          "size": "sm"
+        },
+        {
+          "id": "О2",
+          "label": "О",
+          "x": 88,
+          "y": 82
+        },
+        {
+          "id": "М3",
+          "label": "М",
+          "x": 30,
+          "y": 90
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
       "id": "grid",
       "title": "Найди все М",
       "chapter": "Буква",
@@ -537,44 +685,46 @@
       "hint": "Встань и тихо скажи м-м-м, как машина. Потом вернёмся."
     },
     {
-      "id": "join_ma",
+      "id": "join_am",
       "title": "Мост дружбы",
       "chapter": "Искорка 3 · Слог",
       "kind": "drag_join",
-      "slovik_line": "Познакомь М и А. Веди М по мостику к А — получится ма.",
+      "slovik_line": "Познакомь А и М. Веди А по мостику к М — получится ам.",
       "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "vo-bridge",
-      "hint": "Перетащи М к А по мостику",
+      "hint": "Перетащи А к М по мостику",
       "left": {
-        "id": "M",
-        "label": "М"
-      },
-      "right": {
         "id": "A",
         "label": "А"
       },
+      "right": {
+        "id": "M",
+        "label": "М"
+      },
       "result": {
-        "label": "МА",
-        "sound": "snd-ma"
+        "label": "АМ",
+        "sound": "snd-ma",
+        "image": "/static/early/letters/bear-wise.png",
+        "image_alt": "медведь"
       },
       "spark": true,
       "spark_kind": "syllable",
       "spark_group": "syllable"
     },
     {
-      "id": "slot_ma",
-      "title": "Слог МА",
+      "id": "slot_am",
+      "title": "Слог АМ",
       "chapter": "Искорка 3 · Слог",
       "kind": "slot_build",
-      "slovik_line": "Сложим слог ма. М и А рядом — получается ма.",
+      "slovik_line": "Сложим слог ам. А и М рядом — получается ам.",
       "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l01-slots",
       "result_sound": "snd-ma",
       "targets": [
-        "М",
-        "А"
+        "А",
+        "М"
       ],
       "options": [
         "О",
@@ -582,31 +732,28 @@
         "У",
         "А"
       ],
-      "result_label": "МА",
-      "result_image": "/static/early/letters/motor.png",
+      "result_label": "АМ",
+      "result_image": "/static/early/letters/bear-wise.png",
       "spark": false,
       "spark_group": "syllable"
     },
     {
       "id": "quest",
-      "title": "Слог МА",
+      "title": "Слог АМ",
       "chapter": "Мини-квест",
       "kind": "mini_quest",
-      "slovik_line": "Медведь и машина начинаются на М. Найди обе картинки. Потом слог ма.",
+      "slovik_line": "Медведь начинается на М. Найди его. Потом слог ам.",
       "slovik_pose": "joy",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l01-quest",
       "spark": false,
       "show_all_steps": true,
-      "hint": "Две картинки на М: медведь и машина. Потом слог МА.",
+      "hint": "Картинка медведя. Потом слог АМ.",
       "steps": [
         {
           "kind": "find",
-          "prompt": "Картинки на М",
-          "correct": [
-            "bear",
-            "motor"
-          ],
+          "prompt": "Картинка на М",
+          "correct": "bear",
           "options": [
             {
               "id": "bear",
@@ -614,9 +761,9 @@
               "image": "/static/early/letters/bear-wise.png"
             },
             {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/sun-smile.png"
             },
             {
               "id": "kot",
@@ -628,7 +775,7 @@
         {
           "kind": "find",
           "prompt": "Слог",
-          "correct": "МА",
+          "correct": "АМ",
           "options": [
             "АМ",
             "МА",
@@ -655,7 +802,7 @@
       "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
       "fail_pose": "worry",
       "retry_cta": "Попробовать ещё раз",
-      "parent_note": "Урок «Машина на поляне». Дома: м-м-м и слог МА.",
+      "parent_note": "Урок «Машина на поляне». Дома: м-м-м и слог АМ.",
       "chest_cta": "Открыть сундук",
       "tech_msg": "Знаю букву М"
     }

@@ -25,7 +25,7 @@
       "id": "trail",
       "title": "Тропа букв",
       "kind": "intro_video",
-      "slovik_line": "Новая буква на тропе. Она любит петь: у-у-у.",
+      "slovik_line": "Новая буква на тропе.\nОна любит петь: у-у-у.",
       "slovik_pose": "wave",
       "scene_image": "/static/early/letters/scene-u-echo-intro.jpg",
       "audio": "bo-m1-l02-hi",
@@ -122,60 +122,121 @@
     },
     {
       "id": "echo",
-      "title": "Эхо",
+      "title": "Пещера эха",
       "chapter": "Искорка 1 · Звук",
-      "kind": "repeat_sound",
-      "slovik_line": "Как в пещере эха. Повтори: у-у-у.",
-      "slovik_pose": "listen",
+      "kind": "catch_letter",
+      "slovik_line": "Пещера эха. Здесь пропал звук у-у-у. Лови только букву У — три раза!",
+      "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-sparks.jpg",
       "audio": "bo-m1-l02-echo",
-      "sound": "snd-u",
+      "letter": "У",
+      "letters": [
+        "У",
+        "А",
+        "О",
+        "М"
+      ],
+      "letter_sounds": {
+        "У": "snd-u",
+        "А": "snd-a",
+        "О": "snd-o",
+        "М": "snd-m"
+      },
+      "catches": 3,
       "spark": true,
       "spark_kind": "sound",
       "spark_group": "sound"
     },
     {
       "id": "hop",
-      "title": "Прыжки",
-      "kind": "letter_maze",
-      "mechanic": "letter_hop",
-      "slovik_line": "Прыгай на букву, которая поёт у-у-у.",
-      "scene_image": "/static/early/letters/scene-trail-path.jpg",
+      "title": "Поймай У",
+      "chapter": "Буква",
+      "kind": "scene_hunt",
+      "mechanic": "letter_chase",
+      "slovik_line": "Буквы бегают по поляне! Лови большую У и маленькую у. Другие буквы не трогай.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
       "audio": "bo-m1-l02-hop",
-      "letter": "У",
-      "start": [
-        0,
-        0
+      "moving": true,
+      "move_speed": 5,
+      "success_msg": "Поймал и У, и маленькую у!",
+      "wrong_msg": "Это не У и не у. Ищи дальше.",
+      "correct_ids": [
+        "U1",
+        "u1",
+        "U2",
+        "u2",
+        "U3"
       ],
-      "end": [
-        3,
-        3
-      ],
-      "grid": [
-        [
-          "У",
-          "У",
-          "У",
-          "О"
-        ],
-        [
-          "М",
-          "А",
-          "У",
-          "М"
-        ],
-        [
-          "А",
-          "О",
-          "У",
-          "У"
-        ],
-        [
-          "М",
-          "А",
-          "М",
-          "У"
-        ]
+      "hotspots": [
+        {
+          "id": "U1",
+          "label": "У",
+          "x": 14,
+          "y": 12
+        },
+        {
+          "id": "A1",
+          "label": "А",
+          "x": 34,
+          "y": 10
+        },
+        {
+          "id": "O1",
+          "label": "О",
+          "x": 54,
+          "y": 14
+        },
+        {
+          "id": "M1",
+          "label": "М",
+          "x": 74,
+          "y": 11
+        },
+        {
+          "id": "u1",
+          "label": "у",
+          "x": 90,
+          "y": 22,
+          "size": "sm"
+        },
+        {
+          "id": "S1",
+          "label": "С",
+          "x": 12,
+          "y": 44
+        },
+        {
+          "id": "M2",
+          "label": "М",
+          "x": 88,
+          "y": 48
+        },
+        {
+          "id": "U2",
+          "label": "У",
+          "x": 16,
+          "y": 76
+        },
+        {
+          "id": "u2",
+          "label": "у",
+          "x": 48,
+          "y": 84,
+          "size": "sm"
+        },
+        {
+          "id": "A2",
+          "label": "А",
+          "x": 86,
+          "y": 80
+        },
+        {
+          "id": "U3",
+          "label": "У",
+          "x": 32,
+          "y": 90
+        }
       ],
       "spark": false,
       "spark_group": "letter"
@@ -188,7 +249,7 @@
       "mechanic": "dot_connect",
       "slovik_line": "Соедини точки по порядку — получится буква У.",
       "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
       "audio": "bo-m1-l02-hop",
       "letter": "У",
       "hint": "Жми точки по номерам: 1, 2, 3…",
@@ -196,8 +257,8 @@
       "dots": [
         {
           "n": 1,
-          "x": 22,
-          "y": 12
+          "x": 24,
+          "y": 14
         },
         {
           "n": 2,
@@ -206,13 +267,18 @@
         },
         {
           "n": 3,
-          "x": 78,
-          "y": 12
+          "x": 76,
+          "y": 14
         },
         {
           "n": 4,
           "x": 50,
-          "y": 88
+          "y": 48
+        },
+        {
+          "n": 5,
+          "x": 50,
+          "y": 90
         }
       ],
       "spark": false,
@@ -220,37 +286,148 @@
     },
     {
       "id": "maze",
-      "title": "Лабиринт У и А",
+      "title": "Большая и маленькая У",
       "chapter": "Искорка 2 · Буква",
-      "kind": "letter_maze",
-      "slovik_line": "Иди только по У и А. Другие буквы — стена.",
-      "scene_image": "/static/early/letters/scene-trail-path.jpg",
+      "kind": "sort_two",
+      "slovik_line": "Большая У и маленькая у — одна буква. Разложи.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l02-maze",
-      "letter": "У",
-      "start": [
-        0,
-        0
-      ],
-      "end": [
-        2,
-        2
-      ],
-      "grid": [
-        [
-          "У",
-          "М",
-          "А"
-        ],
-        [
-          "У",
-          "У",
-          "У"
-        ],
-        [
-          "А",
-          "М",
-          "У"
+      "left": {
+        "label": "У",
+        "correct": [
+          "U1",
+          "U2",
+          "U3"
         ]
+      },
+      "right": {
+        "label": "у",
+        "correct": [
+          "u1",
+          "u2",
+          "u3"
+        ]
+      },
+      "options": [
+        {
+          "id": "U1",
+          "label": "У"
+        },
+        {
+          "id": "u1",
+          "label": "у"
+        },
+        {
+          "id": "U2",
+          "label": "У"
+        },
+        {
+          "id": "u2",
+          "label": "у"
+        },
+        {
+          "id": "U3",
+          "label": "У"
+        },
+        {
+          "id": "u3",
+          "label": "у"
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "chase",
+      "title": "Поймай У на поляне",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "scene_hunt",
+      "mechanic": "letter_chase",
+      "slovik_line": "Теперь поймай их на поляне. Найди большую У и маленькую у. Не спутай с другими буквами.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-catch",
+      "moving": true,
+      "move_speed": 5,
+      "success_msg": "Поймал и У, и маленькую у!",
+      "wrong_msg": "Это не У и не у. Ищи дальше.",
+      "correct_ids": [
+        "U1",
+        "u1",
+        "U2",
+        "u2",
+        "U3"
+      ],
+      "hotspots": [
+        {
+          "id": "U1",
+          "label": "У",
+          "x": 14,
+          "y": 10
+        },
+        {
+          "id": "A1",
+          "label": "А",
+          "x": 34,
+          "y": 8
+        },
+        {
+          "id": "O1",
+          "label": "О",
+          "x": 54,
+          "y": 12
+        },
+        {
+          "id": "M1",
+          "label": "М",
+          "x": 74,
+          "y": 9
+        },
+        {
+          "id": "u1",
+          "label": "у",
+          "x": 91,
+          "y": 20,
+          "size": "sm"
+        },
+        {
+          "id": "S1",
+          "label": "С",
+          "x": 10,
+          "y": 42
+        },
+        {
+          "id": "M2",
+          "label": "М",
+          "x": 90,
+          "y": 46
+        },
+        {
+          "id": "U2",
+          "label": "У",
+          "x": 12,
+          "y": 78
+        },
+        {
+          "id": "u2",
+          "label": "у",
+          "x": 48,
+          "y": 86,
+          "size": "sm"
+        },
+        {
+          "id": "A2",
+          "label": "А",
+          "x": 88,
+          "y": 82
+        },
+        {
+          "id": "U3",
+          "label": "У",
+          "x": 30,
+          "y": 90
+        }
       ],
       "spark": false,
       "spark_group": "letter"
@@ -263,6 +440,7 @@
       "slovik_line": "Найди на доске все буквы У. Их несколько.",
       "scene_image": "/static/early/letters/scene-forest-board.jpg",
       "audio": "bo-m1-l02-grid",
+      "pieces_on_board": true,
       "slots": 3,
       "pieces": [
         {
@@ -532,7 +710,9 @@
       },
       "result": {
         "label": "МУ",
-        "sound": "snd-mu"
+        "sound": "snd-mu",
+        "image": "/static/early/letters/cow.png",
+        "image_alt": "корова"
       },
       "spark": false,
       "spark_group": "syllable"
@@ -542,7 +722,7 @@
       "title": "МУ и УМ",
       "chapter": "Искорка 3 · Слог",
       "kind": "slot_build",
-      "slovik_line": "Склеим: му и ум.",
+      "slovik_line": "Склеим: му и ум. Сначала му.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l02-slots",
       "result_sound": "snd-mu",
@@ -557,60 +737,80 @@
         "О"
       ],
       "result_label": "МУ",
-      "result_image": "/static/early/letters/bear-wise.png",
+      "result_image": "/static/early/letters/cow.png",
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots_um",
+      "title": "Слог УМ",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Теперь ум. У и М рядом — получается ум.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-workshop",
+      "targets": [
+        "У",
+        "М"
+      ],
+      "options": [
+        "А",
+        "У",
+        "О",
+        "М"
+      ],
+      "result_label": "УМ",
       "spark": true,
       "spark_kind": "syllable",
       "spark_group": "syllable"
     },
     {
       "id": "or",
-      "title": "Кто поёт?",
-      "kind": "listen_pick",
-      "mechanic": "or_choice",
-      "slovik_line": "Буква У. Что поёт у-у-у — ветер или машина?",
-      "scene_image": "/static/early/letters/scene-comic-book.jpg",
-      "audio": "bo-m1-l02-or",
-      "picture_only": true,
+      "title": "Как говорит корова?",
+      "kind": "find",
+      "mechanic": "cow_moo",
+      "slovik_line": "Как говорит корова? Нажми слог.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "vo-workshop",
+      "spark": false,
+      "hint": "Корова говорит му.",
       "rounds": [
         {
-          "sound": "snd-u",
-          "correct": "wind",
+          "prompt_text": "Как говорит корова?",
+          "prompt_image": "/static/early/letters/cow.png",
+          "prompt_alt": "корова",
+          "correct": "МУ",
           "options": [
-            {
-              "id": "wind",
-              "label": "Ветер",
-              "image": "/static/early/letters/wind-howl.png"
-            },
-            {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
-            }
+            "МУ",
+            "УМ",
+            "МА",
+            "МО"
           ]
         }
-      ],
-      "spark": false
+      ]
     },
     {
       "id": "quest",
-      "title": "Слог УМ",
+      "title": "Слог МУ",
       "kind": "mini_quest",
-      "slovik_line": "Слог ум. Найди умного медведя и слог ум.",
+      "slovik_line": "Слог му. Найди корову и слог му.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l02-quest",
       "spark": false,
       "show_all_steps": true,
-      "hint": "Картинка медведя и слог УМ.",
+      "hint": "Картинка коровы и слог МУ.",
       "steps": [
         {
           "kind": "find",
           "prompt": "Картинка",
-          "correct": "bear",
+          "correct": "cow",
           "options": [
             {
-              "id": "bear",
-              "label": "Медведь",
-              "image": "/static/early/letters/bear-wise.png"
+              "id": "cow",
+              "label": "Корова",
+              "image": "/static/early/letters/cow.png"
             },
             {
               "id": "motor",
@@ -627,7 +827,7 @@
         {
           "kind": "find",
           "prompt": "Слог",
-          "correct": "УМ",
+          "correct": "МУ",
           "options": [
             "МУ",
             "УМ",

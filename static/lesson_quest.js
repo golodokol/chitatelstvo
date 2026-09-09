@@ -487,7 +487,7 @@
     var base = (cfg.assetsBase || "").replace(/\/$/, "");
     var url = base + path;
     if (/\.(png|jpe?g|webp)$/i.test(path) && url.indexOf("?") < 0) {
-      url += "?v=20260909e";
+      url += "?v=20260909u";
     }
     return url;
   }
@@ -1411,15 +1411,37 @@
       ];
     }
     if (L === "О" || L === "O") {
+      // Печатная О против часовой: сверху влево, вниз, вправо и к 7 рядом с 1.
       return [
-        { n: 1, x: 50, y: 10 },
-        { n: 2, x: 82, y: 28 },
-        { n: 3, x: 88, y: 55 },
-        { n: 4, x: 70, y: 86 },
-        { n: 5, x: 30, y: 86 },
-        { n: 6, x: 12, y: 55 },
-        { n: 7, x: 18, y: 28 },
-        { n: 8, x: 50, y: 10 }
+        { n: 1, x: 50, y: 12 },
+        { n: 2, x: 18, y: 30 },
+        { n: 3, x: 18, y: 70 },
+        { n: 4, x: 50, y: 88 },
+        { n: 5, x: 82, y: 70 },
+        { n: 6, x: 82, y: 30 },
+        { n: 7, x: 58, y: 14 }
+      ];
+    }
+    if (L === "У" || L === "U") {
+      // Печатная У: левая ветка → середина → правая → снова середина → ножка вниз.
+      return [
+        { n: 1, x: 24, y: 14 },
+        { n: 2, x: 50, y: 48 },
+        { n: 3, x: 76, y: 14 },
+        { n: 4, x: 50, y: 48 },
+        { n: 5, x: 50, y: 90 }
+      ];
+    }
+    if (L === "С" || L === "C" || L === "S") {
+      // Печатная С: сверху вниз открытой дугой вправо.
+      return [
+        { n: 1, x: 78, y: 20 },
+        { n: 2, x: 50, y: 10 },
+        { n: 3, x: 20, y: 28 },
+        { n: 4, x: 14, y: 55 },
+        { n: 5, x: 24, y: 82 },
+        { n: 6, x: 55, y: 92 },
+        { n: 7, x: 80, y: 78 }
       ];
     }
     return [
@@ -1906,8 +1928,11 @@
         var ang = Math.random() * Math.PI * 2;
         var base = Number(station.move_speed) > 0 ? Number(station.move_speed) : 5;
         var spd = base + Math.random() * (base * 0.35);
-        var sx = Number(btn.style.left) || 50;
-        var sy = Number(btn.style.top) || 50;
+        // parseFloat("14%") → 14; Number("14%") → NaN and all letters piled at 50,50
+        var sx = parseFloat(btn.style.left);
+        var sy = parseFloat(btn.style.top);
+        if (!isFinite(sx)) sx = Number(hs.x) || 50;
+        if (!isFinite(sy)) sy = Number(hs.y) || 50;
         wanderers.push({
           el: btn,
           x: sx,
@@ -2126,6 +2151,27 @@
     return out;
   }
 
+  /** Буквы только внутри деревянной доски (scene-forest-board), под слотами. */
+  function puzzleBoardSpots(count) {
+    var board = [
+      { x: 32, y: 50 },
+      { x: 50, y: 48 },
+      { x: 68, y: 50 },
+      { x: 34, y: 64 },
+      { x: 50, y: 66 },
+      { x: 66, y: 64 },
+      { x: 40, y: 56 },
+      { x: 60, y: 56 },
+      { x: 50, y: 58 }
+    ];
+    var out = [];
+    var i;
+    for (i = 0; i < count; i++) {
+      out.push(board[i % board.length]);
+    }
+    return out;
+  }
+
   function separateSpots(spots, minDist, yFloor, yCeil) {
     var dist = minDist || (window.innerWidth < 640 ? 20 : 15);
     var floor = yFloor == null ? (window.innerWidth < 640 ? 50 : 30) : yFloor;
@@ -2184,19 +2230,28 @@
     }));
     var need = order.filter(function (p) { return p.correct; }).length;
     var slots = station.slots || need;
+    var onBoard = !!(station.pieces_on_board || (String(station.scene_image || "").indexOf("scene-forest-board") >= 0));
     // Same spot source on mobile and web — never discard catalog piece_spots
     // (old mobile override forced a ring + flex stack → letters in neat rows).
     var rawSpots = (station.piece_spots && station.piece_spots.length >= order.length)
       ? station.piece_spots
-      : puzzleRingSpots(order.length);
+      : (onBoard ? puzzleBoardSpots(order.length) : puzzleRingSpots(order.length));
     var spots = separateSpots(
       rawSpots.map(function (s) {
-        return avoidTopSlotZone(s.x, s.y);
+        return onBoard ? { x: Number(s.x), y: Number(s.y) } : avoidTopSlotZone(s.x, s.y);
       }),
-      window.innerWidth < 640 ? 20 : 16,
-      window.innerWidth < 640 ? 36 : 28,
-      window.innerWidth < 640 ? 90 : 72
+      window.innerWidth < 640 ? (onBoard ? 14 : 20) : (onBoard ? 12 : 16),
+      onBoard ? 44 : (window.innerWidth < 640 ? 36 : 28),
+      onBoard ? 72 : (window.innerWidth < 640 ? 90 : 72)
     );
+    if (onBoard) {
+      spots = spots.map(function (s) {
+        return {
+          x: Math.max(30, Math.min(70, Number(s.x) || 50)),
+          y: Math.max(46, Math.min(70, Number(s.y) || 58))
+        };
+      });
+    }
     var filled = 0;
     var slotRow = document.createElement("div");
     slotRow.className = "quest-slots";
@@ -2391,6 +2446,8 @@
   }
 
   function renderFind(station) {
+    var field = elBody.querySelector(".quest-playfield");
+    if (field) field.classList.add("quest-playfield--around");
     var rounds = station.rounds || [station];
     var roundIdx = 0;
     function showRound() {
@@ -2404,6 +2461,8 @@
         tech_msg: roundIdx === 0 ? station.tech_msg : undefined
       };
       openPlayfield(view);
+      field = elBody.querySelector(".quest-playfield");
+      if (field) field.classList.add("quest-playfield--around");
       selected = [];
       enableNext(false);
       if (r.sound) playId(r.sound);
@@ -2707,10 +2766,10 @@
       hint.classList.add("is-result");
       if (resultSpec && resultSpec.image) {
         var img = document.createElement("img");
-        img.className = "quest-spark-fly";
+        img.className = "quest-join__result-pic";
         img.src = assetUrl(resultSpec.image);
-        img.alt = "";
-        wrap.appendChild(img);
+        img.alt = (resultSpec && resultSpec.image_alt) || "";
+        wrap.insertBefore(img, hint);
       }
       coachReact("good", true);
       var sound = (resultSpec && resultSpec.sound) || "snd-ma";
@@ -3616,10 +3675,17 @@
     if (field) field.classList.add("quest-playfield--book", "quest-playfield--azbuka");
     enableNext(false);
 
-    var letter = station.letter || "М";
     var rounds = station.rounds || [];
     var rIdx = 0;
     var locked = false;
+
+    function roundLetter(round) {
+      return (round && round.letter) || station.letter || "М";
+    }
+
+    function roundLetterImage(round) {
+      return (round && round.letter_image) || station.letter_image || "";
+    }
 
     var wrap = document.createElement("div");
     wrap.className = "quest-azbuka";
@@ -3627,7 +3693,7 @@
     var book = document.createElement("div");
     book.className = "quest-book quest-book--azbuka";
     book.setAttribute("role", "region");
-    book.setAttribute("aria-label", "Азбука · буква " + letter);
+    book.setAttribute("aria-label", "Азбука");
 
     var cover = document.createElement("div");
     cover.className = "quest-book__cover";
@@ -3636,24 +3702,19 @@
 
     var pageLetter = document.createElement("div");
     pageLetter.className = "quest-book__page quest-azbuka__letter-page";
-    if (station.letter_image) {
-      var letterImg = document.createElement("img");
-      letterImg.className = "quest-azbuka__letter-img";
-      letterImg.src = assetUrl(station.letter_image);
-      letterImg.alt = letter;
-      pageLetter.appendChild(letterImg);
-    } else {
-      var letterEl = document.createElement("div");
-      letterEl.className = "quest-azbuka__letter";
-      letterEl.textContent = letter;
-      pageLetter.appendChild(letterEl);
-    }
+    var letterImg = document.createElement("img");
+    letterImg.className = "quest-azbuka__letter-img";
+    letterImg.alt = "";
+    letterImg.hidden = true;
+    pageLetter.appendChild(letterImg);
+    var letterEl = document.createElement("div");
+    letterEl.className = "quest-azbuka__letter";
+    pageLetter.appendChild(letterEl);
 
     var pageSlot = document.createElement("div");
     pageSlot.className = "quest-book__page quest-azbuka__slot-page";
     var slot = document.createElement("div");
     slot.className = "quest-azbuka__slot";
-    slot.setAttribute("aria-label", "Место для картинки на " + letter);
     var slotHint = document.createElement("span");
     slotHint.className = "quest-azbuka__slot-hint";
     slotHint.textContent = "?";
@@ -3691,7 +3752,6 @@
 
     var foot = document.createElement("p");
     foot.className = "quest-azbuka__hint";
-    foot.textContent = station.hint || "Выбери картинку на букву " + letter + ".";
     wrap.appendChild(foot);
 
     var dock = field && field.querySelector(".quest-playfield__dock");
@@ -3701,6 +3761,27 @@
       else dock.appendChild(choices);
     } else {
       wrap.appendChild(choices);
+    }
+
+    function paintLetter(round) {
+      var L = roundLetter(round);
+      var src = roundLetterImage(round);
+      book.setAttribute("aria-label", "Азбука · буква " + L);
+      slot.setAttribute("aria-label", "Место для картинки на " + L);
+      if (src) {
+        letterImg.hidden = false;
+        letterImg.src = assetUrl(src);
+        letterImg.alt = L;
+        letterEl.hidden = true;
+        letterEl.textContent = "";
+      } else {
+        letterImg.hidden = true;
+        letterImg.removeAttribute("src");
+        letterEl.hidden = false;
+        letterEl.textContent = L;
+      }
+      foot.textContent = (round && round.hint) || station.hint || ("Выбери картинку на букву " + L + ".");
+      foot.classList.remove("is-done");
     }
 
     function paintStars() {
@@ -3749,8 +3830,9 @@
       locked = false;
       clearSlot();
       paintStars();
-      choices.innerHTML = "";
       var round = rounds[rIdx] || {};
+      paintLetter(round);
+      choices.innerHTML = "";
       choices.appendChild(renderOptions(round.options || [], onPick, false, {
         picture_only: !!(station.picture_only || round.picture_only)
       }));
