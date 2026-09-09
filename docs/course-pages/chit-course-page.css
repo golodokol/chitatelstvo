@@ -2610,6 +2610,26 @@ body.cc-waitlist-open { overflow: hidden; }
 }
 
 /* Hub */
+.cc-hub-section {
+  margin: 0 0 48px;
+}
+.cc-hub-section:last-child {
+  margin-bottom: 0;
+}
+.cc-hub-section__title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--blue-deep);
+  letter-spacing: -0.02em;
+}
+.cc-hub-section__lead {
+  margin: 0 0 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 640px;
+}
 .cc-hub-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

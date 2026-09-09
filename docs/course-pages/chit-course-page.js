@@ -94,24 +94,44 @@
       'rus-6-9': 'https://chitatelstvo.ru/russkie-skazki-6-9',
       'rus-10-12': 'https://chitatelstvo.ru/russkie-skazki-10-12'
     };
-    var cards = Object.keys(D.META).map(function (g) {
-      var m = D.META[g];
-      var href = TILDA[g] || m.file;
-      return '<a class="cc-hub-card" href="' + esc(href) + '">' +
-        '<span class="cc-badge">' + esc(m.badge) + '</span>' +
-        '<h3>' + esc(m.h1) + '</h3>' +
-        '<p>' + esc(m.age) + ' · 8 сказок · от ' + D.formatPrice(D.TARIFF_PRICE.single) + '</p>' +
+    function hubCardHtml(item) {
+      return '<a class="cc-hub-card" href="' + esc(item.href) + '">' +
+        '<span class="cc-badge">' + esc(item.badge) + '</span>' +
+        '<h3>' + esc(item.h1) + '</h3>' +
+        '<p>' + esc(item.line) + '</p>' +
         '</a>';
+    }
+    var sections = D.HUB_SECTIONS || [];
+    var sectionsHtml = sections.map(function (sec) {
+      var items = sec.items || [];
+      if (sec.metaKeys) {
+        items = sec.metaKeys.map(function (g) {
+          var m = D.META[g];
+          if (!m) return null;
+          return {
+            href: TILDA[g] || m.file,
+            badge: m.badge,
+            h1: m.h1,
+            line: m.age + ' · 8 сказок · от ' + D.formatPrice(D.TARIFF_PRICE.single)
+          };
+        }).filter(Boolean);
+      }
+      var cards = items.map(hubCardHtml).join('');
+      return '<section class="cc-hub-section">' +
+        '<h2 class="cc-hub-section__title">' + esc(sec.title) + '</h2>' +
+        (sec.lead ? '<p class="cc-hub-section__lead">' + esc(sec.lead) + '</p>' : '') +
+        '<div class="cc-hub-grid">' + cards + '</div>' +
+        '</section>';
     }).join('');
     root.innerHTML =
       siteHeaderHtml(HOME_URL + '#programs', 'Выбрать программу') +
       '<section class="cc-hero"><div class="cc-hero__grid" style="grid-template-columns:1fr">' +
-        '<div><span class="cc-badge">Программы по возрастам</span>' +
-        '<h1>Сказки по классам и возрастам</h1>' +
-        '<p class="cc-hero__lead">Шесть программ по возрастам — выберите свою и начните в любой день.</p></div>' +
+        '<div><span class="cc-badge">Программы Читательства</span>' +
+        '<h1>От первых букв до медленного чтения</h1>' +
+        '<p class="cc-hero__lead">Ранние курсы, школьные программы и медленное чтение одной книги. Выберите свою и начните в любой день.</p></div>' +
       '</div></section>' +
       '<section class="cc-section cc-section--white"><div class="cc-section__inner">' +
-        '<div class="cc-hub-grid">' + cards + '</div>' +
+        sectionsHtml +
       '</div></section>' +
       footerHtml();
     if (typeof window.chitSyncTildaLayout === 'function') {

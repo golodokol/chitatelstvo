@@ -37,7 +37,7 @@ window.CHIT_COURSE = (function () {
 
   var WITH_TEACHER_STAGE1_CLOSED = true;
   var NO_WITH_TEACHER_GROUPS = ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11'];
-  var PAGES_VERSION = '20260829c';
+  var PAGES_VERSION = '20260909d';
 
   /** Общие ссылки шапки (как на главной). */
   var SITE_NAV = [
@@ -66,6 +66,10 @@ window.CHIT_COURSE = (function () {
     { href: 'https://chitatelstvo.ru/9-11-let', label: 'Внеклассное 9–11 лет' },
     { href: 'https://chitatelstvo.ru/bukvy-ozhivayut', label: 'Буквы оживают' },
     { href: 'https://chitatelstvo.ru/pervye-istorii', label: 'Первые истории' },
+    { href: 'https://chitatelstvo.ru/veter-v-ivah', label: 'Ветер в ивах' },
+    { href: 'https://chitatelstvo.ru/tainstvenny-sad', label: 'Таинственный сад' },
+    { href: 'https://chitatelstvo.ru/russkie-skazki-6-9', label: 'Русские сказки 6–9' },
+    { href: 'https://chitatelstvo.ru/russkie-skazki-10-12', label: 'Русские сказки 10–12' },
     { href: 'https://chitatelstvo.ru/programmy', label: 'Все программы' }
   ];
 
@@ -371,6 +375,32 @@ window.CHIT_COURSE = (function () {
     }
   };
 
+  var HUB_SECTIONS = [
+    {
+      title: 'Ранние курсы',
+      lead: 'От первых звуков к коротким историям — с 4 лет, со Словиком.',
+      items: [
+        { href: 'https://chitatelstvo.ru/bukvy-ozhivayut', badge: 'Первые шаги', h1: 'Буквы оживают', line: '4–6 лет · звук → буква → слог · от 799 ₽' },
+        { href: 'https://chitatelstvo.ru/pervye-istorii', badge: 'Первые шаги', h1: 'Первые истории', line: '5–7 лет · слово → фраза → смысл · от 799 ₽' }
+      ]
+    },
+    {
+      title: 'По классам и внеклассное чтение',
+      lead: 'Школьные списки и любимые книги — 8 сказок в каждой программе.',
+      metaKeys: ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11']
+    },
+    {
+      title: 'Медленное чтение',
+      lead: 'Одна книга или цикл сказок — четыре занятия, спокойный темп.',
+      items: [
+        { href: 'https://chitatelstvo.ru/veter-v-ivah', badge: 'Медленное чтение', h1: 'Ветер в ивах', line: '6–9 лет · 4 занятия · от 799 ₽' },
+        { href: 'https://chitatelstvo.ru/tainstvenny-sad', badge: 'Медленное чтение', h1: 'Таинственный сад', line: '10–12 лет · 4 занятия · от 799 ₽' },
+        { href: 'https://chitatelstvo.ru/russkie-skazki-6-9', badge: 'Русские сказки', h1: 'Русские сказки 6–9 лет', line: '6–9 лет · 4 занятия · от 799 ₽' },
+        { href: 'https://chitatelstvo.ru/russkie-skazki-10-12', badge: 'Русские сказки', h1: 'Русские сказки 10–12 лет', line: '10–12 лет · 4 занятия · от 799 ₽' }
+      ]
+    }
+  ];
+
   function taleInfo(title) {
     return TALE_INFO[title] || { desc: 'Сказка из программы Читательства.', quote: null };
   }
@@ -607,6 +637,7 @@ window.CHIT_COURSE = (function () {
     ASSETS: ASSETS,
     MODULES: MODULES,
     META: META,
+    HUB_SECTIONS: HUB_SECTIONS,
     PROGRAMS: PROGRAMS,
     TALES: TALES,
     TALE_INFO: TALE_INFO,
