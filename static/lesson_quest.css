@@ -3974,7 +3974,9 @@
 .quest-azbuka__slot.is-filled {
   border-style: solid;
   border-color: rgba(227, 155, 58, 0.85);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.35);
+  padding: 6px 5px 8px;
+  gap: 2px;
 }
 .quest-azbuka__slot.is-wrong {
   animation: quest-azbuka-shake 0.4s ease;
@@ -3998,15 +4000,23 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 0 0 auto;
 }
 .quest-azbuka__slot-img {
-  width: 78%;
-  height: 68%;
+  width: 90%;
+  height: auto;
+  max-height: 72%;
   object-fit: contain;
+  object-position: center;
+  flex: 1 1 auto;
+}
+.quest-azbuka__slot.is-filled .quest-azbuka__slot-img {
+  width: 94%;
+  max-height: calc(100% - 1.35em);
 }
 .quest-azbuka__slot:not(.is-filled) .quest-azbuka__slot-img {
   width: 88%;
-  height: 88%;
+  max-height: 88%;
 }
 .quest-azbuka__stars {
   display: flex;
@@ -4035,6 +4045,25 @@
   min-height: 0;
   padding: 14px 14px 16px;
   overflow: visible;
+  /* Без тёмной плашки: док берёт цвет сцены, чтобы шов не резал картинки */
+  background: transparent;
+}
+.quest-playfield--azbuka .quest-playfield__dock-blur {
+  left: 0;
+  right: 0;
+  top: -18%;
+  bottom: -12%;
+  filter: blur(12px) saturate(1.05) brightness(1.02);
+  transform: scale(1.06);
+  opacity: 0.92;
+}
+.quest-playfield--azbuka .quest-playfield__dock::after {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 248, 236, 0.08) 0%,
+    rgba(236, 220, 190, 0.22) 42%,
+    rgba(214, 196, 164, 0.34) 100%
+  );
 }
 .quest-azbuka__choices {
   position: relative;
@@ -4047,28 +4076,30 @@
 }
 .quest-azbuka__choices .quest-grid--rich,
 .quest-azbuka__choices .quest-answers-row {
-  max-width: min(100%, 420px) !important;
-  gap: 14px !important;
+  max-width: min(100%, 560px) !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
 }
 .quest-azbuka__choices .quest-opt--pic {
-  min-height: 108px !important;
-  max-width: 150px !important;
+  min-height: 100px !important;
+  max-width: 128px !important;
   background: #fffdf8 !important;
-  border: 2px solid rgba(255, 255, 255, 0.55);
-  box-shadow: 0 8px 18px rgba(20, 14, 8, 0.28);
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 8px 18px rgba(20, 14, 8, 0.2);
   flex-direction: column !important;
   gap: 6px !important;
   padding: 10px 8px 12px !important;
 }
 .quest-azbuka__choices .quest-opt--pic .quest-opt__label {
   order: -1;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: #2a3a4a;
   line-height: 1.1;
 }
 .quest-azbuka__choices .quest-opt--pic img {
-  max-height: 78px;
+  max-height: 68px;
   width: auto;
   object-fit: contain;
 }

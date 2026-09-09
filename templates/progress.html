@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260909a">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260909c">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -339,6 +339,92 @@
         {% endif %}
         {% endmacro %}
 
+        {% macro render_upcoming_lessons(track) %}
+        {% if track.upcoming_lessons %}
+        <section class="chit-panel chit-panel--stories chit-panel--upcoming{% if track.program_map %} chit-panel--program-map{% endif %}">
+          <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
+          {% if track.stories_subtitle %}
+          <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
+          {% endif %}
+          {% if track.program_map %}
+          <div class="chit-program-map" role="img" aria-label="{{ track.program_map.alt }}">
+            <img class="chit-program-map__img" src="{{ track.program_map.image_url }}" alt="" loading="lazy" width="1280" height="720">
+            <ul class="chit-program-map__pins">
+              {% for pin in track.program_map.pins %}
+              <li class="chit-program-map__pin chit-program-map__pin--{{ pin.state }}" style="left: {{ pin.x }}%; top: {{ pin.y }}%;">
+                {% if pin.unlocked and pin.url %}
+                <a class="chit-program-map__hit" href="{{ pin.url }}" aria-label="Урок {{ pin.n }} · {{ pin.title }}. {{ pin.label }}">
+                  <span class="chit-program-map__num">{{ pin.n }}</span>
+                  <span class="chit-program-map__tip">
+                    <strong>Урок {{ pin.n }}</strong>
+                    <span>{{ pin.title }}</span>
+                    <em>{{ pin.label }}</em>
+                  </span>
+                </a>
+                {% else %}
+                <a class="chit-program-map__hit" href="{{ pin.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener" aria-label="Урок {{ pin.n }} · {{ pin.title }}. {{ pin.label }}">
+                  <span class="chit-program-map__num">{{ pin.n }}</span>
+                  <span class="chit-program-map__tip">
+                    <strong>Урок {{ pin.n }}</strong>
+                    <span>{{ pin.title }}</span>
+                    <em>{{ pin.label }}</em>
+                  </span>
+                </a>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% else %}
+          <div class="chit-story-grid">
+            {% for tale in track.upcoming_lessons %}
+            {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
+            <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
+              {% if tale.unlocked and tale.url %}
+              <a class="chit-story-card__link" href="{{ tale.url }}">
+                <div class="chit-story-card__cover{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
+                  {% if tale.cover_url %}
+                  <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
+                  {% else %}
+                  <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                  {% endif %}
+                  <div class="chit-story-card__overlay">
+                    <span class="chit-story-card__overlay-label">{{ tale.overlay_label or 'тест' }}</span>
+                  </div>
+                </div>
+                <div class="chit-story-card__meta">
+                  <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                  <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                  <span class="chit-story-card__buy">Открыть черновик</span>
+                </div>
+              </a>
+              {% else %}
+              <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
+                <div class="chit-story-card__cover chit-story-card__cover--soon{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
+                  {% if tale.cover_url %}
+                  <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
+                  {% else %}
+                  <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                  {% endif %}
+                  <div class="chit-story-card__overlay">
+                    <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
+                  </div>
+                </div>
+                <div class="chit-story-card__meta">
+                  <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                  <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                  <span class="chit-story-card__buy">Выбрать тариф</span>
+                </div>
+              </a>
+              {% endif %}
+            </article>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </section>
+        {% endif %}
+        {% endmacro %}
+
         {% if cab.tracks %}
           {# Открытые вводные early — выше сокровищницы и сказок. #}
           {% for track in cab.tracks %}
@@ -364,58 +450,7 @@
               {% if not track.chest.claimed %}
               {{ render_chest(track, child, loop.index, '#treasury-all') }}
               {% endif %}
-              {% if track.upcoming_lessons %}
-              <section class="chit-panel chit-panel--stories chit-panel--upcoming">
-                <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
-                {% if track.stories_subtitle %}
-                <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
-                {% endif %}
-                <div class="chit-story-grid">
-                  {% for tale in track.upcoming_lessons %}
-                  {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
-                  <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
-                    {% if tale.unlocked and tale.url %}
-                    <a class="chit-story-card__link" href="{{ tale.url }}">
-                      <div class="chit-story-card__cover{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
-                        {% if tale.cover_url %}
-                        <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
-                        {% else %}
-                        <div class="chit-story-card__placeholder" aria-hidden="true"></div>
-                        {% endif %}
-                        <div class="chit-story-card__overlay">
-                          <span class="chit-story-card__overlay-label">{{ tale.overlay_label or 'тест' }}</span>
-                        </div>
-                      </div>
-                      <div class="chit-story-card__meta">
-                        <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
-                        <h4 class="chit-story-card__title">{{ tale.title }}</h4>
-                        <span class="chit-story-card__buy">Открыть черновик</span>
-                      </div>
-                    </a>
-                    {% else %}
-                    <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
-                      <div class="chit-story-card__cover chit-story-card__cover--soon{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
-                        {% if tale.cover_url %}
-                        <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
-                        {% else %}
-                        <div class="chit-story-card__placeholder" aria-hidden="true"></div>
-                        {% endif %}
-                        <div class="chit-story-card__overlay">
-                          <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
-                        </div>
-                      </div>
-                      <div class="chit-story-card__meta">
-                        <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
-                        <h4 class="chit-story-card__title">{{ tale.title }}</h4>
-                        <span class="chit-story-card__buy">Выбрать тариф</span>
-                      </div>
-                    </a>
-                    {% endif %}
-                  </article>
-                  {% endfor %}
-                </div>
-              </section>
-              {% endif %}
+              {{ render_upcoming_lessons(track) }}
             {% endif %}
           {% endfor %}
 
@@ -481,58 +516,8 @@
           {% if not track.chest.claimed %}
           {{ render_chest(track, child, loop.index, '#treasury-all') }}
           {% endif %}
-          {% if track.upcoming_lessons %}
-          <section class="chit-panel chit-panel--stories chit-panel--upcoming">
-            <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
-            {% if track.stories_subtitle %}
-            <p class="chit-section-sub">{{ track.stories_subtitle }}</p>
-            {% endif %}
-            <div class="chit-story-grid">
-              {% for tale in track.upcoming_lessons %}
-              {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
-              <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
-                {% if tale.unlocked and tale.url %}
-                <a class="chit-story-card__link" href="{{ tale.url }}">
-                  <div class="chit-story-card__cover{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
-                    {% if tale.cover_url %}
-                    <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
-                    {% else %}
-                    <div class="chit-story-card__placeholder" aria-hidden="true"></div>
-                    {% endif %}
-                    <div class="chit-story-card__overlay">
-                      <span class="chit-story-card__overlay-label">{{ tale.overlay_label or 'тест' }}</span>
-                    </div>
-                  </div>
-                  <div class="chit-story-card__meta">
-                    <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
-                    <h4 class="chit-story-card__title">{{ tale.title }}</h4>
-                    <span class="chit-story-card__buy">Открыть черновик</span>
-                  </div>
-                </a>
-                {% else %}
-                <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
-                  <div class="chit-story-card__cover chit-story-card__cover--soon{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
-                    {% if tale.cover_url %}
-                    <img src="{{ tale.cover_url }}" alt="Урок {{ tale.week_in_stage }} · {{ tale.title }}" loading="lazy">
-                    {% else %}
-                    <div class="chit-story-card__placeholder" aria-hidden="true"></div>
-                    {% endif %}
-                    <div class="chit-story-card__overlay">
-                      <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
-                    </div>
-                  </div>
-                  <div class="chit-story-card__meta">
-                    <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
-                    <h4 class="chit-story-card__title">{{ tale.title }}</h4>
-                    <span class="chit-story-card__buy">Выбрать тариф</span>
-                  </div>
-                </a>
-                {% endif %}
-              </article>
-              {% endfor %}
-            </div>
-          </section>
-          {% elif track.story_stages %}
+          {{ render_upcoming_lessons(track) }}
+          {% if not track.upcoming_lessons and track.story_stages %}
           <section class="chit-panel chit-panel--stories">
             <h2 class="chit-section-title">{{ track.stories_title or (('Мои уроки · ' if track.is_early else 'Мои сказки · ') ~ track.group_label) }}</h2>
             {% for stage in track.story_stages %}

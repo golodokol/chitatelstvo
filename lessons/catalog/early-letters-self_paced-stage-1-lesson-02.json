@@ -61,14 +61,24 @@
       "audio": "bo-m1-l02-or",
       "letter": "У",
       "letter_image": "/static/early/letters/letter-u-hero.png",
-      "book_title": "Ветер",
+      "book_title": "Утка и Ветер",
       "picture_only": false,
       "hint": "Картинка должна начинаться на У.",
       "success_msg": "Страница У готова!",
       "rounds": [
         {
-          "correct": "wind",
+          "correct": "duck",
           "options": [
+            {
+              "id": "duck",
+              "label": "утка",
+              "image": "/static/early/letters/duck.png"
+            },
+            {
+              "id": "bear",
+              "label": "медведь",
+              "image": "/static/early/letters/bear-wise.png"
+            },
             {
               "id": "wind",
               "label": "ветер",
@@ -82,17 +92,27 @@
           ]
         },
         {
-          "correct": "wind2",
+          "correct": "duck2",
           "options": [
             {
-              "id": "wind2",
-              "label": "ветер",
-              "image": "/static/early/letters/wind-howl.png"
+              "id": "duck2",
+              "label": "утка",
+              "image": "/static/early/letters/duck.png"
+            },
+            {
+              "id": "bear2",
+              "label": "медведь",
+              "image": "/static/early/letters/bear-wise.png"
             },
             {
               "id": "sun",
               "label": "солнце",
               "image": "/static/early/letters/sun-smile.png"
+            },
+            {
+              "id": "kot",
+              "label": "кот",
+              "image": "/static/early/letters/kot.png"
             }
           ]
         }
@@ -296,8 +316,8 @@
       "rounds": [
         {
           "prompt_text": "С какой буквы?",
-          "prompt_image": "/static/early/letters/wind-howl.png",
-          "prompt_alt": "ветер",
+          "prompt_image": "/static/early/letters/duck.png",
+          "prompt_alt": "утка",
           "correct": "У",
           "options": [
             "А",
@@ -319,8 +339,8 @@
         },
         {
           "prompt_text": "С какой буквы?",
-          "prompt_image": "/static/early/letters/wind-howl.png",
-          "prompt_alt": "ветер",
+          "prompt_image": "/static/early/letters/duck.png",
+          "prompt_alt": "утка",
           "correct": "У",
           "options": [
             "С",

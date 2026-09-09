@@ -12,14 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 LETTERS = ROOT / "static" / "early" / "letters"
 BASE_PATH = LETTERS / "scene-map-sounds-final.png"
 
-# Lesson pads in route order, stored as fractions of the 1280x720 map.
+# Lesson pads in lesson order 1–8, fractions of the 1280x720 map.
 LESSON_PADS = (
-    (0.2070, 0.3694),  # 1 — cave
-    (0.1609, 0.5681),  # 2 — car
-    (0.4422, 0.3694),  # 3 — pond
+    (0.1609, 0.5681),  # 1 — car / машина
+    (0.2070, 0.3694),  # 2 — cave / У
+    (0.4422, 0.3694),  # 3 — pond / О
     (0.6523, 0.3889),  # 4 — snake
-    (0.7078, 0.6250),  # 5 — picture pavilion
-    (0.5125, 0.6972),  # 6 — bridge
+    (0.7078, 0.6250),  # 5 — pavilion / Р
+    (0.5125, 0.6972),  # 6 — bridge / слоги
     (0.6227, 0.9111),  # 7 — glowing spheres
     (0.8734, 0.9333),  # 8 — flower garden
 )

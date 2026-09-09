@@ -48,6 +48,7 @@ IMG = {
     "tree": f"{L}/tree.png",
     "aist": f"{L}/aist.png",
     "wind": f"{L}/wind-howl.png",
+    "duck": f"{L}/duck.png",
     "snake": f"{L}/snake-hiss.png",
     "bear": f"{L}/bear-wise.png",
     "som": f"{L}/som-fish.png",
@@ -521,23 +522,27 @@ def _letters_2() -> list[dict[str, Any]]:
             "audio": "bo-m1-l02-or",
             "letter": "У",
             "letter_image": IMG["letter_u"],
-            "book_title": "Ветер",
+            "book_title": "Утка и Ветер",
             "picture_only": False,
             "hint": "Картинка должна начинаться на У.",
             "success_msg": "Страница У готова!",
             "rounds": [
                 {
-                    "correct": "wind",
+                    "correct": "duck",
                     "options": [
+                        _opt("duck", "утка", IMG["duck"]),
+                        _opt("bear", "медведь", IMG["bear"]),
                         _opt("wind", "ветер", IMG["wind"]),
                         _opt("rain", "дождь", IMG["rain"]),
                     ],
                 },
                 {
-                    "correct": "wind2",
+                    "correct": "duck2",
                     "options": [
-                        _opt("wind2", "ветер", IMG["wind"]),
+                        _opt("duck2", "утка", IMG["duck"]),
+                        _opt("bear2", "медведь", IMG["bear"]),
                         _opt("sun", "солнце", IMG["sun"]),
+                        _opt("kot", "кот", IMG["kot"]),
                     ],
                 },
             ],
@@ -656,8 +661,8 @@ def _letters_2() -> list[dict[str, Any]]:
             "rounds": [
                 {
                     "prompt_text": "С какой буквы?",
-                    "prompt_image": IMG["wind"],
-                    "prompt_alt": "ветер",
+                    "prompt_image": IMG["duck"],
+                    "prompt_alt": "утка",
                     "correct": "У",
                     "options": ["А", "О", "У", "М"],
                 },
@@ -669,8 +674,8 @@ def _letters_2() -> list[dict[str, Any]]:
                 },
                 {
                     "prompt_text": "С какой буквы?",
-                    "prompt_image": IMG["wind"],
-                    "prompt_alt": "ветер",
+                    "prompt_image": IMG["duck"],
+                    "prompt_alt": "утка",
                     "correct": "У",
                     "options": ["С", "А", "У", "О"],
                 },

@@ -152,7 +152,20 @@ _POST_VIDEO_CHEST_STEPS = (
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260909a"
+EARLY_ASSETS_VERSION = "20260909b"
+
+# Площадки уроков 1–8 на единой карте «Страны звуков» (доли ширины/высоты 1280×720).
+# Порядок = номер урока, не порядок генерации старых where-кадров.
+EARLY_LETTERS_MAP_PADS: tuple[tuple[float, float], ...] = (
+    (0.1609, 0.5681),  # 1 — машина
+    (0.2070, 0.3694),  # 2 — пещера / У
+    (0.4422, 0.3694),  # 3 — пруд / О
+    (0.6523, 0.3889),  # 4 — змейка
+    (0.7078, 0.6250),  # 5 — беседка / Р
+    (0.5125, 0.6972),  # 6 — мост / слоги
+    (0.6227, 0.9111),  # 7 — искорки / слова
+    (0.8734, 0.9333),  # 8 — сад / праздник
+)
 
 INTRO_TRIAL_COVERS: dict[str, str] = {
     "early-letters": "course-cover-letters-intro.jpg",
@@ -458,6 +471,51 @@ def _early_letters_where_map_url(lesson_n: int) -> str:
     """Карта «где сейчас» для урока 1–8 курса «Буквы оживают»."""
     n = max(1, min(8, int(lesson_n)))
     return f"/static/early/letters/scene-map-sounds-where-{n:02d}.png?v={EARLY_ASSETS_VERSION}"
+
+
+def _early_letters_program_map_url() -> str:
+    """Единая карта модуля для кабинета (уроки — пины сверху)."""
+    return f"/static/early/letters/scene-map-sounds-final.png?v={EARLY_ASSETS_VERSION}"
+
+
+def _early_letters_program_map(lessons: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Одна карта + пины уроков; для сетки карточек не используется."""
+    if not lessons:
+        return None
+    pins: list[dict[str, Any]] = []
+    for lesson in lessons:
+        try:
+            n = int(lesson.get("week_in_stage") or 0)
+        except (TypeError, ValueError):
+            n = 0
+        if n < 1 or n > len(EARLY_LETTERS_MAP_PADS):
+            continue
+        x, y = EARLY_LETTERS_MAP_PADS[n - 1]
+        unlocked = bool(lesson.get("unlocked") and lesson.get("url"))
+        pins.append(
+            {
+                "n": n,
+                "x": round(x * 100, 2),
+                "y": round(y * 100, 2),
+                "title": lesson.get("title") or f"Урок {n}",
+                "label": (
+                    lesson.get("overlay_label")
+                    if unlocked
+                    else (lesson.get("opens_on_label") or "Скоро")
+                ),
+                "url": lesson.get("url"),
+                "buy_url": lesson.get("buy_url"),
+                "unlocked": unlocked,
+                "state": "open" if unlocked else "soon",
+            }
+        )
+    if not pins:
+        return None
+    return {
+        "image_url": _early_letters_program_map_url(),
+        "alt": "Карта страны звуков — восемь уроков модуля",
+        "pins": pins,
+    }
 
 
 def _intro_trial_cover_url(assets_base: str, group_code: str) -> str | None:
@@ -1751,6 +1809,11 @@ def _build_track_section(
             else f"Мои сказки · {track.get('group_label') or ''}".strip(" ·")
         )
         stories_subtitle = None
+    program_map = (
+        _early_letters_program_map(upcoming_lessons)
+        if group_code == "early-letters" and upcoming_lessons
+        else None
+    )
     treasury = _treasury_for_track(claims, lesson_links)
     weekly_cards = _weekly_lesson_cards(weekly_source, claimed_slugs=claimed)
 
@@ -1769,6 +1832,7 @@ def _build_track_section(
         "daily_lesson": weekly_cards[0] if weekly_cards else None,
         "story_stages": story_stages,
         "upcoming_lessons": upcoming_lessons,
+        "program_map": program_map,
         "stories_title": stories_title,
         "stories_subtitle": stories_subtitle,
         "buy_url": _buy_url_for_group(group_code) if early else None,

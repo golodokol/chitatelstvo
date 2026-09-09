@@ -2315,7 +2315,8 @@ a.chit-room__helper:focus-visible {
 }
 
 .chit-stats__value {
-  font-family: 'Literata', Georgia, serif;
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-weight: 800;
   font-size: 1.15rem;
   color: var(--text-warm);
   line-height: 1.1;
@@ -3596,6 +3597,147 @@ a.chit-lesson-companion--link.is-disabled {
 .chit-story-card__cover--map img {
   object-fit: cover;
   object-position: center;
+}
+
+.chit-program-map {
+  position: relative;
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #d8e7c8;
+  box-shadow: inset 0 0 0 1px rgba(74, 92, 58, 0.12);
+}
+
+.chit-program-map__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.chit-program-map__pins {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.chit-program-map__pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.chit-program-map__hit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(2rem, 5.2vw, 2.75rem);
+  height: clamp(2rem, 5.2vw, 2.75rem);
+  border-radius: 999px;
+  text-decoration: none;
+  color: #3a2a1a;
+  background: radial-gradient(circle at 35% 30%, #fff6df 0%, #f0d39a 62%, #c98a3c 100%);
+  border: 2px solid rgba(255, 248, 230, 0.95);
+  box-shadow:
+    0 0 0 2px rgba(157, 91, 45, 0.28),
+    0 8px 18px rgba(58, 42, 26, 0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.chit-program-map__pin--open .chit-program-map__hit {
+  background: radial-gradient(circle at 35% 30%, #fff9e8 0%, #f5c35a 55%, #e08a1f 100%);
+  box-shadow:
+    0 0 0 3px rgba(239, 174, 55, 0.55),
+    0 10px 22px rgba(58, 42, 26, 0.28);
+}
+
+.chit-program-map__pin--soon .chit-program-map__hit {
+  filter: saturate(0.78) brightness(0.92);
+}
+
+.chit-program-map__hit:hover,
+.chit-program-map__hit:focus-visible {
+  transform: scale(1.08);
+  outline: none;
+  z-index: 3;
+}
+
+.chit-program-map__num {
+  font-family: Literata, Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+  line-height: 1;
+}
+
+.chit-program-map__tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%);
+  min-width: 9.5rem;
+  max-width: 12rem;
+  padding: 0.45rem 0.6rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(33, 28, 22, 0.92);
+  color: #fff8ef;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  box-shadow: 0 10px 24px rgba(20, 16, 12, 0.28);
+}
+
+.chit-program-map__tip strong,
+.chit-program-map__tip span,
+.chit-program-map__tip em {
+  display: block;
+}
+
+.chit-program-map__tip strong {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  font-weight: 700;
+}
+
+.chit-program-map__tip span {
+  margin-top: 0.15rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.chit-program-map__tip em {
+  margin-top: 0.2rem;
+  font-style: normal;
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.chit-program-map__hit:hover .chit-program-map__tip,
+.chit-program-map__hit:focus-visible .chit-program-map__tip {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 720px) {
+  .chit-program-map__tip {
+    min-width: 8rem;
+    max-width: 10rem;
+    font-size: 0.85rem;
+  }
+
+  .chit-program-map__hit {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
 }
 
 .chit-story-card__placeholder {
