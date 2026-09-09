@@ -791,25 +791,65 @@ body.qz-modal-open {
     display: none;
   }
   .qz-modal {
-    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
-    align-items: flex-start;
+    padding: 0;
+    align-items: stretch;
   }
   .qz-modal__dialog {
     width: 100%;
     max-width: 100%;
-    height: auto;
-    max-height: calc(100dvh - 16px - env(safe-area-inset-bottom, 0px));
-    border-radius: 16px;
-    overflow-x: hidden;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .qz-modal__dialog #chit-quiz,
+  .qz-modal__dialog .qz-shell,
+  .qz-modal__dialog .qz-card {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+  .qz-modal__dialog .qz-card {
+    border-radius: 0;
+    padding: 48px 16px 0;
+  }
+  #chit-quiz.qz-phase-questions .qz-logo,
+  #chit-quiz.qz-phase-questions .qz-intro-gift,
+  #chit-quiz.qz-phase-questions .qz-sub {
+    display: none;
+  }
+  #chit-quiz.qz-phase-questions #qz-questions {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  #chit-quiz.qz-phase-questions .qz-step.is-active {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  #chit-quiz.qz-phase-questions .qz-step.is-active .qz-options {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #chit-quiz.qz-phase-questions .qz-step.is-active .qz-nav {
+    flex-shrink: 0;
+    margin-top: 0;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+    background: #fff;
   }
   .qz-modal--tight .qz-intro-gift {
     display: none;
-  }
-  .qz-modal__dialog .qz-card {
-    border-radius: 16px;
-    padding: 42px 16px max(20px, env(safe-area-inset-bottom));
-    min-height: 0;
   }
   .qz-modal__close {
     top: 10px;
@@ -849,17 +889,5 @@ body.qz-modal-open {
 }
 
 @media (max-width: 480px) {
-  .qz-card { padding: 22px 16px 26px; }
-  .qz-nav,
-  .qz-modal__dialog .qz-nav {
-    flex-direction: column !important;
-  }
-  .qz-btn--back,
-  .qz-modal__dialog .qz-nav .qz-btn--back {
-    min-width: 0 !important;
-    width: 100% !important;
-  }
-  .qz-modal__dialog .qz-nav .qz-btn--next {
-    width: 100% !important;
-  }
+  .qz-shell > .qz-card { padding: 22px 16px 26px; }
 }

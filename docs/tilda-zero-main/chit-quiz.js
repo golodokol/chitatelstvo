@@ -1,22 +1,31 @@
 (function () {
   'use strict';
 
-  // Починка «Дальше»: старый inline CSS давал width:100% всем .qz-btn — кнопка сжималась
-  if (!document.getElementById('chit-qz-nav-fix')) {
-    var navFix = document.createElement('style');
+  var navFix = document.getElementById('chit-qz-nav-fix');
+  if (!navFix) {
+    navFix = document.createElement('style');
     navFix.id = 'chit-qz-nav-fix';
-    navFix.textContent =
-      '#qz-modal .qz-modal__dialog .qz-nav{display:flex!important;flex-wrap:nowrap!important;gap:10px!important;width:100%!important;box-sizing:border-box!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}' +
-      '#qz-modal .qz-modal__dialog{overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}' +
-      '@media(max-width:720px){#qz-modal{align-items:flex-start!important}' +
-      '#qz-modal .qz-modal--tight .qz-intro-gift{display:none!important}}' +
-      '@media(max-width:480px){#qz-modal .qz-modal__dialog .qz-nav{flex-direction:column!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back,#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{width:100%!important;min-width:0!important}}';
     (document.head || document.documentElement).appendChild(navFix);
   }
+  navFix.textContent =
+    '#qz-modal .qz-modal__dialog .qz-nav{display:flex!important;flex-wrap:nowrap!important;flex-direction:row!important;gap:10px!important;width:100%!important;box-sizing:border-box!important}' +
+    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}' +
+    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}' +
+    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}' +
+    '@media(max-width:720px){' +
+    '#qz-modal{padding:0!important;align-items:stretch!important}' +
+    '#qz-modal.is-open .qz-modal__dialog{height:100dvh!important;max-height:100dvh!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;border-radius:0!important;width:100%!important;max-width:100%!important}' +
+    '#qz-modal .qz-modal__dialog #chit-quiz,#qz-modal .qz-modal__dialog .qz-shell,#qz-modal .qz-modal__dialog .qz-card{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;width:100%!important;max-width:100%!important}' +
+    '#qz-modal .qz-modal__dialog .qz-card{padding:48px 16px 0!important;border-radius:0!important}' +
+    '#chit-quiz.qz-phase-questions .qz-logo,#chit-quiz.qz-phase-questions .qz-intro-gift,#chit-quiz.qz-phase-questions .qz-sub{display:none!important}' +
+    '#chit-quiz.qz-phase-questions .qz-progress{flex-shrink:0!important;margin-bottom:12px!important}' +
+    '#chit-quiz.qz-phase-questions #qz-questions{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important}' +
+    '#chit-quiz.qz-phase-questions .qz-step.is-active{display:flex!important;flex-direction:column!important;flex:1 1 auto!important;min-height:0!important}' +
+    '#chit-quiz.qz-phase-questions .qz-step.is-active .qz-title{flex-shrink:0!important;font-size:20px!important;margin:0 0 10px!important}' +
+    '#chit-quiz.qz-phase-questions .qz-step.is-active .qz-options{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}' +
+    '#chit-quiz.qz-phase-questions .qz-step.is-active .qz-nav{flex-shrink:0!important;margin:0!important;padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px))!important;background:#fff!important;box-shadow:0 -8px 24px rgba(255,255,255,.92)!important}' +
+    '#chit-quiz.qz-form-step .qz-card,#chit-quiz.qz-success-step .qz-card{overflow-y:auto!important;-webkit-overflow-scrolling:touch}' +
+    '}';
 
   var API_BASE = window.CHIT_QUIZ_API || 'https://api.chitatelstvo.ru';
   var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf?v=20260615b';
@@ -236,11 +245,17 @@
     var dialog = root.closest('.qz-modal__dialog');
     var modal = dialog && dialog.closest('.qz-modal');
     if (!dialog || !modal || !modal.classList.contains('is-open')) return;
-    dialog.style.height = 'auto';
+    var mobile = (window.innerWidth || 0) <= 720;
+    dialog.style.height = '';
     dialog.style.maxHeight = '';
     dialog.style.overflow = '';
     dialog.style.overflowY = '';
     dialog.classList.remove('qz-modal--tight', 'qz-modal--form-compact');
+    if (mobile) {
+      dialog.classList.add('qz-modal--tight');
+      if (root.classList.contains('qz-form-step')) dialog.classList.add('qz-modal--form-compact');
+      return;
+    }
     var card = dialog.querySelector('.qz-card');
     if (!card) return;
     var max = dialogMaxHeight(modal);
