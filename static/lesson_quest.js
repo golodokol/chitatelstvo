@@ -2465,7 +2465,12 @@
       };
       openPlayfield(view);
       field = elBody.querySelector(".quest-playfield");
-      if (field) field.classList.add("quest-playfield--around");
+      if (field) {
+        field.classList.add("quest-playfield--around");
+        if (station.mechanic === "picture_first_letter" || r.prompt_image || (rounds[0] && rounds[0].prompt_image)) {
+          field.classList.add("quest-playfield--first-letter");
+        }
+      }
       selected = [];
       enableNext(false);
       if (r.sound) playId(r.sound);

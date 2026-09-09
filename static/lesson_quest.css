@@ -1444,6 +1444,39 @@
   }
 }
 
+/* FIRST_LETTER: картинка сверху, буквы-ответы внизу — без налезания. */
+.quest-playfield--first-letter .quest-playfield__surface {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding-top: 4px;
+  padding-bottom: 10px;
+  box-sizing: border-box;
+}
+.quest-playfield--first-letter .quest-prompt-line,
+.quest-playfield--first-letter .quest-prompt-ask {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+.quest-playfield--first-letter .quest-prompt-pic {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+  flex: 0 0 auto;
+  margin: 4px auto 0;
+  z-index: 2;
+}
+.quest-playfield--first-letter .quest-grid--choice {
+  margin-top: auto;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+}
+
 .quest-grid--choice {
   display: flex;
   flex-wrap: wrap;
