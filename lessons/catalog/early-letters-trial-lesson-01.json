@@ -18,7 +18,7 @@
   "points": 3,
   "active": true,
   "status": "тест",
-  "note": "Пробный квест: звук → буква А (охота и лабиринт) → слог АМ. Задание можно пропустить.",
+  "note": "Пробный квест: звук → буква А (охота и лабиринт) → слог МА. Задание можно пропустить.",
   "lesson_format": "quest",
   "stations": [
     {
@@ -268,24 +268,24 @@
       "title": "Мост дружбы",
       "chapter": "Искорка 3 · Слог",
       "kind": "slot_build",
-      "slovik_line": "Собери слог ам: сначала а-а-а, потом м-м-м. Рядом другие буквы — не попадись!",
+      "slovik_line": "Собери слог: сначала м-м-м, потом а-а-а. Рядом другие буквы — не попадись!",
       "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "vo-bridge",
       "result_sound": "snd-ma",
-      "targets": ["А", "М"],
+      "targets": ["М", "А"],
       "options": ["О", "М", "У", "А"],
-      "result_label": "АМ",
-      "result_image": "/static/early/letters/bear-wise.png",
+      "result_label": "МА",
+      "result_image": "/static/early/letters/mama.png",
       "spark": false,
       "spark_group": "syllable"
     },
     {
       "id": "chest",
-      "title": "Слог АМ",
+      "title": "Слог МА",
       "chapter": "Искорка 3 · Слог",
       "kind": "mini_quest",
-      "slovik_line": "Медведь начинается на М. Найди его. Потом слог ам.",
+      "slovik_line": "Где картинка со слогом ма? Выбери слог МА, не АМ.",
       "slovik_pose": "joy",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "vo-chest",
@@ -293,24 +293,25 @@
       "spark_kind": "syllable",
       "spark_group": "syllable",
       "show_all_steps": true,
-      "hint": "Сначала выбери картинку «Медведь» и слог АМ.",
-      "success_msg": "Слог АМ найден!",
+      "hint": "Сначала выбери картинку «Мама» и слог МА.",
+      "success_msg": "Слог МА найден!",
       "steps": [
         {
           "kind": "find",
-          "prompt": "Картинка на М",
-          "correct": "bear",
+          "prompt": "Картинка",
+          "correct": "mama",
           "options": [
-            { "id": "bear", "label": "Медведь", "image": "/static/early/letters/bear-wise.png" },
-            { "id": "sun", "label": "Солнце", "image": "/static/early/letters/sun-smile.png" },
-            { "id": "kot", "label": "Кот", "image": "/static/early/letters/kot.png" }
+            { "id": "mama", "label": "Мама", "image": "/static/early/letters/mama.png" },
+            { "id": "myach", "label": "Мяч", "image": "/static/early/letters/ball.webp" },
+            { "id": "kot", "label": "Кот", "image": "/static/early/letters/kot.png" },
+            { "id": "syr", "label": "Сыр", "image": "/static/early/letters/syr.png" }
           ]
         },
         {
           "kind": "find",
           "prompt": "Слог",
-          "correct": "АМ",
-          "options": ["АМ", "МА", "МО", "СА"]
+          "correct": "МА",
+          "options": ["АМ", "МО", "МА", "СА"]
         }
       ]
     },
