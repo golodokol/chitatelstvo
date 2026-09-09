@@ -1839,8 +1839,11 @@
     scene.className = "quest-scene" + (moving ? " is-moving" : "") + (boardPanel ? " quest-scene--board" : "");
     var layer = document.createElement("div");
     layer.className = boardPanel ? "quest-letter-board__grid" : "quest-scene__hotspots";
-    if (boardPanel && station.grid_cols) {
-      layer.style.gridTemplateColumns = "repeat(" + Number(station.grid_cols) + ", minmax(0, 1fr))";
+    if (boardPanel) {
+      var boardCols = Math.max(1, Number(station.grid_cols) || 5);
+      var boardRows = Math.max(1, Math.ceil(hotspots.length / boardCols));
+      layer.style.gridTemplateColumns = "repeat(" + boardCols + ", minmax(0, 1fr))";
+      layer.style.gridTemplateRows = "repeat(" + boardRows + ", minmax(0, 1fr))";
     }
     var board = null;
     if (boardPanel) {
@@ -2412,7 +2415,7 @@
     if (r.sound) {
       var play = document.createElement("button");
       play.type = "button";
-      play.className = "chit-btn";
+      play.className = "chit-btn quest-sound-btn";
       play.textContent = "▶ Слушать звук";
       play.addEventListener("click", function () { playId(r.sound); });
       root().appendChild(play);

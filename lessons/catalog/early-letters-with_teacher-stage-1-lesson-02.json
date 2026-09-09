@@ -50,15 +50,41 @@
       "spark": false
     },
     {
+      "id": "echo",
+      "title": "Пещера эха",
+      "chapter": "Искорка 1 · Звук",
+      "kind": "catch_letter",
+      "slovik_line": "Пещера эха. Здесь пропал звук у-у-у. Лови только букву У — три раза!",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l02-echo",
+      "letter": "У",
+      "letters": [
+        "У",
+        "А",
+        "О",
+        "М"
+      ],
+      "letter_sounds": {
+        "У": "snd-u",
+        "А": "snd-a",
+        "О": "snd-o",
+        "М": "snd-m"
+      },
+      "catches": 3,
+      "spark": false,
+      "spark_group": "sound"
+    },
+    {
       "id": "azbuka",
       "title": "Азбука У",
-      "chapter": "Буква",
+      "chapter": "Искорка 1 · Звук",
       "kind": "alphabet_book",
       "mechanic": "azbuka_fill",
       "slovik_line": "Сложи страницу У. Выбери картинки, которые начинаются на букву У.",
       "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l02-or",
+      "audio": "bo-m1-l02-azbuka",
       "letter": "У",
       "letter_image": "/static/early/letters/letter-u-hero.png",
       "book_title": "Утка и Ветер",
@@ -117,43 +143,60 @@
           ]
         }
       ],
+      "spark": true,
+      "spark_group": "sound",
+      "spark_kind": "sound"
+    },
+    {
+      "id": "build",
+      "title": "Обведи У",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "dot_connect",
+      "mechanic": "dot_connect",
+      "slovik_line": "Соедини точки по порядку — получится буква У.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
+      "audio": "bo-m1-l02-build",
+      "letter": "У",
+      "hint": "Жми точки по номерам: 1, 2, 3…",
+      "success_msg": "Буква У получилась!",
+      "dots": [
+        {
+          "n": 1,
+          "x": 24,
+          "y": 14
+        },
+        {
+          "n": 2,
+          "x": 50,
+          "y": 48
+        },
+        {
+          "n": 3,
+          "x": 76,
+          "y": 14
+        },
+        {
+          "n": 4,
+          "x": 50,
+          "y": 48
+        },
+        {
+          "n": 5,
+          "x": 50,
+          "y": 90
+        }
+      ],
       "spark": false,
       "spark_group": "letter"
     },
     {
-      "id": "echo",
-      "title": "Пещера эха",
-      "chapter": "Искорка 1 · Звук",
-      "kind": "catch_letter",
-      "slovik_line": "Пещера эха. Здесь пропал звук у-у-у. Лови только букву У — три раза!",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l02-echo",
-      "letter": "У",
-      "letters": [
-        "У",
-        "А",
-        "О",
-        "М"
-      ],
-      "letter_sounds": {
-        "У": "snd-u",
-        "А": "snd-a",
-        "О": "snd-o",
-        "М": "snd-m"
-      },
-      "catches": 3,
-      "spark": true,
-      "spark_kind": "sound",
-      "spark_group": "sound"
-    },
-    {
       "id": "hop",
       "title": "Поймай У",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "scene_hunt",
       "mechanic": "letter_chase",
-      "slovik_line": "Буквы бегают по поляне! Лови большую У и маленькую у. Другие буквы не трогай.",
+      "slovik_line": "Буквы бегают по поляне! Лови букву У. Другие буквы не трогай.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-sparks.jpg",
       "audio": "bo-m1-l02-hop",
@@ -242,43 +285,92 @@
       "spark_group": "letter"
     },
     {
-      "id": "build",
-      "title": "Обведи У",
-      "chapter": "Буква",
-      "kind": "dot_connect",
-      "mechanic": "dot_connect",
-      "slovik_line": "Соедини точки по порядку — получится буква У.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-trail-path.jpg",
-      "audio": "bo-m1-l02-hop",
+      "id": "grid",
+      "title": "Найди все У",
+      "kind": "letter_puzzle",
+      "mechanic": "letter_grid",
+      "slovik_line": "Найди на доске все буквы У. Их несколько.",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
+      "audio": "bo-m1-l02-grid",
+      "pieces_on_board": true,
+      "slots": 3,
+      "pieces": [
+        {
+          "id": "u1",
+          "label": "У",
+          "correct": true
+        },
+        {
+          "id": "m1",
+          "label": "М",
+          "correct": false
+        },
+        {
+          "id": "u2",
+          "label": "У",
+          "correct": true
+        },
+        {
+          "id": "a1",
+          "label": "А",
+          "correct": false
+        },
+        {
+          "id": "o1",
+          "label": "О",
+          "correct": false
+        },
+        {
+          "id": "u3",
+          "label": "У",
+          "correct": true
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter",
+      "chapter": "Искорка 2 · Буква"
+    },
+    {
+      "id": "catch",
+      "title": "Поймай У",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "catch_letter",
+      "mechanic": "letter_meadow",
+      "slovik_line": "На поляне появится буква У. Нажми на неё — три раза в разных местах!",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l02-catch",
       "letter": "У",
-      "hint": "Жми точки по номерам: 1, 2, 3…",
-      "success_msg": "Буква У получилась!",
-      "dots": [
+      "appear_on_scene": true,
+      "catches": 3,
+      "spots": [
         {
-          "n": 1,
-          "x": 24,
-          "y": 14
+          "x": 22,
+          "y": 28
         },
         {
-          "n": 2,
-          "x": 50,
-          "y": 48
+          "x": 74,
+          "y": 26
         },
         {
-          "n": 3,
-          "x": 76,
-          "y": 14
+          "x": 48,
+          "y": 40
         },
         {
-          "n": 4,
-          "x": 50,
-          "y": 48
+          "x": 18,
+          "y": 58
         },
         {
-          "n": 5,
-          "x": 50,
-          "y": 90
+          "x": 78,
+          "y": 56
+        },
+        {
+          "x": 58,
+          "y": 70
+        },
+        {
+          "x": 34,
+          "y": 66
         }
       ],
       "spark": false,
@@ -339,156 +431,16 @@
       "spark_group": "letter"
     },
     {
-      "id": "chase",
-      "title": "Поймай У на поляне",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "scene_hunt",
-      "mechanic": "letter_chase",
-      "slovik_line": "Теперь поймай их на поляне. Найди большую У и маленькую у. Не спутай с другими буквами.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
-      "moving": true,
-      "move_speed": 5,
-      "success_msg": "Поймал и У, и маленькую у!",
-      "wrong_msg": "Это не У и не у. Ищи дальше.",
-      "correct_ids": [
-        "U1",
-        "u1",
-        "U2",
-        "u2",
-        "U3"
-      ],
-      "hotspots": [
-        {
-          "id": "U1",
-          "label": "У",
-          "x": 14,
-          "y": 10
-        },
-        {
-          "id": "A1",
-          "label": "А",
-          "x": 34,
-          "y": 8
-        },
-        {
-          "id": "O1",
-          "label": "О",
-          "x": 54,
-          "y": 12
-        },
-        {
-          "id": "M1",
-          "label": "М",
-          "x": 74,
-          "y": 9
-        },
-        {
-          "id": "u1",
-          "label": "у",
-          "x": 91,
-          "y": 20,
-          "size": "sm"
-        },
-        {
-          "id": "S1",
-          "label": "С",
-          "x": 10,
-          "y": 42
-        },
-        {
-          "id": "M2",
-          "label": "М",
-          "x": 90,
-          "y": 46
-        },
-        {
-          "id": "U2",
-          "label": "У",
-          "x": 12,
-          "y": 78
-        },
-        {
-          "id": "u2",
-          "label": "у",
-          "x": 48,
-          "y": 86,
-          "size": "sm"
-        },
-        {
-          "id": "A2",
-          "label": "А",
-          "x": 88,
-          "y": 82
-        },
-        {
-          "id": "U3",
-          "label": "У",
-          "x": 30,
-          "y": 90
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "grid",
-      "title": "Найди все У",
-      "kind": "letter_puzzle",
-      "mechanic": "letter_grid",
-      "slovik_line": "Найди на доске все буквы У. Их несколько.",
-      "scene_image": "/static/early/letters/scene-forest-board.jpg",
-      "audio": "bo-m1-l02-grid",
-      "pieces_on_board": true,
-      "slots": 3,
-      "pieces": [
-        {
-          "id": "u1",
-          "label": "У",
-          "correct": true
-        },
-        {
-          "id": "m1",
-          "label": "М",
-          "correct": false
-        },
-        {
-          "id": "u2",
-          "label": "У",
-          "correct": true
-        },
-        {
-          "id": "a1",
-          "label": "А",
-          "correct": false
-        },
-        {
-          "id": "o1",
-          "label": "О",
-          "correct": false
-        },
-        {
-          "id": "u3",
-          "label": "У",
-          "correct": true
-        }
-      ],
-      "spark": true,
-      "spark_kind": "letter",
-      "spark_group": "letter"
-    },
-    {
       "id": "first_letter",
       "title": "Первая буква",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "find",
       "mechanic": "picture_first_letter",
       "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-workshop",
-      "spark": false,
+      "audio": "bo-m1-l02-first",
+      "spark": true,
       "spark_group": "letter",
       "hint": "Скажи слово вслух и найди первую букву.",
       "rounds": [
@@ -527,168 +479,8 @@
             "О"
           ]
         }
-      ]
-    },
-    {
-      "id": "board",
-      "title": "Доска букв",
-      "chapter": "Буква",
-      "kind": "scene_hunt",
-      "mechanic": "letter_board",
-      "board_panel": true,
-      "slovik_line": "Найди на доске все буквы У. Их несколько.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-forest-board.jpg",
-      "audio": "bo-m1-l02-grid",
-      "layout": "grid",
-      "grid_cols": 5,
-      "moving": false,
-      "correct_ids": [
-        "u1",
-        "u2",
-        "u3",
-        "u4",
-        "u5"
       ],
-      "hotspots": [
-        {
-          "id": "a1",
-          "label": "А"
-        },
-        {
-          "id": "u1",
-          "label": "У"
-        },
-        {
-          "id": "o1",
-          "label": "О"
-        },
-        {
-          "id": "m1",
-          "label": "М"
-        },
-        {
-          "id": "s1",
-          "label": "С"
-        },
-        {
-          "id": "k1",
-          "label": "К"
-        },
-        {
-          "id": "u2",
-          "label": "У"
-        },
-        {
-          "id": "n1",
-          "label": "Н"
-        },
-        {
-          "id": "a2",
-          "label": "А"
-        },
-        {
-          "id": "o2",
-          "label": "О"
-        },
-        {
-          "id": "m2",
-          "label": "М"
-        },
-        {
-          "id": "u3",
-          "label": "У"
-        },
-        {
-          "id": "s2",
-          "label": "С"
-        },
-        {
-          "id": "k2",
-          "label": "К"
-        },
-        {
-          "id": "a3",
-          "label": "А"
-        },
-        {
-          "id": "o3",
-          "label": "О"
-        },
-        {
-          "id": "u4",
-          "label": "У"
-        },
-        {
-          "id": "m3",
-          "label": "М"
-        },
-        {
-          "id": "n2",
-          "label": "Н"
-        },
-        {
-          "id": "u5",
-          "label": "У"
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "catch",
-      "title": "Поймай У",
-      "chapter": "Буква",
-      "kind": "catch_letter",
-      "mechanic": "letter_meadow",
-      "slovik_line": "На поляне появится буква У. Нажми на неё — три раза в разных местах!",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
-      "letter": "У",
-      "appear_on_scene": true,
-      "catches": 3,
-      "spots": [
-        {
-          "x": 22,
-          "y": 28
-        },
-        {
-          "x": 74,
-          "y": 26
-        },
-        {
-          "x": 48,
-          "y": 40
-        },
-        {
-          "x": 18,
-          "y": 58
-        },
-        {
-          "x": 78,
-          "y": 56
-        },
-        {
-          "x": 58,
-          "y": 70
-        },
-        {
-          "x": 34,
-          "y": 66
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "pause",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Отойди. Пропой у-у-у тихо, как ветер.",
-      "audio": "bo-m1-l02-pause",
-      "spark": false,
-      "hint": "Тихо пропой у-у-у у окна. Потом вернёмся."
+      "spark_kind": "letter"
     },
     {
       "id": "join_mu",
@@ -698,7 +490,7 @@
       "slovik_line": "Познакомь М и У. Веди М по мостику к У — получится му.",
       "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-bridge",
+      "audio": "bo-m1-l02-join",
       "hint": "Перетащи М к У по мостику",
       "left": {
         "id": "M",
@@ -722,7 +514,7 @@
       "title": "МУ и УМ",
       "chapter": "Искорка 3 · Слог",
       "kind": "slot_build",
-      "slovik_line": "Склеим: му и ум. Сначала му.",
+      "slovik_line": "Склеим: му, М и У рядом — получается МУ",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l02-slots",
       "result_sound": "snd-mu",
@@ -742,30 +534,6 @@
       "spark_group": "syllable"
     },
     {
-      "id": "slots_um",
-      "title": "Слог УМ",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Теперь ум. У и М рядом — получается ум.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-workshop",
-      "targets": [
-        "У",
-        "М"
-      ],
-      "options": [
-        "А",
-        "У",
-        "О",
-        "М"
-      ],
-      "result_label": "УМ",
-      "spark": true,
-      "spark_kind": "syllable",
-      "spark_group": "syllable"
-    },
-    {
       "id": "or",
       "title": "Как говорит корова?",
       "kind": "find",
@@ -773,7 +541,7 @@
       "slovik_line": "Как говорит корова? Нажми слог.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-workshop",
+      "audio": "bo-m1-l02-cow",
       "spark": false,
       "hint": "Корова говорит му.",
       "rounds": [
@@ -789,7 +557,9 @@
             "МО"
           ]
         }
-      ]
+      ],
+      "spark_group": "syllable",
+      "chapter": "Искорка 3 · Слог"
     },
     {
       "id": "quest",
@@ -835,7 +605,33 @@
             "АМ"
           ]
         }
-      ]
+      ],
+      "spark_group": "syllable",
+      "chapter": "Искорка 3 · Слог"
+    },
+    {
+      "id": "slots_um",
+      "title": "Слог УМ",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Теперь ум. У и М рядом — получается ум.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l02-slots-um",
+      "targets": [
+        "У",
+        "М"
+      ],
+      "options": [
+        "А",
+        "У",
+        "О",
+        "М"
+      ],
+      "result_label": "УМ",
+      "spark": true,
+      "spark_group": "syllable",
+      "spark_kind": "syllable"
     },
     {
       "id": "chest",

@@ -49,57 +49,6 @@
       "spark": false
     },
     {
-      "id": "azbuka",
-      "title": "Азбука С",
-      "chapter": "Буква",
-      "kind": "alphabet_book",
-      "mechanic": "azbuka_fill",
-      "slovik_line": "Сложи страницу С. Выбери картинки, которые начинаются на букву С.",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l04-or",
-      "letter": "С",
-      "letter_image": "/static/early/letters/letter-s-hero.png",
-      "book_title": "С",
-      "picture_only": false,
-      "hint": "Картинка должна начинаться на С.",
-      "success_msg": "Страница С готова!",
-      "rounds": [
-        {
-          "correct": "snake",
-          "options": [
-            {
-              "id": "snake",
-              "label": "змейка",
-              "image": "/static/early/letters/snake-hiss.png"
-            },
-            {
-              "id": "motor",
-              "label": "машина",
-              "image": "/static/early/letters/motor.png"
-            }
-          ]
-        },
-        {
-          "correct": "som",
-          "options": [
-            {
-              "id": "som",
-              "label": "сом",
-              "image": "/static/early/letters/som-fish.png"
-            },
-            {
-              "id": "bear",
-              "label": "медведь",
-              "image": "/static/early/letters/bear-wise.png"
-            }
-          ]
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
       "id": "hiss",
       "title": "с-с-с или м-м-м",
       "chapter": "Искорка 1 · Звук",
@@ -126,8 +75,7 @@
           ]
         }
       ],
-      "spark": true,
-      "spark_kind": "sound",
+      "spark": false,
       "spark_group": "sound"
     },
     {
@@ -135,7 +83,7 @@
       "title": "Прыжки",
       "kind": "letter_maze",
       "mechanic": "letter_hop",
-      "slovik_line": "Прыгай на С. Она говорит с-с-с.",
+      "slovik_line": "Найди букву С. Она говорит с-с-с.",
       "scene_image": "/static/early/letters/scene-trail-path.jpg",
       "audio": "bo-m1-l04-hop",
       "letter": "С",
@@ -174,18 +122,80 @@
         ]
       ],
       "spark": false,
-      "spark_group": "letter"
+      "spark_group": "letter",
+      "chapter": "Искорка 1 · Звук"
+    },
+    {
+      "id": "pause",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Тихое с-с-с, как ветер в траве.",
+      "audio": "bo-m1-l04-pause",
+      "spark": false,
+      "hint": "Тихо скажи с-с-с. Не путай с ш-ш-ш."
+    },
+    {
+      "id": "azbuka",
+      "title": "Азбука С",
+      "chapter": "Искорка 1 · Звук",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи страницу С. Выбери картинки, которые начинаются на букву С.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l04-azbuka",
+      "letter": "С",
+      "letter_image": "/static/early/letters/letter-s-hero.png",
+      "book_title": "С",
+      "picture_only": false,
+      "hint": "Картинка должна начинаться на С.",
+      "success_msg": "Страница С готова!",
+      "rounds": [
+        {
+          "correct": "snake",
+          "options": [
+            {
+              "id": "snake",
+              "label": "змейка",
+              "image": "/static/early/letters/snake-hiss.png"
+            },
+            {
+              "id": "motor",
+              "label": "машина",
+              "image": "/static/early/letters/motor.png"
+            }
+          ]
+        },
+        {
+          "correct": "som",
+          "options": [
+            {
+              "id": "som",
+              "label": "сом",
+              "image": "/static/early/letters/som-fish.png"
+            },
+            {
+              "id": "bear",
+              "label": "медведь",
+              "image": "/static/early/letters/bear-wise.png"
+            }
+          ]
+        }
+      ],
+      "spark": true,
+      "spark_group": "sound",
+      "spark_kind": "sound"
     },
     {
       "id": "build",
       "title": "Обведи С",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "dot_connect",
       "mechanic": "dot_connect",
       "slovik_line": "Соедини точки по порядку — получится буква С.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-water-count.jpg",
-      "audio": "bo-m1-l04-hop",
+      "audio": "bo-m1-l04-build",
       "letter": "С",
       "hint": "Жми точки по номерам: 1, 2, 3…",
       "success_msg": "Буква С получилась!",
@@ -230,54 +240,61 @@
       "spark_group": "letter"
     },
     {
-      "id": "sort",
-      "title": "Большая и маленькая С",
+      "id": "grid",
+      "title": "Найди все С",
       "chapter": "Искорка 2 · Буква",
-      "kind": "sort_two",
-      "slovik_line": "Большая С и маленькая с — одна буква. Разложи.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "kind": "letter_puzzle",
+      "mechanic": "letter_grid",
+      "slovik_line": "Теперь найди все буквы С на доске.",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
       "audio": "bo-m1-l04-grid",
-      "left": {
-        "label": "С",
-        "correct": [
-          "С1",
-          "С2",
-          "С3"
-        ]
-      },
-      "right": {
-        "label": "с",
-        "correct": [
-          "с1",
-          "с2",
-          "с3"
-        ]
-      },
-      "options": [
+      "pieces_on_board": true,
+      "slots": 5,
+      "pieces": [
         {
-          "id": "С1",
-          "label": "С"
+          "id": "s1",
+          "label": "С",
+          "correct": true
         },
         {
-          "id": "с1",
-          "label": "с"
+          "id": "m1",
+          "label": "М",
+          "correct": false
         },
         {
-          "id": "С2",
-          "label": "С"
+          "id": "s2",
+          "label": "С",
+          "correct": true
         },
         {
-          "id": "с2",
-          "label": "с"
+          "id": "a1",
+          "label": "А",
+          "correct": false
         },
         {
-          "id": "С3",
-          "label": "С"
+          "id": "s3",
+          "label": "С",
+          "correct": true
         },
         {
-          "id": "с3",
-          "label": "с"
+          "id": "o1",
+          "label": "О",
+          "correct": false
+        },
+        {
+          "id": "s4",
+          "label": "С",
+          "correct": true
+        },
+        {
+          "id": "u1",
+          "label": "У",
+          "correct": false
+        },
+        {
+          "id": "s5",
+          "label": "С",
+          "correct": true
         }
       ],
       "spark": false,
@@ -289,10 +306,10 @@
       "chapter": "Искорка 2 · Буква",
       "kind": "scene_hunt",
       "mechanic": "letter_chase",
-      "slovik_line": "Теперь поймай их на поляне. Найди большую С и маленькую с. Не спутай с другими буквами.",
+      "slovik_line": "Теперь поймай их на поляне. Найди все буквы С. Не спутай с другими буквами.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
+      "audio": "bo-m1-l04-chase",
       "moving": true,
       "move_speed": 5,
       "success_msg": "Поймал и С, и маленькую с!",
@@ -378,77 +395,15 @@
       "spark_group": "letter"
     },
     {
-      "id": "grid",
-      "title": "Найди все С",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "letter_puzzle",
-      "mechanic": "letter_grid",
-      "slovik_line": "Найди все буквы С на доске.",
-      "scene_image": "/static/early/letters/scene-forest-board.jpg",
-      "audio": "bo-m1-l04-grid",
-      "pieces_on_board": true,
-      "slots": 5,
-      "pieces": [
-        {
-          "id": "s1",
-          "label": "С",
-          "correct": true
-        },
-        {
-          "id": "m1",
-          "label": "М",
-          "correct": false
-        },
-        {
-          "id": "s2",
-          "label": "С",
-          "correct": true
-        },
-        {
-          "id": "a1",
-          "label": "А",
-          "correct": false
-        },
-        {
-          "id": "s3",
-          "label": "С",
-          "correct": true
-        },
-        {
-          "id": "o1",
-          "label": "О",
-          "correct": false
-        },
-        {
-          "id": "s4",
-          "label": "С",
-          "correct": true
-        },
-        {
-          "id": "u1",
-          "label": "У",
-          "correct": false
-        },
-        {
-          "id": "s5",
-          "label": "С",
-          "correct": true
-        }
-      ],
-      "spark": true,
-      "spark_kind": "letter",
-      "spark_group": "letter"
-    },
-    {
       "id": "first_letter",
       "title": "Первая буква",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "find",
       "mechanic": "picture_first_letter",
       "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-workshop",
+      "audio": "bo-m1-l04-first",
       "spark": false,
       "spark_group": "letter",
       "hint": "Скажи слово вслух и найди первую букву.",
@@ -491,122 +446,15 @@
       ]
     },
     {
-      "id": "board",
-      "title": "Доска букв",
-      "chapter": "Буква",
-      "kind": "scene_hunt",
-      "mechanic": "letter_board",
-      "board_panel": true,
-      "slovik_line": "Найди на доске все буквы С. Их несколько.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-forest-board.jpg",
-      "audio": "bo-m1-l04-grid",
-      "layout": "grid",
-      "grid_cols": 5,
-      "moving": false,
-      "correct_ids": [
-        "с1",
-        "с2",
-        "с3",
-        "с4",
-        "с5",
-        "с6"
-      ],
-      "hotspots": [
-        {
-          "id": "а1",
-          "label": "А"
-        },
-        {
-          "id": "с1",
-          "label": "С"
-        },
-        {
-          "id": "о1",
-          "label": "О"
-        },
-        {
-          "id": "м1",
-          "label": "М"
-        },
-        {
-          "id": "у1",
-          "label": "У"
-        },
-        {
-          "id": "к1",
-          "label": "К"
-        },
-        {
-          "id": "с2",
-          "label": "С"
-        },
-        {
-          "id": "н1",
-          "label": "Н"
-        },
-        {
-          "id": "а2",
-          "label": "А"
-        },
-        {
-          "id": "о2",
-          "label": "О"
-        },
-        {
-          "id": "м2",
-          "label": "М"
-        },
-        {
-          "id": "с3",
-          "label": "С"
-        },
-        {
-          "id": "с4",
-          "label": "С"
-        },
-        {
-          "id": "к2",
-          "label": "К"
-        },
-        {
-          "id": "а3",
-          "label": "А"
-        },
-        {
-          "id": "о3",
-          "label": "О"
-        },
-        {
-          "id": "с5",
-          "label": "С"
-        },
-        {
-          "id": "м3",
-          "label": "М"
-        },
-        {
-          "id": "н2",
-          "label": "Н"
-        },
-        {
-          "id": "с6",
-          "label": "С"
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
       "id": "catch",
       "title": "Поймай С",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "catch_letter",
       "mechanic": "letter_meadow",
       "slovik_line": "На поляне появится буква С. Нажми на неё — три раза в разных местах!",
       "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
+      "audio": "bo-m1-l04-catch",
       "letter": "С",
       "appear_on_scene": true,
       "catches": 3,
@@ -668,128 +516,74 @@
       },
       "catches": 6,
       "spark": false,
-      "spark_group": "letter"
+      "spark_group": "letter",
+      "chapter": "Искорка 2 · Буква"
     },
     {
-      "id": "pause",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Тихое с-с-с, как ветер в траве.",
-      "audio": "bo-m1-l04-pause",
-      "spark": false,
-      "hint": "Тихо скажи с-с-с. Не путай с ш-ш-ш."
-    },
-    {
-      "id": "join_sa",
-      "title": "Мост дружбы",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "drag_join",
-      "slovik_line": "Познакомь С и А. Веди С по мостику к А — получится са.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-bridge",
-      "hint": "Перетащи С к А по мостику",
-      "left": {
-        "id": "S",
-        "label": "С"
-      },
-      "right": {
-        "id": "A",
-        "label": "А"
-      },
-      "result": {
-        "label": "СА",
-        "sound": "snd-s",
-        "image": "/static/early/letters/snake-hiss.png",
-        "image_alt": "змейка"
-      },
-      "spark": false,
-      "spark_group": "syllable"
-    },
-    {
-      "id": "slots",
-      "title": "Слог СА",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Склеим слог са. Сначала са.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l04-slots",
-      "targets": [
-        "С",
-        "А"
-      ],
-      "options": [
-        "С",
-        "О",
-        "А",
-        "М"
-      ],
-      "result_label": "СА",
-      "result_image": "/static/early/letters/snake-hiss.png",
-      "spark": false,
-      "spark_group": "syllable"
-    },
-    {
-      "id": "slots_so",
-      "title": "Слог СО",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Теперь со. С и О рядом — получается со.",
-      "slovik_pose": "invite",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-workshop",
-      "targets": [
-        "С",
-        "О"
-      ],
-      "options": [
-        "А",
-        "С",
-        "М",
-        "О"
-      ],
-      "result_label": "СО",
-      "result_image": "/static/early/letters/som-fish.png",
-      "spark": true,
-      "spark_kind": "syllable",
-      "spark_group": "syllable"
-    },
-    {
-      "id": "or",
-      "title": "Как говорит змейка?",
-      "kind": "find",
-      "mechanic": "snake_hiss",
-      "slovik_line": "Как говорит змейка? Нажми слог.",
+      "id": "sort",
+      "title": "Большая и маленькая С",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "sort_two",
+      "slovik_line": "Большая С и маленькая с — одна буква. Разложи.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l04-or",
-      "spark": false,
-      "hint": "Змейка говорит с-с-с. Выбери слог СА.",
-      "rounds": [
+      "audio": "bo-m1-l04-sort",
+      "left": {
+        "label": "С",
+        "correct": [
+          "С1",
+          "С2",
+          "С3"
+        ]
+      },
+      "right": {
+        "label": "с",
+        "correct": [
+          "с1",
+          "с2",
+          "с3"
+        ]
+      },
+      "options": [
         {
-          "prompt_text": "Как говорит змейка?",
-          "prompt_image": "/static/early/letters/snake-hiss.png",
-          "prompt_alt": "змейка",
-          "correct": "СА",
-          "options": [
-            "СА",
-            "СО",
-            "МА",
-            "МО"
-          ]
+          "id": "С1",
+          "label": "С"
+        },
+        {
+          "id": "с1",
+          "label": "с"
+        },
+        {
+          "id": "С2",
+          "label": "С"
+        },
+        {
+          "id": "с2",
+          "label": "с"
+        },
+        {
+          "id": "С3",
+          "label": "С"
+        },
+        {
+          "id": "с3",
+          "label": "с"
         }
-      ]
+      ],
+      "spark": true,
+      "spark_group": "letter",
+      "spark_kind": "letter"
     },
     {
       "id": "spread",
       "title": "Азбука М, У, О, С",
-      "chapter": "Буква",
+      "chapter": "Искорка 3 · Слог",
       "kind": "alphabet_book",
       "mechanic": "azbuka_fill",
       "slovik_line": "Вспомним буквы в азбуке. Выбери картинку на каждую: М, У, О и С.",
       "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-spread",
+      "audio": "bo-m1-l04-review",
       "picture_only": false,
       "hint": "Картинка должна начинаться на нужную букву.",
       "success_msg": "Буквы М, У, О и С с нами!",
@@ -871,13 +665,87 @@
       "spark_group": "letter"
     },
     {
+      "id": "join_sa",
+      "title": "Мост дружбы",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "drag_join",
+      "slovik_line": "Познакомь С и А. Веди С по мостику к А — получится са.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l04-join",
+      "hint": "Перетащи С к А по мостику",
+      "left": {
+        "id": "S",
+        "label": "С"
+      },
+      "right": {
+        "id": "A",
+        "label": "А"
+      },
+      "result": {
+        "label": "СА",
+        "sound": "snd-s",
+        "image": "/static/early/letters/snake-hiss.png",
+        "image_alt": "змейка"
+      },
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots",
+      "title": "Слог СА",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Склеим слог са. Сначала са.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l04-slots",
+      "targets": [
+        "С",
+        "А"
+      ],
+      "options": [
+        "С",
+        "О",
+        "А",
+        "М"
+      ],
+      "result_label": "СА",
+      "result_image": "/static/early/letters/snake-hiss.png",
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots_so",
+      "title": "Слог СО",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Теперь со. С и О рядом — получается со.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l04-slots-so",
+      "targets": [
+        "С",
+        "О"
+      ],
+      "options": [
+        "А",
+        "С",
+        "М",
+        "О"
+      ],
+      "result_label": "СО",
+      "result_image": "/static/early/letters/som-fish.png",
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
       "id": "quest",
       "title": "Слог СО",
       "kind": "mini_quest",
       "slovik_line": "Сом начинается на С. Найди его. Потом слог со.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l04-quest",
-      "spark": false,
+      "spark": true,
       "show_all_steps": true,
       "hint": "Картинка сома и слог СО.",
       "steps": [
@@ -914,14 +782,17 @@
             "МО"
           ]
         }
-      ]
+      ],
+      "spark_kind": "syllable",
+      "spark_group": "syllable",
+      "chapter": "Искорка 3 · Слог"
     },
     {
       "id": "chest",
       "title": "Награда Словика",
       "chapter": "Три искорки",
       "kind": "reward",
-      "slovik_line": "Змейка С с нами! Ты знаешь букву С.",
+      "slovik_line": "Ура, все искорки с нами! Теперь ты знаешь букву С.",
       "slovik_pose": "chest",
       "scene_image": "/static/early/letters/scene-invite.jpg",
       "spark_image": "/static/early/letters/spark.png",

@@ -50,57 +50,6 @@
       "spark": false
     },
     {
-      "id": "azbuka",
-      "title": "Азбука О",
-      "chapter": "Буква",
-      "kind": "alphabet_book",
-      "mechanic": "azbuka_fill",
-      "slovik_line": "Сложи страницу О. Выбери картинки, которые начинаются на букву О.",
-      "slovik_pose": "talk",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-spread",
-      "letter": "О",
-      "letter_image": "/static/early/letters/letter-o-hero.png",
-      "book_title": "О",
-      "picture_only": false,
-      "hint": "Картинка должна начинаться на О.",
-      "success_msg": "Страница О готова!",
-      "rounds": [
-        {
-          "correct": "window",
-          "options": [
-            {
-              "id": "window",
-              "label": "окно",
-              "image": "/static/early/stories/window-frame.png"
-            },
-            {
-              "id": "tree",
-              "label": "дерево",
-              "image": "/static/early/letters/tree.png"
-            }
-          ]
-        },
-        {
-          "correct": "wasp",
-          "options": [
-            {
-              "id": "wasp",
-              "label": "оса",
-              "image": "/static/early/letters/wasp.png"
-            },
-            {
-              "id": "motor",
-              "label": "машина",
-              "image": "/static/early/letters/motor.png"
-            }
-          ]
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
       "id": "round",
       "title": "Круглое на поляне",
       "chapter": "Искорка 1 · Звук",
@@ -160,62 +109,71 @@
           "y": 72
         }
       ],
-      "spark": true,
-      "spark_kind": "sound",
+      "spark": false,
       "spark_group": "sound"
     },
     {
-      "id": "hop",
-      "title": "Прыжки",
-      "kind": "letter_maze",
-      "mechanic": "letter_hop",
-      "slovik_line": "Прыгай на круглую О.",
-      "scene_image": "/static/early/letters/scene-trail-path.jpg",
-      "audio": "bo-m1-l03-hop",
+      "id": "azbuka",
+      "title": "Азбука О",
+      "chapter": "Искорка 1 · Звук",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи страницу О. Выбери картинки, которые начинаются на букву О.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l03-azbuka",
       "letter": "О",
-      "start": [
-        0,
-        0
+      "letter_image": "/static/early/letters/letter-o-hero.png",
+      "book_title": "О",
+      "picture_only": false,
+      "hint": "Картинка должна начинаться на О.",
+      "success_msg": "Страница О готова!",
+      "rounds": [
+        {
+          "correct": "window",
+          "options": [
+            {
+              "id": "window",
+              "label": "окно",
+              "image": "/static/early/stories/window-frame.png"
+            },
+            {
+              "id": "tree",
+              "label": "дерево",
+              "image": "/static/early/letters/tree.png"
+            }
+          ]
+        },
+        {
+          "correct": "wasp",
+          "options": [
+            {
+              "id": "wasp",
+              "label": "оса",
+              "image": "/static/early/letters/wasp.png"
+            },
+            {
+              "id": "motor",
+              "label": "машина",
+              "image": "/static/early/letters/motor.png"
+            }
+          ]
+        }
       ],
-      "end": [
-        3,
-        2
-      ],
-      "grid": [
-        [
-          "О",
-          "А",
-          "У"
-        ],
-        [
-          "О",
-          "М",
-          "О"
-        ],
-        [
-          "О",
-          "О",
-          "О"
-        ],
-        [
-          "М",
-          "У",
-          "О"
-        ]
-      ],
-      "spark": false,
-      "spark_group": "letter"
+      "spark": true,
+      "spark_group": "sound",
+      "spark_kind": "sound"
     },
     {
       "id": "build",
       "title": "Обведи О",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "dot_connect",
       "mechanic": "dot_connect",
       "slovik_line": "Соедини точки по порядку — получится буква О.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-water-count.jpg",
-      "audio": "bo-m1-l03-hop",
+      "audio": "bo-m1-l03-build",
       "letter": "О",
       "hint": "Жми точки по номерам: 1, 2, 3…",
       "success_msg": "Буква О получилась!",
@@ -260,58 +218,47 @@
       "spark_group": "letter"
     },
     {
-      "id": "sort",
-      "title": "Большая и маленькая О",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "sort_two",
-      "slovik_line": "Большая О и маленькая о — одна буква. Разложи.",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-build",
-      "left": {
-        "label": "О",
-        "correct": [
-          "O1",
-          "O2",
-          "O3"
-        ]
-      },
-      "right": {
-        "label": "о",
-        "correct": [
-          "o1",
-          "o2",
-          "o3"
-        ]
-      },
-      "options": [
-        {
-          "id": "O1",
-          "label": "О"
-        },
-        {
-          "id": "o1",
-          "label": "о"
-        },
-        {
-          "id": "O2",
-          "label": "О"
-        },
-        {
-          "id": "o2",
-          "label": "о"
-        },
-        {
-          "id": "O3",
-          "label": "О"
-        },
-        {
-          "id": "o3",
-          "label": "о"
-        }
+      "id": "hop",
+      "title": "Прыжки",
+      "kind": "letter_maze",
+      "mechanic": "letter_hop",
+      "slovik_line": "Прыгай на круглую О.",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
+      "audio": "bo-m1-l03-hop",
+      "letter": "О",
+      "start": [
+        0,
+        0
       ],
-      "spark": true,
-      "spark_kind": "letter",
-      "spark_group": "letter"
+      "end": [
+        3,
+        2
+      ],
+      "grid": [
+        [
+          "О",
+          "А",
+          "У"
+        ],
+        [
+          "О",
+          "М",
+          "О"
+        ],
+        [
+          "О",
+          "О",
+          "О"
+        ],
+        [
+          "М",
+          "У",
+          "О"
+        ]
+      ],
+      "spark": false,
+      "spark_group": "letter",
+      "chapter": "Искорка 2 · Буква"
     },
     {
       "id": "chase",
@@ -319,10 +266,10 @@
       "chapter": "Искорка 2 · Буква",
       "kind": "scene_hunt",
       "mechanic": "letter_chase",
-      "slovik_line": "Теперь поймай их на поляне. Найди большую О и маленькую о. Не спутай с другими буквами.",
+      "slovik_line": "Теперь поймай их на поляне. Найди все буквы О. Не спутай с другими буквами.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
+      "audio": "bo-m1-l03-chase",
       "moving": true,
       "move_speed": 5,
       "success_msg": "Поймал и О, и маленькую о!",
@@ -408,6 +355,34 @@
       "spark_group": "letter"
     },
     {
+      "id": "quest",
+      "title": "С какой буквы?",
+      "kind": "find",
+      "mechanic": "picture_first_letter",
+      "slovik_line": "Это оса. С какой буквы начинается слово? Нажми букву.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l03-quest",
+      "spark": false,
+      "hint": "Оса начинается на О.",
+      "rounds": [
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/wasp.png",
+          "prompt_alt": "оса",
+          "correct": "О",
+          "options": [
+            "А",
+            "М",
+            "О",
+            "У"
+          ]
+        }
+      ],
+      "spark_group": "letter",
+      "chapter": "Искорка 2 · Буква"
+    },
+    {
       "id": "count",
       "title": "Шесть О",
       "kind": "catch_letter",
@@ -430,70 +405,20 @@
       },
       "catches": 6,
       "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "first_letter",
-      "title": "Первая буква",
-      "chapter": "Буква",
-      "kind": "find",
-      "mechanic": "picture_first_letter",
-      "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-workshop",
-      "spark": false,
       "spark_group": "letter",
-      "hint": "Скажи слово вслух и найди первую букву.",
-      "rounds": [
-        {
-          "prompt_text": "С какой буквы?",
-          "prompt_image": "/static/early/letters/wasp.png",
-          "prompt_alt": "оса",
-          "correct": "О",
-          "options": [
-            "А",
-            "О",
-            "М",
-            "У"
-          ]
-        },
-        {
-          "prompt_text": "Какая буква поёт о-о-о?",
-          "sound": "snd-o",
-          "correct": "О",
-          "options": [
-            "У",
-            "М",
-            "О",
-            "А"
-          ]
-        },
-        {
-          "prompt_text": "С какой буквы?",
-          "prompt_image": "/static/early/letters/wasp.png",
-          "prompt_alt": "оса",
-          "correct": "О",
-          "options": [
-            "С",
-            "А",
-            "О",
-            "М"
-          ]
-        }
-      ]
+      "chapter": "Искорка 2 · Буква"
     },
     {
       "id": "board",
       "title": "Доска букв",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "scene_hunt",
       "mechanic": "letter_board",
       "board_panel": true,
       "slovik_line": "Найди на доске все буквы О. Их несколько.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-forest-board.jpg",
-      "audio": "bo-m1-l03-count",
+      "audio": "bo-m1-l03-board",
       "layout": "grid",
       "grid_cols": 5,
       "moving": false,
@@ -592,13 +517,13 @@
     {
       "id": "catch",
       "title": "Поймай О",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "catch_letter",
       "mechanic": "letter_meadow",
       "slovik_line": "На поляне появится буква О. Нажми на неё — три раза в разных местах!",
       "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
+      "audio": "bo-m1-l03-catch",
       "letter": "О",
       "appear_on_scene": true,
       "catches": 3,
@@ -636,73 +561,120 @@
       "spark_group": "letter"
     },
     {
-      "id": "pause",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Найди дома что-то круглое. Потом вернёмся.",
-      "audio": "bo-m1-l03-pause",
-      "spark": false,
-      "hint": "Найди дома круглую вещь и скажи о-о-о."
-    },
-    {
-      "id": "join_mo",
-      "title": "Мост дружбы",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "drag_join",
-      "slovik_line": "Познакомь М и О. Веди М по мостику к О — получится мо.",
-      "slovik_pose": "invite",
+      "id": "sort",
+      "title": "Большая и маленькая О",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "sort_two",
+      "slovik_line": "Большая О и маленькая о — одна буква. Разложи.",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-bridge",
-      "hint": "Перетащи М к О по мостику",
+      "audio": "bo-m1-l03-sort",
       "left": {
-        "id": "M",
-        "label": "М"
+        "label": "О",
+        "correct": [
+          "O1",
+          "O2",
+          "O3"
+        ]
       },
       "right": {
-        "id": "O",
-        "label": "О"
+        "label": "о",
+        "correct": [
+          "o1",
+          "o2",
+          "o3"
+        ]
       },
-      "result": {
-        "label": "МО",
-        "sound": "snd-mo"
-      },
+      "options": [
+        {
+          "id": "O1",
+          "label": "О"
+        },
+        {
+          "id": "o1",
+          "label": "о"
+        },
+        {
+          "id": "O2",
+          "label": "О"
+        },
+        {
+          "id": "o2",
+          "label": "о"
+        },
+        {
+          "id": "O3",
+          "label": "О"
+        },
+        {
+          "id": "o3",
+          "label": "о"
+        }
+      ],
       "spark": false,
-      "spark_group": "syllable"
+      "spark_group": "letter"
     },
     {
-      "id": "slots",
-      "title": "Слог МО",
-      "chapter": "Искорка 3 · Слог",
-      "kind": "slot_build",
-      "slovik_line": "Сложим слог мо. М и О рядом.",
+      "id": "first_letter",
+      "title": "Первая буква",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "find",
+      "mechanic": "picture_first_letter",
+      "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
+      "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-slots",
-      "result_sound": "snd-mo",
-      "targets": [
-        "М",
-        "О"
-      ],
-      "options": [
-        "С",
-        "М",
-        "О",
-        "А"
-      ],
-      "result_label": "МО",
+      "audio": "bo-m1-l03-first",
       "spark": true,
-      "spark_kind": "syllable",
-      "spark_group": "syllable"
+      "spark_group": "letter",
+      "hint": "Скажи слово вслух и найди первую букву.",
+      "rounds": [
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/wasp.png",
+          "prompt_alt": "оса",
+          "correct": "О",
+          "options": [
+            "А",
+            "О",
+            "М",
+            "У"
+          ]
+        },
+        {
+          "prompt_text": "Какая буква поёт о-о-о?",
+          "sound": "snd-o",
+          "correct": "О",
+          "options": [
+            "У",
+            "М",
+            "О",
+            "А"
+          ]
+        },
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/wasp.png",
+          "prompt_alt": "оса",
+          "correct": "О",
+          "options": [
+            "С",
+            "А",
+            "О",
+            "М"
+          ]
+        }
+      ],
+      "spark_kind": "letter"
     },
     {
       "id": "spread",
       "title": "Азбука М, У, О",
-      "chapter": "Буква",
+      "chapter": "Искорка 3 · Слог",
       "kind": "alphabet_book",
       "mechanic": "azbuka_fill",
       "slovik_line": "Вспомним буквы в азбуке. Выбери картинку на каждую букву: М, У и О.",
       "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-spread",
+      "audio": "bo-m1-l03-review",
       "picture_only": false,
       "hint": "Картинка должна начинаться на нужную букву.",
       "success_msg": "Буквы М, У и О с нами!",
@@ -766,30 +738,53 @@
       "spark_group": "letter"
     },
     {
-      "id": "quest",
-      "title": "С какой буквы?",
-      "kind": "find",
-      "mechanic": "picture_first_letter",
-      "slovik_line": "Это оса. С какой буквы начинается слово? Нажми букву.",
-      "slovik_pose": "hint",
+      "id": "join_mo",
+      "title": "Мост дружбы",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "drag_join",
+      "slovik_line": "Познакомь М и О. Веди М по мостику к О — получится мо.",
+      "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l03-quest",
+      "audio": "bo-m1-l03-join",
+      "hint": "Перетащи М к О по мостику",
+      "left": {
+        "id": "M",
+        "label": "М"
+      },
+      "right": {
+        "id": "O",
+        "label": "О"
+      },
+      "result": {
+        "label": "МО",
+        "sound": "snd-mo"
+      },
       "spark": false,
-      "hint": "Оса начинается на О.",
-      "rounds": [
-        {
-          "prompt_text": "С какой буквы?",
-          "prompt_image": "/static/early/letters/wasp.png",
-          "prompt_alt": "оса",
-          "correct": "О",
-          "options": [
-            "А",
-            "М",
-            "О",
-            "У"
-          ]
-        }
-      ]
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots",
+      "title": "Слог МО",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Сложим слог мо. М и О рядом.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l03-slots",
+      "result_sound": "snd-mo",
+      "targets": [
+        "М",
+        "О"
+      ],
+      "options": [
+        "С",
+        "М",
+        "О",
+        "А"
+      ],
+      "result_label": "МО",
+      "spark": true,
+      "spark_group": "syllable",
+      "spark_kind": "syllable"
     },
     {
       "id": "chest",

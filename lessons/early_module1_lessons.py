@@ -114,14 +114,22 @@ def _reward(*, audio: str, line: str, parent: str, badge_line: str) -> dict[str,
     }
 
 
-def _sort_big_small(letter: str, *, audio: str, scene: str = SCENE_L) -> dict[str, Any]:
+def _sort_big_small(
+    letter: str,
+    *,
+    audio: str,
+    scene: str = SCENE_L,
+    spark: bool = False,
+    spark_kind: str | None = None,
+    chapter: str = "Искорка 2 · Буква",
+) -> dict[str, Any]:
     """Общая станция: большая / маленькая буква."""
     big = letter.upper()
     small = letter.lower()
-    return {
+    st: dict[str, Any] = {
         "id": "sort",
         "title": f"Большая и маленькая {big}",
-        "chapter": "Искорка 2 · Буква",
+        "chapter": chapter,
         "kind": "sort_two",
         "slovik_line": f"Большая {big} и маленькая {small} — одна буква. Разложи.",
         "slovik_pose": "hint",
@@ -137,12 +145,21 @@ def _sort_big_small(letter: str, *, audio: str, scene: str = SCENE_L) -> dict[st
             {"id": f"{big}3", "label": big},
             {"id": f"{small}3", "label": small},
         ],
-        "spark": False,
+        "spark": spark,
         "spark_group": "letter",
     }
+    if spark and spark_kind:
+        st["spark_kind"] = spark_kind
+    return st
 
 
-def _chase_meadow(letter: str, *, audio: str = "vo-catch", scene: str = SCENE_L) -> dict[str, Any]:
+def _chase_meadow(
+    letter: str,
+    *,
+    audio: str,
+    scene: str = SCENE_L,
+    slovik_line: str | None = None,
+) -> dict[str, Any]:
     """Общая станция: ловля большой и маленькой буквы на поляне."""
     big = letter.upper()
     small = letter.lower()
@@ -167,7 +184,8 @@ def _chase_meadow(letter: str, *, audio: str = "vo-catch", scene: str = SCENE_L)
         "chapter": "Искорка 2 · Буква",
         "kind": "scene_hunt",
         "mechanic": "letter_chase",
-        "slovik_line": (
+        "slovik_line": slovik_line
+        or (
             f"Теперь поймай их на поляне. Найди большую {big} и маленькую {small}. "
             "Не спутай с другими буквами."
         ),
@@ -387,8 +405,8 @@ def _letters_1() -> list[dict[str, Any]]:
             "spark": False,
             "spark_group": "letter",
         },
-        _sort_big_small("М", audio="bo-m1-l01-grid"),
-        _chase_meadow("М", audio="vo-catch"),
+        _sort_big_small("М", audio="bo-m1-l01-sort"),
+        _chase_meadow("М", audio="bo-m1-l01-chase"),
         {
             "id": "grid",
             "title": "Найди все М",
@@ -447,7 +465,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
-            "audio": "vo-workshop",
+            "audio": "bo-m1-l01-first",
             "spark": False,
             "spark_group": "letter",
             "hint": "Скажи слово вслух и найди первую букву.",
@@ -485,7 +503,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "slovik_line": "Найди на доске все буквы М. Их несколько.",
             "slovik_pose": "hint",
             "scene_image": SCENE_BOARD,
-            "audio": "bo-m1-l01-grid",
+            "audio": "bo-m1-l01-board",
             "layout": "grid",
             "grid_cols": 5,
             "moving": False,
@@ -524,7 +542,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "slovik_line": "На поляне появится буква М. Нажми на неё — три раза в разных местах!",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "vo-catch",
+            "audio": "bo-m1-l01-catch",
             "letter": "М",
             "appear_on_scene": True,
             "catches": 3,
@@ -557,7 +575,7 @@ def _letters_1() -> list[dict[str, Any]]:
             "slovik_line": "Познакомь А и М. Веди А по мостику к М — получится ам.",
             "slovik_pose": "invite",
             "scene_image": SCENE_L,
-            "audio": "vo-bridge",
+            "audio": "bo-m1-l01-join",
             "hint": "Перетащи А к М по мостику",
             "left": {"id": "A", "label": "А"},
             "right": {"id": "M", "label": "М"},
@@ -662,7 +680,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Сложи страницу У. Выбери картинки, которые начинаются на букву У.",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "bo-m1-l02-or",
+            "audio": "bo-m1-l02-azbuka",
             "letter": "У",
             "letter_image": IMG["letter_u"],
             "book_title": "Утка и Ветер",
@@ -749,7 +767,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Соедини точки по порядку — получится буква У.",
             "slovik_pose": "hint",
             "scene_image": SCENE_TRAIL,
-            "audio": "bo-m1-l02-hop",
+            "audio": "bo-m1-l02-build",
             "letter": "У",
             "hint": "Жми точки по номерам: 1, 2, 3…",
             "success_msg": "Буква У получилась!",
@@ -794,7 +812,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Теперь поймай их на поляне. Найди большую У и маленькую у. Не спутай с другими буквами.",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
-            "audio": "vo-catch",
+            "audio": "bo-m1-l02-chase",
             "moving": True,
             "move_speed": 5,
             "success_msg": "Поймал и У, и маленькую у!",
@@ -847,7 +865,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
-            "audio": "vo-workshop",
+            "audio": "bo-m1-l02-first",
             "spark": False,
             "spark_group": "letter",
             "hint": "Скажи слово вслух и найди первую букву.",
@@ -884,7 +902,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Найди на доске все буквы У. Их несколько.",
             "slovik_pose": "hint",
             "scene_image": SCENE_BOARD,
-            "audio": "bo-m1-l02-grid",
+            "audio": "bo-m1-l02-board",
             "layout": "grid",
             "grid_cols": 5,
             "moving": False,
@@ -923,7 +941,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "На поляне появится буква У. Нажми на неё — три раза в разных местах!",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "vo-catch",
+            "audio": "bo-m1-l02-catch",
             "letter": "У",
             "appear_on_scene": True,
             "catches": 3,
@@ -956,7 +974,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Познакомь М и У. Веди М по мостику к У — получится му.",
             "slovik_pose": "invite",
             "scene_image": SCENE_L,
-            "audio": "vo-bridge",
+            "audio": "bo-m1-l02-join",
             "hint": "Перетащи М к У по мостику",
             "left": {"id": "M", "label": "М"},
             "right": {"id": "U", "label": "У"},
@@ -988,7 +1006,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Теперь ум. У и М рядом — получается ум.",
             "slovik_pose": "invite",
             "scene_image": SCENE_L,
-            "audio": "vo-workshop",
+            "audio": "bo-m1-l02-slots-um",
             "targets": ["У", "М"],
             "options": ["А", "У", "О", "М"],
             "result_label": "УМ",
@@ -1004,7 +1022,7 @@ def _letters_2() -> list[dict[str, Any]]:
             "slovik_line": "Как говорит корова? Нажми слог.",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
-            "audio": "vo-workshop",
+            "audio": "bo-m1-l02-cow",
             "spark": False,
             "hint": "Корова говорит му.",
             "rounds": [
@@ -1094,7 +1112,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "Сложи страницу О. Выбери картинки, которые начинаются на букву О.",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "bo-m1-l03-spread",
+            "audio": "bo-m1-l03-azbuka",
             "letter": "О",
             "letter_image": IMG["letter_o"],
             "book_title": "О",
@@ -1174,7 +1192,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "Соедини точки по порядку — получится буква О.",
             "slovik_pose": "hint",
             "scene_image": SCENE_WATER,
-            "audio": "bo-m1-l03-hop",
+            "audio": "bo-m1-l03-build",
             "letter": "О",
             "hint": "Жми точки по номерам: 1, 2, 3…",
             "success_msg": "Буква О получилась!",
@@ -1197,7 +1215,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "kind": "sort_two",
             "slovik_line": "Большая О и маленькая о — одна буква. Разложи.",
             "scene_image": SCENE_L,
-            "audio": "bo-m1-l03-build",
+            "audio": "bo-m1-l03-sort",
             "left": {"label": "О", "correct": ["O1", "O2", "O3"]},
             "right": {"label": "о", "correct": ["o1", "o2", "o3"]},
             "options": [
@@ -1221,7 +1239,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "Теперь поймай их на поляне. Найди большую О и маленькую о. Не спутай с другими буквами.",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
-            "audio": "vo-catch",
+            "audio": "bo-m1-l03-chase",
             "moving": True,
             "move_speed": 5,
             "success_msg": "Поймал и О, и маленькую о!",
@@ -1267,7 +1285,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
-            "audio": "vo-workshop",
+            "audio": "bo-m1-l03-first",
             "spark": False,
             "spark_group": "letter",
             "hint": "Скажи слово вслух и найди первую букву.",
@@ -1304,7 +1322,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "Найди на доске все буквы О. Их несколько.",
             "slovik_pose": "hint",
             "scene_image": SCENE_BOARD,
-            "audio": "bo-m1-l03-count",
+            "audio": "bo-m1-l03-board",
             "layout": "grid",
             "grid_cols": 5,
             "moving": False,
@@ -1343,7 +1361,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "На поляне появится буква О. Нажми на неё — три раза в разных местах!",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "vo-catch",
+            "audio": "bo-m1-l03-catch",
             "letter": "О",
             "appear_on_scene": True,
             "catches": 3,
@@ -1376,7 +1394,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "Познакомь М и О. Веди М по мостику к О — получится мо.",
             "slovik_pose": "invite",
             "scene_image": SCENE_L,
-            "audio": "vo-bridge",
+            "audio": "bo-m1-l03-join",
             "hint": "Перетащи М к О по мостику",
             "left": {"id": "M", "label": "М"},
             "right": {"id": "O", "label": "О"},
@@ -1409,7 +1427,7 @@ def _letters_3() -> list[dict[str, Any]]:
             "slovik_line": "Вспомним буквы в азбуке. Выбери картинку на каждую букву: М, У и О.",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "bo-m1-l03-spread",
+            "audio": "bo-m1-l03-review",
             "picture_only": False,
             "hint": "Картинка должна начинаться на нужную букву.",
             "success_msg": "Буквы М, У и О с нами!",
@@ -1516,7 +1534,7 @@ def _letters_4() -> list[dict[str, Any]]:
             "slovik_line": "Сложи страницу С. Выбери картинки, которые начинаются на букву С.",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "bo-m1-l04-or",
+            "audio": "bo-m1-l04-azbuka",
             "letter": "С",
             "letter_image": IMG["letter_s"],
             "book_title": "С",
@@ -1594,7 +1612,7 @@ def _letters_4() -> list[dict[str, Any]]:
             "slovik_line": "Соедини точки по порядку — получится буква С.",
             "slovik_pose": "hint",
             "scene_image": SCENE_WATER,
-            "audio": "bo-m1-l04-hop",
+            "audio": "bo-m1-l04-build",
             "letter": "С",
             "hint": "Жми точки по номерам: 1, 2, 3…",
             "success_msg": "Буква С получилась!",
@@ -1610,8 +1628,8 @@ def _letters_4() -> list[dict[str, Any]]:
             "spark": False,
             "spark_group": "letter",
         },
-        _sort_big_small("С", audio="bo-m1-l04-grid"),
-        _chase_meadow("С", audio="vo-catch"),
+        _sort_big_small("С", audio="bo-m1-l04-sort"),
+        _chase_meadow("С", audio="bo-m1-l04-chase"),
         {
             "id": "grid",
             "title": "Найди все С",
@@ -1647,7 +1665,7 @@ def _letters_4() -> list[dict[str, Any]]:
             "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
             "slovik_pose": "hint",
             "scene_image": SCENE_L,
-            "audio": "vo-workshop",
+            "audio": "bo-m1-l04-first",
             "spark": False,
             "spark_group": "letter",
             "hint": "Скажи слово вслух и найди первую букву.",
@@ -1674,8 +1692,8 @@ def _letters_4() -> list[dict[str, Any]]:
                 },
             ],
         },
-        _board_letters("С", audio="bo-m1-l04-grid"),
-        _meadow_catch("С", audio="vo-catch"),
+        _board_letters("С", audio="bo-m1-l04-board"),
+        _meadow_catch("С", audio="bo-m1-l04-catch"),
         {
             "id": "count",
             "title": "Шесть С",
@@ -1708,7 +1726,7 @@ def _letters_4() -> list[dict[str, Any]]:
             "slovik_line": "Познакомь С и А. Веди С по мостику к А — получится са.",
             "slovik_pose": "invite",
             "scene_image": SCENE_L,
-            "audio": "vo-bridge",
+            "audio": "bo-m1-l04-join",
             "hint": "Перетащи С к А по мостику",
             "left": {"id": "S", "label": "С"},
             "right": {"id": "A", "label": "А"},
@@ -1739,7 +1757,7 @@ def _letters_4() -> list[dict[str, Any]]:
             "slovik_line": "Теперь со. С и О рядом — получается со.",
             "slovik_pose": "invite",
             "scene_image": SCENE_L,
-            "audio": "vo-workshop",
+            "audio": "bo-m1-l04-slots-so",
             "targets": ["С", "О"],
             "options": ["А", "С", "М", "О"],
             "result_label": "СО",
@@ -1778,7 +1796,7 @@ def _letters_4() -> list[dict[str, Any]]:
             "slovik_line": "Вспомним буквы в азбуке. Выбери картинку на каждую: М, У, О и С.",
             "slovik_pose": "talk",
             "scene_image": SCENE_L,
-            "audio": "bo-m1-l03-spread",
+            "audio": "bo-m1-l04-review",
             "picture_only": False,
             "hint": "Картинка должна начинаться на нужную букву.",
             "success_msg": "Буквы М, У, О и С с нами!",
@@ -2457,11 +2475,188 @@ def _stories_4() -> list[dict[str, Any]]:
     ]
 
 
+LETTERS_ORDER: dict[int, list[str]] = {
+    # Порядок и искорки — из docs/early-courses/09-voice-actor-letters-module1.docx
+    # Станции без номера в листе сюда не входят (удалены как лишние/повторы).
+    1: [
+        "trail",
+        "meet",
+        "motor",
+        "or",
+        "spread",  # ★ звук
+        "build",
+        "quest",
+        "grid",
+        "hop",
+        "chase",
+        "first_letter",
+        "catch",
+        "sort",  # ★ буква
+        "join_am",
+        "slot_am",  # ★ слог
+        "chest",
+    ],
+    2: [
+        "trail",
+        "meet",
+        "echo",
+        "azbuka",  # ★ звук
+        "build",
+        "hop",
+        "grid",
+        "catch",
+        "maze",
+        "first_letter",  # ★ буква
+        "join_mu",
+        "slots",
+        "or",
+        "quest",
+        "slots_um",  # ★ слог
+        "chest",
+    ],
+    3: [
+        "trail",
+        "meet",
+        "round",
+        "azbuka",  # ★ звук
+        "build",
+        "hop",
+        "chase",
+        "quest",
+        "count",
+        "board",
+        "catch",
+        "sort",
+        "first_letter",  # ★ буква
+        "spread",  # review (в листе тоже 13 — сразу после first)
+        "join_mo",
+        "slots",  # ★ слог
+        "chest",
+    ],
+    4: [
+        "trail",
+        "meet",
+        "hiss",
+        "hop",
+        "pause",
+        "azbuka",  # ★ звук
+        "build",
+        "grid",
+        "chase",
+        "first_letter",
+        "catch",
+        "count",
+        "sort",  # ★ буква
+        "spread",
+        "join_sa",
+        "slots",
+        "slots_so",
+        "quest",  # ★ слог
+        "chest",
+    ],
+}
+
+LETTERS_SPARKS: dict[int, dict[str, str]] = {
+    1: {"spread": "sound", "sort": "letter", "slot_am": "syllable"},
+    2: {"azbuka": "sound", "first_letter": "letter", "slots_um": "syllable"},
+    3: {"azbuka": "sound", "first_letter": "letter", "slots": "syllable"},
+    4: {"azbuka": "sound", "sort": "letter", "quest": "syllable"},
+}
+
+LETTERS_LINES: dict[int, dict[str, str]] = {
+    1: {
+        "trail": "На тропе зажглась новая буква. Помнишь машину? Она гудит: м-м-м. Познакомься с буквой М.",
+        "motor": "Что гудит м-м-м?",
+        "chase": "Теперь поймай их на поляне. Найди букву М. Не спутай с другими буквами.",
+        "quest": "Медведь начинается на М. Найди его.",
+    },
+    2: {
+        "hop": "Буквы бегают по поляне! Лови букву У. Другие буквы не трогай.",
+        "slots": "Склеим: му, М и У рядом — получается МУ",
+    },
+    3: {
+        "chase": "Теперь поймай их на поляне. Найди все буквы О. Не спутай с другими буквами.",
+    },
+    4: {
+        "hop": "Найди букву С. Она говорит с-с-с.",
+        "grid": "Теперь найди все буквы С на доске.",
+        "chase": "Теперь поймай их на поляне. Найди все буквы С. Не спутай с другими буквами.",
+        "chest": "Ура, все искорки с нами! Теперь ты знаешь букву С.",
+    },
+}
+
+_CHAPTER_BY_KIND = {
+    "sound": "Искорка 1 · Звук",
+    "letter": "Искорка 2 · Буква",
+    "syllable": "Искорка 3 · Слог",
+}
+
+
+def _finalize_letter_lesson(
+    stations: list[dict[str, Any]],
+    order: list[str],
+    sparks: dict[str, str],
+    lines: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    """Собирает урок в порядке листа: только нумерованные станции, искорки как помечено."""
+    by_id = {s["id"]: deepcopy(s) for s in stations}
+    missing = [sid for sid in order if sid not in by_id]
+    if missing:
+        raise KeyError(f"letter stations missing ids: {missing}")
+
+    spark_ids = set(sparks)
+    # Секции по ближайшей следующей искорке в порядке.
+    section_for: dict[str, str] = {}
+    pending_kind = "sound"
+    spark_kinds_in_order = [sparks[sid] for sid in order if sid in sparks]
+    kind_iter = iter(spark_kinds_in_order)
+    pending_kind = next(kind_iter, "letter")
+    for sid in order:
+        section_for[sid] = pending_kind
+        if sid in sparks:
+            pending_kind = next(kind_iter, "syllable")
+
+    out: list[dict[str, Any]] = []
+    for sid in order:
+        st = by_id[sid]
+        st["spark"] = False
+        st.pop("spark_kind", None)
+        if sid in sparks:
+            kind = sparks[sid]
+            st["spark"] = True
+            st["spark_kind"] = kind
+            st["spark_group"] = kind
+        elif "spark_group" not in st and sid not in ("trail", "meet", "chest", "pause"):
+            st["spark_group"] = section_for[sid]
+        if sid not in ("trail", "meet", "chest") and sid != "pause":
+            st["chapter"] = _CHAPTER_BY_KIND.get(section_for[sid], st.get("chapter") or "Буква")
+        if lines and sid in lines:
+            st["slovik_line"] = lines[sid]
+        # М · квест только картинка медведя (без слога) — по тексту листа.
+        if sid == "quest" and st.get("audio") == "bo-m1-l01-quest":
+            st["title"] = "Медведь на М"
+            st["steps"] = [
+                {
+                    "kind": "find",
+                    "prompt": "Картинка на М",
+                    "correct": "bear",
+                    "options": [
+                        _opt("bear", "Медведь", IMG["bear"]),
+                        _opt("sun", "Солнце", IMG["sun"]),
+                        _opt("kot", "Кот", IMG["kot"]),
+                    ],
+                }
+            ]
+            st["hint"] = "Картинка медведя."
+        out.append(st)
+    return out
+
+
 LETTERS: dict[int, list[dict[str, Any]]] = {
-    1: _letters_1(),
-    2: _letters_2(),
-    3: _letters_3(),
-    4: _letters_4(),
+    1: _finalize_letter_lesson(_letters_1(), LETTERS_ORDER[1], LETTERS_SPARKS[1], LETTERS_LINES[1]),
+    2: _finalize_letter_lesson(_letters_2(), LETTERS_ORDER[2], LETTERS_SPARKS[2], LETTERS_LINES[2]),
+    3: _finalize_letter_lesson(_letters_3(), LETTERS_ORDER[3], LETTERS_SPARKS[3], LETTERS_LINES[3]),
+    4: _finalize_letter_lesson(_letters_4(), LETTERS_ORDER[4], LETTERS_SPARKS[4], LETTERS_LINES[4]),
 }
 
 STORIES: dict[int, list[dict[str, Any]]] = {

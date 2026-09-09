@@ -25,7 +25,7 @@
       "id": "trail",
       "title": "Тропа букв",
       "kind": "intro_video",
-      "slovik_line": "На тропе зажглась новая буква. Помнишь машину? Она говорит: м-м-м. Познакомься с буквой М.",
+      "slovik_line": "На тропе зажглась новая буква. Помнишь машину? Она гудит: м-м-м. Познакомься с буквой М.",
       "slovik_pose": "wave",
       "scene_image": "/static/early/letters/scene-m-meadow-intro.jpg",
       "audio": "bo-m1-l01-hi",
@@ -50,9 +50,72 @@
       "spark": false
     },
     {
+      "id": "motor",
+      "title": "Кто гудит?",
+      "chapter": "Искорка 1 · Звук",
+      "kind": "listen_pick",
+      "slovik_line": "Что гудит м-м-м?",
+      "slovik_pose": "listen",
+      "scene_image": "/static/early/letters/scene-missing.jpg",
+      "audio": "bo-m1-l01-motor",
+      "picture_only": true,
+      "rounds": [
+        {
+          "sound": "snd-m",
+          "correct": "motor",
+          "options": [
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "rain",
+              "label": "Дождь",
+              "image": "/static/early/letters/rain.png"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "sound"
+    },
+    {
+      "id": "or",
+      "title": "Машина или солнце",
+      "chapter": "Искорка 1 · Звук",
+      "kind": "listen_pick",
+      "mechanic": "or_choice",
+      "slovik_line": "Буква М. Что начинается на букву М — машина или солнце?",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l01-or",
+      "picture_only": true,
+      "rounds": [
+        {
+          "sound": "snd-m",
+          "correct": "motor",
+          "options": [
+            {
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
+            },
+            {
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/sun-smile.png"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
       "id": "spread",
       "title": "Первая азбука",
-      "chapter": "Буква",
+      "chapter": "Искорка 1 · Звук",
       "kind": "alphabet_book",
       "mechanic": "azbuka_fill",
       "slovik_line": "Сложи свою первую азбуку. Выбери картинки, которые начинаются на букву М.",
@@ -97,45 +160,151 @@
           ]
         }
       ],
+      "spark": true,
+      "spark_group": "sound",
+      "spark_kind": "sound"
+    },
+    {
+      "id": "build",
+      "title": "Обведи М",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "dot_connect",
+      "mechanic": "dot_connect",
+      "slovik_line": "Соедини точки по порядку — получится буква М.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l01-build",
+      "letter": "М",
+      "hint": "Жми точки по номерам: 1, 2, 3…",
+      "success_msg": "Буква М получилась!",
+      "dots": [
+        {
+          "n": 1,
+          "x": 18,
+          "y": 88
+        },
+        {
+          "n": 2,
+          "x": 18,
+          "y": 12
+        },
+        {
+          "n": 3,
+          "x": 50,
+          "y": 72
+        },
+        {
+          "n": 4,
+          "x": 82,
+          "y": 12
+        },
+        {
+          "n": 5,
+          "x": 82,
+          "y": 88
+        }
+      ],
       "spark": false,
       "spark_group": "letter"
     },
     {
-      "id": "motor",
-      "title": "Кто гудит?",
-      "chapter": "Искорка 1 · Звук",
-      "kind": "listen_pick",
-      "slovik_line": "Что гудит м-м-м? Машина или дождь?",
-      "slovik_pose": "listen",
-      "scene_image": "/static/early/letters/scene-missing.jpg",
-      "audio": "bo-m1-l01-motor",
-      "picture_only": true,
-      "rounds": [
+      "id": "quest",
+      "title": "Медведь на М",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "mini_quest",
+      "slovik_line": "Медведь начинается на М. Найди его.",
+      "slovik_pose": "joy",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l01-quest",
+      "spark": false,
+      "show_all_steps": true,
+      "hint": "Картинка медведя.",
+      "steps": [
         {
-          "sound": "snd-m",
-          "correct": "motor",
+          "kind": "find",
+          "prompt": "Картинка на М",
+          "correct": "bear",
           "options": [
             {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
+              "id": "bear",
+              "label": "Медведь",
+              "image": "/static/early/letters/bear-wise.png"
             },
             {
-              "id": "rain",
-              "label": "Дождь",
-              "image": "/static/early/letters/rain.png"
+              "id": "sun",
+              "label": "Солнце",
+              "image": "/static/early/letters/sun-smile.png"
+            },
+            {
+              "id": "kot",
+              "label": "Кот",
+              "image": "/static/early/letters/kot.png"
             }
           ]
         }
       ],
-      "spark": true,
-      "spark_kind": "sound",
-      "spark_group": "sound"
+      "spark_group": "letter"
+    },
+    {
+      "id": "grid",
+      "title": "Найди все М",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "letter_puzzle",
+      "mechanic": "letter_grid",
+      "slovik_line": "Найди на доске все буквы М. Их несколько.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-sparks.jpg",
+      "audio": "bo-m1-l01-grid",
+      "slots": 4,
+      "pieces": [
+        {
+          "id": "m1",
+          "label": "М",
+          "correct": true
+        },
+        {
+          "id": "a1",
+          "label": "А",
+          "correct": false
+        },
+        {
+          "id": "m2",
+          "label": "М",
+          "correct": true
+        },
+        {
+          "id": "u1",
+          "label": "У",
+          "correct": false
+        },
+        {
+          "id": "m3",
+          "label": "М",
+          "correct": true
+        },
+        {
+          "id": "o1",
+          "label": "О",
+          "correct": false
+        },
+        {
+          "id": "s1",
+          "label": "С",
+          "correct": false
+        },
+        {
+          "id": "m4",
+          "label": "М",
+          "correct": true
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
     },
     {
       "id": "hop",
       "title": "Лабиринт из М",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "letter_maze",
       "mechanic": "letter_hop",
       "slovik_line": "Прыгай только на букву, которая говорит м-м-м.",
@@ -192,112 +361,15 @@
       "spark_group": "letter"
     },
     {
-      "id": "build",
-      "title": "Обведи М",
-      "chapter": "Буква",
-      "kind": "dot_connect",
-      "mechanic": "dot_connect",
-      "slovik_line": "Соедини точки по порядку — получится буква М.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l01-build",
-      "letter": "М",
-      "hint": "Жми точки по номерам: 1, 2, 3…",
-      "success_msg": "Буква М получилась!",
-      "dots": [
-        {
-          "n": 1,
-          "x": 18,
-          "y": 88
-        },
-        {
-          "n": 2,
-          "x": 18,
-          "y": 12
-        },
-        {
-          "n": 3,
-          "x": 50,
-          "y": 72
-        },
-        {
-          "n": 4,
-          "x": 82,
-          "y": 12
-        },
-        {
-          "n": 5,
-          "x": 82,
-          "y": 88
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "sort",
-      "title": "Большая и маленькая М",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "sort_two",
-      "slovik_line": "Большая М и маленькая м — одна буква. Разложи.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-grid",
-      "left": {
-        "label": "М",
-        "correct": [
-          "М1",
-          "М2",
-          "М3"
-        ]
-      },
-      "right": {
-        "label": "м",
-        "correct": [
-          "м1",
-          "м2",
-          "м3"
-        ]
-      },
-      "options": [
-        {
-          "id": "М1",
-          "label": "М"
-        },
-        {
-          "id": "м1",
-          "label": "м"
-        },
-        {
-          "id": "М2",
-          "label": "М"
-        },
-        {
-          "id": "м2",
-          "label": "м"
-        },
-        {
-          "id": "М3",
-          "label": "М"
-        },
-        {
-          "id": "м3",
-          "label": "м"
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
       "id": "chase",
       "title": "Поймай М на поляне",
       "chapter": "Искорка 2 · Буква",
       "kind": "scene_hunt",
       "mechanic": "letter_chase",
-      "slovik_line": "Теперь поймай их на поляне. Найди большую М и маленькую м. Не спутай с другими буквами.",
+      "slovik_line": "Теперь поймай их на поляне. Найди букву М. Не спутай с другими буквами.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
+      "audio": "bo-m1-l01-chase",
       "moving": true,
       "move_speed": 5,
       "success_msg": "Поймал и М, и маленькую м!",
@@ -383,104 +455,15 @@
       "spark_group": "letter"
     },
     {
-      "id": "grid",
-      "title": "Найди все М",
-      "chapter": "Буква",
-      "kind": "letter_puzzle",
-      "mechanic": "letter_grid",
-      "slovik_line": "Найди на доске все буквы М. Их несколько.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-sparks.jpg",
-      "audio": "bo-m1-l01-grid",
-      "slots": 4,
-      "pieces": [
-        {
-          "id": "m1",
-          "label": "М",
-          "correct": true
-        },
-        {
-          "id": "a1",
-          "label": "А",
-          "correct": false
-        },
-        {
-          "id": "m2",
-          "label": "М",
-          "correct": true
-        },
-        {
-          "id": "u1",
-          "label": "У",
-          "correct": false
-        },
-        {
-          "id": "m3",
-          "label": "М",
-          "correct": true
-        },
-        {
-          "id": "o1",
-          "label": "О",
-          "correct": false
-        },
-        {
-          "id": "s1",
-          "label": "С",
-          "correct": false
-        },
-        {
-          "id": "m4",
-          "label": "М",
-          "correct": true
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
-      "id": "or",
-      "title": "Машина или солнце",
-      "chapter": "Искорка 2 · Буква",
-      "kind": "listen_pick",
-      "mechanic": "or_choice",
-      "slovik_line": "Буква М. Что начинается на букву М — машина или солнце?",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-or",
-      "picture_only": true,
-      "rounds": [
-        {
-          "sound": "snd-m",
-          "correct": "motor",
-          "options": [
-            {
-              "id": "motor",
-              "label": "Машина",
-              "image": "/static/early/letters/motor.png"
-            },
-            {
-              "id": "sun",
-              "label": "Солнце",
-              "image": "/static/early/letters/sun-smile.png"
-            }
-          ]
-        }
-      ],
-      "spark": true,
-      "spark_kind": "letter",
-      "spark_group": "letter"
-    },
-    {
       "id": "first_letter",
       "title": "Первая буква",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "find",
       "mechanic": "picture_first_letter",
       "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
       "slovik_pose": "hint",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-workshop",
+      "audio": "bo-m1-l01-first",
       "spark": false,
       "spark_group": "letter",
       "hint": "Скажи слово вслух и найди первую букву.",
@@ -524,121 +507,15 @@
       ]
     },
     {
-      "id": "board",
-      "title": "Доска букв",
-      "chapter": "Буква",
-      "kind": "scene_hunt",
-      "mechanic": "letter_board",
-      "board_panel": true,
-      "slovik_line": "Найди на доске все буквы М. Их несколько.",
-      "slovik_pose": "hint",
-      "scene_image": "/static/early/letters/scene-forest-board.jpg",
-      "audio": "bo-m1-l01-grid",
-      "layout": "grid",
-      "grid_cols": 5,
-      "moving": false,
-      "correct_ids": [
-        "m1",
-        "m2",
-        "m3",
-        "m4",
-        "m5"
-      ],
-      "hotspots": [
-        {
-          "id": "a1",
-          "label": "А"
-        },
-        {
-          "id": "m1",
-          "label": "М"
-        },
-        {
-          "id": "o1",
-          "label": "О"
-        },
-        {
-          "id": "u1",
-          "label": "У"
-        },
-        {
-          "id": "s1",
-          "label": "С"
-        },
-        {
-          "id": "k1",
-          "label": "К"
-        },
-        {
-          "id": "m2",
-          "label": "М"
-        },
-        {
-          "id": "n1",
-          "label": "Н"
-        },
-        {
-          "id": "a2",
-          "label": "А"
-        },
-        {
-          "id": "o2",
-          "label": "О"
-        },
-        {
-          "id": "u2",
-          "label": "У"
-        },
-        {
-          "id": "m3",
-          "label": "М"
-        },
-        {
-          "id": "s2",
-          "label": "С"
-        },
-        {
-          "id": "k2",
-          "label": "К"
-        },
-        {
-          "id": "a3",
-          "label": "А"
-        },
-        {
-          "id": "o3",
-          "label": "О"
-        },
-        {
-          "id": "m4",
-          "label": "М"
-        },
-        {
-          "id": "u3",
-          "label": "У"
-        },
-        {
-          "id": "n2",
-          "label": "Н"
-        },
-        {
-          "id": "m5",
-          "label": "М"
-        }
-      ],
-      "spark": false,
-      "spark_group": "letter"
-    },
-    {
       "id": "catch",
       "title": "Поймай М",
-      "chapter": "Буква",
+      "chapter": "Искорка 2 · Буква",
       "kind": "catch_letter",
       "mechanic": "letter_meadow",
       "slovik_line": "На поляне появится буква М. Нажми на неё — три раза в разных местах!",
       "slovik_pose": "talk",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-catch",
+      "audio": "bo-m1-l01-catch",
       "letter": "М",
       "appear_on_scene": true,
       "catches": 3,
@@ -676,13 +553,59 @@
       "spark_group": "letter"
     },
     {
-      "id": "pause",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Встань. Погуди как машина: м-м-м. Без экрана.",
-      "audio": "bo-m1-l01-pause",
-      "spark": false,
-      "hint": "Встань и тихо скажи м-м-м, как машина. Потом вернёмся."
+      "id": "sort",
+      "title": "Большая и маленькая М",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "sort_two",
+      "slovik_line": "Большая М и маленькая м — одна буква. Разложи.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l01-sort",
+      "left": {
+        "label": "М",
+        "correct": [
+          "М1",
+          "М2",
+          "М3"
+        ]
+      },
+      "right": {
+        "label": "м",
+        "correct": [
+          "м1",
+          "м2",
+          "м3"
+        ]
+      },
+      "options": [
+        {
+          "id": "М1",
+          "label": "М"
+        },
+        {
+          "id": "м1",
+          "label": "м"
+        },
+        {
+          "id": "М2",
+          "label": "М"
+        },
+        {
+          "id": "м2",
+          "label": "м"
+        },
+        {
+          "id": "М3",
+          "label": "М"
+        },
+        {
+          "id": "м3",
+          "label": "м"
+        }
+      ],
+      "spark": true,
+      "spark_group": "letter",
+      "spark_kind": "letter"
     },
     {
       "id": "join_am",
@@ -692,7 +615,7 @@
       "slovik_line": "Познакомь А и М. Веди А по мостику к М — получится ам.",
       "slovik_pose": "invite",
       "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "vo-bridge",
+      "audio": "bo-m1-l01-join",
       "hint": "Перетащи А к М по мостику",
       "left": {
         "id": "A",
@@ -708,8 +631,7 @@
         "image": "/static/early/letters/bear-wise.png",
         "image_alt": "медведь"
       },
-      "spark": true,
-      "spark_kind": "syllable",
+      "spark": false,
       "spark_group": "syllable"
     },
     {
@@ -734,56 +656,9 @@
       ],
       "result_label": "АМ",
       "result_image": "/static/early/letters/bear-wise.png",
-      "spark": false,
-      "spark_group": "syllable"
-    },
-    {
-      "id": "quest",
-      "title": "Слог АМ",
-      "chapter": "Мини-квест",
-      "kind": "mini_quest",
-      "slovik_line": "Медведь начинается на М. Найди его. Потом слог ам.",
-      "slovik_pose": "joy",
-      "scene_image": "/static/early/letters/scene-invite.jpg",
-      "audio": "bo-m1-l01-quest",
-      "spark": false,
-      "show_all_steps": true,
-      "hint": "Картинка медведя. Потом слог АМ.",
-      "steps": [
-        {
-          "kind": "find",
-          "prompt": "Картинка на М",
-          "correct": "bear",
-          "options": [
-            {
-              "id": "bear",
-              "label": "Медведь",
-              "image": "/static/early/letters/bear-wise.png"
-            },
-            {
-              "id": "sun",
-              "label": "Солнце",
-              "image": "/static/early/letters/sun-smile.png"
-            },
-            {
-              "id": "kot",
-              "label": "Кот",
-              "image": "/static/early/letters/kot.png"
-            }
-          ]
-        },
-        {
-          "kind": "find",
-          "prompt": "Слог",
-          "correct": "АМ",
-          "options": [
-            "АМ",
-            "МА",
-            "М",
-            "А"
-          ]
-        }
-      ]
+      "spark": true,
+      "spark_group": "syllable",
+      "spark_kind": "syllable"
     },
     {
       "id": "chest",
