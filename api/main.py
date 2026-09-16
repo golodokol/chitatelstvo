@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from config.settings import PUBLIC_BASE_URL, ROOT
-from api.routes import admin, auth, cabinet_api, chest, chest_v1, early_trial, legal, lesson, lesson_v1, max_bot, pages, progress, quiz, telegram, test_lesson, webhook
+from api.routes import admin, auth, cabinet_api, chest, chest_v1, early_trial, expedition, legal, lesson, lesson_v1, max_bot, pages, progress, quiz, telegram, test_lesson, webhook
 
 app = FastAPI(
     title="Литературная школа онлайн",
@@ -35,6 +35,7 @@ def llms_txt() -> FileResponse:
 
 app.include_router(admin.router)
 app.include_router(pages.router)
+app.include_router(expedition.router)
 app.include_router(legal.router)
 app.include_router(webhook.router)
 app.include_router(auth.router)

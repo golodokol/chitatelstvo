@@ -957,11 +957,11 @@
           <span class="proof-review__avatar" aria-hidden="true">М</span>
           <div>
             <cite class="proof-review__author">Мария</cite>
-            <span class="proof-review__meta">мама · 2 класс</span>
+            <span class="proof-review__meta">мама</span>
           </div>
         </div>
-        <p class="proof-review__result">Результат: сам просит следующую сказку</p>
-        <p class="proof-review__text">«Наконец-то ребёнок не просто „прочитал для галочки“ — он рассказывает, что понял, и сам просит следующую сказку.»</p>
+        <p class="proof-review__result">Результат: собирает словики, проходит «путь героя» и ждёт новые курсы</p>
+        <p class="proof-review__text">«Было интересно проходить урок, сыну понравилось собирать словики и проходить „путь героя“! Ждёт открытия новых курсов!»</p>
       </article>
       <article class="proof-review proof-review--card">
         <div class="proof-review__top">

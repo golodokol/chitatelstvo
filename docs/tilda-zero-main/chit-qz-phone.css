@@ -1,0 +1,50 @@
+/* Телефон: квиз без огромного интро, кнопка «Дальше» всегда в зоне пальца. Новый URL — обход кэша Safari на 30 дней. */
+@media (max-width: 720px) {
+  #qz-modal {
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+  #qz-modal.is-open .qz-modal__dialog {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  #qz-modal.is-open .qz-logo,
+  #qz-modal.is-open .qz-intro-gift,
+  #qz-modal.is-open .qz-sub {
+    display: none !important;
+  }
+  #qz-modal .qz-modal__dialog .qz-card {
+    padding: 48px 16px 96px !important;
+  }
+  #qz-modal .qz-modal__dialog .qz-nav {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 6 !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #fff !important;
+    box-shadow: 0 -8px 24px rgba(255, 255, 255, 0.92) !important;
+  }
+  #qz-modal .qz-modal__dialog .qz-nav .qz-btn {
+    width: auto !important;
+    max-width: none !important;
+  }
+  #qz-modal .qz-modal__dialog .qz-nav .qz-btn--back {
+    flex: 0 0 auto !important;
+    min-width: 96px !important;
+  }
+  #qz-modal .qz-modal__dialog .qz-nav .qz-btn--next {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+}

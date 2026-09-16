@@ -16,18 +16,6 @@
     style.textContent = '#chit-st100-warning,.st100-warning{display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important}';
     head.appendChild(style);
   }
-  if (!document.getElementById('chit-qz-nav-fix')) {
-    var navFix = document.createElement('style');
-    navFix.id = 'chit-qz-nav-fix';
-    navFix.textContent =
-      '#qz-modal .qz-modal__dialog .qz-nav{display:flex!important;flex-wrap:nowrap!important;gap:10px!important;width:100%!important;box-sizing:border-box!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}' +
-      '@media(max-width:480px){#qz-modal .qz-modal__dialog .qz-nav{flex-direction:column!important}' +
-      '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back,#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{width:100%!important;min-width:0!important}}';
-    head.appendChild(navFix);
-  }
   function killSt100Warning() {
     var warn = document.getElementById('chit-st100-warning');
     if (warn && warn.parentNode) warn.parentNode.removeChild(warn);
@@ -38,12 +26,28 @@
   }
 })();
 
+/** Всегда помечаем клик по квизу — даже если inline-loader уже занял __chitTrialLoaderBound. */
+(function chitMarkQuizUserIntent() {
+  if (window.__chitQuizIntentMarkBound) return;
+  window.__chitQuizIntentMarkBound = true;
+  var sel = '[href="#quiz"], [href="/quiz"], [href$="/quiz"], a[href*="/quiz"], [data-qz-open], .course-card__btn--trial, .qz-launcher';
+  var mark = function (ev) {
+    if (!ev || !ev.target || !ev.target.closest) return;
+    if (!ev.target.closest(sel)) return;
+    try { window.__chitQuizUserIntent = Date.now(); } catch (err) {}
+  };
+  document.addEventListener('pointerdown', mark, true);
+  document.addEventListener('click', mark, true);
+  document.addEventListener('touchend', mark, true);
+  try { sessionStorage.removeItem('chit_open_quiz'); } catch (err) {}
+})();
+
 /** Safari-safe quiz loader: touchend + повторный клик после загрузки квиза. */
 (function chitInstallSafariQuizLoader() {
   if (window.__chitTrialLoaderBound) return;
   window.__chitTrialLoaderBound = true;
   var A = 'https://api.chitatelstvo.ru/assets/';
-  var V = '20260909c';
+  var V = '20260916p';
   var busy = 0;
   var done = 0;
   var q = [];
@@ -118,6 +122,7 @@
     var now = Date.now();
     if (now - last < 450) return;
     last = now;
+    try { window.__chitQuizUserIntent = now; } catch (err) {}
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -139,14 +144,16 @@
     var t = trialTarget(e);
     if (t) openTrial(t, e);
   }, { capture: true, passive: false });
-  if (location.hash === '#quiz') window.chitLoadQuiz();
-  try {
-    if (sessionStorage.getItem('chit_open_quiz') === '1') {
-      sessionStorage.removeItem('chit_open_quiz');
-      window.chitLoadQuiz(function () {
-        openReady(null);
-      });
+  // Не открываем квиз сами: только по клику. Сбрасываем старые триггеры.
+  if (location.hash === '#quiz') {
+    try {
+      history.replaceState(null, '', location.pathname + location.search);
+    } catch (err) {
+      location.hash = '';
     }
+  }
+  try {
+    sessionStorage.removeItem('chit_open_quiz');
   } catch (err) {}
 })();
 
@@ -896,10 +903,10 @@ if (faqList) {
       '1': ['Кот и коробка', 'Дождь за окном', 'Где мяч?', 'Словик проверяет память', 'Мокрый кот', 'Кот и плед', 'Словик пришёл', 'Словик дома']
     },
     'wind': {
-      '1': ['Знакомство с книгой', 'Читаем дальше', 'Главные герои', 'Итог модуля']
+      '1': ['Жители берега реки', 'Дорожная история', 'Мистер Тод или Жаб', 'Возвращение домой']
     },
     'garden': {
-      '1': ['Знакомство с книгой', 'Читаем дальше', 'Тайна сада', 'Итог модуля']
+      '1': ['Никого не осталось… Знакомство с Мэри', 'Ключ от сада. Знакомство с Диконом', 'До чего странный дом! Знакомство с Колином', 'Магия. Я буду жить вечно!']
     },
     'rus-6-9': {
       '1': ['Урок 1', 'Урок 2', 'Урок 3', 'Урок 4']
@@ -944,12 +951,12 @@ if (faqList) {
   function cohortScheduleHtml(index) {
     var dates = {
       'wind': {
-        days: ['15 сентября', '22 сентября', '29 сентября', '6 октября'],
-        weekdays: ['вторник', 'вторник', 'вторник', 'вторник']
+        days: ['22 сентября', '28 сентября', '5 октября', '12 октября'],
+        weekdays: ['вторник', 'понедельник', 'понедельник', 'понедельник']
       },
       'garden': {
-        days: ['15 сентября', '22 сентября', '29 сентября', '6 октября'],
-        weekdays: ['вторник', 'вторник', 'вторник', 'вторник']
+        days: ['22 сентября', '28 сентября', '5 октября', '12 октября'],
+        weekdays: ['вторник', 'понедельник', 'понедельник', 'понедельник']
       },
       'rus-6-9': {
         days: ['15 октября', '20 октября', '27 октября', '10 ноября'],
@@ -2826,6 +2833,29 @@ if (faqList) {
     var section = document.getElementById('final-cta');
     if (!section) return;
     section.classList.add('is-active');
+  })();
+
+  (function lazyFinalCtaBg() {
+    var bg = document.querySelector('#final-cta .final-cta__bg, .final-cta__bg');
+    if (!bg || bg.classList.contains('is-loaded')) return;
+    function load() {
+      bg.classList.add('is-loaded');
+    }
+    if (!('IntersectionObserver' in window)) {
+      load();
+      return;
+    }
+    var target = document.getElementById('final-cta') || bg;
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          load();
+          io.disconnect();
+          return;
+        }
+      }
+    }, { rootMargin: '240px 0px' });
+    io.observe(target);
   })();
 
   (function initFeedbackTab() {

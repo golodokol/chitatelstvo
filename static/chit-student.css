@@ -3603,7 +3603,7 @@ a.chit-lesson-companion--link.is-disabled {
   position: relative;
   width: 100%;
   border-radius: 18px;
-  overflow: hidden;
+  overflow: visible;
   background: #d8e7c8;
   box-shadow: inset 0 0 0 1px rgba(74, 92, 58, 0.12);
 }
@@ -3613,6 +3613,7 @@ a.chit-lesson-companion--link.is-disabled {
   width: 100%;
   height: auto;
   vertical-align: top;
+  border-radius: 18px;
 }
 
 .chit-program-map__pins {
@@ -3750,21 +3751,49 @@ a.chit-lesson-companion--link.is-disabled {
 }
 
 .chit-program-map__hit:hover .chit-program-map__tip,
-.chit-program-map__hit:focus-visible .chit-program-map__tip {
+.chit-program-map__hit:focus-visible .chit-program-map__tip,
+.chit-program-map__pin.is-tip .chit-program-map__tip {
   opacity: 1;
   visibility: visible;
 }
 
+.chit-program-map__pin.is-tip {
+  z-index: 8;
+}
+
 @media (max-width: 720px) {
+  body.chit-cabinet {
+    overflow-x: hidden;
+  }
+
+  .chit-panel--program-map {
+    overflow: visible;
+  }
+
+  .chit-panel--program-map .chit-program-map {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: 12px;
+    margin-bottom: 18px;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .chit-panel--program-map .chit-program-map__img {
+    border-radius: 0;
+  }
+
   .chit-program-map__tip {
-    min-width: 8rem;
-    max-width: 10rem;
+    min-width: 9rem;
+    max-width: min(14rem, 72vw);
     font-size: 0.85rem;
   }
 
   .chit-program-map__hit {
-    width: 2.15rem;
-    height: 2.15rem;
+    width: 2.45rem;
+    height: 2.45rem;
   }
 }
 

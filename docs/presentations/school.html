@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Читательство — школа литературного чтения</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a3a6b;
+      --muted: #5b6b7c;
+      --line: #d7e3ef;
+      --card: #eef5fb;
+      --white: #fff;
+      --blue: #2f6fdb;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #cfd8e3; }
+    body { font-family: Nunito, "Segoe UI", sans-serif; color: var(--ink); }
+    .stage {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 12px;
+    }
+    .deck {
+      width: min(100vw - 16px, 1440px);
+      aspect-ratio: 16 / 9;
+      background: #f4f7fb;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 18px 50px rgba(26, 58, 107, .18);
+    }
+    .slide {
+      display: none;
+      height: 100%;
+      padding: 20px 28px 16px;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+    .slide.is-on { display: grid; }
+    .body { min-height: 0; display: grid; gap: 10px; }
+    .kicker { margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8a97a8; font-weight: 800; }
+    h1 { margin: 2px 0 6px; font-size: 34px; line-height: 1.12; letter-spacing: -.03em; }
+    .lead { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.4; }
+    .logo {
+      position: absolute; top: 18px; right: 24px; width: 42px; height: 42px;
+      object-fit: contain;
+    }
+    .nav {
+      position: absolute; left: 28px; bottom: 16px; display: flex; gap: 7px; z-index: 2;
+    }
+    .nav button {
+      width: 9px; height: 9px; border: 0; border-radius: 99px; background: #c5d0dc; cursor: pointer;
+    }
+    .nav button.on { background: var(--blue); }
+    .foot {
+      display: flex; justify-content: flex-end; align-items: center;
+      color: #8a97a8; font-size: 13px; font-weight: 700;
+    }
+    a { color: var(--blue); font-weight: 800; text-decoration: none; }
+    .s1 { grid-template-columns: 1.15fr .85fr; grid-template-rows: auto minmax(0, 1fr) auto auto; }
+    .s1 .head { grid-column: 1; grid-row: 1; }
+    .s1 .copy { grid-column: 1; grid-row: 2; display: grid; gap: 10px; align-content: start; }
+    .s1 .visual { grid-column: 2; grid-row: 1 / 3; min-height: 0; }
+    .s1 .founder { grid-column: 1; grid-row: 3; }
+    .s1 .caption { grid-column: 2; grid-row: 3; }
+    .s1 .foot { grid-column: 1 / -1; grid-row: 4; }
+    .s1 p { margin: 0; font-size: 17px; line-height: 1.45; color: #334a63; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .facts div, .box, .founder, .caption, .note, .pilot {
+      background: #fff;
+      border: 1px solid #c5daf5;
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .facts b { display: block; font-size: 11px; letter-spacing: .08em; color: #7b8ea3; }
+    .facts span { font-size: 16px; font-weight: 800; }
+    .box h2, .note h2, .pilot h2 { margin: 0 0 6px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #2f6fdb; }
+    .box li { margin: 0 0 4px; font-size: 16px; }
+    .hero {
+      width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: center 45%; border-radius: 18px;
+    }
+    .caption {
+      display: flex; gap: 10px; align-items: center;
+      font-size: 14px; font-weight: 700; line-height: 1.3;
+      padding: 12px 14px;
+    }
+    .caption img { width: 40px; height: 40px; flex: 0 0 auto; object-fit: contain; }
+    .founder { display: flex; gap: 12px; align-items: center; padding: 12px 14px; }
+    .founder img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
+    .founder p { margin: 0; font-size: 14px; line-height: 1.3; }
+    .links { display: flex; gap: 16px; font-size: 14px; }
+
+    .path {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      align-content: start;
+      gap: 14px;
+      height: 100%;
+      min-height: 0;
+      padding-top: 4px;
+      padding-bottom: 44px;
+      box-sizing: border-box;
+    }
+    .slide[data-slide="2"] {
+      padding-bottom: 28px;
+      gap: 14px;
+    }
+    .slide[data-slide="2"] .foot {
+      padding-top: 4px;
+      min-height: 28px;
+    }
+    .path article {
+      background: #fff;
+      border: 2px solid #7eb0ff;
+      border-radius: 16px;
+      padding: 16px 18px 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 16px;
+      min-height: 0;
+    }
+    .path figure {
+      margin: 0;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      display: grid;
+      place-items: center;
+      background: #e8f1fb;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .path img {
+      width: 100%; height: 100%;
+      object-fit: contain; object-position: center;
+    }
+    .path h3 { margin: 0 0 6px; font-size: 20px; line-height: 1.15; text-align: left; }
+    .path p { margin: 0; font-size: 15px; line-height: 1.35; color: #334a63; text-align: left; }
+
+    .lessons-body { grid-template-rows: auto minmax(0, 1fr); gap: 12px; }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .step {
+      background: #fff;
+      border: 3px solid #4f8af0;
+      border-radius: 16px;
+      display: grid;
+      grid-template-rows: auto auto;
+      padding: 8px 8px 10px;
+      min-height: 0;
+    }
+    .step img {
+      width: 100%; aspect-ratio: 1; height: auto;
+      object-fit: contain; background: #e8f1fb; border-radius: 10px;
+    }
+    .step p { margin: 8px 2px 0; font-size: 15px; line-height: 1.25; font-weight: 800; text-align: center; }
+    .step small { display: block; font-weight: 700; color: #2f6fdb; font-size: 12px; margin-bottom: 2px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-height: 0; height: 100%; }
+    .row3 .note { display: grid; align-content: center; gap: 8px; text-align: left; background: #e3f0ff; border: 2px solid #4f8af0; padding: 20px 22px; }
+    .row3 .note p, .row3 .note li { font-size: 20px; line-height: 1.45; margin: 0; text-align: left; list-style: none; }
+    .shot {
+      margin: 0; border-radius: 14px; overflow: hidden;
+      background: #d9e4f0; border: 2px solid #4f8af0;
+      display: grid; place-items: center; min-height: 0;
+    }
+    .shot img {
+      width: 100%; height: 100%; min-height: 0;
+      object-fit: contain; object-position: center; display: block;
+    }
+
+    .lib-body { grid-template-rows: auto minmax(0, 1fr); }
+    .formats-body { grid-template-rows: minmax(0, 1fr) auto; }
+    .banner {
+      background: var(--blue);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 18px;
+      line-height: 1.35;
+      text-align: center;
+      font-weight: 700;
+    }
+    .ideas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
+    .idea {
+      display: grid;
+      align-content: center;
+      text-align: center;
+      gap: 8px;
+      padding: 18px 20px;
+      background: #e3f0ff;
+      border: 3px solid #2f6fdb;
+      border-radius: 16px;
+    }
+    .idea .n { color: #2f6fdb; font-size: 14px; font-weight: 800; letter-spacing: .08em; }
+    .idea h3 { margin: 0; font-size: 24px; }
+    .idea p { margin: 0; font-size: 17px; line-height: 1.4; color: #1a3a6b; }
+    .cabinet-body { grid-template-rows: minmax(0, 1fr); min-height: 0; }
+    .cabinet-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 1fr 1fr;
+      gap: 10px;
+      min-height: 0;
+      height: 100%;
+    }
+    .cabinet-card {
+      margin: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 6px;
+      background: #fff;
+      border: 2px solid #4f8af0;
+      border-radius: 14px;
+      padding: 8px;
+      overflow: hidden;
+    }
+    .cabinet-card .frame {
+      margin: 0;
+      min-height: 0;
+      height: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #e8f1fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cabinet-card img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+    }
+    .cabinet-card figcaption {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-align: center;
+      color: #1a3a6b;
+    }
+    .cabinet-card figcaption small {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #5b6b7c;
+    }
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+      min-height: 0;
+      height: 100%;
+    }
+    .shot-grid .cabinet-card { padding: 8px; gap: 6px; }
+    .shot-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: 1fr;
+      gap: 10px;
+      min-height: 0;
+      height: 100%;
+      align-items: stretch;
+    }
+    .shot-grid-4 .cabinet-card {
+      padding: 6px 6px 4px;
+      gap: 4px;
+      border-width: 1.5px;
+    }
+    .shot-grid-4 .cabinet-card .frame {
+      background: #eef4fb;
+      border-radius: 8px;
+      min-height: 0;
+    }
+    .shot-grid-4 .cabinet-card img {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      object-fit: contain;
+      object-position: center;
+    }
+    .shot-grid-4 .cabinet-card figcaption {
+      font-size: 13px;
+      line-height: 1.2;
+    }
+    .shot-grid-4 .cabinet-card figcaption small {
+      font-size: 11px;
+    }
+    .shot-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      min-height: 0;
+      height: 100%;
+    }
+    .shot-row .cabinet-card { padding: 10px; gap: 8px; }
+    .shot-row .cabinet-card figcaption { font-size: 15px; }
+    .shot-row .cabinet-card figcaption small { font-size: 13px; }
+    .formats-body { grid-template-rows: minmax(0, 1fr) auto; gap: 12px; }
+    .s5-bottom { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
+    .s5-bottom .note, .pilot {
+      background: #e3f0ff;
+      border: 2px solid #4f8af0;
+      text-align: center;
+    }
+    .pilot { display: grid; align-content: center; gap: 8px; }
+    .pilot .mail { font-size: 18px; }
+    .invite-body {
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      min-height: 0;
+      height: 100%;
+    }
+    .invite-banner {
+      background: #2f6fdb;
+      color: #fff;
+      border-radius: 16px;
+      padding: 18px 22px;
+      font-size: 20px;
+      line-height: 1.4;
+      font-weight: 700;
+      text-align: center;
+    }
+    .invite-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      min-height: 0;
+      height: 100%;
+    }
+    .invite-grid .note {
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      background: #e3f0ff;
+      border: 2px solid #4f8af0;
+      text-align: center;
+      padding: 18px 16px;
+    }
+    .invite-grid .note h2 { margin: 0; font-size: 15px; }
+    .invite-grid .note p { margin: 0; font-size: 17px; line-height: 1.4; color: #1a3a6b; }
+    .invite-cta {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .invite-cta .pilot {
+      background: #e3f0ff;
+      border: 2px solid #4f8af0;
+      border-radius: 14px;
+      padding: 16px 18px;
+      text-align: center;
+    }
+    .invite-cta .note {
+      background: #fff;
+      border: 2px solid #4f8af0;
+      text-align: left;
+    }
+    .invite-cta .note p { margin: 0 0 4px; font-size: 17px; line-height: 1.4; }
+    html.pdf-export .invite-grid { grid-template-columns: 1fr 1fr 1fr !important; }
+    html.pdf-export .invite-cta { grid-template-columns: 1.2fr .8fr !important; }
+    html.pdf-export, html.pdf-export body { background: #f4f7fb; }
+    html.pdf-export .stage { padding: 0; height: 100%; }
+    html.pdf-export .deck {
+      width: 100vw; height: 100vh; max-width: none;
+      aspect-ratio: auto; border-radius: 0; box-shadow: none;
+    }
+    html.pdf-export .nav { display: none; }
+    html.pdf-export .path { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto auto !important; }
+    html.pdf-export .path article { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) !important; }
+    html.pdf-export .steps { grid-template-columns: repeat(5, 1fr) !important; }
+    html.pdf-export .row3 { grid-template-columns: 1fr 1fr !important; }
+    html.pdf-export .ideas { grid-template-columns: 1fr 1fr !important; }
+    html.pdf-export .s5-bottom { grid-template-columns: 1.1fr .9fr !important; }
+    html.pdf-export .cabinet-grid,
+    html.pdf-export .shot-grid,
+    html.pdf-export .shot-row {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+    html.pdf-export .shot-grid-4 {
+      grid-template-columns: repeat(4, 1fr) !important;
+      grid-template-rows: 1fr !important;
+    }
+    html.pdf-export .shot-grid,
+    html.pdf-export .cabinet-grid {
+      grid-template-rows: 1fr 1fr !important;
+    }
+    html.pdf-export .s1 { grid-template-columns: 1.15fr .85fr !important; }
+    @page { size: 13.333in 7.5in; margin: 0; }
+    @media print {
+      html, body { background: #f4f7fb; height: auto; }
+      .stage { padding: 0; height: auto; display: block; }
+      .deck {
+        width: 13.333in; height: auto; max-width: none;
+        aspect-ratio: auto; border-radius: 0; box-shadow: none; overflow: visible;
+      }
+      .slide {
+        display: grid !important;
+        width: 13.333in; height: 7.5in;
+        page-break-after: always; break-after: page;
+        overflow: hidden;
+      }
+      .slide:last-of-type { page-break-after: auto; break-after: auto; }
+      .nav { display: none !important; }
+      .path { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto auto !important; }
+      .path article { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) !important; }
+      .steps { grid-template-columns: repeat(5, 1fr) !important; }
+      .row3 { grid-template-columns: 1fr 1fr !important; }
+      .ideas { grid-template-columns: 1fr 1fr !important; }
+      .s5-bottom { grid-template-columns: 1.1fr .9fr !important; }
+      .invite-grid { grid-template-columns: 1fr 1fr 1fr !important; }
+      .invite-cta { grid-template-columns: 1.2fr .8fr !important; }
+      .cabinet-grid,
+      .shot-grid,
+      .shot-row {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+      .shot-grid-4 {
+        grid-template-columns: repeat(4, 1fr) !important;
+        grid-template-rows: 1fr !important;
+      }
+      .cabinet-grid,
+      .shot-grid {
+        grid-template-rows: 1fr 1fr !important;
+      }
+      .s1 { grid-template-columns: 1.15fr .85fr !important; }
+    }
+    @media screen and (max-width: 900px) {
+      .deck { aspect-ratio: auto; height: auto; min-height: 100%; }
+      .s1, .path, .steps, .row3, .ideas, .s5-bottom, .cabinet-grid, .shot-grid, .shot-grid-4, .shot-row, .invite-grid, .invite-cta { grid-template-columns: 1fr; }
+      .path { grid-template-rows: none; }
+      .path article { grid-template-columns: 1fr; }
+      .cabinet-grid, .shot-grid { grid-template-rows: none; }
+      .s1 { grid-template-rows: auto; }
+      .s1 .head, .s1 .copy, .s1 .visual, .s1 .founder, .s1 .caption, .s1 .foot { grid-column: 1; grid-row: auto; }
+      .hero { height: 280px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="deck" id="deck">
+      <img class="logo" src="../tilda-zero-main/logo-chitatelstvo-header.webp" alt="Читательство">
+
+      <section class="slide s1 is-on" data-slide="1">
+        <header class="head">
+          <p class="kicker">О школе</p>
+          <h1>Что такое Читательство</h1>
+          <p class="lead">Онлайн-школа литературного чтения для детей 4–12 лет.</p>
+        </header>
+        <div class="copy">
+          <p>Короткая система занятий, где ребёнок учится понимать текст: о ком история, что чувствует герой, зачем этот эпизод в книге. От первых звуков и букв — к школьным сказкам и внеклассным повестям.</p>
+          <p>Занятие занимает 10–25 минут. Можно остановиться и вернуться. Для 6–7 лет рядом нужен взрослый. После урока открывается сундук: творческое задание дома, баллы и прогресс на личной странице.</p>
+          <div class="facts">
+            <div><b>Кто</b><span>Дети 4–12</span></div>
+            <div><b>Как</b><span>Онлайн, свой темп</span></div>
+            <div><b>Урок</b><span>10–25 минут</span></div>
+          </div>
+          <div class="box">
+            <h2>Что внутри</h2>
+            <ul>
+              <li>Программы: буквы → истории → школьное и внеклассное чтение</li>
+              <li>Понимание, пересказ, чувства героев, образы и пословицы</li>
+              <li>Персонаж Словик, баллы и награды · прогресс на личной странице</li>
+            </ul>
+          </div>
+          <div class="links">
+            <a href="https://chitatelstvo.ru" target="_blank" rel="noopener">chitatelstvo.ru</a>
+            <a href="https://chitatelstvo.ru" target="_blank" rel="noopener">О школе</a>
+            <a href="https://chitatelstvo.ru/#program" target="_blank" rel="noopener">Программы</a>
+          </div>
+        </div>
+        <div class="visual">
+          <img class="hero" src="covers/slovik-gate.jpg" alt="Словик у калитки в страну чтения">
+        </div>
+        <div class="founder">
+          <img src="https://api.chitatelstvo.ru/assets/founder-olga.jpg" alt="Ольга Рощина">
+          <p><strong>Ольга Рощина</strong><br>основатель школы · руководитель книжного ДоброЛавка в Москве</p>
+        </div>
+        <div class="caption">
+          <img src="../images/slovik-main.png" alt="">
+          Словик — персонаж платформы. За задания начисляются баллы, открываются награды и прогресс на личной странице.
+        </div>
+        <div class="foot">1 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="2">
+        <header>
+          <p class="kicker">Программы</p>
+          <h1>Как растёт читатель</h1>
+          <p class="lead">Четыре ступени: от букв и первых историй — к школьным сказкам и чтению для удовольствия.</p>
+        </header>
+        <div class="path">
+          <article>
+            <figure><img src="covers/course-cover-letters.jpg" alt="Буквы оживают"></figure>
+            <div>
+              <h3>Буквы оживают</h3>
+              <p>Первое знакомство с буквами и звуками, интерактивные занятия для детей от 4 лет. С этих занятий стоит начинать, чтобы научиться складывать слоги.</p>
+            </div>
+          </article>
+          <article>
+            <figure><img src="covers/course-cover-stories.jpg" alt="Первые истории"></figure>
+            <div>
+              <h3>Первые истории</h3>
+              <p>Занятия для детей от 5 лет, которые уже знают все буквы и делают первые шаги в чтении.</p>
+            </div>
+          </article>
+          <article>
+            <figure><img src="covers/course-cover-grade-1.jpg" alt="Школьные сказки"></figure>
+            <div>
+              <h3>Школьные сказки</h3>
+              <p>Уроки по сказкам школьной программы 1–4 класса. По 8 уроков на каждый возраст: понять героя, сюжет, пересказать историю. Можно проходить самостоятельно.</p>
+            </div>
+          </article>
+          <article>
+            <figure><img src="covers/course-cover-extra-9-11.jpg" alt="Внеклассное чтение"></figure>
+            <div>
+              <h3>Внеклассное чтение</h3>
+              <p>Сказки вне школьной программы — чтение для удовольствия. Тот же смысл урока: понять героя, сюжет, пересказать историю. Можно проходить самостоятельно.</p>
+            </div>
+          </article>
+        </div>
+        <div class="foot">2 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="3">
+        <header>
+          <p class="kicker">Школа изнутри · 1</p>
+          <h1>Кабинет ученика</h1>
+          <p class="lead">Личная страница: Словик, урок недели, карта и трофеи.</p>
+        </header>
+        <div class="body cabinet-body">
+          <div class="shot-row">
+            <figure class="cabinet-card">
+              <div class="frame"><img src="cabinet/01-hero.png" alt="Приветствие Словика и путь героя"></div>
+              <figcaption>Словик и путь героя<small>уровни и Словики на одной странице</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="cabinet/02-week-map.png" alt="Урок недели, сундук и карта программы"></div>
+              <figcaption>Урок, сундук, карта<small>что открыто сегодня и что дальше</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="cabinet/03-trophies.png" alt="Трофеи и бейджи"></div>
+              <figcaption>Трофеи<small>бейджи за шаги, буквы и сундук</small></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="foot">3 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="4">
+        <header>
+          <p class="kicker">Школа изнутри · 2</p>
+          <h1>Кабинет: сказка, дневник, сокровищница</h1>
+          <p class="lead">Старт урока, оценки сказок и скачивание творческих листов.</p>
+        </header>
+        <div class="body cabinet-body">
+          <div class="shot-row">
+            <figure class="cabinet-card">
+              <div class="frame"><img src="cabinet/04-lesson.png" alt="Карточка сказки недели"></div>
+              <figcaption>Сказка недели<small>старт урока и прогресс к сундуку</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="cabinet/05-diary.png" alt="Читательский дневник"></div>
+              <figcaption>Читательский дневник<small>оценки сказок от любимых к обычным</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="cabinet/06-treasury.png" alt="Сокровищница наград"></div>
+              <figcaption>Сокровищница<small>задания из уроков — можно скачать снова</small></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="foot">4 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="5">
+        <header>
+          <p class="kicker">Уроки</p>
+          <h1>Как устроены уроки</h1>
+          <p class="lead">Короткая сессия 10–25 минут. Сначала работа с текстом — потом награда.</p>
+        </header>
+        <div class="body lessons-body">
+        <div class="steps">
+          <article class="step">
+            <img src="https://api.chitatelstvo.ru/assets/lesson-step-video.png" alt="Видео по сказке">
+            <p><small>Шаг 1</small>Текст / видео</p>
+          </article>
+          <article class="step">
+            <img src="https://api.chitatelstvo.ru/assets/lesson-step-quiz-text.png" alt="Понимание">
+            <p><small>Шаг 2</small>Понимание сюжета</p>
+          </article>
+          <article class="step">
+            <img src="https://api.chitatelstvo.ru/assets/lesson-step-quiz-meaning.png" alt="Смысл">
+            <p><small>Шаг 3</small>Смысл и эмоции</p>
+          </article>
+          <article class="step">
+            <img src="https://api.chitatelstvo.ru/assets/lesson-step-creative.png" alt="Творческое задание">
+            <p><small>Шаг 4</small>Образ и чувство</p>
+          </article>
+          <article class="step">
+            <img src="https://api.chitatelstvo.ru/assets/lesson-step-retell.png" alt="Пересказ">
+            <p><small>Шаг 5</small>Пересказ своими словами</p>
+          </article>
+        </div>
+        <div class="row3">
+          <div class="note">
+            <h2>Что тренируем</h2>
+            <p>Понимание и пересказ</p>
+            <p>Чувства героев</p>
+            <p>Образы и пословицы</p>
+            <p>Привычку дочитать</p>
+          </div>
+          <div class="note">
+            <h2>Как поддерживаем интерес</h2>
+            <p>Словик на экране урока</p>
+            <p>Баллы и награды</p>
+            <p>Видимый прогресс</p>
+            <p>Свой темп, без сравнения</p>
+          </div>
+        </div>
+        </div>
+        <div class="foot">5 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="6">
+        <header>
+          <p class="kicker">4–6 лет</p>
+          <h1>Занятия для самых маленьких</h1>
+          <p class="lead">Звук → буква. Короткие квесты со Словиком, голос и картинки.</p>
+        </header>
+        <div class="body cabinet-body">
+          <div class="shot-grid">
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/01-letter-a.jpg" alt="Знакомство с буквой А"></div>
+              <figcaption>Звук и буква<small>нажми — услышишь «а-а-а»</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/02-find-a.png" alt="Найди буквы А"></div>
+              <figcaption>Найди букву<small>три «А» среди других</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/03-maze-a.png" alt="Лабиринт из букв А"></div>
+              <figcaption>Лабиринт<small>путь только по буквам А</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/05-sound-m.png" alt="Звук М: машина или солнце"></div>
+              <figcaption>Звук М<small>машина или солнце?</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/06-alphabet-m.png" alt="Первая азбука"></div>
+              <figcaption>Азбука<small>картинка к букве М</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/07-trace-m.png" alt="Обведи букву М"></div>
+              <figcaption>Обведи букву<small>точки по порядку</small></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="foot">6 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="7">
+        <header>
+          <p class="kicker">4–6 лет</p>
+          <h1>Первое чтение</h1>
+          <p class="lead">Слог → слово → фраза. Тот же маршрут, следующий уровень.</p>
+        </header>
+        <div class="body cabinet-body">
+          <div class="shot-grid">
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/08-syllable.jpg" alt="Мост слога"></div>
+              <figcaption>Слог<small>веди С к А — получится «са»</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/09-word-cat.png" alt="Слово к картинке"></div>
+              <figcaption>Слово<small>картинка → КОТ</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/10-match.png" alt="Соедини слово и картинку"></div>
+              <figcaption>Пары<small>слово и картинка</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/11-rebus.png" alt="Ребус со словами"></div>
+              <figcaption>Ребус<small>шифр из фигурок</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/12-word-house.png" alt="Домик слов"></div>
+              <figcaption>Домик слов<small>прочитай и найди картинку</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="early/13-phrase.png" alt="Собери фразу"></div>
+              <figcaption>Фраза<small>кот → ест → сыр</small></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="foot">7 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="8">
+        <header>
+          <p class="kicker">От 6 лет</p>
+          <h1>Уроки для детей от 6 лет</h1>
+          <p class="lead">Чтение, эмоции, мини-тест, смысл, задания и пересказ.</p>
+        </header>
+        <div class="body cabinet-body">
+          <div class="shot-grid">
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/01-reading.png" alt="Практика чтения"></div>
+              <figcaption>Практика чтения<small>короткие фразы с картинками</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/03-emotions.png" alt="Колесо эмоций"></div>
+              <figcaption>Эмоции героя<small>колесо чувств в сказке</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/02-quiz.png" alt="Мини-тест"></div>
+              <figcaption>Мини-тест<small>вопросы по сюжету</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/04-proverbs.png" alt="Пословицы и смысл"></div>
+              <figcaption>Смысл и пословицы<small>выбор и несколько верных</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/05-tasks.png" alt="Задания по героям"></div>
+              <figcaption>Задания<small>лишние герои и пары</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/06-retell-saltan.png" alt="Пересказ по порядку"></div>
+              <figcaption>Пересказ<small>события по порядку</small></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="foot">8 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="9">
+        <header>
+          <p class="kicker">От 6 лет</p>
+          <h1>Награды и творчество</h1>
+          <p class="lead">Словики, сундук, письмо герою и творческие листы.</p>
+        </header>
+        <div class="body cabinet-body">
+          <div class="shot-grid-4">
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/12-sloviki.png" alt="Награда Словики"></div>
+              <figcaption>Словики<small>баллы сразу после ответа</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/08-chest-reward.png" alt="Награды в сокровищнице"></div>
+              <figcaption>Сундук открыт<small>награды в сокровищнице</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/09-letter.png" alt="Письмо герою"></div>
+              <figcaption>Письмо герою<small>скачать лист и написать</small></figcaption>
+            </figure>
+            <figure class="cabinet-card">
+              <div class="frame"><img src="lesson/10-trough.png" alt="Творческое задание"></div>
+              <figcaption>Творчество<small>рисунок и добрые желания</small></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="foot">9 / 10</div>
+      </section>
+
+      <section class="slide" data-slide="10">
+        <header>
+          <p class="kicker">О школе</p>
+          <h1>Читательство</h1>
+          <p class="lead">Короткие занятия по сказкам: понять героя, пересказать своими словами и захотеть следующую книгу.</p>
+        </header>
+        <div class="body invite-body">
+          <p class="invite-banner">Онлайн-школа литературного чтения для детей 4–12 лет. Урок 10–25 минут: текст или видео, вопросы, творчество и сундук. Прогресс виден на личной странице.</p>
+          <div class="invite-grid">
+            <div class="note">
+              <h2>Для кого</h2>
+              <p>Детям 4–12 лет</p>
+              <p>Родителям, которым важно понимание текста</p>
+              <p>Семьям, где нужен короткий маршрут по сказке</p>
+            </div>
+            <div class="note">
+              <h2>Как проходит урок</h2>
+              <p>Читаем и отвечаем на вопросы</p>
+              <p>Замечаем чувства героя</p>
+              <p>Пробуем пересказать своими словами</p>
+            </div>
+            <div class="note">
+              <h2>Что видит родитель</h2>
+              <p>Открытые сказки и баллы</p>
+              <p>Путь героя и бейджи</p>
+              <p>Свой темп, без сравнения детей</p>
+            </div>
+          </div>
+          <div class="invite-cta">
+            <div class="note">
+              <h2>Четыре ступени</h2>
+              <p>Буквы оживают · Первые истории</p>
+              <p>Школьные сказки · Внеклассное чтение</p>
+              <p>Одна сказка — один короткий урок на платформе</p>
+            </div>
+            <div class="pilot">
+              <h2>Сайт школы</h2>
+              <p style="margin:0;font-size:17px;line-height:1.4;">Подробнее о программах и занятиях</p>
+              <a class="mail" href="https://chitatelstvo.ru">chitatelstvo.ru</a>
+            </div>
+          </div>
+        </div>
+        <div class="foot">10 / 10</div>
+      </section>
+</div>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const nav = document.createElement("div");
+    nav.className = "nav";
+    document.getElementById("deck").appendChild(nav);
+    let i = 0;
+    slides.forEach((_, n) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.addEventListener("click", () => show(n));
+      nav.appendChild(b);
+    });
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => s.classList.toggle("is-on", k === i));
+      [...nav.children].forEach((b, k) => b.classList.toggle("on", k === i));
+    }
+    const q = new URLSearchParams(location.search);
+    if (q.has("pdf")) document.documentElement.classList.add("pdf-export");
+    const start = Math.max(1, parseInt(q.get("slide") || "1", 10));
+    show(Number.isFinite(start) ? start - 1 : 0);
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); show(i + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); show(i - 1); }
+    });
+  </script>
+</body>
+</html>

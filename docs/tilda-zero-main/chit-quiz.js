@@ -1,31 +1,27 @@
+/* 20260909m: compact logo + wordmark; gift stays on the form step */
 (function () {
   'use strict';
 
-  var navFix = document.getElementById('chit-qz-nav-fix');
-  if (!navFix) {
-    navFix = document.createElement('style');
-    navFix.id = 'chit-qz-nav-fix';
-    (document.head || document.documentElement).appendChild(navFix);
+  var LOGO_SRC = 'https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png';
+
+  function ensureQuizLogo() {
+    var box = document.getElementById('qz-modal') || document.getElementById('chit-quiz');
+    if (!box) return;
+    var gift = box.querySelector('.qz-intro-gift');
+    if (gift && gift.parentNode) gift.parentNode.removeChild(gift);
+    var card = box.querySelector('.qz-card');
+    if (!card) return;
+    var logo = card.querySelector('.qz-logo');
+    if (!logo) {
+      logo = document.createElement('img');
+      logo.className = 'qz-logo';
+      logo.alt = 'Читательство';
+      var title = card.querySelector('#qz-modal-title');
+      if (title && title.parentNode === card) card.insertBefore(logo, title);
+      else card.insertBefore(logo, card.firstChild);
+    }
+    logo.src = LOGO_SRC;
   }
-  navFix.textContent =
-    '#qz-modal .qz-modal__dialog .qz-nav{display:flex!important;flex-wrap:nowrap!important;flex-direction:row!important;gap:10px!important;width:100%!important;box-sizing:border-box!important}' +
-    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn{width:auto!important;max-width:none!important;box-sizing:border-box!important}' +
-    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--back{flex:0 0 auto!important;min-width:96px!important}' +
-    '#qz-modal .qz-modal__dialog .qz-nav .qz-btn--next{flex:1 1 auto!important;min-width:0!important}' +
-    '@media(max-width:720px){' +
-    '#qz-modal{padding:0!important;align-items:stretch!important}' +
-    '#qz-modal.is-open .qz-modal__dialog{height:100dvh!important;max-height:100dvh!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;border-radius:0!important;width:100%!important;max-width:100%!important}' +
-    '#qz-modal .qz-modal__dialog #chit-quiz,#qz-modal .qz-modal__dialog .qz-shell,#qz-modal .qz-modal__dialog .qz-card{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;width:100%!important;max-width:100%!important}' +
-    '#qz-modal .qz-modal__dialog .qz-card{padding:48px 16px 0!important;border-radius:0!important}' +
-    '#chit-quiz.qz-phase-questions .qz-logo,#chit-quiz.qz-phase-questions .qz-intro-gift,#chit-quiz.qz-phase-questions .qz-sub{display:none!important}' +
-    '#chit-quiz.qz-phase-questions .qz-progress{flex-shrink:0!important;margin-bottom:12px!important}' +
-    '#chit-quiz.qz-phase-questions #qz-questions{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important}' +
-    '#chit-quiz.qz-phase-questions .qz-step.is-active{display:flex!important;flex-direction:column!important;flex:1 1 auto!important;min-height:0!important}' +
-    '#chit-quiz.qz-phase-questions .qz-step.is-active .qz-title{flex-shrink:0!important;font-size:20px!important;margin:0 0 10px!important}' +
-    '#chit-quiz.qz-phase-questions .qz-step.is-active .qz-options{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}' +
-    '#chit-quiz.qz-phase-questions .qz-step.is-active .qz-nav{flex-shrink:0!important;margin:0!important;padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px))!important;background:#fff!important;box-shadow:0 -8px 24px rgba(255,255,255,.92)!important}' +
-    '#chit-quiz.qz-form-step .qz-card,#chit-quiz.qz-success-step .qz-card{overflow-y:auto!important;-webkit-overflow-scrolling:touch}' +
-    '}';
 
   var API_BASE = window.CHIT_QUIZ_API || 'https://api.chitatelstvo.ru';
   var CHECKLIST_URL = API_BASE + '/quiz/checklist.pdf?v=20260615b';
@@ -291,6 +287,7 @@
     root.classList.toggle('qz-intro-collapsed', index > 0 && index < qs.length);
     root.classList.toggle('qz-form-step', index === qs.length);
     root.classList.toggle('qz-success-step', index > qs.length);
+    ensureQuizLogo();
     updateProgress();
     hideError();
     window.setTimeout(fitDialogHeight, 40);
@@ -367,7 +364,6 @@
     var container = root.querySelector('#qz-questions');
     if (!container) return;
     var qs = questions();
-    var sub = copy().questionSub;
     container.innerHTML = qs.map(function (q, qi) {
       var opts = q.options.map(function (opt, oi) {
         return '<button type="button" class="qz-option" data-q="' + qi + '" data-v="' + oi + '">' + opt + '</button>';
@@ -375,12 +371,8 @@
       return (
         '<section class="qz-step' + (qi === 0 ? ' is-active' : '') + '" data-step="' + qi + '">' +
           '<h2 class="qz-title">' + q.title + '</h2>' +
-          '<p class="qz-sub">' + sub + '</p>' +
           '<div class="qz-options">' + opts + '</div>' +
-          '<div class="qz-nav">' +
-            (qi > 0 ? '<button type="button" class="qz-btn qz-btn--back" data-back="' + qi + '">Назад</button>' : '') +
-            '<button type="button" class="qz-btn qz-btn--next" data-next="' + qi + '" disabled>Дальше</button>' +
-          '</div>' +
+          (qi > 0 ? '<button type="button" class="qz-btn qz-btn--back" data-back="' + qi + '">Назад</button>' : '') +
         '</section>'
       );
     }).join('');
@@ -525,15 +517,55 @@
   function bindModal() {
     var modal = document.getElementById('qz-modal');
     if (!modal) return;
-    window.chitQuizOpen = function () { openQuizModal('manual'); };
-    window.chitQuizOpenWithEl = function (fromEl) {
+    // Квиз только после действия пользователя. Старые вставки Tilda ещё могут
+    // вызывать chitQuizOpen() из sessionStorage / #quiz — это блокируем.
+    var quizUserIntentAt = 0;
+    var quizIntentSel = '[href="#quiz"], [href="/quiz"], [href$="/quiz"], a[href*="/quiz"], [data-qz-open], .course-card__btn--trial, .qz-launcher';
+    function noteQuizIntent() {
+      quizUserIntentAt = Date.now();
+      try { window.__chitQuizUserIntent = quizUserIntentAt; } catch (err) {}
+    }
+    function hasQuizIntent() {
+      if (quizUserIntentAt > 0 && (Date.now() - quizUserIntentAt) < 60000) return true;
+      try {
+        if (window.__chitQuizUserIntent && (Date.now() - window.__chitQuizUserIntent) < 60000) return true;
+      } catch (err) {}
+      // Клик был до загрузки chit-quiz.js — User Activation это видит.
+      try {
+        if (navigator.userActivation && navigator.userActivation.hasBeenActive) return true;
+      } catch (err2) {}
+      return false;
+    }
+    function autoOpenAllowed() {
+      return !!(window.CHIT_QUIZ_AUTO && window.CHIT_QUIZ_AUTO.enabled === true);
+    }
+    function openFromApi(fromEl) {
+      if (!autoOpenAllowed() && !hasQuizIntent()) {
+        // Без User Activation API не ломаем старые браузеры кликом через loader.
+        var hasUA = false;
+        try { hasUA = 'userActivation' in navigator; } catch (err) {}
+        if (hasUA) return;
+      }
       if (fromEl) rememberTrialFromEl(fromEl);
       openQuizModal('manual', fromEl);
-    };
+    }
+    document.addEventListener('pointerdown', function (e) {
+      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizIntent();
+    }, true);
+    document.addEventListener('click', function (e) {
+      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizIntent();
+    }, true);
+    document.addEventListener('touchend', function (e) {
+      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizIntent();
+    }, true);
+    try { sessionStorage.removeItem('chit_open_quiz'); } catch (err) {}
+    window.chitQuizOpen = function () { openFromApi(null); };
+    window.chitQuizOpenWithEl = function (fromEl) { openFromApi(fromEl || null); };
     window.chitQuizClose = closeQuizModal;
     document.querySelectorAll('[href="#quiz"], [data-qz-open]').forEach(function (el) {
       el.addEventListener('click', function (e) {
         e.preventDefault();
+        noteQuizIntent();
         rememberTrialFromEl(el);
         openQuizModal('manual', el);
       });
@@ -545,14 +577,22 @@
       if (e.key === 'Escape' && modal.classList.contains('is-open')) closeQuizModal();
     });
     window.addEventListener('hashchange', function () {
+      // Квиз открывается только по клику, не по появлению #quiz в URL.
       if (window.location.hash === '#quiz') {
-        rememberTrialFromUrl();
-        openQuizModal('hash');
+        try {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch (err) {
+          window.location.hash = '';
+        }
       }
     });
     rememberTrialFromUrl();
     if (window.location.hash === '#quiz') {
-      window.setTimeout(function () { openQuizModal('hash'); }, 120);
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (err) {
+        window.location.hash = '';
+      }
     }
   }
 
@@ -681,6 +721,7 @@
   }
 
   renderQuestions();
+  ensureQuizLogo();
   bindModal();
 
   root.addEventListener('click', function (e) {
@@ -694,8 +735,8 @@
       opt.closest('.qz-options').querySelectorAll('.qz-option').forEach(function (b) {
         b.classList.toggle('is-selected', b === opt);
       });
-      var nextBtn = opt.closest('.qz-step').querySelector('.qz-btn--next');
-      if (nextBtn) nextBtn.disabled = false;
+      if (qi < qs.length - 1) showStep(qi + 1);
+      else showStep(qs.length);
       return;
     }
     var next = e.target.closest('[data-next]');

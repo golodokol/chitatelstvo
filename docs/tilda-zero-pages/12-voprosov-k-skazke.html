@@ -1,0 +1,195 @@
+<!-- Читательство · статья «12 вопросов к сказке»
+     Zero Block → HTML-элемент → вставить целиком → артборд 1200, высота авто → Опубликовать.
+     SEO в настройках страницы:
+     Title: Как помочь ребёнку понимать сказку: 12 вопросов вместо пересказа
+     Description: 12 вопросов к сказке — герой, чувства и выбор. Пример на «Царевне-лягушке» и как устроены занятия в школе «Читательство».
+     URL: /blog/12-voprosov-k-skazke или /statyi/ponimanie-skazki
+     Автор: Ольга Рощина, основатель школы (живые встречи сейчас тоже ведёт Ольга)
+-->
+<script>(function(){var ROOT_IDS=["chit-page-root"];function getRoot(){for(var i=0;i<ROOT_IDS.length;i++){var el=document.getElementById(ROOT_IDS[i]);if(el)return el;}return null;}function setImp(el,props){if(!el)return;Object.keys(props).forEach(function(k){if(props[k]!=null)el.style.setProperty(k,props[k],"important");});}function patchRecStyles(rec){if(!rec)return;rec.querySelectorAll("style").forEach(function(s){var t=s.textContent||"";if(t.indexOf("t396__artboard")<0&&t.indexOf("tn-elem")<0)return;var n=t.replace(/left:\s*calc\([^)]+\)/gi,"left:0").replace(/width:\s*(?:1200|960|640|480|320)px/gi,"width:100%").replace(/height:\s*35000px/gi,"height:auto").replace(/height:\s*100vh/gi,"height:auto").replace(/display:\s*table/gi,"display:block");if(n!==t)s.textContent=n;});}function syncTildaLayout(){var m=getRoot();if(!m)return;var rec=m.closest(".t-rec");patchRecStyles(rec);if(rec){setImp(rec,{width:"100%","max-width":"100%",height:"auto","max-height":"none",overflow:"visible","padding-top":"0","margin-top":"0"});}[m.closest(".t396"),m.closest(".t396__artboard"),m.closest(".tn-elem"),m.closest(".tn-atom"),m.closest(".tn-atom__html"),m].forEach(function(el){if(!el)return;setImp(el,{display:"block",position:"relative",left:"0",top:"0",width:"100%","max-width":"100%","min-width":"0",transform:"none","min-height":"0","max-height":"none",overflow:"visible",height:"auto"});});[".t396__carrier",".t396__filter"].forEach(function(sel){var el=rec&&rec.querySelector(sel);if(!el)return;setImp(el,{height:"0","max-height":"0",overflow:"hidden",position:"absolute",left:"0",top:"0",width:"100%","pointer-events":"none"});});var h=Math.ceil(m.getBoundingClientRect().height);if(h>0){var ab=m.closest(".t396__artboard");if(ab){setImp(ab,{height:h+"px"});ab.setAttribute("data-artboard-height",String(h));}}}window.chitSyncTildaLayout=syncTildaLayout;function hookT396(){if(window._chitPageT396Hook)return;var orig=window.t396_init;if(typeof orig!=="function")return;window._chitPageT396Hook=1;window.t396_init=function(){var out=orig.apply(this,arguments);syncTildaLayout();setTimeout(syncTildaLayout,50);return out;};}syncTildaLayout();hookT396();setTimeout(syncTildaLayout,80);setTimeout(syncTildaLayout,300);setTimeout(syncTildaLayout,1200);window.addEventListener("load",syncTildaLayout);var n=0;var poll=setInterval(function(){syncTildaLayout();hookT396();if(++n>80)clearInterval(poll);},250);var root=getRoot();if(root&&window.ResizeObserver){new ResizeObserver(syncTildaLayout).observe(root);}})();</script>
+<style id="chit-page-tilda">
+.t-rec:has(#chit-page-root){height:auto!important;max-height:none!important;overflow:visible!important;padding-top:0!important}
+.t-rec:has(#chit-page-root) .t396,.t-rec:has(#chit-page-root) .t396__artboard,.t-rec:has(#chit-page-root) .tn-elem[data-elem-type="html"],.t-rec:has(#chit-page-root) .tn-atom,.t-rec:has(#chit-page-root) .tn-atom__html{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;width:100%!important;max-width:100%!important;left:0!important;top:0!important;transform:none!important;display:block!important;position:relative!important}
+.t-rec:has(#chit-page-root) .t396__carrier,.t-rec:has(#chit-page-root) .t396__filter{height:0!important;max-height:0!important;overflow:hidden!important;position:absolute!important;pointer-events:none!important}
+#chit-page-root{--chit-text:#2E2A38;--chit-muted:#6B8499;--chit-blue:#5B7FA6;--chit-deep:#3D5266;--chit-lilac:#8F7DA3;--chit-line:#E4DCEB;--chit-soft:#F6F4F9;--chit-pale:#F8F5FA;box-sizing:border-box;width:100%;margin:0;padding:0;font-family:Nunito,Manrope,system-ui,sans-serif;color:var(--chit-text);background:#fff;line-height:1.65;font-size:17px}
+#chit-page-root *,#chit-page-root *::before,#chit-page-root *::after{box-sizing:border-box}
+.chit-wrap{max-width:720px;margin:0 auto;padding:0 20px}
+.chit-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--chit-line)}
+.chit-header__inner{max-width:960px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.chit-logo img{height:40px;width:auto;display:block}
+.chit-header-cta{padding:10px 16px;border-radius:12px;background:var(--chit-blue);color:#fff!important;text-decoration:none;font:800 14px/1 Nunito,system-ui,sans-serif}
+.chit-article-hero{padding:48px 0 28px;background:linear-gradient(180deg,#F3EEF7 0%,#fff 72%)}
+.chit-kicker{display:inline-block;margin:0 0 12px;padding:6px 12px;border-radius:999px;background:#fff;border:1px solid var(--chit-line);color:var(--chit-lilac);font:800 12px/1 Nunito,system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.chit-article-hero h1{margin:0 0 16px;font:800 clamp(1.7rem,4vw,2.5rem)/1.18 Nunito,system-ui,sans-serif;color:var(--chit-deep)}
+.chit-byline{display:flex;align-items:center;gap:12px;margin:0 0 8px}
+.chit-byline img{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--chit-line)}
+.chit-byline strong{display:block;color:var(--chit-deep);font:800 15px/1.2 Nunito,system-ui,sans-serif}
+.chit-byline span{color:var(--chit-muted);font:600 13px/1.3 Nunito,system-ui,sans-serif}
+.chit-lead{margin:18px 0 0;color:var(--chit-deep);font:600 1.12rem/1.55 Nunito,system-ui,sans-serif}
+.chit-prose{padding:28px 0 48px}
+.chit-prose h2{margin:36px 0 14px;font:800 clamp(1.3rem,3vw,1.7rem)/1.25 Nunito,system-ui,sans-serif;color:var(--chit-deep)}
+.chit-prose h3{margin:24px 0 10px;font:800 1.1rem/1.3 Nunito,system-ui,sans-serif;color:var(--chit-lilac)}
+.chit-prose p{margin:0 0 14px;color:var(--chit-deep)}
+.chit-prose ol,.chit-prose ul{margin:0 0 18px;padding-left:1.2em;color:var(--chit-deep)}
+.chit-prose li{margin:0 0 8px}
+.chit-prose a{color:var(--chit-blue);font-weight:700}
+.chit-callout{margin:22px 0;padding:18px 18px;border-radius:16px;background:var(--chit-pale);border:1px solid var(--chit-line)}
+.chit-callout p{margin:0}
+.chit-qa{margin:0 0 14px;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid var(--chit-line)}
+.chit-qa strong{display:block;margin:0 0 6px;color:var(--chit-deep)}
+.chit-qa p{margin:0;color:var(--chit-muted);font:600 15px/1.5 Nunito,system-ui,sans-serif}
+.chit-cta{margin:36px 0 0;padding:24px 20px;border-radius:18px;background:linear-gradient(180deg,#F3EEF7,#F8F5FA);border:1px solid var(--chit-line);text-align:center}
+.chit-cta p{margin:0 0 14px}
+.chit-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.chit-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 20px;border-radius:12px;text-decoration:none;font:800 15px/1.2 Nunito,system-ui,sans-serif}
+.chit-btn--primary{background:var(--chit-blue);color:#fff!important}
+.chit-btn--ghost{background:#fff;color:var(--chit-blue)!important;border:2px solid #C5D9ED}
+.chit-footer{padding:40px 20px 56px;background:var(--chit-soft);border-top:1px solid var(--chit-line);text-align:center}
+.chit-footer__logo{height:40px;width:auto;margin:0 auto 12px;display:block}
+.chit-footer p{margin:0 0 8px;color:var(--chit-muted);font:600 14px/1.45 Nunito,system-ui,sans-serif}
+.chit-footer a{color:var(--chit-blue);text-decoration:none;font-weight:700}
+.chit-footer__legal{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin:14px 0}
+@media (max-width:640px){
+  .chit-article-hero{padding:32px 0 20px}
+  .chit-prose{padding:20px 0 40px}
+}
+</style>
+<div id="chit-page-root">
+  <header class="chit-header">
+    <div class="chit-header__inner">
+      <a class="chit-logo" href="https://chitatelstvo.ru"><img src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="160" height="42" /></a>
+      <a class="chit-header-cta" href="https://chitatelstvo.ru/#program">Записаться</a>
+    </div>
+  </header>
+
+  <header class="chit-article-hero">
+    <div class="chit-wrap">
+      <span class="chit-kicker">Статья · для родителей</span>
+      <h1>Как помочь ребёнку понимать сказку: 12 вопросов вместо пересказа</h1>
+      <div class="chit-byline">
+        <img src="https://api.chitatelstvo.ru/assets/founder-olga.jpg" alt="Ольга Рощина" width="96" height="96" loading="eager" />
+        <div>
+          <strong>Ольга Рощина</strong>
+          <span>основатель школы «Читательство» · ДоброЛавка</span>
+        </div>
+      </div>
+      <p class="chit-lead">Знакомая картина: ребёнок дочитал страницу, а на вопрос «О чём было?» отвечает «Не знаю». Иногда перечисляет события цепочкой. Есть другой ход — задать несколько точных вопросов и вместе заметить героя, его желание, трудность и выбор.</p>
+    </div>
+  </header>
+
+  <article class="chit-prose">
+    <div class="chit-wrap">
+      <h2>Основная мысль</h2>
+      <p>Понимать текст — значит замечать, чего хотел герой, что его остановило, что он почувствовал, какой выбор сделал и почему эта история может быть важна нам.</p>
+      <p>Пересказ своими словами вырастает из таких наблюдений. Сначала — разговор. Потом — связный рассказ.</p>
+
+      <h2>12 вопросов к сказке</h2>
+      <p>Их удобно держать под рукой после любой истории. Можно задать два–три за один вечер — этого достаточно.</p>
+
+      <h3>Герой и желание</h3>
+      <ol>
+        <li>Кто здесь главный герой?</li>
+        <li>Чего он хочет в начале истории?</li>
+        <li>Что меняется в его жизни?</li>
+      </ol>
+
+      <h3>Трудность и чувства</h3>
+      <ol start="4">
+        <li>Что было для него трудным или страшным?</li>
+        <li>Что он почувствовал в этот момент?</li>
+        <li>Кто ему помог — и почему согласился помочь?</li>
+      </ol>
+
+      <h3>Выбор</h3>
+      <ol start="7">
+        <li>Какой выбор он сделал?</li>
+        <li>Почему он поступил именно так?</li>
+        <li>Что бы ты сделал на его месте?</li>
+      </ol>
+
+      <h3>Смысл и образ</h3>
+      <ol start="10">
+        <li>Какой момент тебя удивил?</li>
+        <li>Какое слово, картина или поступок запомнились сильнее всего?</li>
+        <li>О чём эта сказка — глубже, чем «что случилось по порядку»? Что можно взять из неё в свою жизнь?</li>
+      </ol>
+
+      <h2>Пример: «Царевна-лягушка»</h2>
+      <p>Иван-царевич стреляет стрелой — и получает в жёны лягушку. Дальше — испытания, помощь Василисы, ошибка Ивана, путь за ней и возвращение.</p>
+
+      <div class="chit-callout">
+        <p><strong>Слабый разговор</strong> держится только на событиях: кого похитили, кто помог, чем закончилось. Ребёнок может ответить коротко и «правильно» — и всё равно не почувствовать историю.</p>
+      </div>
+
+      <p><strong>Живой разговор</strong> держит смысл рядом с сюжетом:</p>
+
+      <div class="chit-qa">
+        <strong>Чего хочет Иван в начале?</strong>
+        <p>Жениться «как положено», выполнить отцовский наказ, не оказаться хуже братьев.</p>
+      </div>
+      <div class="chit-qa">
+        <strong>Что меняется, когда стрела попадает к лягушке?</strong>
+        <p>Появляется стыд, неловкость, желание «исправить» судьбу. Появляется и чудо: лягушка оказывается помощницей и умной женой.</p>
+      </div>
+      <div class="chit-qa">
+        <strong>Что было трудным для Ивана?</strong>
+        <p>Принять необычную жену. Довериться ей в испытаниях. Потом — удержать себя, когда хочется всё узнать сразу.</p>
+      </div>
+      <div class="chit-qa">
+        <strong>Где его ошибка?</strong>
+        <p>Он сжигает лягушачью кожу. Хотелось быстрее увидеть Василису «настоящей» — и этим он нарушает условие и теряет её.</p>
+      </div>
+      <div class="chit-qa">
+        <strong>О чём сказка глубже сюжета?</strong>
+        <p>О терпении, доверии и цене поспешного желания «сразу как хочется». О том, что чудо рядом может выглядеть непривычно — и его легко спугнуть.</p>
+      </div>
+
+      <p>С ребёнком 7–9 лет достаточно двух-трёх вопросов из этого набора. Остальное — когда история уже «осела».</p>
+
+      <h2>Как задавать вопросы дома</h2>
+      <ul>
+        <li>Один вечер — мало вопросов, зато с паузой.</li>
+        <li>Если ребёнок молчит, предложите выбор: «Ему было стыдно или страшно?»</li>
+        <li>Можно указать на картинку в книге: «Что здесь чувствует герой?»</li>
+        <li>Свою версию говорите после ребёнка: так он не подстраивается под «правильный» ответ слишком рано.</li>
+      </ul>
+
+      <h2>Как это устроено в «Читательстве»</h2>
+      <p>В школе «Читательство» урок строится как короткий маршрут смысла:</p>
+      <ol>
+        <li>Текст или видео по сказке</li>
+        <li>Вопросы на понимание</li>
+        <li>Чувства героя, смысл, образы</li>
+        <li>Творческое задание и сундук</li>
+        <li>Попытка пересказать своими словами</li>
+      </ol>
+      <p>За занятие — 10–25 минут. На личной странице видны прогресс, Словики и путь героя.</p>
+      <p>«Царевна-лягушка» входит в школьные программы: как раз тот возраст, где важно учиться замечать желание героя, ошибку и цену выбора.</p>
+      <div class="chit-callout">
+        <p>Идею школы и формат занятий собрала основатель Ольга Рощина. Живые встречи сейчас тоже ведёт она.</p>
+      </div>
+
+      <div class="chit-cta" id="try">
+        <p>Хотите попробовать такой разговор на платформе — начните с одной сказки или бесплатного урока.</p>
+        <div class="chit-actions">
+          <a class="chit-btn chit-btn--primary" href="https://chitatelstvo.ru/#quiz">Попробовать бесплатно</a>
+          <a class="chit-btn chit-btn--ghost" href="https://chitatelstvo.ru/#program">Выбрать программу</a>
+          <a class="chit-btn chit-btn--ghost" href="https://chitatelstvo.ru/1-klass">Курс 1 класс</a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <footer class="chit-footer">
+    <img class="chit-footer__logo" src="https://api.chitatelstvo.ru/assets/logo-chitatelstvo.png" alt="Читательство" width="160" height="42" />
+    <p>С теплом, команда Читательство</p>
+    <nav class="chit-footer__legal" aria-label="Юридическая информация">
+      <a href="https://api.chitatelstvo.ru/legal/politika">Политика</a>
+      <a href="https://api.chitatelstvo.ru/legal/oferta">Оферта</a>
+      <a href="https://api.chitatelstvo.ru/legal/rekvizity">Реквизиты</a>
+    </nav>
+    <p><a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> · <a href="https://chitatelstvo.ru">chitatelstvo.ru</a></p>
+    <p>ИП Рощина Ольга Владимировна · ИНН 231150315327</p>
+  </footer>
+</div>
+<!-- /12-voprosov-k-skazke -->

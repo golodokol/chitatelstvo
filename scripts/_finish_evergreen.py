@@ -52,8 +52,8 @@ def patch_enroll_two_steps() -> None:
 PROOF_REVIEWS = """
     <div class="proof-reviews" aria-label="Отзывы родителей">
       <article class="proof-review">
-        <p class="proof-review__text">«Наконец-то ребёнок не просто „прочитал для галочки“ — он рассказывает, что понял, и сам просит следующую сказку.»</p>
-        <cite class="proof-review__author">Мария, мама ученика 2 класса</cite>
+        <p class="proof-review__text">«Было интересно проходить урок, сыну понравилось собирать словики и проходить „путь героя“! Ждёт открытия новых курсов!»</p>
+        <cite class="proof-review__author">Мария, мама</cite>
       </article>
       <article class="proof-review">
         <p class="proof-review__text">«Удобно, что всё на личной странице: видно баллы, открытые уроки — не нужно ничего отмечать вручную.»</p>

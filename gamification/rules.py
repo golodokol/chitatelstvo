@@ -135,6 +135,27 @@ EVENT_RULES: dict[str, dict] = {
         "reward_type": "badge",
         "next_action": "Празднуем завершение модуля! Можно выбрать новую сказку для чтения на выходных.",
     },
+    "expedition_story": {
+        "points": 1,
+        "badge": "Искатель сказок",
+        "level": "Юный читатель",
+        "reward_type": "badge",
+        "next_action": "Открыть следующую точку Читательской экспедиции.",
+    },
+    "expedition_detail": {
+        "points": 1,
+        "badge": "Сыщик деталей",
+        "level": "Исследователь",
+        "reward_type": "badge",
+        "next_action": "Сравнить эту историю с похожей сказкой другого края.",
+    },
+    "expedition_creative": {
+        "points": 1,
+        "badge": "Создатель продолжений",
+        "level": "Исследователь",
+        "reward_type": "badge",
+        "next_action": "Сохранить отклик в паспорте и выбрать новый маршрут.",
+    },
 }
 
 

@@ -579,4 +579,38 @@
         });
     });
   }
+
+  function bindProgramMap() {
+    var maps = document.querySelectorAll('.chit-program-map');
+    if (!maps.length) return;
+
+    function coarsePointer() {
+      return window.matchMedia && window.matchMedia('(hover: none)').matches;
+    }
+
+    function clearTips(map) {
+      map.querySelectorAll('.chit-program-map__pin.is-tip').forEach(function (pin) {
+        pin.classList.remove('is-tip');
+      });
+    }
+
+    maps.forEach(function (map) {
+      map.addEventListener('click', function (e) {
+        var hit = e.target.closest && e.target.closest('.chit-program-map__hit');
+        if (!hit) {
+          clearTips(map);
+          return;
+        }
+        if (!coarsePointer()) return;
+        var pin = hit.closest('.chit-program-map__pin');
+        if (!pin) return;
+        if (pin.classList.contains('is-tip')) return;
+        e.preventDefault();
+        clearTips(map);
+        pin.classList.add('is-tip');
+      });
+    });
+  }
+
+  bindProgramMap();
 })();

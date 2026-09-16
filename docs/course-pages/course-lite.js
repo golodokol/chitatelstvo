@@ -21,7 +21,13 @@
       staticEl.setAttribute('hidden', '');
       staticEl.setAttribute('aria-hidden', 'true');
     }
-    if (appWrap) appWrap.removeAttribute('hidden');
+    if (appWrap) {
+      appWrap.removeAttribute('hidden');
+      appWrap.removeAttribute('aria-hidden');
+      if (appWrap.style) {
+        appWrap.style.removeProperty('display');
+      }
+    }
   }
 
   function esc(s) {
@@ -47,8 +53,11 @@
   function imgUrl(src) {
     if (!src) return '';
     if (/^https?:\/\//i.test(src)) return src;
-    if (src.indexOf('/early/') === 0) return (D.STATIC || 'https://api.chitatelstvo.ru/static') + src;
-    return D.ASSETS + '/' + src.replace(/^\//, '');
+    var assets = (D && D.ASSETS) || 'https://api.chitatelstvo.ru/assets';
+    var staticBase = (D && D.STATIC) || 'https://api.chitatelstvo.ru/static';
+    if (src.indexOf('/early/') === 0) return staticBase + src;
+    if (src.indexOf('/static/') === 0) return 'https://api.chitatelstvo.ru' + src;
+    return assets + '/' + String(src).replace(/^\//, '');
   }
 
   function lessonTitle(item) {
@@ -59,12 +68,17 @@
     return typeof item === 'string' ? '' : (item && item.blurb) || '';
   }
 
+  function lessonDate(item) {
+    return typeof item === 'string' ? '' : (item && item.date) || '';
+  }
+
   var home = D.HOME_URL || 'https://chitatelstvo.ru';
   var enroll = enrollHref();
   var quiz = D.QUIZ_URL || home + '#quiz';
   var isEarly = group.indexOf('early-') === 0;
-  var isRich = !!(course.why || course.inside || course.gallery || course.faq || course.nextLinks);
-  var tariffsHref = isEarly ? '#tariffs' : enroll;
+  var isRich = !!(course.why || course.inside || course.gallery || course.faq || course.nextLinks || course.forWhom || course.tariffs || course.aboutBook || course.lessonSteps || course.rewards);
+  var hasTariffsBlock = isEarly || !!(course.tariffs && course.tariffs.length);
+  var tariffsHref = hasTariffsBlock ? '#tariffs' : enroll;
 
   function pricingNote() {
     if (isEarly) {
@@ -140,15 +154,35 @@
     );
   }
 
+  var lessonsInteractive = !!(course.aboutBook || course.lessonSteps || course.rewards);
   var lessons = (course.lessons || []).map(function (item, i) {
     var title = lessonTitle(item);
     var blurb = lessonBlurb(item);
+    var date = lessonDate(item);
+    if (!lessonsInteractive) {
+      return (
+        '<li>' +
+          '<span class="ccl-lesson__n">' + (i + 1) + '</span>' +
+          '<div class="ccl-lesson__body">' +
+            '<strong class="ccl-lesson__title">' + esc(title) + '</strong>' +
+            (blurb ? '<span class="ccl-lesson__blurb">' + esc(blurb) + '</span>' : '') +
+          '</div>' +
+        '</li>'
+      );
+    }
+    var open = i === 0;
     return (
-      '<li>' +
-        '<span class="ccl-lesson__n">' + (i + 1) + '</span>' +
-        '<div class="ccl-lesson__body">' +
-          '<strong class="ccl-lesson__title">' + esc(title) + '</strong>' +
-          (blurb ? '<span class="ccl-lesson__blurb">' + esc(blurb) + '</span>' : '') +
+      '<li class="ccl-lesson' + (open ? ' is-open' : '') + '">' +
+        '<button type="button" class="ccl-lesson__toggle" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+          '<span class="ccl-lesson__n">' + (i + 1) + '</span>' +
+          '<span class="ccl-lesson__main">' +
+            '<strong class="ccl-lesson__title">' + esc(title) + '</strong>' +
+            (date ? '<span class="ccl-lesson__date">откроется ' + esc(date) + '</span>' : '') +
+          '</span>' +
+          '<span class="ccl-lesson__chev" aria-hidden="true"></span>' +
+        '</button>' +
+        '<div class="ccl-lesson__panel"' + (open ? '' : ' hidden') + '>' +
+          (blurb ? '<p class="ccl-lesson__blurb">' + esc(blurb) + '</p>' : '') +
         '</div>' +
       '</li>'
     );
@@ -177,11 +211,15 @@
 
   var navExtra = '';
   if (course.why) navExtra += '<a href="#why">Почему мы</a>';
+  if (course.aboutBook || course.aboutAuthor) navExtra += '<a href="#about-book">О книге</a>';
+  if (course.lessonSteps) navExtra += '<a href="#inside-lesson">Внутри урока</a>';
+  if (course.rewards) navExtra += '<a href="#rewards">Награды</a>';
   if (course.gallery) navExtra += '<a href="#look">Как выглядит</a>';
   navExtra += '<a href="#program">Программа</a><a href="#outcome">После курса</a>';
+  if (course.forWhom) navExtra += '<a href="#for-whom">Для кого</a>';
   if (course.faq) navExtra += '<a href="#faq">Вопросы</a>';
   navExtra += '<a href="https://chitatelstvo.ru/o-shkole">О школе</a>';
-  navExtra += '<a href="' + (isEarly ? '#tariffs' : '#enroll') + '">Запись</a>';
+  navExtra += '<a href="' + (hasTariffsBlock ? '#tariffs' : '#enroll') + '">Запись</a>';
   if (isEarly && course.trialSlug) navExtra += '<a href="#trial">Пробный</a>';
 
   var trialHref = (isEarly && course.trialSlug) ? '#trial' : quiz;
@@ -203,7 +241,7 @@
       '<div class="ccl-header__inner">' +
         '<a class="ccl-logo" href="' + esc(home) + '"><img src="' + D.ASSETS + '/logo-chitatelstvo.png" alt="Читательство" width="180" height="48"></a>' +
         '<nav class="ccl-nav" aria-label="Разделы">' + navExtra + '</nav>' +
-        '<a class="ccl-header-cta" href="' + esc(isEarly ? '#tariffs' : enroll) + '">Записаться</a>' +
+        '<a class="ccl-header-cta" href="' + esc(hasTariffsBlock ? '#tariffs' : enroll) + '">Записаться</a>' +
       '</div>' +
     '</header>';
 
@@ -289,6 +327,29 @@
       '</section>';
   }
 
+  if (course.aboutBook || course.aboutAuthor) {
+    html +=
+      '<section class="ccl-about-book" id="about-book">' +
+        '<div class="ccl-about-book__inner">' +
+          '<p class="ccl-chapter"><em>книга</em></p>' +
+          '<div class="ccl-about-book__grid">' +
+            (course.aboutBook
+              ? '<article class="ccl-about-book__card">' +
+                  '<h2>' + esc(course.aboutBookTitle || 'О произведении') + '</h2>' +
+                  '<p>' + esc(course.aboutBook) + '</p>' +
+                '</article>'
+              : '') +
+            (course.aboutAuthor
+              ? '<article class="ccl-about-book__card">' +
+                  '<h2>' + esc(course.aboutAuthorTitle || 'Об авторе') + '</h2>' +
+                  '<p>' + esc(course.aboutAuthor) + '</p>' +
+                '</article>'
+              : '') +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
   if (course.inside && course.inside.length) {
     html +=
       '<section class="ccl-inside" id="inside">' +
@@ -300,13 +361,62 @@
       '</section>';
   }
 
+  if (course.lessonSteps && course.lessonSteps.length) {
+    html +=
+      '<section class="ccl-steps" id="inside-lesson">' +
+        '<div class="ccl-steps__inner">' +
+          '<p class="ccl-chapter"><em>внутри урока</em></p>' +
+          '<h2>' + esc(course.lessonStepsTitle || 'Внутри урока') + '</h2>' +
+          (course.lessonStepsLead ? '<p class="ccl-steps__lead">' + esc(course.lessonStepsLead) + '</p>' : '') +
+          '<div class="ccl-steps__track" role="list">' +
+            course.lessonSteps.map(function (step, i) {
+              return (
+                '<button type="button" class="ccl-step' + (i === 0 ? ' is-active' : '') + '" role="listitem" data-step="' + i + '">' +
+                  '<span class="ccl-step__n">' + (i + 1) + '</span>' +
+                  (step.image
+                    ? '<img class="ccl-step__img" src="' + esc(imgUrl(step.image)) + '" alt="" width="320" height="200" loading="lazy">'
+                    : '') +
+                  '<strong class="ccl-step__title">' + esc(step.title || '') + '</strong>' +
+                  '<span class="ccl-step__text">' + esc(step.text || '') + '</span>' +
+                '</button>'
+              );
+            }).join('') +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  if (course.rewards && course.rewards.length) {
+    html +=
+      '<section class="ccl-rewards" id="rewards">' +
+        '<div class="ccl-rewards__inner">' +
+          '<p class="ccl-chapter"><em>награды</em></p>' +
+          '<h2>' + esc(course.rewardsTitle || 'Награды на пути') + '</h2>' +
+          (course.rewardsLead ? '<p class="ccl-rewards__lead">' + esc(course.rewardsLead) + '</p>' : '') +
+          '<div class="ccl-rewards__grid">' +
+            course.rewards.map(function (r) {
+              return (
+                '<article class="ccl-reward">' +
+                  (r.image
+                    ? '<img class="ccl-reward__img" src="' + esc(imgUrl(r.image)) + '" alt="' + esc(r.title || '') + '" width="240" height="240" loading="lazy">'
+                    : '') +
+                  '<h3>' + esc(r.title || '') + '</h3>' +
+                  '<p>' + esc(r.text || '') + '</p>' +
+                '</article>'
+              );
+            }).join('') +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
   if (course.gallery && course.gallery.length) {
     html +=
       '<section class="ccl-gallery" id="look">' +
         '<div class="ccl-gallery__inner">' +
           '<p class="ccl-chapter"><em>из уроков</em></p>' +
           '<h2>' + esc(course.galleryTitle || 'Как выглядит урок') + '</h2>' +
-          '<div class="ccl-gallery__grid">' +
+          '<div class="ccl-gallery__grid' + (course.gallery.length > 4 ? ' ccl-gallery__grid--rich' : '') + '">' +
             course.gallery.map(function (g) {
               return (
                 '<figure class="ccl-gallery__item">' +
@@ -363,6 +473,32 @@
       '</div>' +
     '</section>';
 
+  if (course.forWhom && course.forWhom.length) {
+    html +=
+      '<section class="ccl-for-whom" id="for-whom">' +
+        '<div class="ccl-for-whom__inner">' +
+          '<p class="ccl-chapter"><em>для семьи</em></p>' +
+          '<h2>' + esc(course.forWhomTitle || 'Этот курс для вас, если') + '</h2>' +
+          '<ul class="ccl-for-whom__list">' + listBlock(course.forWhom, '') + '</ul>' +
+        '</div>' +
+      '</section>';
+  }
+
+  if (course.tariffs && course.tariffs.length) {
+    html +=
+      '<section class="ccl-tariffs" id="tariffs">' +
+        '<div class="ccl-tariffs__inner">' +
+          '<p class="ccl-chapter"><em>тариф</em></p>' +
+          '<h2>' + esc(course.tariffsTitle || 'Тарифы') + '</h2>' +
+          '<ul class="ccl-tariffs__list">' + listBlock(course.tariffs, '') + '</ul>' +
+          '<div class="ccl-actions ccl-actions--enroll">' +
+            '<a class="ccl-btn ccl-btn--primary" href="' + esc(enroll) + '">Записаться на курс</a>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  if (!(course.tariffs && course.tariffs.length)) {
   html +=
     '<section class="ccl-enroll' + (isEarly ? ' ccl-enroll--fares' : '') + '" id="' + (isEarly ? 'tariffs' : 'enroll') + '">' +
       '<div class="ccl-enroll__inner">' +
@@ -383,6 +519,9 @@
             '</div>') +
       '</div>' +
     '</section>';
+  } else {
+    html += '<div id="enroll" hidden aria-hidden="true"></div>';
+  }
 
   if (isEarly) {
     html += '<div id="enroll" hidden aria-hidden="true"></div>';
@@ -442,12 +581,16 @@
           '<p class="ccl-chapter"><em>вопросы</em></p>' +
           '<h2>' + esc(course.faqTitle || 'Частые вопросы') + '</h2>' +
           '<div class="ccl-faq__list">' +
-            course.faq.map(function (item) {
+            course.faq.map(function (item, i) {
+              var open = i === 0;
               return (
-                '<details class="ccl-faq__item">' +
-                  '<summary>' + esc(item.q) + '</summary>' +
-                  '<p>' + esc(item.a) + '</p>' +
-                '</details>'
+                '<div class="ccl-faq__item' + (open ? ' is-open' : '') + '">' +
+                  '<button type="button" class="ccl-faq__q" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+                    esc(item.q) +
+                    '<span class="ccl-faq__chev" aria-hidden="true"></span>' +
+                  '</button>' +
+                  '<div class="ccl-faq__a"' + (open ? '' : ' hidden') + '><p>' + esc(item.a) + '</p></div>' +
+                '</div>'
               );
             }).join('') +
           '</div>' +
@@ -508,6 +651,58 @@
     a.addEventListener('click', function () {
       rememberEnroll(a.getAttribute('data-enroll-tariff') || '');
     });
+  });
+
+  root.addEventListener('click', function (e) {
+    var lessonBtn = e.target && e.target.closest ? e.target.closest('.ccl-lesson__toggle') : null;
+    if (lessonBtn) {
+      var lesson = lessonBtn.closest('.ccl-lesson');
+      if (!lesson) return;
+      var openLesson = !lesson.classList.contains('is-open');
+      root.querySelectorAll('.ccl-lesson.is-open').forEach(function (el) {
+        el.classList.remove('is-open');
+        var t = el.querySelector('.ccl-lesson__toggle');
+        var p = el.querySelector('.ccl-lesson__panel');
+        if (t) t.setAttribute('aria-expanded', 'false');
+        if (p) p.hidden = true;
+      });
+      if (openLesson) {
+        lesson.classList.add('is-open');
+        lessonBtn.setAttribute('aria-expanded', 'true');
+        var panel = lesson.querySelector('.ccl-lesson__panel');
+        if (panel) panel.hidden = false;
+      }
+      return;
+    }
+
+    var faqBtn = e.target && e.target.closest ? e.target.closest('.ccl-faq__q') : null;
+    if (faqBtn) {
+      var faqItem = faqBtn.closest('.ccl-faq__item');
+      if (!faqItem) return;
+      var openFaq = !faqItem.classList.contains('is-open');
+      root.querySelectorAll('.ccl-faq__item.is-open').forEach(function (el) {
+        el.classList.remove('is-open');
+        var t = el.querySelector('.ccl-faq__q');
+        var a = el.querySelector('.ccl-faq__a');
+        if (t) t.setAttribute('aria-expanded', 'false');
+        if (a) a.hidden = true;
+      });
+      if (openFaq) {
+        faqItem.classList.add('is-open');
+        faqBtn.setAttribute('aria-expanded', 'true');
+        var ans = faqItem.querySelector('.ccl-faq__a');
+        if (ans) ans.hidden = false;
+      }
+      return;
+    }
+
+    var stepBtn = e.target && e.target.closest ? e.target.closest('.ccl-step') : null;
+    if (stepBtn) {
+      root.querySelectorAll('.ccl-step.is-active').forEach(function (el) {
+        el.classList.remove('is-active');
+      });
+      stepBtn.classList.add('is-active');
+    }
   });
 
   function scrollToHashTarget() {

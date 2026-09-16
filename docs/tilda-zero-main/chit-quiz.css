@@ -40,23 +40,19 @@
 
 .qz-logo {
   display: block;
-  width: min(220px, 72vw);
+  width: min(168px, 52vw);
   height: auto;
   margin: 0 auto 12px;
-  padding: 10px 14px;
-  background: #fff;
-  border-radius: 14px;
-  box-sizing: content-box;
+  padding: 0;
+  object-fit: contain;
 }
-
 .qz-intro-gift {
-  margin: 0 0 20px;
-  padding: 18px 16px 16px;
-  border-radius: 16px;
-  text-align: center;
-  background: #EBE6F3;
-  border: 2px solid #C9BCD9;
-  box-shadow: 0 4px 16px rgba(91, 127, 166, 0.1);
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  border: none !important;
 }
 .qz-intro-gift__badge {
   margin: 0 0 10px;
@@ -156,7 +152,7 @@
   display: block;
   width: 100%;
   text-align: left;
-  padding: 16px 18px;
+  padding: 12px 14px;
   border: 2px solid var(--qz-border);
   border-radius: 14px;
   background: var(--qz-white);
@@ -656,10 +652,8 @@
     display: none;
   }
 }
-#chit-quiz.qz-phase-questions .qz-logo {
-  width: min(140px, 42vw);
-  margin-bottom: 8px;
-  padding: 6px 10px;
+#chit-quiz.qz-phase-questions .qz-sub {
+  display: none !important;
 }
 .qz-modal__close {
   position: absolute;
@@ -819,10 +813,16 @@ body.qz-modal-open {
     border-radius: 0;
     padding: 48px 16px 0;
   }
-  #chit-quiz.qz-phase-questions .qz-logo,
   #chit-quiz.qz-phase-questions .qz-intro-gift,
   #chit-quiz.qz-phase-questions .qz-sub {
     display: none;
+  }
+  #chit-quiz.qz-phase-questions .qz-logo {
+    display: block;
+    width: min(148px, 46vw);
+    height: auto;
+    max-height: none;
+    margin: 0 auto 8px;
   }
   #chit-quiz.qz-phase-questions #qz-questions {
     flex: 1 1 auto;

@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIR = ROOT / "docs" / "tilda-zero-main"
-VERSION = "20260905a"
+VERSION = "20260916p"
 
 CHIT_QUIZ_LOADER = (
     '<script id="chit-quiz-loader">(function(){if(window.__chitTrialLoaderBound)return;window.__chitTrialLoaderBound=1;'
@@ -30,15 +30,16 @@ CHIT_QUIZ_LOADER = (
     'if(!document.querySelector(\'link[href*="chit-quiz.css"]\')){var c=document.createElement("link");'
     'c.rel="stylesheet";c.href=A+"chit-quiz.css?v="+V;document.head.appendChild(c);}'
     'appendJs();setTimeout(function(){if(!done)appendJs();},2000);};'
-    'function openTrial(el,e){if(!el)return;var now=Date.now();if(now-last<450)return;last=now;'
+    'function openTrial(el,e){if(!el)return;var now=Date.now();if(now-last<=449)return;last=now;'
     'if(e){e.preventDefault();e.stopPropagation();}rememberTrial(el);'
     'if(done&&window.chitQuizOpen){openReady(el);return;}'
     'window.chitLoadQuiz(function(){openReady(el);});}'
     'function trialTarget(e){return e.target&&e.target.closest?e.target.closest(\'[href="#quiz"], [href="/quiz"], [href$="/quiz"], a[href*="/quiz"], [data-qz-open], .course-card__btn--trial\'):null;}'
     'document.addEventListener("click",function(e){var t=trialTarget(e);if(t)openTrial(t,e);},true);'
     'document.addEventListener("touchend",function(e){var t=trialTarget(e);if(t)openTrial(t,e);},{capture:true,passive:false});'
-    'if(location.hash==="#quiz")window.chitLoadQuiz();' +
-    'try{if(sessionStorage.getItem("chit_open_quiz")==="1"){sessionStorage.removeItem("chit_open_quiz");window.chitLoadQuiz(function(){if(window.chitQuizOpen)window.chitQuizOpen();});}}catch(err){}' +
+    # Квиз только по клику: сбрасываем #quiz и старый sessionStorage-триггер
+    'if(location.hash==="#quiz"){try{history.replaceState(null,"",location.pathname+location.search);}catch(err){location.hash="";}}'
+    'try{sessionStorage.removeItem("chit_open_quiz");}catch(err){}'
     '})();</script>'
 ).replace("__VERSION__", VERSION)
 

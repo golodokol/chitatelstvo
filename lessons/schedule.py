@@ -68,18 +68,18 @@ COHORT_GROUPS = frozenset({"wind", "garden", "rus-6-9", "rus-10-12"})
 SLOW_READING_GROUPS = frozenset({"wind", "garden"})
 RUSSIAN_TALES_GROUPS = frozenset({"rus-6-9", "rus-10-12"})
 
-# Медленное чтение: старт 15 сентября, далее по вторникам.
+# Медленное чтение: старт 22 сентября; уроки 22 и 28 сен, 5 и 12 окт.
 SLOW_READING_LESSON_OPENS = (
-    date(2026, 9, 15),
     date(2026, 9, 22),
-    date(2026, 9, 29),
-    date(2026, 10, 6),
+    date(2026, 9, 28),
+    date(2026, 10, 5),
+    date(2026, 10, 12),
 )
 SLOW_READING_MEETINGS = (
-    date(2026, 9, 18),
-    date(2026, 9, 25),
-    date(2026, 10, 2),
-    date(2026, 10, 9),
+    date(2026, 9, 24),
+    date(2026, 10, 1),
+    date(2026, 10, 8),
+    date(2026, 10, 15),
 )
 
 # Русские сказки: 15, 20, 27 октября и 3, 10 ноября (4 урока).

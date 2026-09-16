@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent / "docs" / "course-pages"
 REDIR = ROOT / "tilda-redirects"
 SEO = json.loads((ROOT / "course-seo.json").read_text(encoding="utf-8"))
-VER = "20260828c"
+VER = "20260916j"
 API = "https://api.chitatelstvo.ru/assets/course-pages"
 SITE = SEO["site"]
 ASSETS = SEO["assets"]
@@ -310,23 +310,26 @@ def static_footer_full() -> str:
 
 
 def static_footer_lite() -> str:
-    return (
-        '<footer class="ccl-footer">'
-        '<div class="ccl-footer__inner">'
-        f'<img class="ccl-footer__logo" src="{ASSETS}/logo-chitatelstvo.png" alt="{esc(ORG)}" width="180" height="48">'
-        f'<p class="ccl-footer__warm">С теплом, команда {esc(ORG)}</p>'
-        '<nav class="ccl-footer__legal" aria-label="Юридическая информация">'
-        '<a href="https://api.chitatelstvo.ru/legal/politika">Политика</a>'
-        '<a href="https://api.chitatelstvo.ru/legal/oferta">Оферта</a>'
-        '<a href="https://api.chitatelstvo.ru/legal/rekvizity">Реквизиты</a>'
-        "</nav>"
-        '<p class="ccl-footer__contact">'
-        '<a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> · '
-        f'<a href="{SITE}">chitatelstvo.ru</a>'
-        "</p>"
-        '<p class="ccl-footer__seller">ИП Рощина Ольга Владимировна · ИНН 231150315327</p>'
-        f'<p class="ccl-footer__copy">© {esc(ORG)}</p>'
-        "</div></footer>"
+    return "\n".join(
+        [
+            '<footer class="ccl-footer">',
+            '<div class="ccl-footer__inner">',
+            f'<img class="ccl-footer__logo" src="{ASSETS}/logo-chitatelstvo.png" alt="{esc(ORG)}" width="180" height="48" />',
+            f'<p class="ccl-footer__warm">С теплом, команда {esc(ORG)}</p>',
+            '<nav class="ccl-footer__legal" aria-label="Юридическая информация">',
+            '<a href="https://api.chitatelstvo.ru/legal/politika">Политика</a>',
+            '<a href="https://api.chitatelstvo.ru/legal/oferta">Оферта</a>',
+            '<a href="https://api.chitatelstvo.ru/legal/rekvizity">Реквизиты</a>',
+            "</nav>",
+            '<p class="ccl-footer__contact">',
+            '<a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> · ',
+            f'<a href="{SITE}">chitatelstvo.ru</a>',
+            "</p>",
+            '<p class="ccl-footer__seller">ИП Рощина Ольга Владимировна · ИНН 231150315327</p>',
+            f'<p class="ccl-footer__copy">© {esc(ORG)}</p>',
+            "</div>",
+            "</footer>",
+        ]
     )
 
 
@@ -416,14 +419,16 @@ def static_lite_html(group: str, data: dict) -> str:
     hero_class = "ccl-hero ccl-hero--brand" if is_early else "ccl-hero"
     parts = [
         f'<article id="chit-course-static" class="ccl-static" itemscope itemtype="https://schema.org/Course">',
-        f'<meta itemprop="name" content="{esc(data["h1"])}">',
-        f'<meta itemprop="description" content="{esc(data["description"])}">',
-        f'<link itemprop="url" href="{esc(url)}">',
+        f'<span itemprop="name" style="display:none">{esc(data["h1"])}</span>',
+        f'<span itemprop="description" style="display:none">{esc(data["description"])}</span>',
+        f'<a itemprop="url" href="{esc(url)}" style="display:none">{esc(url)}</a>',
         '<header class="ccl-header"><div class="ccl-header__inner">',
-        f'<a class="ccl-logo" href="{SITE}"><img src="{ASSETS}/logo-chitatelstvo.png" alt="{esc(ORG)}"></a>',
+        f'<a class="ccl-logo" href="{SITE}"><img src="{ASSETS}/logo-chitatelstvo.png" alt="{esc(ORG)}" /></a>',
         '<nav class="ccl-nav" aria-label="Разделы">',
         '<a href="#program">Программа</a>',
         '<a href="#outcome">После курса</a>',
+        *(['<a href="#for-whom">Для кого</a>'] if data.get("forWhom") else []),
+        *(['<a href="#faq">Вопросы</a>'] if data.get("faq") else []),
         '<a href="#enroll">Запись</a>',
         "</nav>",
         f'<a class="ccl-header-cta" href="{SITE}/#program">Записаться</a>',
@@ -452,7 +457,16 @@ def static_lite_html(group: str, data: dict) -> str:
     if not is_early:
         parts.append(f'<p class="ccl-intro">{esc(data["intro"])}</p>')
     parts.append(f'<div class="ccl-chips">{chips}</div>')
-    parts.append("</div></div>")
+    parts.append("</div>")
+    # hero cover for lite (absolute URL so images show even before JS)
+    cover_name = data.get("cover") or COVER_BY_GROUP.get(group, "")
+    if cover_name:
+        cover_src = cover_name if str(cover_name).startswith("http") else f"{ASSETS}/{cover_name}"
+        parts.append(
+            f'<div class="ccl-hero__media"><img src="{esc(cover_src)}" alt="{esc(data["h1"])}" '
+            f'width="800" height="500" loading="eager" /></div>'
+        )
+    parts.append("</div>")
     if is_early:
         parts.append("</div>")
     parts.append("</section>")
@@ -471,6 +485,79 @@ def static_lite_html(group: str, data: dict) -> str:
             f'<section class="ccl-why" id="why"><div class="ccl-why__inner">'
             f'<h2>{esc(data.get("whyTitle") or "Почему выбирают этот курс")}</h2>'
             f"<ul>{li_items(data['why'])}</ul></div></section>"
+        )
+    if data.get("aboutBook") or data.get("aboutAuthor"):
+        about = ['<section class="ccl-about-book" id="about-book"><div class="ccl-about-book__inner">']
+        if data.get("aboutBook"):
+            about.append(
+                f'<h2>{esc(data.get("aboutBookTitle") or "О произведении")}</h2>'
+                f'<p>{esc(data["aboutBook"])}</p>'
+            )
+        if data.get("aboutAuthor"):
+            about.append(
+                f'<h2>{esc(data.get("aboutAuthorTitle") or "Об авторе")}</h2>'
+                f'<p>{esc(data["aboutAuthor"])}</p>'
+            )
+        about.append("</div></section>")
+        parts.append("".join(about))
+    # Внутри урока / награды / галерея — в статике, чтобы было видно без JS
+    if data.get("lessonSteps"):
+        steps = []
+        for i, step in enumerate(data["lessonSteps"], 1):
+            img = step.get("image") or ""
+            img_html = (
+                f'<img class="ccl-step__img" src="{esc(img)}" alt="" width="320" height="200" loading="lazy" />'
+                if img else ""
+            )
+            steps.append(
+                f'<article class="ccl-step is-active">'
+                f'<span class="ccl-step__n">{i}</span>{img_html}'
+                f'<strong class="ccl-step__title">{esc(step.get("title", ""))}</strong>'
+                f'<span class="ccl-step__text">{esc(step.get("text", ""))}</span>'
+                f"</article>"
+            )
+        parts.append(
+            f'<section class="ccl-steps" id="inside-lesson"><div class="ccl-steps__inner">'
+            f'<p class="ccl-chapter"><em>внутри урока</em></p>'
+            f'<h2>{esc(data.get("lessonStepsTitle") or "Внутри урока")}</h2>'
+            + (f'<p class="ccl-steps__lead">{esc(data["lessonStepsLead"])}</p>' if data.get("lessonStepsLead") else "")
+            + f'<div class="ccl-steps__track">{"".join(steps)}</div></div></section>'
+        )
+    if data.get("rewards"):
+        cards = []
+        for r in data["rewards"]:
+            img = r.get("image") or ""
+            img_html = (
+                f'<img class="ccl-reward__img" src="{esc(img)}" alt="{esc(r.get("title", ""))}" width="240" height="240" loading="lazy" />'
+                if img else ""
+            )
+            cards.append(
+                f'<article class="ccl-reward">{img_html}'
+                f'<h3>{esc(r.get("title", ""))}</h3><p>{esc(r.get("text", ""))}</p></article>'
+            )
+        parts.append(
+            f'<section class="ccl-rewards" id="rewards"><div class="ccl-rewards__inner">'
+            f'<p class="ccl-chapter"><em>награды</em></p>'
+            f'<h2>{esc(data.get("rewardsTitle") or "Награды на пути")}</h2>'
+            + (f'<p class="ccl-rewards__lead">{esc(data["rewardsLead"])}</p>' if data.get("rewardsLead") else "")
+            + f'<div class="ccl-rewards__grid">{"".join(cards)}</div></div></section>'
+        )
+    if data.get("gallery"):
+        figs = []
+        for g in data["gallery"]:
+            src = g.get("src") or ""
+            figs.append(
+                f'<figure class="ccl-gallery__item">'
+                f'<img src="{esc(src)}" alt="{esc(g.get("alt", ""))}" width="640" height="400" loading="lazy" />'
+                + (f'<figcaption>{esc(g["caption"])}</figcaption>' if g.get("caption") else "")
+                + "</figure>"
+            )
+        grid_class = "ccl-gallery__grid ccl-gallery__grid--rich" if len(data["gallery"]) > 4 else "ccl-gallery__grid"
+        parts.append(
+            f'<section class="ccl-gallery" id="look"><div class="ccl-gallery__inner">'
+            f'<p class="ccl-chapter"><em>из уроков</em></p>'
+            f'<h2>{esc(data.get("galleryTitle") or "Как выглядит урок изнутри")}</h2>'
+            f'<div class="{grid_class}">{"".join(figs)}</div></div></section>'
         )
     parts.extend(
         [
@@ -503,47 +590,98 @@ def static_lite_html(group: str, data: dict) -> str:
             f'<p class="ccl-outcome__lead">{esc(data["outcomeLead"])}</p>',
             f'<ul class="ccl-outcome__list">{li_items(data["outcome"])}</ul>',
             "</div></section>",
-            (
-                f'<section class="ccl-enroll ccl-enroll--fares" id="tariffs">'
-                f'<div class="ccl-enroll__inner">'
-                f"<h2>Выберите формат</h2>"
-                f"<p>Форматы этого модуля · 1 990 ₽ — за 8 уроков</p>"
-                f'<div class="ccl-fares" role="list">'
-                f'<article class="ccl-fare"><h3 class="ccl-fare__name">Разовое</h3>'
-                f'<p class="ccl-fare__price">799 ₽</p><p class="ccl-fare__sub">1 урок</p>'
-                f'<ul class="ccl-fare__feats"><li class="is-yes">1 урок модуля на платформе</li>'
-                f'<li class="is-yes">Квест и задания</li><li class="is-yes">Личная страница прогресса</li>'
-                f'<li class="is-no">Модуль из 8 уроков</li><li class="is-no">Живые встречи</li></ul></article>'
-                f'<article class="ccl-fare ccl-fare--rec"><span class="ccl-fare__badge">Рекомендуем</span>'
-                f'<h3 class="ccl-fare__name">Индивидуальное</h3><p class="ccl-fare__price">1 990 ₽</p>'
-                f'<p class="ccl-fare__sub">8 уроков модуля · свой темп</p>'
-                f'<ul class="ccl-fare__feats"><li class="is-yes">8 уроков модуля на платформе</li>'
-                f'<li class="is-yes">Квест и задания</li><li class="is-yes">Личная страница прогресса</li>'
-                f'<li class="is-yes">Модуль целиком</li><li class="is-no">Живые встречи</li></ul></article>'
-                f'<article class="ccl-fare"><h3 class="ccl-fare__name">С преподавателем</h3>'
-                f'<p class="ccl-fare__price">4 990 ₽</p><p class="ccl-fare__sub">8 уроков модуля + 4 встречи</p>'
-                f'<ul class="ccl-fare__feats"><li class="is-yes">8 уроков модуля на платформе</li>'
-                f'<li class="is-yes">Квест и задания</li><li class="is-yes">Личная страница прогресса</li>'
-                f'<li class="is-yes">Модуль целиком</li><li class="is-yes">Живые встречи</li></ul></article>'
-                f"</div>"
-                + (
-                    f'<p class="ccl-enroll__trial"><a class="ccl-btn ccl-btn--ghost" href="#trial">Пробный урок бесплатно</a></p>'
-                    if data.get("trialSlug")
-                    else ""
-                )
-                + f'<div id="enroll" hidden></div></div></section>'
-                if is_early
-                else (
-                    '<section class="ccl-enroll" id="enroll">'
-                    '<div class="ccl-enroll__inner">'
-                    "<h2>Выберите тариф и запишитесь</h2>"
-                    f"<p>{esc(price)}</p>"
-                    f'<p><a class="ccl-btn ccl-btn--primary" href="{SITE}/#program">Записаться на курс</a></p>'
-                    "</div></section>"
-                )
-            ),
         ]
     )
+    if data.get("forWhom"):
+        parts.append(
+            '<section class="ccl-for-whom" id="for-whom">'
+            '<div class="ccl-for-whom__inner">'
+            "<h2>Этот курс для вас, если</h2>"
+            f'<ul class="ccl-for-whom__list">{li_items(data["forWhom"])}</ul>'
+            "</div></section>"
+        )
+    if data.get("inside"):
+        inside_items = data["inside"]
+        if inside_items and isinstance(inside_items[0], dict):
+            inside_html = "".join(
+                f"<li><strong>{esc(x.get('title', ''))}</strong> — {esc(x.get('text', ''))}</li>"
+                for x in inside_items
+            )
+        else:
+            inside_html = li_items(inside_items)
+        parts.append(
+            f'<section class="ccl-inside" id="inside"><div class="ccl-inside__inner">'
+            f'<h2>{esc(data.get("insideTitle") or "Как устроен модуль")}</h2>'
+            f"<ul>{inside_html}</ul></div></section>"
+        )
+    if data.get("tariffs"):
+        parts.append(
+            '<section class="ccl-tariffs" id="tariffs">'
+            '<div class="ccl-tariffs__inner">'
+            "<h2>Тарифы</h2>"
+            f'<ul class="ccl-tariffs__list">{li_items(data["tariffs"])}</ul>'
+            f'<p><a class="ccl-btn ccl-btn--primary" href="{SITE}/#program">Записаться на курс</a></p>'
+            "</div></section>"
+            '<div id="enroll" hidden></div>'
+        )
+    elif is_early:
+        parts.append(
+            f'<section class="ccl-enroll ccl-enroll--fares" id="tariffs">'
+            f'<div class="ccl-enroll__inner">'
+            f"<h2>Выберите формат</h2>"
+            f"<p>Форматы этого модуля · 1 990 ₽ — за 8 уроков</p>"
+            f'<div class="ccl-fares" role="list">'
+            f'<article class="ccl-fare"><h3 class="ccl-fare__name">Разовое</h3>'
+            f'<p class="ccl-fare__price">799 ₽</p><p class="ccl-fare__sub">1 урок</p>'
+            f'<ul class="ccl-fare__feats"><li class="is-yes">1 урок модуля на платформе</li>'
+            f'<li class="is-yes">Квест и задания</li><li class="is-yes">Личная страница прогресса</li>'
+            f'<li class="is-no">Модуль из 8 уроков</li><li class="is-no">Живые встречи</li></ul></article>'
+            f'<article class="ccl-fare ccl-fare--rec"><span class="ccl-fare__badge">Рекомендуем</span>'
+            f'<h3 class="ccl-fare__name">Индивидуальное</h3><p class="ccl-fare__price">1 990 ₽</p>'
+            f'<p class="ccl-fare__sub">8 уроков модуля · свой темп</p>'
+            f'<ul class="ccl-fare__feats"><li class="is-yes">8 уроков модуля на платформе</li>'
+            f'<li class="is-yes">Квест и задания</li><li class="is-yes">Личная страница прогресса</li>'
+            f'<li class="is-yes">Модуль целиком</li><li class="is-no">Живые встречи</li></ul></article>'
+            f'<article class="ccl-fare"><h3 class="ccl-fare__name">С преподавателем</h3>'
+            f'<p class="ccl-fare__price">4 990 ₽</p><p class="ccl-fare__sub">8 уроков модуля + 4 встречи</p>'
+            f'<ul class="ccl-fare__feats"><li class="is-yes">8 уроков модуля на платформе</li>'
+            f'<li class="is-yes">Квест и задания</li><li class="is-yes">Личная страница прогресса</li>'
+            f'<li class="is-yes">Модуль целиком</li><li class="is-yes">Живые встречи</li></ul></article>'
+            f"</div>"
+            + (
+                f'<p class="ccl-enroll__trial"><a class="ccl-btn ccl-btn--ghost" href="#trial">Пробный урок бесплатно</a></p>'
+                if data.get("trialSlug")
+                else ""
+            )
+            + f'<div id="enroll" hidden></div></div></section>'
+        )
+    else:
+        parts.append(
+            '<section class="ccl-enroll" id="enroll">'
+            '<div class="ccl-enroll__inner">'
+            "<h2>Выберите тариф и запишитесь</h2>"
+            f"<p>{esc(price)}</p>"
+            f'<p><a class="ccl-btn ccl-btn--primary" href="{SITE}/#program">Записаться на курс</a></p>'
+            "</div></section>"
+        )
+    if data.get("faq"):
+        faq_bits = []
+        for item in data["faq"]:
+            if not (isinstance(item, dict) and item.get("q") and item.get("a")):
+                continue
+            faq_bits.append(
+                f'<div class="ccl-faq__item">'
+                f'<p class="ccl-faq__q"><strong>{esc(item["q"])}</strong></p>'
+                f'<p class="ccl-faq__a">{esc(item["a"])}</p>'
+                f"</div>"
+            )
+        if faq_bits:
+            parts.append('<section class="ccl-faq" id="faq">')
+            parts.append('<div class="ccl-faq__inner">')
+            parts.append(f'<h2>{esc(data.get("faqTitle") or "Частые вопросы")}</h2>')
+            parts.append('<div class="ccl-faq__list">')
+            parts.extend(faq_bits)
+            parts.append("</div></div></section>")
     if is_early and data.get("trialSlug"):
         parts.append(
             '<section class="ccl-trial" id="trial">'
@@ -567,8 +705,16 @@ def static_lite_html(group: str, data: dict) -> str:
         )
     parts.append(static_footer_lite())
     parts.append("</article>")
-    parts.append(json_ld_scripts(group, data, url))
-    return "".join(parts)
+    # JSON-LD отдельными строками — Tilda ломается на одной гигантской строке
+    ld = json_ld_scripts(group, data, url)
+    for chunk in ld.split("</script>"):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        if not chunk.endswith("</script>"):
+            chunk = chunk + "</script>"
+        parts.append(chunk)
+    return "\n".join(parts)
 
 
 def full_shell(group: str) -> str:
@@ -588,19 +734,82 @@ def full_shell(group: str) -> str:
 """
 
 
+def lite_course_override_script(group: str) -> str:
+    """Встраивает актуальные данные курса в HTML — не ждём деплоя CDN."""
+    data_js = ROOT / "course-lite-data.js"
+    if not data_js.is_file():
+        return ""
+    try:
+        import subprocess
+
+        payload = subprocess.check_output(
+            [
+                "node",
+                "-e",
+                "const fs=require('fs');const vm=require('vm');"
+                "const ctx={window:{}};vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),ctx);"
+                "const c=ctx.window.CHIT_COURSE_LITE&&ctx.window.CHIT_COURSE_LITE.courses&&"
+                "ctx.window.CHIT_COURSE_LITE.courses[process.argv[2]];"
+                "if(!c) process.exit(2);"
+                "process.stdout.write(JSON.stringify(c));",
+                str(data_js),
+                group,
+            ],
+            cwd=str(ROOT.parent.parent),
+            text=True,
+            encoding="utf-8",
+        )
+    except Exception:
+        return ""
+    # JSON безопасен внутри <script type="application/json">
+    return (
+        f'<script type="application/json" id="chit-course-lite-embed">{payload}</script>\n'
+        "<script>(function(){"
+        "var el=document.getElementById('chit-course-lite-embed');"
+        "if(!el)return;"
+        "var course=null;"
+        "try{course=JSON.parse(el.textContent||'');}catch(e){return;}"
+        "if(!course)return;"
+        "window.CHIT_COURSE_LITE=window.CHIT_COURSE_LITE||{"
+        "ASSETS:'https://api.chitatelstvo.ru/assets',"
+        "STATIC:'https://api.chitatelstvo.ru/static',"
+        "MAIN_URL:'https://chitatelstvo.ru/#program',"
+        "HOME_URL:'https://chitatelstvo.ru',"
+        "QUIZ_URL:'https://chitatelstvo.ru/#quiz',"
+        "courses:{}};"
+        "window.CHIT_COURSE_LITE.courses=window.CHIT_COURSE_LITE.courses||{};"
+        f"window.CHIT_COURSE_LITE.courses[{group!r}]=course;"
+        "})();</script>\n"
+    )
+
+
+def lite_inline_assets() -> tuple[str, str]:
+    """Встраивает CSS/JS в HTML — интерактивность без ожидания CDN."""
+    css = (ROOT / "course-lite.css").read_text(encoding="utf-8")
+    js = (ROOT / "course-lite.js").read_text(encoding="utf-8")
+    # Защита от случайного закрытия style/script в Tilda
+    css = css.replace("</style", "<\\/style")
+    js = js.replace("</script", "<\\/script")
+    return css, js
+
+
 def lite_shell(group: str) -> str:
     data = SEO["lite"][group]
     static = static_lite_html(group, data)
-    return f"""{TILDA_FIX}<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{API}/course-lite.css?v={VER}">
+    override = lite_course_override_script(group)
+    # Компактная вставка: CSS/JS с CDN (после scp), данные курса — embed.
+    # Статика уже содержит «внутри урока» и галерею — видно даже без JS.
+    return f"""{TILDA_FIX}<style>
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap");
+@import url("{API}/course-lite.css?v={VER}");
+</style>
 <div id="chit-course-lite" data-group="{group}">
 {static}
   <div id="chit-course-lite-app" hidden></div>
 </div>
 <script src="{API}/course-lite-data.js?v={VER}"></script>
-<script src="{API}/course-lite.js?v={VER}"></script>
-<!-- {esc(data["h1"])} · SEO static + interactive app -->
+{override}<script src="{API}/course-lite.js?v={VER}"></script>
+<!-- {esc(data["h1"])} · SEO static + interactive app v={VER} -->
 """
 
 
