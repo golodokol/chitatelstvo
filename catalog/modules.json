@@ -584,6 +584,67 @@
       "price_rub": 4990,
       "status": "активен",
       "note": "Старт 5 октября · уроки по понедельникам. Контент уроков пополняется."
+    },
+    {
+      "id": 40,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "tariff_code": "alphabet_pack",
+      "tariff_label": "Весь алфавит",
+      "title": "Весь алфавит, Буквы оживают",
+      "tales_count": 44,
+      "stages": "Модули 1–4",
+      "tale_numbers": "все уроки модулей 1–4",
+      "meetings": 0,
+      "price_rub": 5990,
+      "status": "черновик",
+      "unlocks_module_ids": [21, 41, 42, 43],
+      "note": "Пакет 5 990 ₽. Пока открывает модуль 1 (21); модули 2–4 (41–43) — по мере публикации уроков. В Tilda нужен товар uid/lid/sku → order-config alphabet_pack."
+    },
+    {
+      "id": 41,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "tariff_code": "self_paced",
+      "tariff_label": "Индивидуальное обучение",
+      "title": "Модуль 2 самостоятельно, Буквы оживают",
+      "tales_count": 10,
+      "stages": "Модуль 2 · Шипящая тропа",
+      "tale_numbers": "1–10",
+      "meetings": 0,
+      "price_rub": 1990,
+      "status": "черновик",
+      "note": "Заготовка: уроки stage-2 ещё не в каталоге."
+    },
+    {
+      "id": 42,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "tariff_code": "self_paced",
+      "tariff_label": "Индивидуальное обучение",
+      "title": "Модуль 3 самостоятельно, Буквы оживают",
+      "tales_count": 12,
+      "stages": "Модуль 3 · Звонкие и поющие",
+      "tale_numbers": "1–12",
+      "meetings": 0,
+      "price_rub": 1990,
+      "status": "черновик",
+      "note": "Заготовка: уроки stage-3 ещё не в каталоге."
+    },
+    {
+      "id": 43,
+      "group_code": "early-letters",
+      "group_label": "Буквы оживают",
+      "tariff_code": "self_paced",
+      "tariff_label": "Индивидуальное обучение",
+      "title": "Модуль 4 самостоятельно, Буквы оживают",
+      "tales_count": 14,
+      "stages": "Модуль 4 · Последние на тропе",
+      "tale_numbers": "1–14",
+      "meetings": 0,
+      "price_rub": 1990,
+      "status": "черновик",
+      "note": "Заготовка: уроки stage-4 ещё не в каталоге."
     }
   ]
 }

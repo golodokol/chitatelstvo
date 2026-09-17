@@ -14,124 +14,617 @@
   "tale_slug": "early-letters-stage1-tale-07",
   "module_week": 7,
   "meeting_number": 0,
-  "badge": "Первый шаг",
+  "badge": "Слоги дружат",
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Каркас станций модуля 1.",
+  "note": "Станции модуля 1 · буквы 1–4, 6 (Т), 7 (слоги), 8 (праздник).",
   "lesson_format": "quest",
   "stations": [
     {
-      "id": "hello",
-      "title": "Приветствие",
+      "id": "trail",
+      "title": "Тропа букв",
       "kind": "intro_video",
-      "slovik_line": "Сегодня: Буквы в моём мире",
+      "slovik_line": "Все буквы на тропе. Сложим слоги — они дружат!",
+      "slovik_pose": "wave",
+      "scene_image": "/static/early/letters/scene-map-sounds-where-07.png",
       "audio": "bo-m1-l07-hi",
+      "cta_label": "Начать",
       "spark": false
     },
     {
       "id": "warm",
-      "title": "Разминка",
+      "title": "Какая буква?",
+      "chapter": "Разминка",
       "kind": "find",
-      "slovik_line": "Вспомним прошлое.",
+      "slovik_line": "Слушай звук. Какая это буква?",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-missing.jpg",
       "audio": "bo-m1-l07-warm",
-      "spark": false,
+      "hint": "Скажи звук вслух и найди букву.",
       "rounds": [
         {
-          "correct": "A",
+          "prompt_text": "м-м-м",
+          "sound": "snd-m",
+          "correct": "М",
           "options": [
-            "A",
-            "M",
-            "O"
+            "М",
+            "С",
+            "Т",
+            "Р"
+          ]
+        },
+        {
+          "prompt_text": "с-с-с",
+          "sound": "snd-s",
+          "correct": "С",
+          "options": [
+            "Р",
+            "С",
+            "Т",
+            "М"
+          ]
+        },
+        {
+          "prompt_text": "т-т-т",
+          "sound": "snd-t",
+          "correct": "Т",
+          "options": [
+            "Т",
+            "М",
+            "А",
+            "О"
+          ]
+        },
+        {
+          "prompt_text": "р-р-р",
+          "sound": "snd-r",
+          "correct": "Р",
+          "options": [
+            "С",
+            "Р",
+            "Т",
+            "У"
           ]
         }
-      ]
+      ],
+      "spark": false,
+      "spark_group": "syllable"
     },
     {
-      "id": "new",
-      "title": "Новое",
-      "kind": "repeat_sound",
-      "slovik_line": "Новый навык.",
-      "audio": "bo-m1-l07-new",
-      "sound": "bo-m1-l07-sound",
-      "spark": false
-    },
-    {
-      "id": "game1",
-      "title": "Игра 1",
-      "kind": "listen_pick",
-      "slovik_line": "Поиграем!",
-      "audio": "bo-m1-l07-g1",
-      "spark": true,
+      "id": "twins",
+      "title": "Слоги-близнецы",
+      "chapter": "Слог",
+      "kind": "find",
+      "slovik_line": "Похожие слоги: МА и АМ, СО и ОС, ТО и ОТ. Найди пару.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-twins",
+      "hint": "Буквы те же, порядок другой.",
       "rounds": [
         {
-          "correct": "yes",
+          "prompt_text": "Пара к МА",
+          "correct": "АМ",
           "options": [
+            "АМ",
+            "МО",
+            "СА",
+            "УМ"
+          ]
+        },
+        {
+          "prompt_text": "Пара к СО",
+          "correct": "ОС",
+          "options": [
+            "СА",
+            "ОС",
+            "ТО",
+            "РО"
+          ]
+        },
+        {
+          "prompt_text": "Пара к ТО",
+          "correct": "ОТ",
+          "options": [
+            "ТА",
+            "ОТ",
+            "МО",
+            "РА"
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots_m",
+      "title": "Слоги на М",
+      "chapter": "Слог",
+      "kind": "slot_build",
+      "slovik_line": "Склеим слог ма. М и А рядом.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-slots-m",
+      "targets": [
+        "М",
+        "А"
+      ],
+      "options": [
+        "М",
+        "О",
+        "А",
+        "У"
+      ],
+      "result_label": "МА",
+      "result_image": "/static/early/letters/mama.png",
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots_s",
+      "title": "Слоги на С",
+      "chapter": "Слог",
+      "kind": "slot_build",
+      "slovik_line": "Теперь со. С и О — слог со.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-slots-s",
+      "targets": [
+        "С",
+        "О"
+      ],
+      "options": [
+        "С",
+        "А",
+        "О",
+        "М"
+      ],
+      "result_label": "СО",
+      "result_image": "/static/early/letters/som-fish.png",
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots_t",
+      "title": "Слоги на Т",
+      "chapter": "Искорка 1 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Слог то. Т и О рядом.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-slots-t",
+      "targets": [
+        "Т",
+        "О"
+      ],
+      "options": [
+        "Т",
+        "А",
+        "О",
+        "Р"
+      ],
+      "result_label": "ТО",
+      "result_image": "/static/early/letters/drum.png",
+      "spark": true,
+      "spark_kind": "syllable",
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots_r",
+      "title": "Слоги на Р",
+      "chapter": "Слог",
+      "kind": "slot_build",
+      "slovik_line": "Слог ра. Р и А дружат.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-slots-r",
+      "targets": [
+        "Р",
+        "А"
+      ],
+      "options": [
+        "Р",
+        "О",
+        "А",
+        "С"
+      ],
+      "result_label": "РА",
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "paths",
+      "title": "Дорожки слогов",
+      "chapter": "Искорка 2 · Слово",
+      "kind": "path_word",
+      "slovik_line": "Слева слог, справа слог. Собери МАМА и СОМ.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-paths",
+      "hint": "МА + МА = МАМА. СО + М = СОМ.",
+      "rounds": [
+        {
+          "prompt_text": "Какие слова получились?",
+          "left": [
+            "МА",
+            "СО",
+            "У"
+          ],
+          "right": [
+            "МА",
+            "М",
+            "М"
+          ],
+          "pairs": [
             {
-              "id": "yes",
-              "label": "Да"
+              "from": 0,
+              "to": 0,
+              "color": "#6b4ea3"
             },
             {
-              "id": "no",
-              "label": "Нет"
+              "from": 1,
+              "to": 1,
+              "color": "#e06a2f"
+            },
+            {
+              "from": 2,
+              "to": 2,
+              "color": "#3f8f4a"
+            }
+          ],
+          "correct": [
+            "mama",
+            "som",
+            "um"
+          ],
+          "options": [
+            {
+              "id": "mama",
+              "label": "МАМА"
+            },
+            {
+              "id": "som",
+              "label": "СОМ"
+            },
+            {
+              "id": "um",
+              "label": "УМ"
+            },
+            {
+              "id": "sam",
+              "label": "САМ"
             }
           ]
         }
-      ]
-    },
-    {
-      "id": "break",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Отойдём от экрана.",
-      "audio": "shared-pause-start",
-      "spark": false,
-      "hint": "Короткая пауза без экрана."
-    },
-    {
-      "id": "game2",
-      "title": "Игра 2",
-      "kind": "find",
-      "slovik_line": "Ещё практика.",
-      "audio": "bo-m1-l07-g2",
+      ],
       "spark": true,
+      "spark_kind": "word",
+      "spark_group": "word"
+    },
+    {
+      "id": "pads",
+      "title": "Найди слог ТО",
+      "chapter": "Слог",
+      "kind": "scene_hunt",
+      "mechanic": "word_pads",
+      "slovik_line": "Найди на плитках все слоги ТО.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
+      "audio": "bo-m1-l07-pads",
+      "layout": "grid",
+      "grid_cols": 3,
+      "captions": true,
+      "correct_ids": [
+        "w-то-1",
+        "w-то-2",
+        "w-то-3"
+      ],
+      "wrong_msg": "Это не то слово. Ищи дальше.",
+      "success_msg": "Нашёл: ТО!",
+      "hotspots": [
+        {
+          "id": "w-ма-1",
+          "label": "МА"
+        },
+        {
+          "id": "w-то-1",
+          "label": "ТО"
+        },
+        {
+          "id": "w-со-1",
+          "label": "СО"
+        },
+        {
+          "id": "w-ра-1",
+          "label": "РА"
+        },
+        {
+          "id": "w-то-2",
+          "label": "ТО"
+        },
+        {
+          "id": "w-ам-1",
+          "label": "АМ"
+        },
+        {
+          "id": "w-та-1",
+          "label": "ТА"
+        },
+        {
+          "id": "w-ро-1",
+          "label": "РО"
+        },
+        {
+          "id": "w-то-3",
+          "label": "ТО"
+        }
+      ],
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "fill",
+      "title": "Добор слова",
+      "chapter": "Слово",
+      "kind": "find",
+      "slovik_line": "Какое слово подходит?",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-fill",
       "rounds": [
         {
-          "correct": "A",
+          "prompt_text": "ВОТ ___",
+          "correct": "som",
           "options": [
-            "A",
-            "M",
-            "S"
+            {
+              "id": "som",
+              "label": "СОМ",
+              "image": "/static/early/letters/som-fish.png"
+            },
+            {
+              "id": "mama",
+              "label": "МАМА",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "um",
+              "label": "УМ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Это ___",
+          "correct": "mama",
+          "options": [
+            {
+              "id": "um",
+              "label": "УМ"
+            },
+            {
+              "id": "mama",
+              "label": "МАМА",
+              "image": "/static/early/letters/mama.png"
+            },
+            {
+              "id": "sam",
+              "label": "САМ"
+            }
           ]
         }
-      ]
+      ],
+      "spark": false,
+      "spark_group": "word"
+    },
+    {
+      "id": "match",
+      "title": "Слог к картинке",
+      "chapter": "Слово",
+      "kind": "match_pairs",
+      "mechanic": "drag_match",
+      "slovik_line": "Перетащи слог к картинке.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l07-match",
+      "hint": "Нажми слог, потом картинку.",
+      "pairs": [
+        {
+          "id": "ma",
+          "label": "МА",
+          "image": "/static/early/letters/mama.png"
+        },
+        {
+          "id": "so",
+          "label": "СО",
+          "image": "/static/early/letters/som-fish.png"
+        },
+        {
+          "id": "ta",
+          "label": "ТА",
+          "image": "/static/early/letters/drum.png"
+        }
+      ],
+      "spark": false,
+      "spark_group": "word"
+    },
+    {
+      "id": "rebus",
+      "title": "Шифр слова",
+      "chapter": "Слово",
+      "kind": "shape_rebus",
+      "slovik_line": "Каждая фигурка — буква. Расшифруй слово.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-comic-book.jpg",
+      "audio": "bo-m1-l07-rebus",
+      "hint": "Ключ: фигура = буква.",
+      "legend": [
+        {
+          "shape": "circle",
+          "tone": "violet",
+          "letter": "С"
+        },
+        {
+          "shape": "pill",
+          "tone": "green",
+          "letter": "О"
+        },
+        {
+          "shape": "diamond",
+          "tone": "red",
+          "letter": "М"
+        },
+        {
+          "shape": "star",
+          "tone": "blue",
+          "letter": "А"
+        }
+      ],
+      "rounds": [
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "circle",
+              "tone": "violet",
+              "letter": "С"
+            },
+            {
+              "shape": "pill",
+              "tone": "green",
+              "letter": "О"
+            },
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "М"
+            }
+          ],
+          "correct": "som",
+          "options": [
+            {
+              "id": "som",
+              "label": "СОМ"
+            },
+            {
+              "id": "mama",
+              "label": "МАМА"
+            },
+            {
+              "id": "um",
+              "label": "УМ"
+            }
+          ]
+        },
+        {
+          "prompt_text": "Какое это слово?",
+          "cipher": [
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "М"
+            },
+            {
+              "shape": "star",
+              "tone": "blue",
+              "letter": "А"
+            },
+            {
+              "shape": "diamond",
+              "tone": "red",
+              "letter": "М"
+            },
+            {
+              "shape": "star",
+              "tone": "blue",
+              "letter": "А"
+            }
+          ],
+          "correct": "mama",
+          "options": [
+            {
+              "id": "sam",
+              "label": "САМ"
+            },
+            {
+              "id": "mama",
+              "label": "МАМА"
+            },
+            {
+              "id": "som",
+              "label": "СОМ"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "word"
     },
     {
       "id": "quest",
-      "title": "Мини-квест",
+      "title": "Цепочка до слова",
+      "chapter": "Искорка 3 · Слово",
       "kind": "mini_quest",
-      "slovik_line": "Почти финиш!",
+      "slovik_line": "Звук т → буква Т → слог ТА. Потом слово ТОТ.",
+      "slovik_pose": "joy",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l07-quest",
-      "spark": false,
+      "show_all_steps": true,
+      "hint": "Сначала звук и буква, потом слог и слово.",
       "steps": [
         {
           "kind": "find",
-          "correct": "A",
+          "prompt": "Звук т-т-т",
+          "sound": "snd-t",
+          "correct": "Т",
           "options": [
-            "A",
-            "O"
+            "М",
+            "Т",
+            "С",
+            "Р"
+          ]
+        },
+        {
+          "kind": "find",
+          "prompt": "Слог",
+          "correct": "ТА",
+          "options": [
+            "ТА",
+            "ТО",
+            "АТ",
+            "МА"
+          ]
+        },
+        {
+          "kind": "find",
+          "prompt": "Слово",
+          "correct": "ТОТ",
+          "options": [
+            "ТОТ",
+            "СОМ",
+            "УМ",
+            "РОС"
           ]
         }
-      ]
+      ],
+      "spark": true,
+      "spark_kind": "word",
+      "spark_group": "word"
     },
     {
-      "id": "reward",
-      "title": "Награда",
+      "id": "chest",
+      "title": "Награда Словика",
+      "chapter": "Три искорки",
       "kind": "reward",
-      "slovik_line": "Молодец!",
-      "audio": "shared-reward",
+      "slovik_line": "Слоги дружат! Три искорки. Ты склеиваешь слоги в слова.",
+      "slovik_pose": "chest",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "spark_image": "/static/early/letters/spark.png",
+      "audio": "bo-m1-l07-reward",
+      "fail_audio": "vo-retry",
       "spark": false,
-      "parent_note": "Урок «Буквы в моём мире» пройден. Повторите дома главный навык."
+      "fail_title": "Ещё чуть-чуть",
+      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_pose": "worry",
+      "retry_cta": "Попробовать ещё раз",
+      "parent_note": "Урок «Слоги дружат». Дома вслух: МА, СО, ТА, РА.",
+      "chest_cta": "Открыть сундук",
+      "tech_msg": "Слоги дружат"
     }
   ],
   "quest": {

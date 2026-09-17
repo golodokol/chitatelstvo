@@ -134,6 +134,15 @@ def validate_registration_module(body: RegisterWebhook) -> dict | None:
         }
 
     stage = normalize_stage(body.chosen_stage)
+    # Пакет «весь алфавит» — все модули из unlocks_module_ids, без одного этапа
+    if module.get("tariff_code") == "alphabet_pack":
+        return {
+            "module": module,
+            "chosen_stage": "all",
+            "chosen_tale_number": None,
+            "chosen_tale_slug": None,
+            "chosen_tale_title": None,
+        }
     # Early modules: default stage-1 if omitted (старт модуля 1)
     if not stage and module.get("group_code") in ("early-letters", "early-stories"):
         stage = "stage-1"

@@ -20,6 +20,32 @@ def is_promo_lesson(lesson: dict[str, Any] | None) -> bool:
     return str((lesson or {}).get("slug") or "").strip() in PROMO_LESSON_SLUGS
 
 
+def module_unlocks_ids(module: dict[str, Any] | None) -> list[int]:
+    """module_id самой записи + unlocks_module_ids (пакет «весь алфавит»)."""
+    if not module:
+        return []
+    mid = module.get("id")
+    unlocks = module.get("unlocks_module_ids") or []
+    out: list[int] = []
+    if mid is not None:
+        out.append(int(mid))
+    for raw in unlocks:
+        try:
+            n = int(raw)
+        except (TypeError, ValueError):
+            continue
+        if n not in out:
+            out.append(n)
+    return out
+
+
+def enrollment_covers_module_id(enrollment: Enrollment, module_id: int) -> bool:
+    if enrollment.module_id == module_id:
+        return True
+    mod = get_module(enrollment.module_id)
+    return module_id in module_unlocks_ids(mod)
+
+
 def resolve_chosen_tale(
     *,
     group_code: str,
@@ -90,7 +116,7 @@ def find_enrollment_for_lesson(
     if module_id is None:
         return get_active_enrollment(child)
 
-    matches = [e for e in enrollments if e.module_id == module_id]
+    matches = [e for e in enrollments if enrollment_covers_module_id(e, int(module_id))]
     if not matches:
         matches = [e for e in enrollments if single_enrollment_covers_content(e, lesson)]
     if not matches:
@@ -134,7 +160,7 @@ def child_can_access_lesson(
     active = enrollment or find_enrollment_for_lesson(child, lesson)
     if active is None or active.status != "active":
         return False
-    if active.module_id != module_id:
+    if not enrollment_covers_module_id(active, int(module_id)):
         return single_enrollment_covers_content(active, lesson)
 
     module = get_module(active.module_id)
@@ -146,6 +172,10 @@ def child_can_access_lesson(
 
     if lesson.get("tariff_code") in ("single", "trial"):
         return False
+
+    # Пакет алфавита / unlocks — без фильтра по chosen_stage
+    if module.get("tariff_code") == "alphabet_pack" or module.get("unlocks_module_ids"):
+        return True
 
     stage = normalize_stage(active.chosen_stage)
     if stage and lesson.get("stage") and lesson.get("stage") != stage:
@@ -189,15 +219,26 @@ def list_lessons_for_enrollment(enrollment: Enrollment) -> list[dict[str, Any]]:
     if not module:
         return []
 
-    lessons = list_module_lessons(enrollment.module_id, active_only=False)
+    lessons: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for mid in module_unlocks_ids(module):
+        for les in list_module_lessons(mid, active_only=False):
+            slug = str(les.get("slug") or "")
+            if slug and slug in seen:
+                continue
+            if slug:
+                seen.add(slug)
+            lessons.append(les)
+
     tariff = module["tariff_code"]
     if tariff in ("single", "trial"):
         lessons = [les for les in lessons if les.get("tariff_code") == tariff]
     else:
         lessons = [les for les in lessons if les.get("tariff_code") not in ("single", "trial")]
-        stage = normalize_stage(enrollment.chosen_stage)
-        if stage:
-            lessons = [les for les in lessons if les.get("stage") == stage]
+        if tariff != "alphabet_pack" and not module.get("unlocks_module_ids"):
+            stage = normalize_stage(enrollment.chosen_stage)
+            if stage:
+                lessons = [les for les in lessons if les.get("stage") == stage]
 
     return [_lesson_summary(les, enrollment) for les in lessons]
 

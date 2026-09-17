@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "pay_page_url": "https://chitatelstvo.ru/oplata",
   "products": {
     "single": {
@@ -22,6 +22,14 @@
       "sku": "SKU0003",
       "title": "Читательство · С преподавателем",
       "price": 4990
+    },
+    "alphabet_pack": {
+      "uid": "",
+      "lid": "",
+      "sku": "SKU-LETTERS-FULL",
+      "title": "Читательство · Буквы оживают · весь алфавит",
+      "price": 5990,
+      "note": "Создать товар в Tilda Store за 5990 ₽ и вписать uid/lid сюда и в chit-zero ORDER_PRODUCTS."
     },
     "meeting_addon": {
       "uid": "168614126213",

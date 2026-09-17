@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Станции уроков букв модуля 1 (уроки 1–4 и 6 · буква Т) и историй 1–4.
+"""Станции уроков букв модуля 1 (1–4, 6·Т, 7·слоги, 8·праздник) и историй 1–4.
 
 Новые механики из ТЗ (`letter_hop`, `letter_grid`, …) играются существующими
 `kind` плеера; исходное имя — в поле `mechanic`.
@@ -2195,6 +2195,687 @@ def _letters_6() -> list[dict[str, Any]]:
     ]
 
 
+def _letters_7() -> list[dict[str, Any]]:
+    """Интеграция слогов · урок 7 «Слоги дружат». 14 станций. Искорки: слог · слово · слово."""
+    legend = [
+        _legend_entry("С", "circle", "violet"),
+        _legend_entry("О", "pill", "green"),
+        _legend_entry("М", "diamond", "red"),
+        _legend_entry("А", "star", "blue"),
+    ]
+    return [
+        {
+            "id": "trail",
+            "title": "Тропа букв",
+            "kind": "intro_video",
+            "slovik_line": "Все буквы на тропе. Сложим слоги — они дружат!",
+            "slovik_pose": "wave",
+            "scene_image": where_map(7),
+            "audio": "bo-m1-l07-hi",
+            "cta_label": "Начать",
+            "spark": False,
+        },
+        {
+            "id": "warm",
+            "title": "Какая буква?",
+            "chapter": "Разминка",
+            "kind": "find",
+            "slovik_line": "Слушай звук. Какая это буква?",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_MISS,
+            "audio": "bo-m1-l07-warm",
+            "hint": "Скажи звук вслух и найди букву.",
+            "rounds": [
+                {
+                    "prompt_text": "м-м-м",
+                    "sound": "snd-m",
+                    "correct": "М",
+                    "options": ["М", "С", "Т", "Р"],
+                },
+                {
+                    "prompt_text": "с-с-с",
+                    "sound": "snd-s",
+                    "correct": "С",
+                    "options": ["Р", "С", "Т", "М"],
+                },
+                {
+                    "prompt_text": "т-т-т",
+                    "sound": "snd-t",
+                    "correct": "Т",
+                    "options": ["Т", "М", "А", "О"],
+                },
+                {
+                    "prompt_text": "р-р-р",
+                    "sound": "snd-r",
+                    "correct": "Р",
+                    "options": ["С", "Р", "Т", "У"],
+                },
+            ],
+            "spark": False,
+            "spark_group": "syllable",
+        },
+        {
+            "id": "twins",
+            "title": "Слоги-близнецы",
+            "chapter": "Слог",
+            "kind": "find",
+            "slovik_line": "Похожие слоги: МА и АМ, СО и ОС, ТО и ОТ. Найди пару.",
+            "slovik_pose": "talk",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-twins",
+            "hint": "Буквы те же, порядок другой.",
+            "rounds": [
+                {
+                    "prompt_text": "Пара к МА",
+                    "correct": "АМ",
+                    "options": ["АМ", "МО", "СА", "УМ"],
+                },
+                {
+                    "prompt_text": "Пара к СО",
+                    "correct": "ОС",
+                    "options": ["СА", "ОС", "ТО", "РО"],
+                },
+                {
+                    "prompt_text": "Пара к ТО",
+                    "correct": "ОТ",
+                    "options": ["ТА", "ОТ", "МО", "РА"],
+                },
+            ],
+            "spark": False,
+            "spark_group": "syllable",
+        },
+        {
+            "id": "slots_m",
+            "title": "Слоги на М",
+            "chapter": "Слог",
+            "kind": "slot_build",
+            "slovik_line": "Склеим слог ма. М и А рядом.",
+            "slovik_pose": "invite",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-slots-m",
+            "targets": ["М", "А"],
+            "options": ["М", "О", "А", "У"],
+            "result_label": "МА",
+            "result_image": IMG["mama"],
+            "spark": False,
+            "spark_group": "syllable",
+        },
+        {
+            "id": "slots_s",
+            "title": "Слоги на С",
+            "chapter": "Слог",
+            "kind": "slot_build",
+            "slovik_line": "Теперь со. С и О — слог со.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-slots-s",
+            "targets": ["С", "О"],
+            "options": ["С", "А", "О", "М"],
+            "result_label": "СО",
+            "result_image": IMG["som"],
+            "spark": False,
+            "spark_group": "syllable",
+        },
+        {
+            "id": "slots_t",
+            "title": "Слоги на Т",
+            "chapter": "Искорка 1 · Слог",
+            "kind": "slot_build",
+            "slovik_line": "Слог то. Т и О рядом.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-slots-t",
+            "targets": ["Т", "О"],
+            "options": ["Т", "А", "О", "Р"],
+            "result_label": "ТО",
+            "result_image": IMG["drum"],
+            "spark": True,
+            "spark_kind": "syllable",
+            "spark_group": "syllable",
+        },
+        {
+            "id": "slots_r",
+            "title": "Слоги на Р",
+            "chapter": "Слог",
+            "kind": "slot_build",
+            "slovik_line": "Слог ра. Р и А дружат.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-slots-r",
+            "targets": ["Р", "А"],
+            "options": ["Р", "О", "А", "С"],
+            "result_label": "РА",
+            "spark": False,
+            "spark_group": "syllable",
+        },
+        {
+            "id": "paths",
+            "title": "Дорожки слогов",
+            "chapter": "Искорка 2 · Слово",
+            "kind": "path_word",
+            "slovik_line": "Слева слог, справа слог. Собери МАМА и СОМ.",
+            "slovik_pose": "talk",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-paths",
+            "hint": "МА + МА = МАМА. СО + М = СОМ.",
+            "rounds": [
+                {
+                    "prompt_text": "Какие слова получились?",
+                    "left": ["МА", "СО", "У"],
+                    "right": ["МА", "М", "М"],
+                    "pairs": [
+                        {"from": 0, "to": 0, "color": "#6b4ea3"},
+                        {"from": 1, "to": 1, "color": "#e06a2f"},
+                        {"from": 2, "to": 2, "color": "#3f8f4a"},
+                    ],
+                    "correct": ["mama", "som", "um"],
+                    "options": [
+                        _opt("mama", "МАМА"),
+                        _opt("som", "СОМ"),
+                        _opt("um", "УМ"),
+                        _opt("sam", "САМ"),
+                    ],
+                }
+            ],
+            "spark": True,
+            "spark_kind": "word",
+            "spark_group": "word",
+        },
+        _word_pads(
+            sid="pads",
+            title="Найди слог ТО",
+            audio="bo-m1-l07-pads",
+            line="Найди на плитках все слоги ТО.",
+            target="ТО",
+            words=["МА", "ТО", "СО", "РА", "ТО", "АМ", "ТА", "РО", "ТО"],
+            scene=SCENE_WATER,
+            chapter="Слог",
+            spark=False,
+            spark_kind="syllable",
+        ),
+        {
+            "id": "fill",
+            "title": "Добор слова",
+            "chapter": "Слово",
+            "kind": "find",
+            "slovik_line": "Какое слово подходит?",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-fill",
+            "rounds": [
+                {
+                    "prompt_text": "ВОТ ___",
+                    "correct": "som",
+                    "options": [
+                        _opt("som", "СОМ", IMG["som"]),
+                        _opt("mama", "МАМА", IMG["mama"]),
+                        _opt("um", "УМ"),
+                    ],
+                },
+                {
+                    "prompt_text": "Это ___",
+                    "correct": "mama",
+                    "options": [
+                        _opt("um", "УМ"),
+                        _opt("mama", "МАМА", IMG["mama"]),
+                        _opt("sam", "САМ"),
+                    ],
+                },
+            ],
+            "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "match",
+            "title": "Слог к картинке",
+            "chapter": "Слово",
+            "kind": "match_pairs",
+            "mechanic": "drag_match",
+            "slovik_line": "Перетащи слог к картинке.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-match",
+            "hint": "Нажми слог, потом картинку.",
+            "pairs": [
+                {"id": "ma", "label": "МА", "image": IMG["mama"]},
+                {"id": "so", "label": "СО", "image": IMG["som"]},
+                {"id": "ta", "label": "ТА", "image": IMG["drum"]},
+            ],
+            "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "rebus",
+            "title": "Шифр слова",
+            "chapter": "Слово",
+            "kind": "shape_rebus",
+            "slovik_line": "Каждая фигурка — буква. Расшифруй слово.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_COMIC,
+            "audio": "bo-m1-l07-rebus",
+            "hint": "Ключ: фигура = буква.",
+            "legend": legend,
+            "rounds": [
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "СОМ"),
+                    "correct": "som",
+                    "options": [
+                        _opt("som", "СОМ"),
+                        _opt("mama", "МАМА"),
+                        _opt("um", "УМ"),
+                    ],
+                },
+                {
+                    "prompt_text": "Какое это слово?",
+                    "cipher": _cipher_letters(legend, "МАМА"),
+                    "correct": "mama",
+                    "options": [
+                        _opt("sam", "САМ"),
+                        _opt("mama", "МАМА"),
+                        _opt("som", "СОМ"),
+                    ],
+                },
+            ],
+            "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "quest",
+            "title": "Цепочка до слова",
+            "chapter": "Искорка 3 · Слово",
+            "kind": "mini_quest",
+            "slovik_line": "Звук т → буква Т → слог ТА. Потом слово ТОТ.",
+            "slovik_pose": "joy",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l07-quest",
+            "show_all_steps": True,
+            "hint": "Сначала звук и буква, потом слог и слово.",
+            "steps": [
+                {
+                    "kind": "find",
+                    "prompt": "Звук т-т-т",
+                    "sound": "snd-t",
+                    "correct": "Т",
+                    "options": ["М", "Т", "С", "Р"],
+                },
+                {
+                    "kind": "find",
+                    "prompt": "Слог",
+                    "correct": "ТА",
+                    "options": ["ТА", "ТО", "АТ", "МА"],
+                },
+                {
+                    "kind": "find",
+                    "prompt": "Слово",
+                    "correct": "ТОТ",
+                    "options": ["ТОТ", "СОМ", "УМ", "РОС"],
+                },
+            ],
+            "spark": True,
+            "spark_kind": "word",
+            "spark_group": "word",
+        },
+        _reward(
+            audio="bo-m1-l07-reward",
+            line="Слоги дружат! Три искорки. Ты склеиваешь слоги в слова.",
+            parent="Урок «Слоги дружат». Дома вслух: МА, СО, ТА, РА.",
+            badge_line="Слоги дружат",
+        ),
+    ]
+
+
+def _letters_8() -> list[dict[str, Any]]:
+    """Финал модуля · урок 8 «Праздник у Словика». 14 станций. Искорки: буква · слог · слово."""
+    our = ["А", "М", "У", "О", "С", "Р", "Т"]
+    board_grid = [
+        "А", "К", "М", "Н", "У",
+        "О", "П", "С", "Б", "Р",
+        "Т", "Д", "А", "М", "О",
+        "С", "Р", "Т", "У", "Л",
+    ]
+    board_hotspots: list[dict[str, Any]] = []
+    board_correct: list[str] = []
+    board_counts: dict[str, int] = {}
+    for lab in board_grid:
+        board_counts[lab] = board_counts.get(lab, 0) + 1
+        hid = f"b-{lab.lower()}{board_counts[lab]}"
+        board_hotspots.append({"id": hid, "label": lab})
+        if lab in our:
+            board_correct.append(hid)
+
+    hunt_letters = ["А", "М", "У", "О", "С", "Р", "Т", "К", "Н", "П"]
+    hunt_hotspots: list[dict[str, Any]] = []
+    hunt_correct: list[str] = []
+    positions = [
+        (12, 12), (32, 10), (52, 14), (72, 11), (88, 18),
+        (14, 42), (40, 48), (66, 44), (86, 50), (28, 78),
+        (55, 82), (78, 76),
+    ]
+    for i, lab in enumerate(hunt_letters):
+        x, y = positions[i % len(positions)]
+        hid = f"h-{lab.lower()}{i}"
+        hunt_hotspots.append({"id": hid, "label": lab, "x": x, "y": y})
+        if lab in our:
+            hunt_correct.append(hid)
+
+    return [
+        {
+            "id": "trail",
+            "title": "Праздник на тропе",
+            "kind": "intro_video",
+            "slovik_line": "Все буквы вернулись! Праздник на тропе!",
+            "slovik_pose": "wave",
+            "scene_image": where_map(8),
+            "audio": "bo-m1-l08-hi",
+            "cta_label": "Начать",
+            "spark": False,
+        },
+        {
+            "id": "catch",
+            "title": "Лови наши буквы",
+            "chapter": "Искорка 1 · Буква",
+            "kind": "catch_letter",
+            "mechanic": "letter_count",
+            "slovik_line": "Быстро лови буквы А М У О С Р Т. Шесть поймай!",
+            "scene_image": SCENE_SP,
+            "audio": "bo-m1-l08-catch",
+            "letter": "А",
+            "letters": ["А", "М", "У", "О", "С", "Р", "Т"],
+            "letter_sounds": {
+                "А": "snd-a",
+                "М": "snd-m",
+                "У": "snd-u",
+                "О": "snd-o",
+                "С": "snd-s",
+                "Р": "snd-r",
+                "Т": "snd-t",
+            },
+            "catches": 6,
+            "spark": True,
+            "spark_kind": "letter",
+            "spark_group": "letter",
+        },
+        {
+            "id": "board",
+            "title": "Доска наших букв",
+            "chapter": "Буква",
+            "kind": "scene_hunt",
+            "mechanic": "letter_board",
+            "board_panel": True,
+            "slovik_line": "Найди на доске все наши буквы: А М У О С Р Т.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_BOARD,
+            "audio": "bo-m1-l08-board",
+            "layout": "grid",
+            "grid_cols": 5,
+            "moving": False,
+            "correct_ids": board_correct,
+            "hotspots": board_hotspots,
+            "success_msg": "Все наши буквы нашлись!",
+            "wrong_msg": "Это чужая буква. Ищи наши.",
+            "spark": False,
+            "spark_group": "letter",
+        },
+        {
+            "id": "chase",
+            "title": "Большая и маленькая",
+            "chapter": "Буква",
+            "kind": "scene_hunt",
+            "mechanic": "letter_chase",
+            "slovik_line": "На поляне большие и маленькие. Поймай А а, М м, Т т.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-chase",
+            "moving": True,
+            "move_speed": 5,
+            "success_msg": "Поймал большие и маленькие!",
+            "wrong_msg": "Это не те. Ищи А, М, Т.",
+            "correct_ids": ["A1", "a1", "M1", "m1", "T1", "t1"],
+            "hotspots": [
+                {"id": "A1", "label": "А", "x": 14, "y": 12},
+                {"id": "K1", "label": "К", "x": 40, "y": 10},
+                {"id": "a1", "label": "а", "x": 70, "y": 16, "size": "sm"},
+                {"id": "M1", "label": "М", "x": 20, "y": 48},
+                {"id": "m1", "label": "м", "x": 55, "y": 52, "size": "sm"},
+                {"id": "N1", "label": "Н", "x": 85, "y": 46},
+                {"id": "T1", "label": "Т", "x": 18, "y": 80},
+                {"id": "t1", "label": "т", "x": 48, "y": 84, "size": "sm"},
+                {"id": "P1", "label": "П", "x": 78, "y": 78},
+            ],
+            "spark": False,
+            "spark_group": "letter",
+        },
+        {
+            "id": "first",
+            "title": "Первая буква",
+            "chapter": "Буква",
+            "kind": "find",
+            "mechanic": "picture_first_letter",
+            "slovik_line": "Смотри картинку. С какой буквы начинается слово?",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-first",
+            "rounds": [
+                {
+                    "prompt_text": "С какой буквы?",
+                    "prompt_image": IMG["bear"],
+                    "prompt_alt": "медведь",
+                    "correct": "М",
+                    "options": ["М", "С", "Т", "А"],
+                },
+                {
+                    "prompt_text": "С какой буквы?",
+                    "prompt_image": IMG["som"],
+                    "prompt_alt": "сом",
+                    "correct": "С",
+                    "options": ["Р", "С", "О", "Т"],
+                },
+                {
+                    "prompt_text": "С какой буквы?",
+                    "prompt_image": IMG["drum"],
+                    "prompt_alt": "тук-тук",
+                    "correct": "Т",
+                    "options": ["Т", "М", "У", "А"],
+                },
+                {
+                    "prompt_text": "С какой буквы?",
+                    "prompt_image": IMG["duck"],
+                    "prompt_alt": "утка",
+                    "correct": "У",
+                    "options": ["О", "У", "А", "М"],
+                },
+            ],
+            "spark": False,
+            "spark_group": "letter",
+        },
+        {
+            "id": "sort",
+            "title": "Большая / маленькая",
+            "chapter": "Буква",
+            "kind": "sort_two",
+            "slovik_line": "Большая М и маленькая м — одна буква. Разложи.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-sort",
+            "left": {"label": "М", "correct": ["M1", "M2", "M3"]},
+            "right": {"label": "м", "correct": ["m1", "m2", "m3"]},
+            "options": [
+                {"id": "M1", "label": "М"},
+                {"id": "m1", "label": "м"},
+                {"id": "M2", "label": "М"},
+                {"id": "m2", "label": "м"},
+                {"id": "M3", "label": "М"},
+                {"id": "m3", "label": "м"},
+            ],
+            "spark": False,
+            "spark_group": "letter",
+        },
+        {
+            "id": "slots",
+            "title": "Три слога",
+            "chapter": "Искорка 2 · Слог",
+            "kind": "slot_build",
+            "slovik_line": "Склеим знакомый слог ма.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-slots",
+            "targets": ["М", "А"],
+            "options": ["М", "О", "А", "Т"],
+            "result_label": "МА",
+            "result_image": IMG["mama"],
+            "spark": True,
+            "spark_kind": "syllable",
+            "spark_group": "syllable",
+        },
+        _word_pads(
+            sid="pads",
+            title="Найди МАМА",
+            audio="bo-m1-l08-pads",
+            line="Найди на плитках все слова МАМА.",
+            target="МАМА",
+            words=["МА", "СОМ", "МАМА", "ТО", "УМ", "МАМА", "РА", "САМ", "МАМА"],
+            scene=SCENE_WATER,
+            chapter="Слово",
+            spark=False,
+            spark_kind="word",
+        ),
+        {
+            "id": "fill",
+            "title": "Добор слов",
+            "chapter": "Слово",
+            "kind": "find",
+            "slovik_line": "Какое слово подходит в предложение?",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-fill",
+            "rounds": [
+                {
+                    "prompt_text": "ВОТ ___",
+                    "correct": "som",
+                    "options": [
+                        _opt("som", "СОМ", IMG["som"]),
+                        _opt("um", "УМ"),
+                        _opt("ros", "РОС"),
+                    ],
+                },
+                {
+                    "prompt_text": "ИДЁТ ___",
+                    "correct": "mama",
+                    "options": [
+                        _opt("mama", "МАМА", IMG["mama"]),
+                        _opt("sam", "САМ"),
+                        _opt("tot", "ТОТ"),
+                    ],
+                },
+            ],
+            "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "match",
+            "title": "Картинка и слово",
+            "chapter": "Слово",
+            "kind": "match_pairs",
+            "mechanic": "drag_match",
+            "slovik_line": "Перетащи слово к картинке.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-match",
+            "pairs": [
+                {"id": "mama", "label": "МАМА", "image": IMG["mama"]},
+                {"id": "som", "label": "СОМ", "image": IMG["som"]},
+                {"id": "um", "label": "УМ", "image": IMG["bear"]},
+            ],
+            "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "paths",
+            "title": "Собери слова",
+            "chapter": "Слово",
+            "kind": "path_word",
+            "slovik_line": "Слоги модуля дружат. Собери два слова.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-paths",
+            "hint": "МА+МА и СО+М.",
+            "rounds": [
+                {
+                    "prompt_text": "Какие слова?",
+                    "left": ["МА", "СО"],
+                    "right": ["МА", "М"],
+                    "pairs": [
+                        {"from": 0, "to": 0, "color": "#6b4ea3"},
+                        {"from": 1, "to": 1, "color": "#e06a2f"},
+                    ],
+                    "correct": ["mama", "som"],
+                    "options": [
+                        _opt("mama", "МАМА"),
+                        _opt("som", "СОМ"),
+                        _opt("um", "УМ"),
+                        _opt("tot", "ТОТ"),
+                    ],
+                }
+            ],
+            "spark": False,
+            "spark_group": "word",
+        },
+        {
+            "id": "quest",
+            "title": "Финал: МАМА",
+            "chapter": "Искорка 3 · Слово",
+            "kind": "mini_quest",
+            "slovik_line": "Звук м → буква М → слог МА → слово МАМА.",
+            "slovik_pose": "joy",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l08-quest",
+            "show_all_steps": True,
+            "hint": "Четыре шага до праздничного слова.",
+            "steps": [
+                {
+                    "kind": "find",
+                    "prompt": "Звук м-м-м",
+                    "sound": "snd-m",
+                    "correct": "М",
+                    "options": ["А", "М", "С", "Т"],
+                },
+                {
+                    "kind": "find",
+                    "prompt": "Слог",
+                    "correct": "МА",
+                    "options": ["МА", "АМ", "МО", "СА"],
+                },
+                {
+                    "kind": "find",
+                    "prompt": "Слово",
+                    "correct": "МАМА",
+                    "options": ["МАМА", "СОМ", "УМ", "ТОТ"],
+                },
+            ],
+            "spark": True,
+            "spark_kind": "word",
+            "spark_group": "word",
+        },
+        {
+            "id": "hunt",
+            "title": "Семь букв на поляне",
+            "chapter": "Праздник",
+            "kind": "scene_hunt",
+            "mechanic": "letter_chase",
+            "slovik_line": "Найди все семь букв праздника: А М У О С Р Т.",
+            "slovik_pose": "invite",
+            "scene_image": SCENE_TRAIL,
+            "audio": "bo-m1-l08-hunt",
+            "moving": False,
+            "success_msg": "Все семь букв на празднике!",
+            "wrong_msg": "Это не наша буква праздника.",
+            "correct_ids": hunt_correct,
+            "hotspots": hunt_hotspots,
+            "spark": False,
+            "spark_group": "letter",
+        },
+        _reward(
+            audio="bo-m1-l08-reward",
+            line="Праздник у Словика! Все буквы с нами. Ты — хранитель праздника.",
+            parent="Урок «Праздник у Словика». Сегодня повтор. Дома: МА, СО, ТА вслух.",
+            badge_line="Хранитель праздника",
+        ),
+    ]
+
+
 def _legend_entry(letter: str, shape: str, tone: str) -> dict[str, str]:
     return {"shape": shape, "tone": tone, "letter": letter}
 
@@ -3916,6 +4597,8 @@ LETTERS: dict[int, list[dict[str, Any]]] = {
     3: _finalize_letter_lesson(_letters_3(), LETTERS_ORDER[3], LETTERS_SPARKS[3], LETTERS_LINES[3]),
     4: _finalize_letter_lesson(_letters_4(), LETTERS_ORDER[4], LETTERS_SPARKS[4], LETTERS_LINES[4]),
     6: _finalize_letter_lesson(_letters_6(), LETTERS_ORDER[6], LETTERS_SPARKS[6], LETTERS_LINES[6]),
+    7: _letters_7(),
+    8: _letters_8(),
 }
 
 STORIES: dict[int, list[dict[str, Any]]] = {
@@ -3931,6 +4614,8 @@ LETTERS_META = {
     3: {"title": "Круглая О", "badge": "Знаю букву О"},
     4: {"title": "Змейка: с-с-с!", "badge": "Знаю букву С"},
     6: {"title": "Тук-тук: буква Т", "badge": "Знаю букву Т"},
+    7: {"title": "Слоги дружат", "badge": "Слоги дружат"},
+    8: {"title": "Праздник у Словика", "badge": "Хранитель праздника"},
 }
 
 STORIES_META = {
@@ -3948,13 +4633,13 @@ def stations_for(course: str, lesson_n: int) -> list[dict[str, Any]] | None:
 
 
 def apply_to_catalog(lessons_dir) -> list[str]:
-    """Пишет станции букв (1–4, 6) и историй 1–4 в self_paced и with_teacher JSON."""
+    """Пишет станции букв (1–4, 6–8) и историй 1–4 в self_paced и with_teacher JSON."""
     import json
     from pathlib import Path
 
     root = Path(lessons_dir)
     written: list[str] = []
-    note = "Станции модуля 1 · буквы 1–4 и 6 (Т). Новые механики — поле mechanic."
+    note = "Станции модуля 1 · буквы 1–4, 6 (Т), 7 (слоги), 8 (праздник)."
     jobs = (
         ("letters", "early-letters", LETTERS, LETTERS_META, "искорки"),
         ("stories", "early-stories", STORIES, STORIES_META, "искорки"),

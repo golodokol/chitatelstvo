@@ -723,7 +723,7 @@ if (faqList) {
     'grade-4': { single: 10, self_paced: 11, with_teacher: 12, label: '4 класс' },
     'extra-6-8': { single: 13, self_paced: 14, with_teacher: 15, label: '6–8 лет' },
     'extra-9-11': { single: 16, self_paced: 17, with_teacher: 18, label: '9–11 лет' },
-    'early-letters': { single: 26, self_paced: 21, with_teacher: 22, trial: 20, label: 'Буквы оживают' },
+    'early-letters': { single: 26, self_paced: 21, with_teacher: 22, trial: 20, alphabet_pack: 40, label: 'Буквы оживают' },
     'early-stories': { single: 27, self_paced: 24, with_teacher: 25, trial: 23, label: 'Первые истории' },
     'wind': { single: 28, self_paced: 29, with_teacher: 30, label: 'Ветер в ивах' },
     'garden': { single: 31, self_paced: 32, with_teacher: 33, label: 'Таинственный сад' },
@@ -732,14 +732,15 @@ if (faqList) {
   };
   var NO_WITH_TEACHER_GROUPS = ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11'];
   var COHORT_GROUPS = ['wind', 'garden', 'rus-6-9', 'rus-10-12'];
-  var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем', trial: 'Пробный' };
-  var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990, trial: 0 };
+  var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем', trial: 'Пробный', alphabet_pack: 'Весь алфавит' };
+  var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990, trial: 0, alphabet_pack: 5990 };
   var STAGE_LABEL = { '1': 'Блок 1 · сказки 1–4', '2': 'Блок 2 · сказки 5–8' };
   var STAGE_LABEL_EARLY = { '1': 'Модуль 1 · 8 уроков' };
   var ORDER_PRODUCTS = {
     single: { title: 'Читательство · Разовое', price: 799, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
-    with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022', lid: '776534181255', sku: 'SKU0003' }
+    with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022', lid: '776534181255', sku: 'SKU0003' },
+    alphabet_pack: { title: 'Читательство · Буквы оживают · весь алфавит', price: 5990, uid: '', lid: '', sku: 'SKU-LETTERS-FULL' }
   };
   var ST100_RECID = '2379461281';
   var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
@@ -1892,6 +1893,10 @@ if (faqList) {
           openCartModal();
           return;
         }
+        if (tariff === 'alphabet_pack' && !(ORDER_PRODUCTS.alphabet_pack && ORDER_PRODUCTS.alphabet_pack.uid)) {
+          alert('Пакет «Весь алфавит» почти готов к оплате. Напишите на info@chitatelstvo.ru — зачислим вручную, или возьмите модуль 1 за 1 990 ₽.');
+          return;
+        }
         var hashes = buildOrderHashes(tariff);
         var hashIdx = 0;
         var hashWait = 0;
@@ -2266,7 +2271,8 @@ if (faqList) {
     var card = e.target.closest('[data-tariff]'); if (!card) return;
     state.tariff = card.getAttribute('data-tariff');
     if (state.tariff !== 'single') state.taleNum = 0;
-    else if (state.stage && !state.taleNum) state.taleNum = 1;
+    if (state.tariff === 'alphabet_pack') state.stage = 'all';
+    else if (!state.stage) state.stage = '1';
     document.querySelectorAll('#chit-tariffs .pick-card').forEach(function(c) { c.classList.toggle('is-active', c === card); });
     // Сразу закрываем этап 1 для «С преподавателем», до отрисовки дат
     refreshStageAvailability();
@@ -2622,7 +2628,11 @@ if (faqList) {
       elDateBox.classList.add('is-visible');
       return false;
     }
-    if (state.tariff !== 'single' && !hidStage.value) { alert('Выберите дату старта.'); elDateBox.classList.add('is-visible'); return false; }
+    if (state.tariff === 'alphabet_pack') {
+      state.stage = 'all';
+      hidStage.value = 'all';
+    }
+    if (state.tariff !== 'single' && state.tariff !== 'alphabet_pack' && !hidStage.value) { alert('Выберите дату старта.'); elDateBox.classList.add('is-visible'); return false; }
     var parentName = document.querySelector('#chit-main [name="parent_name"]');
     var parentEmail = document.querySelector('#chit-main [name="parent_email"]');
     var childName = document.querySelector('#chit-main [name="child_name"]');

@@ -208,9 +208,14 @@ EARLY_INTRO_TRIALS: dict[str, dict[str, str]] = {
 }
 
 EARLY_BUY_URLS: dict[str, str] = {
-    "early-letters": "https://chitatelstvo.ru/#programs",
-    "early-stories": "https://chitatelstvo.ru/#programs",
+    "early-letters": "https://chitatelstvo.ru/bukvy-ozhivayut#tariffs",
+    "early-stories": "https://chitatelstvo.ru/pervye-istorii#tariffs",
 }
+
+ALPHABET_PACK_URL = "https://chitatelstvo.ru/bukvy-ozhivayut#tariffs"
+ALPHABET_PACK_MODULE_ID = 40
+LETTERS_MODULE1_IDS = frozenset({21, 22})  # self_paced / with_teacher модуля 1
+
 
 # Даты открытия 8 уроков модуля (сентября) — вместо «после покупки» / «Скоро».
 EARLY_MODULE_OPEN_LABELS: list[str] = [
@@ -1830,6 +1835,25 @@ def _build_track_section(
     )
     treasury = _treasury_for_track(claims, lesson_links)
     weekly_cards = _weekly_lesson_cards(weekly_source, claimed_slugs=claimed)
+    next_offer = None
+    mid = track.get("module_id")
+    try:
+        mid_int = int(mid) if mid is not None else None
+    except (TypeError, ValueError):
+        mid_int = None
+    if (
+        group_code == "early-letters"
+        and not is_trial_track
+        and mid_int in LETTERS_MODULE1_IDS
+    ):
+        next_offer = {
+            "title": "Весь алфавит",
+            "price_label": "5 990 ₽",
+            "text": "Модуль 1 — старт. Дальше ещё три модуля до всех 33 букв. Весь путь выгоднее, чем покупать по одному.",
+            "cta": "Открыть весь путь",
+            "url": ALPHABET_PACK_URL,
+            "module_id": ALPHABET_PACK_MODULE_ID,
+        }
 
     return {
         "group_code": group_code,
@@ -1850,6 +1874,7 @@ def _build_track_section(
         "stories_title": stories_title,
         "stories_subtitle": stories_subtitle,
         "buy_url": _buy_url_for_group(group_code) if early else None,
+        "next_offer": next_offer,
         "missions": missions,
         "missions_title": "Миссии на эту неделю",
         "missions_subtitle": (

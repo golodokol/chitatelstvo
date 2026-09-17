@@ -451,6 +451,14 @@
               {{ render_chest(track, child, loop.index, '#treasury-all') }}
               {% endif %}
               {{ render_upcoming_lessons(track) }}
+              {% if track.next_offer %}
+              <section class="chit-panel chit-panel--offer" aria-label="Следующий шаг">
+                <h2 class="chit-section-title">{{ track.next_offer.title }}</h2>
+                <p class="chit-section-sub">{{ track.next_offer.text }}</p>
+                <p class="chit-offer__price">{{ track.next_offer.price_label }}</p>
+                <a class="chit-btn chit-btn--primary" href="{{ track.next_offer.url }}" target="_blank" rel="noopener">{{ track.next_offer.cta }}</a>
+              </section>
+              {% endif %}
             {% endif %}
           {% endfor %}
 
@@ -517,6 +525,14 @@
           {{ render_chest(track, child, loop.index, '#treasury-all') }}
           {% endif %}
           {{ render_upcoming_lessons(track) }}
+          {% if track.next_offer %}
+          <section class="chit-panel chit-panel--offer" aria-label="Следующий шаг">
+            <h2 class="chit-section-title">{{ track.next_offer.title }}</h2>
+            <p class="chit-section-sub">{{ track.next_offer.text }}</p>
+            <p class="chit-offer__price">{{ track.next_offer.price_label }}</p>
+            <a class="chit-btn chit-btn--primary" href="{{ track.next_offer.url }}" target="_blank" rel="noopener">{{ track.next_offer.cta }}</a>
+          </section>
+          {% endif %}
           {% if not track.upcoming_lessons and track.story_stages %}
           <section class="chit-panel chit-panel--stories">
             <h2 class="chit-section-title">{{ track.stories_title or (('Мои уроки · ' if track.is_early else 'Мои сказки · ') ~ track.group_label) }}</h2>

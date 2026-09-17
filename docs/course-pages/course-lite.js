@@ -89,6 +89,7 @@
   }
 
   function earlyFareCardsHtml() {
+    var isLetters = group === 'early-letters';
     function card(opts) {
       return (
         '<article class="ccl-fare' + (opts.rec ? ' ccl-fare--rec' : '') + '">' +
@@ -124,19 +125,37 @@
       }) +
       card({
         tariff: 'self_paced',
-        name: 'Индивидуальное',
+        name: 'Один модуль',
         price: '1 990 ₽',
-        delta: '1 990 ₽ за модуль',
+        delta: isLetters ? 'сейчас открыт модуль 1' : '1 990 ₽ за модуль',
         sub: 'уроки модуля · свой темп',
-        rec: true,
+        rec: !isLetters,
         feats: [
-          { yes: true, text: 'Уроки модуля на платформе (в модуле 1 — 8)' },
+          { yes: true, text: isLetters ? '8 уроков модуля 1 на платформе' : 'Уроки модуля на платформе (в модуле 1 — 8)' },
           { yes: true, text: 'Квест и задания' },
           { yes: true, text: 'Личная страница прогресса' },
           { yes: true, text: 'Модуль целиком · 1 990 ₽' },
           { yes: false, text: 'Живые встречи' }
         ]
       }) +
+      (isLetters
+        ? card({
+            tariff: 'alphabet_pack',
+            name: 'Весь алфавит',
+            price: '5 990 ₽',
+            delta: 'вместо 7 960 ₽ по модулям',
+            sub: '4 модуля · 44 урока · 33 буквы',
+            rec: true,
+            cta: 'Взять весь путь',
+            feats: [
+              { yes: true, text: 'Модули 1–4 по мере открытия' },
+              { yes: true, text: 'Все буквы алфавита со Словиком' },
+              { yes: true, text: 'Квест и задания' },
+              { yes: true, text: 'Личная страница прогресса' },
+              { yes: false, text: 'Живые встречи' }
+            ]
+          })
+        : '') +
       card({
         tariff: 'with_teacher',
         name: 'С преподавателем',
