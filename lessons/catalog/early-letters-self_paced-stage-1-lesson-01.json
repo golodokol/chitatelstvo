@@ -1,7 +1,7 @@
 {
   "slug": "early-letters-self_paced-stage-1-lesson-01",
-  "title": "Машина на поляне",
-  "tale_title": "Машина на поляне",
+  "title": "Мотор на поляне",
+  "tale_title": "Мотор на поляне",
   "module_id": 21,
   "group_code": "early-letters",
   "group_label": "Буквы оживают",
@@ -18,7 +18,7 @@
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic.",
+  "note": "Станции модуля 1 · буквы 1–4 и 6 (Т). Новые механики — поле mechanic.",
   "lesson_format": "quest",
   "stations": [
     {

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Станции уроков 1–4 модуля 1 (1, 3, 8, 10 сентября).
+"""Станции уроков букв модуля 1 (уроки 1–4 и 6 · буква Т) и историй 1–4.
 
 Новые механики из ТЗ (`letter_hop`, `letter_grid`, …) играются существующими
 `kind` плеера; исходное имя — в поле `mechanic`.
@@ -59,6 +59,8 @@ IMG = {
     "letter_u": f"{L}/letter-u-hero.png",
     "letter_o": f"{L}/letter-o-hero.png",
     "letter_s": f"{L}/letter-s-hero.png",
+    "letter_t": f"{L}/letter-t-hero.png",
+    "drum": f"{L}/drum.png",
     "sleep": f"{ST}/kot-sleep.png",
     "run": f"{ST}/cat-run.png",
     "eat": f"{ST}/kot-eat.png",
@@ -163,7 +165,7 @@ def _chase_meadow(
     """Общая станция: ловля большой и маленькой буквы на поляне."""
     big = letter.upper()
     small = letter.lower()
-    pool = ["А", "М", "У", "О", "С"]
+    pool = ["А", "М", "У", "О", "С", "Р"]
     distractors = [x for x in pool if x != big][:3]
     hotspots = [
         {"id": f"{big}1", "label": big, "x": 14, "y": 10},
@@ -1883,6 +1885,316 @@ def _letters_4() -> list[dict[str, Any]]:
     ]
 
 
+def _letters_6() -> list[dict[str, Any]]:
+    """Буква Т · урок 6 «Тук-тук: буква Т»."""
+    return [
+        {
+            "id": "trail",
+            "title": "Тропа букв",
+            "kind": "intro_video",
+            "slovik_line": "Слышишь тук-тук? На тропе новая буква — Т.",
+            "slovik_pose": "wave",
+            "scene_image": where_map(6),
+            "audio": "bo-m1-l06-hi",
+            "cta_label": "Начать",
+            "spark": False,
+        },
+        {
+            "id": "meet",
+            "title": "Буква Т",
+            "kind": "meet_letter",
+            "mechanic": "meet_letter",
+            "slovik_line": "Буква Т. Коротко: т-т-т. Как стук.",
+            "slovik_pose": "invite",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l06-meet",
+            "sound": "snd-t",
+            "letter": "Т",
+            "letter_image": IMG["letter_t"],
+            "hint": "Нажми на букву — услышишь звук.",
+            "coach_success": "Т-т-т! Это буква Т. Дальше соберём искорки.",
+            "spark": False,
+        },
+        {
+            "id": "knock",
+            "title": "Тук-тук или м-м-м",
+            "chapter": "Искорка 1 · Звук",
+            "kind": "listen_pick",
+            "slovik_line": "Что слышишь: тук-тук или м-м-м?",
+            "scene_image": SCENE_MISS,
+            "audio": "bo-m1-l06-knock",
+            "picture_only": True,
+            "rounds": [
+                {
+                    "sound": "snd-t",
+                    "correct": "drum",
+                    "options": [
+                        _opt("drum", "Тук-тук", IMG["drum"]),
+                        _opt("motor", "Машина", IMG["motor"]),
+                    ],
+                }
+            ],
+            "spark": True,
+            "spark_kind": "sound",
+            "spark_group": "sound",
+        },
+        {
+            "id": "hop",
+            "title": "Прыжки",
+            "kind": "letter_maze",
+            "mechanic": "letter_hop",
+            "slovik_line": "Прыгай на Т. Она говорит т-т-т.",
+            "scene_image": SCENE_TRAIL,
+            "audio": "bo-m1-l06-hop",
+            "letter": "Т",
+            "start": [0, 0],
+            "end": [3, 3],
+            "grid": [
+                ["Т", "М", "А", "У"],
+                ["О", "Т", "С", "Р"],
+                ["М", "А", "Т", "О"],
+                ["С", "У", "Р", "Т"],
+            ],
+            "spark": False,
+            "spark_group": "sound",
+        },
+        {
+            "id": "azbuka",
+            "title": "Азбука Т",
+            "chapter": "Буква",
+            "kind": "alphabet_book",
+            "mechanic": "azbuka_fill",
+            "slovik_line": "Сложи страницу Т. Выбери то, что начинается на Т или звучит тук-тук.",
+            "slovik_pose": "talk",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l06-azbuka",
+            "letter": "Т",
+            "letter_image": IMG["letter_t"],
+            "book_title": "Т",
+            "picture_only": False,
+            "hint": "Ищи тук-тук или слово на Т.",
+            "success_msg": "Страница Т готова!",
+            "rounds": [
+                {
+                    "correct": "drum",
+                    "options": [
+                        _opt("drum", "тук-тук", IMG["drum"]),
+                        _opt("motor", "машина", IMG["motor"]),
+                    ],
+                },
+                {
+                    "correct": "tort",
+                    "options": [
+                        _opt("tort", "торт"),
+                        _opt("som", "сом", IMG["som"]),
+                    ],
+                },
+            ],
+            "spark": False,
+            "spark_group": "letter",
+        },
+        {
+            "id": "build",
+            "title": "Обведи Т",
+            "chapter": "Буква",
+            "kind": "dot_connect",
+            "mechanic": "dot_connect",
+            "slovik_line": "Соедини точки по порядку — получится буква Т.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_WATER,
+            "audio": "bo-m1-l06-build",
+            "letter": "Т",
+            "hint": "Жми точки по номерам: 1, 2, 3…",
+            "success_msg": "Буква Т получилась!",
+            "dots": [
+                {"n": 1, "x": 18, "y": 22},
+                {"n": 2, "x": 50, "y": 18},
+                {"n": 3, "x": 82, "y": 22},
+                {"n": 4, "x": 50, "y": 48},
+                {"n": 5, "x": 50, "y": 88},
+            ],
+            "spark": False,
+            "spark_group": "letter",
+        },
+        _sort_big_small("Т", audio="bo-m1-l06-sort"),
+        _chase_meadow(
+            "Т",
+            audio="bo-m1-l06-chase",
+            slovik_line="Теперь поймай их на поляне. Найди все буквы Т. Не спутай с другими буквами.",
+        ),
+        {
+            "id": "grid",
+            "title": "Найди все Т",
+            "chapter": "Искорка 2 · Буква",
+            "kind": "letter_puzzle",
+            "mechanic": "letter_grid",
+            "slovik_line": "Найди все буквы Т на доске.",
+            "scene_image": SCENE_BOARD,
+            "audio": "bo-m1-l06-grid",
+            "pieces_on_board": True,
+            "slots": 5,
+            "pieces": [
+                {"id": "t1", "label": "Т", "correct": True},
+                {"id": "m1", "label": "М", "correct": False},
+                {"id": "t2", "label": "Т", "correct": True},
+                {"id": "a1", "label": "А", "correct": False},
+                {"id": "t3", "label": "Т", "correct": True},
+                {"id": "r1", "label": "Р", "correct": False},
+                {"id": "t4", "label": "Т", "correct": True},
+                {"id": "s1", "label": "С", "correct": False},
+                {"id": "t5", "label": "Т", "correct": True},
+            ],
+            "spark": True,
+            "spark_kind": "letter",
+            "spark_group": "letter",
+        },
+        {
+            "id": "first_letter",
+            "title": "Первая буква",
+            "chapter": "Буква",
+            "kind": "find",
+            "mechanic": "picture_first_letter",
+            "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
+            "slovik_pose": "hint",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l06-first",
+            "spark": False,
+            "spark_group": "letter",
+            "hint": "Скажи слово вслух и найди первую букву.",
+            "rounds": [
+                {
+                    "prompt_text": "С какой буквы?",
+                    "prompt_image": IMG["drum"],
+                    "prompt_alt": "тук-тук",
+                    "correct": "Т",
+                    "options": ["А", "М", "Т", "С"],
+                },
+                {
+                    "prompt_text": "Какая буква говорит т-т-т?",
+                    "sound": "snd-t",
+                    "correct": "Т",
+                    "options": ["М", "Т", "Р", "А"],
+                },
+                {
+                    "prompt_text": "Слово ТОРТ. С какой буквы?",
+                    "correct": "Т",
+                    "options": ["О", "Т", "Р", "С"],
+                },
+            ],
+        },
+        _board_letters("Т", audio="bo-m1-l06-board"),
+        _meadow_catch("Т", audio="bo-m1-l06-catch"),
+        {
+            "id": "count",
+            "title": "Шесть Т",
+            "kind": "catch_letter",
+            "mechanic": "letter_count",
+            "slovik_line": "Собери шесть Т у воды.",
+            "scene_image": SCENE_WATER,
+            "audio": "bo-m1-l06-count",
+            "letter": "Т",
+            "letters": ["Т", "М", "А", "О", "Р"],
+            "letter_sounds": {
+                "Т": "snd-t",
+                "М": "snd-m",
+                "А": "snd-a",
+                "О": "snd-o",
+                "Р": "snd-r",
+            },
+            "catches": 6,
+            "spark": False,
+            "spark_group": "letter",
+        },
+        {
+            "id": "pause",
+            "title": "Пауза",
+            "kind": "break",
+            "slovik_line": "Тихое т-т-т, как стук пальцем по столу.",
+            "audio": "bo-m1-l06-pause",
+            "spark": False,
+            "hint": "Тихо скажи т-т-т.",
+        },
+        {
+            "id": "join_ta",
+            "title": "Мост дружбы",
+            "chapter": "Искорка 3 · Слог",
+            "kind": "drag_join",
+            "slovik_line": "Познакомь Т и А. Веди Т по мостику к А — получится та.",
+            "slovik_pose": "invite",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l06-join",
+            "hint": "Перетащи Т к А по мостику",
+            "left": {"id": "T", "label": "Т"},
+            "right": {"id": "A", "label": "А"},
+            "result": {"label": "ТА", "sound": "snd-t", "image": IMG["drum"], "image_alt": "тук"},
+            "spark": False,
+            "spark_group": "syllable",
+        },
+        {
+            "id": "slots",
+            "title": "Слог ТА",
+            "chapter": "Искорка 3 · Слог",
+            "kind": "slot_build",
+            "slovik_line": "Склеим слог та. Сначала та.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l06-slots",
+            "targets": ["Т", "А"],
+            "options": ["Т", "О", "А", "М"],
+            "result_label": "ТА",
+            "result_image": IMG["drum"],
+            "spark": False,
+            "spark_group": "syllable",
+        },
+        {
+            "id": "slots_to",
+            "title": "Слог ТО",
+            "chapter": "Искорка 3 · Слог",
+            "kind": "slot_build",
+            "slovik_line": "Теперь то. Т и О рядом — получается то.",
+            "slovik_pose": "invite",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l06-slots-to",
+            "targets": ["Т", "О"],
+            "options": ["А", "Т", "М", "О"],
+            "result_label": "ТО",
+            "spark": True,
+            "spark_kind": "syllable",
+            "spark_group": "syllable",
+        },
+        {
+            "id": "quest",
+            "title": "Слог ТО",
+            "kind": "mini_quest",
+            "slovik_line": "Торт начинается на Т. Выбери букву, потом слог то.",
+            "scene_image": SCENE_L,
+            "audio": "bo-m1-l06-quest",
+            "spark": False,
+            "show_all_steps": True,
+            "hint": "Буква Т и слог ТО.",
+            "steps": [
+                {
+                    "kind": "find",
+                    "prompt": "Первая буква слова ТОРТ",
+                    "correct": "Т",
+                    "options": ["Т", "О", "Р", "С"],
+                },
+                {
+                    "kind": "find",
+                    "prompt": "Слог",
+                    "correct": "ТО",
+                    "options": ["ТА", "ТО", "ОТ", "МО"],
+                },
+            ],
+        },
+        _reward(
+            audio="bo-m1-l06-reward",
+            line="Тук-тук! Буква Т с нами. Ты знаешь букву Т.",
+            parent="Урок «Тук-тук: буква Т». Дома тихое т-т-т, слог та / то.",
+            badge_line="Знаю букву Т",
+        ),
+    ]
+
+
 def _legend_entry(letter: str, shape: str, tone: str) -> dict[str, str]:
     return {"shape": shape, "tone": tone, "letter": letter}
 
@@ -3472,6 +3784,27 @@ LETTERS_ORDER: dict[int, list[str]] = {
         "quest",  # ★ слог
         "chest",
     ],
+    6: [
+        "trail",
+        "meet",
+        "knock",  # ★ звук
+        "hop",
+        "azbuka",
+        "build",
+        "sort",
+        "chase",
+        "grid",  # ★ буква
+        "first_letter",
+        "board",
+        "catch",
+        "count",
+        "pause",
+        "join_ta",
+        "slots",
+        "slots_to",  # ★ слог
+        "quest",
+        "chest",
+    ],
 }
 
 LETTERS_SPARKS: dict[int, dict[str, str]] = {
@@ -3479,6 +3812,7 @@ LETTERS_SPARKS: dict[int, dict[str, str]] = {
     2: {"azbuka": "sound", "first_letter": "letter", "slots_um": "syllable"},
     3: {"azbuka": "sound", "first_letter": "letter", "slots": "syllable"},
     4: {"azbuka": "sound", "sort": "letter", "quest": "syllable"},
+    6: {"knock": "sound", "grid": "letter", "slots_to": "syllable"},
 }
 
 LETTERS_LINES: dict[int, dict[str, str]] = {
@@ -3500,6 +3834,12 @@ LETTERS_LINES: dict[int, dict[str, str]] = {
         "grid": "Теперь найди все буквы С на доске.",
         "chase": "Теперь поймай их на поляне. Найди все буквы С. Не спутай с другими буквами.",
         "chest": "Ура, все искорки с нами! Теперь ты знаешь букву С.",
+    },
+    6: {
+        "trail": "Слышишь тук-тук? На тропе новая буква — Т.",
+        "hop": "Найди букву Т. Она говорит т-т-т.",
+        "chase": "Теперь поймай их на поляне. Найди все буквы Т. Не спутай с другими буквами.",
+        "chest": "Ура, все искорки с нами! Теперь ты знаешь букву Т.",
     },
 }
 
@@ -3575,6 +3915,7 @@ LETTERS: dict[int, list[dict[str, Any]]] = {
     2: _finalize_letter_lesson(_letters_2(), LETTERS_ORDER[2], LETTERS_SPARKS[2], LETTERS_LINES[2]),
     3: _finalize_letter_lesson(_letters_3(), LETTERS_ORDER[3], LETTERS_SPARKS[3], LETTERS_LINES[3]),
     4: _finalize_letter_lesson(_letters_4(), LETTERS_ORDER[4], LETTERS_SPARKS[4], LETTERS_LINES[4]),
+    6: _finalize_letter_lesson(_letters_6(), LETTERS_ORDER[6], LETTERS_SPARKS[6], LETTERS_LINES[6]),
 }
 
 STORIES: dict[int, list[dict[str, Any]]] = {
@@ -3585,10 +3926,11 @@ STORIES: dict[int, list[dict[str, Any]]] = {
 }
 
 LETTERS_META = {
-    1: {"title": "Машина на поляне", "badge": "Знаю букву М"},
+    1: {"title": "Мотор на поляне", "badge": "Знаю букву М"},
     2: {"title": "Поющая У", "badge": "Знаю букву У"},
     3: {"title": "Круглая О", "badge": "Знаю букву О"},
     4: {"title": "Змейка: с-с-с!", "badge": "Знаю букву С"},
+    6: {"title": "Тук-тук: буква Т", "badge": "Знаю букву Т"},
 }
 
 STORIES_META = {
@@ -3606,13 +3948,13 @@ def stations_for(course: str, lesson_n: int) -> list[dict[str, Any]] | None:
 
 
 def apply_to_catalog(lessons_dir) -> list[str]:
-    """Пишет станции уроков 1–4 в self_paced и with_teacher JSON."""
+    """Пишет станции букв (1–4, 6) и историй 1–4 в self_paced и with_teacher JSON."""
     import json
     from pathlib import Path
 
     root = Path(lessons_dir)
     written: list[str] = []
-    note = "Станции модуля 1 · уроки 1–4 (1, 3, 8, 10 сентября). Новые механики — поле mechanic."
+    note = "Станции модуля 1 · буквы 1–4 и 6 (Т). Новые механики — поле mechanic."
     jobs = (
         ("letters", "early-letters", LETTERS, LETTERS_META, "искорки"),
         ("stories", "early-stories", STORIES, STORIES_META, "искорки"),

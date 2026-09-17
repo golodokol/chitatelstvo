@@ -1,7 +1,7 @@
 {
   "slug": "early-letters-self_paced-stage-1-lesson-06",
-  "title": "Слоги дружат",
-  "tale_title": "Слоги дружат",
+  "title": "Тук-тук: буква Т",
+  "tale_title": "Тук-тук: буква Т",
   "module_id": 21,
   "group_code": "early-letters",
   "group_label": "Буквы оживают",
@@ -14,124 +14,790 @@
   "tale_slug": "early-letters-stage1-tale-06",
   "module_week": 6,
   "meeting_number": 0,
-  "badge": "Первый шаг",
+  "badge": "Знаю букву Т",
   "points": 2,
   "active": false,
   "status": "черновик",
-  "note": "Каркас станций модуля 1.",
+  "note": "Станции модуля 1 · буквы 1–4 и 6 (Т). Новые механики — поле mechanic.",
   "lesson_format": "quest",
   "stations": [
     {
-      "id": "hello",
-      "title": "Приветствие",
+      "id": "trail",
+      "title": "Тропа букв",
       "kind": "intro_video",
-      "slovik_line": "Сегодня: Буквы дружат",
+      "slovik_line": "Слышишь тук-тук? На тропе новая буква — Т.",
+      "slovik_pose": "wave",
+      "scene_image": "/static/early/letters/scene-map-sounds-where-06.png",
       "audio": "bo-m1-l06-hi",
+      "cta_label": "Начать",
       "spark": false
     },
     {
-      "id": "warm",
-      "title": "Разминка",
-      "kind": "find",
-      "slovik_line": "Вспомним прошлое.",
-      "audio": "bo-m1-l06-warm",
-      "spark": false,
-      "rounds": [
-        {
-          "correct": "A",
-          "options": [
-            "A",
-            "M",
-            "O"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "new",
-      "title": "Новое",
-      "kind": "repeat_sound",
-      "slovik_line": "Новый навык.",
-      "audio": "bo-m1-l06-new",
-      "sound": "bo-m1-l06-sound",
+      "id": "meet",
+      "title": "Буква Т",
+      "kind": "meet_letter",
+      "mechanic": "meet_letter",
+      "slovik_line": "Буква Т. Коротко: т-т-т. Как стук.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-meet",
+      "sound": "snd-t",
+      "letter": "Т",
+      "letter_image": "/static/early/letters/letter-t-hero.png",
+      "hint": "Нажми на букву — услышишь звук.",
+      "coach_success": "Т-т-т! Это буква Т. Дальше соберём искорки.",
       "spark": false
     },
     {
-      "id": "game1",
-      "title": "Игра 1",
+      "id": "knock",
+      "title": "Тук-тук или м-м-м",
+      "chapter": "Искорка 1 · Звук",
       "kind": "listen_pick",
-      "slovik_line": "Поиграем!",
-      "audio": "bo-m1-l06-g1",
-      "spark": true,
+      "slovik_line": "Что слышишь: тук-тук или м-м-м?",
+      "scene_image": "/static/early/letters/scene-missing.jpg",
+      "audio": "bo-m1-l06-knock",
+      "picture_only": true,
       "rounds": [
         {
-          "correct": "yes",
+          "sound": "snd-t",
+          "correct": "drum",
           "options": [
             {
-              "id": "yes",
-              "label": "Да"
+              "id": "drum",
+              "label": "Тук-тук",
+              "image": "/static/early/letters/drum.png"
             },
             {
-              "id": "no",
-              "label": "Нет"
+              "id": "motor",
+              "label": "Машина",
+              "image": "/static/early/letters/motor.png"
             }
           ]
         }
-      ]
-    },
-    {
-      "id": "break",
-      "title": "Пауза",
-      "kind": "break",
-      "slovik_line": "Отойдём от экрана.",
-      "audio": "shared-pause-start",
-      "spark": false,
-      "hint": "Короткая пауза без экрана."
-    },
-    {
-      "id": "game2",
-      "title": "Игра 2",
-      "kind": "find",
-      "slovik_line": "Ещё практика.",
-      "audio": "bo-m1-l06-g2",
+      ],
       "spark": true,
+      "spark_group": "sound",
+      "spark_kind": "sound"
+    },
+    {
+      "id": "hop",
+      "title": "Прыжки",
+      "kind": "letter_maze",
+      "mechanic": "letter_hop",
+      "slovik_line": "Найди букву Т. Она говорит т-т-т.",
+      "scene_image": "/static/early/letters/scene-trail-path.jpg",
+      "audio": "bo-m1-l06-hop",
+      "letter": "Т",
+      "start": [
+        0,
+        0
+      ],
+      "end": [
+        3,
+        3
+      ],
+      "grid": [
+        [
+          "Т",
+          "М",
+          "А",
+          "У"
+        ],
+        [
+          "О",
+          "Т",
+          "С",
+          "Р"
+        ],
+        [
+          "М",
+          "А",
+          "Т",
+          "О"
+        ],
+        [
+          "С",
+          "У",
+          "Р",
+          "Т"
+        ]
+      ],
+      "spark": false,
+      "spark_group": "sound",
+      "chapter": "Искорка 2 · Буква"
+    },
+    {
+      "id": "azbuka",
+      "title": "Азбука Т",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "alphabet_book",
+      "mechanic": "azbuka_fill",
+      "slovik_line": "Сложи страницу Т. Выбери то, что начинается на Т или звучит тук-тук.",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-azbuka",
+      "letter": "Т",
+      "letter_image": "/static/early/letters/letter-t-hero.png",
+      "book_title": "Т",
+      "picture_only": false,
+      "hint": "Ищи тук-тук или слово на Т.",
+      "success_msg": "Страница Т готова!",
       "rounds": [
         {
-          "correct": "A",
+          "correct": "drum",
           "options": [
-            "A",
-            "M",
-            "S"
+            {
+              "id": "drum",
+              "label": "тук-тук",
+              "image": "/static/early/letters/drum.png"
+            },
+            {
+              "id": "motor",
+              "label": "машина",
+              "image": "/static/early/letters/motor.png"
+            }
+          ]
+        },
+        {
+          "correct": "tort",
+          "options": [
+            {
+              "id": "tort",
+              "label": "торт"
+            },
+            {
+              "id": "som",
+              "label": "сом",
+              "image": "/static/early/letters/som-fish.png"
+            }
+          ]
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "build",
+      "title": "Обведи Т",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "dot_connect",
+      "mechanic": "dot_connect",
+      "slovik_line": "Соедини точки по порядку — получится буква Т.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
+      "audio": "bo-m1-l06-build",
+      "letter": "Т",
+      "hint": "Жми точки по номерам: 1, 2, 3…",
+      "success_msg": "Буква Т получилась!",
+      "dots": [
+        {
+          "n": 1,
+          "x": 18,
+          "y": 22
+        },
+        {
+          "n": 2,
+          "x": 50,
+          "y": 18
+        },
+        {
+          "n": 3,
+          "x": 82,
+          "y": 22
+        },
+        {
+          "n": 4,
+          "x": 50,
+          "y": 48
+        },
+        {
+          "n": 5,
+          "x": 50,
+          "y": 88
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "sort",
+      "title": "Большая и маленькая Т",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "sort_two",
+      "slovik_line": "Большая Т и маленькая т — одна буква. Разложи.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-sort",
+      "left": {
+        "label": "Т",
+        "correct": [
+          "Т1",
+          "Т2",
+          "Т3"
+        ]
+      },
+      "right": {
+        "label": "т",
+        "correct": [
+          "т1",
+          "т2",
+          "т3"
+        ]
+      },
+      "options": [
+        {
+          "id": "Т1",
+          "label": "Т"
+        },
+        {
+          "id": "т1",
+          "label": "т"
+        },
+        {
+          "id": "Т2",
+          "label": "Т"
+        },
+        {
+          "id": "т2",
+          "label": "т"
+        },
+        {
+          "id": "Т3",
+          "label": "Т"
+        },
+        {
+          "id": "т3",
+          "label": "т"
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "chase",
+      "title": "Поймай Т на поляне",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "scene_hunt",
+      "mechanic": "letter_chase",
+      "slovik_line": "Теперь поймай их на поляне. Найди все буквы Т. Не спутай с другими буквами.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-chase",
+      "moving": true,
+      "move_speed": 5,
+      "success_msg": "Поймал и Т, и маленькую т!",
+      "wrong_msg": "Это не Т и не т. Ищи дальше.",
+      "correct_ids": [
+        "Т1",
+        "т1",
+        "Т2",
+        "т2",
+        "Т3"
+      ],
+      "hotspots": [
+        {
+          "id": "Т1",
+          "label": "Т",
+          "x": 14,
+          "y": 10
+        },
+        {
+          "id": "А1",
+          "label": "А",
+          "x": 34,
+          "y": 8
+        },
+        {
+          "id": "М1",
+          "label": "М",
+          "x": 54,
+          "y": 12
+        },
+        {
+          "id": "У1",
+          "label": "У",
+          "x": 74,
+          "y": 9
+        },
+        {
+          "id": "т1",
+          "label": "т",
+          "x": 91,
+          "y": 20,
+          "size": "sm"
+        },
+        {
+          "id": "А2",
+          "label": "А",
+          "x": 10,
+          "y": 42
+        },
+        {
+          "id": "М2",
+          "label": "М",
+          "x": 90,
+          "y": 46
+        },
+        {
+          "id": "Т2",
+          "label": "Т",
+          "x": 12,
+          "y": 78
+        },
+        {
+          "id": "т2",
+          "label": "т",
+          "x": 48,
+          "y": 86,
+          "size": "sm"
+        },
+        {
+          "id": "У2",
+          "label": "У",
+          "x": 88,
+          "y": 82
+        },
+        {
+          "id": "Т3",
+          "label": "Т",
+          "x": 30,
+          "y": 90
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "grid",
+      "title": "Найди все Т",
+      "chapter": "Искорка 2 · Буква",
+      "kind": "letter_puzzle",
+      "mechanic": "letter_grid",
+      "slovik_line": "Найди все буквы Т на доске.",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
+      "audio": "bo-m1-l06-grid",
+      "pieces_on_board": true,
+      "slots": 5,
+      "pieces": [
+        {
+          "id": "t1",
+          "label": "Т",
+          "correct": true
+        },
+        {
+          "id": "m1",
+          "label": "М",
+          "correct": false
+        },
+        {
+          "id": "t2",
+          "label": "Т",
+          "correct": true
+        },
+        {
+          "id": "a1",
+          "label": "А",
+          "correct": false
+        },
+        {
+          "id": "t3",
+          "label": "Т",
+          "correct": true
+        },
+        {
+          "id": "r1",
+          "label": "Р",
+          "correct": false
+        },
+        {
+          "id": "t4",
+          "label": "Т",
+          "correct": true
+        },
+        {
+          "id": "s1",
+          "label": "С",
+          "correct": false
+        },
+        {
+          "id": "t5",
+          "label": "Т",
+          "correct": true
+        }
+      ],
+      "spark": true,
+      "spark_group": "letter",
+      "spark_kind": "letter"
+    },
+    {
+      "id": "first_letter",
+      "title": "Первая буква",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "find",
+      "mechanic": "picture_first_letter",
+      "slovik_line": "Смотри картинку. С какой буквы начинается слово? Нажми букву.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-first",
+      "spark": false,
+      "spark_group": "letter",
+      "hint": "Скажи слово вслух и найди первую букву.",
+      "rounds": [
+        {
+          "prompt_text": "С какой буквы?",
+          "prompt_image": "/static/early/letters/drum.png",
+          "prompt_alt": "тук-тук",
+          "correct": "Т",
+          "options": [
+            "А",
+            "М",
+            "Т",
+            "С"
+          ]
+        },
+        {
+          "prompt_text": "Какая буква говорит т-т-т?",
+          "sound": "snd-t",
+          "correct": "Т",
+          "options": [
+            "М",
+            "Т",
+            "Р",
+            "А"
+          ]
+        },
+        {
+          "prompt_text": "Слово ТОРТ. С какой буквы?",
+          "correct": "Т",
+          "options": [
+            "О",
+            "Т",
+            "Р",
+            "С"
           ]
         }
       ]
+    },
+    {
+      "id": "board",
+      "title": "Доска букв",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "scene_hunt",
+      "mechanic": "letter_board",
+      "board_panel": true,
+      "slovik_line": "Найди на доске все буквы Т. Их несколько.",
+      "slovik_pose": "hint",
+      "scene_image": "/static/early/letters/scene-forest-board.jpg",
+      "audio": "bo-m1-l06-board",
+      "layout": "grid",
+      "grid_cols": 5,
+      "moving": false,
+      "correct_ids": [
+        "т1",
+        "т2",
+        "т3",
+        "т4",
+        "т5"
+      ],
+      "hotspots": [
+        {
+          "id": "а1",
+          "label": "А"
+        },
+        {
+          "id": "т1",
+          "label": "Т"
+        },
+        {
+          "id": "о1",
+          "label": "О"
+        },
+        {
+          "id": "м1",
+          "label": "М"
+        },
+        {
+          "id": "у1",
+          "label": "У"
+        },
+        {
+          "id": "к1",
+          "label": "К"
+        },
+        {
+          "id": "т2",
+          "label": "Т"
+        },
+        {
+          "id": "н1",
+          "label": "Н"
+        },
+        {
+          "id": "а2",
+          "label": "А"
+        },
+        {
+          "id": "о2",
+          "label": "О"
+        },
+        {
+          "id": "м2",
+          "label": "М"
+        },
+        {
+          "id": "т3",
+          "label": "Т"
+        },
+        {
+          "id": "с1",
+          "label": "С"
+        },
+        {
+          "id": "к2",
+          "label": "К"
+        },
+        {
+          "id": "а3",
+          "label": "А"
+        },
+        {
+          "id": "о3",
+          "label": "О"
+        },
+        {
+          "id": "т4",
+          "label": "Т"
+        },
+        {
+          "id": "м3",
+          "label": "М"
+        },
+        {
+          "id": "н2",
+          "label": "Н"
+        },
+        {
+          "id": "т5",
+          "label": "Т"
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "catch",
+      "title": "Поймай Т",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "catch_letter",
+      "mechanic": "letter_meadow",
+      "slovik_line": "На поляне появится буква Т. Нажми на неё — три раза в разных местах!",
+      "slovik_pose": "talk",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-catch",
+      "letter": "Т",
+      "appear_on_scene": true,
+      "catches": 3,
+      "spots": [
+        {
+          "x": 22,
+          "y": 28
+        },
+        {
+          "x": 74,
+          "y": 26
+        },
+        {
+          "x": 48,
+          "y": 40
+        },
+        {
+          "x": 18,
+          "y": 58
+        },
+        {
+          "x": 78,
+          "y": 56
+        },
+        {
+          "x": 58,
+          "y": 70
+        },
+        {
+          "x": 34,
+          "y": 66
+        }
+      ],
+      "spark": false,
+      "spark_group": "letter"
+    },
+    {
+      "id": "count",
+      "title": "Шесть Т",
+      "kind": "catch_letter",
+      "mechanic": "letter_count",
+      "slovik_line": "Собери шесть Т у воды.",
+      "scene_image": "/static/early/letters/scene-water-count.jpg",
+      "audio": "bo-m1-l06-count",
+      "letter": "Т",
+      "letters": [
+        "Т",
+        "М",
+        "А",
+        "О",
+        "Р"
+      ],
+      "letter_sounds": {
+        "Т": "snd-t",
+        "М": "snd-m",
+        "А": "snd-a",
+        "О": "snd-o",
+        "Р": "snd-r"
+      },
+      "catches": 6,
+      "spark": false,
+      "spark_group": "letter",
+      "chapter": "Искорка 3 · Слог"
+    },
+    {
+      "id": "pause",
+      "title": "Пауза",
+      "kind": "break",
+      "slovik_line": "Тихое т-т-т, как стук пальцем по столу.",
+      "audio": "bo-m1-l06-pause",
+      "spark": false,
+      "hint": "Тихо скажи т-т-т."
+    },
+    {
+      "id": "join_ta",
+      "title": "Мост дружбы",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "drag_join",
+      "slovik_line": "Познакомь Т и А. Веди Т по мостику к А — получится та.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-join",
+      "hint": "Перетащи Т к А по мостику",
+      "left": {
+        "id": "T",
+        "label": "Т"
+      },
+      "right": {
+        "id": "A",
+        "label": "А"
+      },
+      "result": {
+        "label": "ТА",
+        "sound": "snd-t",
+        "image": "/static/early/letters/drum.png",
+        "image_alt": "тук"
+      },
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots",
+      "title": "Слог ТА",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Склеим слог та. Сначала та.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-slots",
+      "targets": [
+        "Т",
+        "А"
+      ],
+      "options": [
+        "Т",
+        "О",
+        "А",
+        "М"
+      ],
+      "result_label": "ТА",
+      "result_image": "/static/early/letters/drum.png",
+      "spark": false,
+      "spark_group": "syllable"
+    },
+    {
+      "id": "slots_to",
+      "title": "Слог ТО",
+      "chapter": "Искорка 3 · Слог",
+      "kind": "slot_build",
+      "slovik_line": "Теперь то. Т и О рядом — получается то.",
+      "slovik_pose": "invite",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "audio": "bo-m1-l06-slots-to",
+      "targets": [
+        "Т",
+        "О"
+      ],
+      "options": [
+        "А",
+        "Т",
+        "М",
+        "О"
+      ],
+      "result_label": "ТО",
+      "spark": true,
+      "spark_group": "syllable",
+      "spark_kind": "syllable"
     },
     {
       "id": "quest",
-      "title": "Мини-квест",
+      "title": "Слог ТО",
       "kind": "mini_quest",
-      "slovik_line": "Почти финиш!",
+      "slovik_line": "Торт начинается на Т. Выбери букву, потом слог то.",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
       "audio": "bo-m1-l06-quest",
       "spark": false,
+      "show_all_steps": true,
+      "hint": "Буква Т и слог ТО.",
       "steps": [
         {
           "kind": "find",
-          "correct": "A",
+          "prompt": "Первая буква слова ТОРТ",
+          "correct": "Т",
           "options": [
-            "A",
-            "O"
+            "Т",
+            "О",
+            "Р",
+            "С"
+          ]
+        },
+        {
+          "kind": "find",
+          "prompt": "Слог",
+          "correct": "ТО",
+          "options": [
+            "ТА",
+            "ТО",
+            "ОТ",
+            "МО"
           ]
         }
-      ]
+      ],
+      "spark_group": "syllable",
+      "chapter": "Искорка 3 · Слог"
     },
     {
-      "id": "reward",
-      "title": "Награда",
+      "id": "chest",
+      "title": "Награда Словика",
+      "chapter": "Три искорки",
       "kind": "reward",
-      "slovik_line": "Молодец!",
-      "audio": "shared-reward",
+      "slovik_line": "Ура, все искорки с нами! Теперь ты знаешь букву Т.",
+      "slovik_pose": "chest",
+      "scene_image": "/static/early/letters/scene-invite.jpg",
+      "spark_image": "/static/early/letters/spark.png",
+      "audio": "bo-m1-l06-reward",
+      "fail_audio": "vo-retry",
       "spark": false,
-      "parent_note": "Урок «Буквы дружат» пройден. Повторите дома главный навык."
+      "fail_title": "Ещё чуть-чуть",
+      "fail_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_slovik_line": "Искорки ещё не все. Давай пройдём ещё раз.",
+      "fail_pose": "worry",
+      "retry_cta": "Попробовать ещё раз",
+      "parent_note": "Урок «Тук-тук: буква Т». Дома тихое т-т-т, слог та / то.",
+      "chest_cta": "Открыть сундук",
+      "tech_msg": "Знаю букву Т"
     }
   ],
   "quest": {
