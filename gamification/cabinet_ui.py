@@ -701,9 +701,6 @@ def _upcoming_module_lessons(
             stage = str(les.get("stage") or "stage-1")
             stage_label = str(les.get("stage_label") or "")
             title = str(les.get("title") or f"Урок {idx}")
-            if stage != "stage-1" and stage_label:
-                short = stage_label.split("·")[0].strip()
-                title = f"{short}: {title}"
             date_label = (
                 EARLY_MODULE_OPEN_LABELS[idx - 1]
                 if stage == "stage-1" and 1 <= idx <= len(EARLY_MODULE_OPEN_LABELS)
