@@ -24,12 +24,12 @@
       "price": 4990
     },
     "alphabet_pack": {
-      "uid": "",
-      "lid": "",
+      "uid": "999720498043",
+      "lid": "999720498043",
+      "external_code": "k3PbH3r7JIGZ55feosGL",
       "sku": "SKU-LETTERS-FULL",
       "title": "Читательство · Буквы оживают · весь алфавит",
-      "price": 5990,
-      "note": "Создать товар в Tilda Store за 5990 ₽ и вписать uid/lid сюда и в chit-zero ORDER_PRODUCTS."
+      "price": 5990
     },
     "meeting_addon": {
       "uid": "168614126213",

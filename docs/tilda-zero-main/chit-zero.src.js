@@ -740,7 +740,7 @@ if (faqList) {
     single: { title: 'Читательство · Разовое', price: 799, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
     with_teacher: { title: 'Читательство · С преподавателем', price: 4990, uid: '956231952022', lid: '776534181255', sku: 'SKU0003' },
-    alphabet_pack: { title: 'Читательство · Буквы оживают · весь алфавит', price: 5990, uid: '', lid: '', sku: 'SKU-LETTERS-FULL' }
+    alphabet_pack: { title: 'Читательство · Буквы оживают · весь алфавит', price: 5990, uid: '999720498043', lid: '999720498043', sku: 'SKU-LETTERS-FULL' }
   };
   var ST100_RECID = '2379461281';
   var PAY_PAGE_URL = 'https://chitatelstvo.ru/oplata';
@@ -841,7 +841,7 @@ if (faqList) {
 
   orderConfigReady = new Promise(function(resolve) {
     function load() {
-      fetch('https://api.chitatelstvo.ru/assets/order-config.json?v=20260828a', {
+      fetch('https://api.chitatelstvo.ru/assets/order-config.json?v=20260918a', {
         cache: 'no-store',
         mode: 'cors',
         credentials: 'omit'

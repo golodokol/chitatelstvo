@@ -175,16 +175,12 @@
 | Модули в `catalog/modules.json`: 21 (M1), 40 (пакет), 41–43 (M2–4) | каркас |
 | Каркас уроков stage-2…4 (`scripts/gen_early_letters_module_stubs.py`) | заготовки «скоро» |
 | Кабинет: апселл «Весь алфавит» после M1 | готово |
-| Оплата пакета 5 990 ₽ | **нужен товар в Tilda** (uid/lid) |
+| Оплата пакета 5 990 ₽ | **Product ID `999720498043`** · внешний код `k3PbH3r7JIGZ55feosGL` |
 
 ### Товар в Tilda Store · 5 990 ₽
 
-1. Tilda → **Магазин** → добавить товар-услугу:  
-   **«Читательство · Буквы оживают · весь алфавит»** · цена **5990** · SKU `SKU-LETTERS-FULL`.
-2. Скопировать **Product UID** и **Edition LID** (как у тарифа 1990).
-3. Вписать в `docs/tilda-zero-main/order-config.json` → `products.alphabet_pack.uid` / `lid`.  
-   То же в `chit-zero.src.js` → `ORDER_PRODUCTS.alphabet_pack` (и пересобрать `chit-zero.js`).
-4. На странице курса / в модалке тарифов кнопка **«Взять весь путь»** шлёт `module_id=40`, `chosen_stage=all`.
-5. Опубликовать сайт Tilda + выкатить `order-config.json` на assets.
-
-Пока uid пустой, кнопка пакета показывает сообщение «почти готов» и предлагает модуль 1 или письмо на info@.
+1. Товар создан: **Product ID** `999720498043` (это `uid`/`lid` в `order-config`).
+2. **Внешний код** `k3PbH3r7JIGZ55feosGL` — для интеграций Tilda, в корзину не подставляем.
+3. На странице **`/oplata`** добавьте блок **ST205** с этим Product ID (как у тарифов 799/1990/4990).
+4. Опубликуйте сайт Tilda.
+5. Кнопка **«Взять весь путь»** шлёт `module_id=40`, `chosen_stage=all`.
