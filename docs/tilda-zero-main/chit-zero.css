@@ -987,20 +987,9 @@
     }
     .final-cta__bg {
       position: absolute; inset: 0; z-index: 0;
-      background-color: #c9b8a4;
-      background-image: none;
-      background-position: center bottom;
-      background-size: cover;
-      background-repeat: no-repeat;
-      transform: none;
-    }
-    .final-cta__bg.is-loaded {
-      background-image: url('https://api.chitatelstvo.ru/assets/cta-fairy-tale-bg.webp');
-    }
-    @media (max-width: 768px) {
-      .final-cta__bg.is-loaded {
-        background-image: url('https://api.chitatelstvo.ru/assets/cta-fairy-tale-bg-m.webp');
-      }
+      background: url('https://api.chitatelstvo.ru/assets/cta-fairy-tale-bg.png') center bottom / cover no-repeat;
+      transform: scale(1.04);
+      will-change: transform;
     }
     .final-cta__frame {
       position: relative; z-index: 1;
@@ -2026,7 +2015,7 @@
       max-width: 100%;
       box-sizing: border-box;
       background-color: var(--cream);
-      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.webp');
+      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
       background-repeat: repeat;
       background-position: center top;
       background-size: 420px;
@@ -2061,7 +2050,7 @@
       position: relative;
       height: 104px;
       background-color: var(--cream);
-      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.webp');
+      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
       background-repeat: repeat;
       background-position: center;
       background-size: 380px;
@@ -2087,7 +2076,7 @@
     .footer {
       position: relative;
       background-color: var(--cream);
-      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.webp');
+      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
       background-repeat: repeat;
       background-position: center top;
       background-attachment: scroll;
@@ -2156,7 +2145,7 @@
       padding: 40px 24px 56px;
       margin-top: 0;
       background-color: var(--cream-warm);
-      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.webp');
+      background-image: url('https://api.chitatelstvo.ru/assets/pattern-meadow-books.png');
       background-repeat: repeat;
       background-position: center top;
       background-size: 420px;

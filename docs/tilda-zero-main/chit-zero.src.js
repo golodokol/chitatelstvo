@@ -735,7 +735,7 @@ if (faqList) {
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем', trial: 'Пробный', alphabet_pack: 'Весь алфавит' };
   var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990, trial: 0, alphabet_pack: 5990 };
   var STAGE_LABEL = { '1': 'Блок 1 · сказки 1–4', '2': 'Блок 2 · сказки 5–8' };
-  var STAGE_LABEL_EARLY = { '1': 'Модуль 1 · 8 уроков' };
+  var STAGE_LABEL_EARLY = { '1': 'Модуль 1 · 8 уроков', all: 'Модули 1–4 · весь алфавит' };
   var ORDER_PRODUCTS = {
     single: { title: 'Читательство · Разовое', price: 799, uid: '797131986522', lid: '863983274147', sku: 'SKU0001-2' },
     self_paced: { title: 'Читательство · Индивидуальное', price: 1990, uid: '206548598642', lid: '205285061796', sku: 'SKU0002' },
@@ -1962,6 +1962,9 @@ if (faqList) {
       } else {
         html += '<br><span class="summary-empty">Выберите блок и сказку</span>';
       }
+    } else if (state.tariff === 'alphabet_pack') {
+      html += '<br>Модули 1–4 · 44 урока · 33 буквы';
+      html += '<br>' + formatPrice(TARIFF_PRICE.alphabet_pack) + ' · весь путь';
     } else if (state.stage) {
       if (isEarlyGroup()) {
         html += '<br>' + stageLabelFor(state.stage);
@@ -1984,6 +1987,15 @@ if (faqList) {
   function renderTales() {
     elTales.innerHTML = '';
     elPreview.style.display = 'none';
+    if (state.tariff === 'alphabet_pack') {
+      elTales.style.display = 'none';
+      elPreview.style.display = 'block';
+      elPreview.innerHTML =
+        '<div class="block-preview__banner">✓ Весь алфавит: модули 1–4 · 44 урока · 33 буквы</div>' +
+        '<div class="block-preview__title">Сейчас открыт модуль 1 — дальше уроки появятся по мере публикации</div>' +
+        '<p class="block-preview__next">Дальше заполните контакты и нажмите «Оплатить» ↓</p>';
+      return;
+    }
     if (!state.group || !state.stage) return;
     var list = TALES[state.group] && TALES[state.group][state.stage];
     if (!list || !list.length) return;
@@ -2036,7 +2048,9 @@ if (faqList) {
     var guide = document.getElementById('chit-step3-guide');
     var onlyOneStage = state.tariff === 'with_teacher' && WITH_TEACHER_STAGE1_CLOSED && !isEarlyGroup() && !isCohortGroup();
     if (guide) {
-      if (isEarlyGroup()) {
+      if (state.tariff === 'alphabet_pack') {
+        guide.textContent = 'Весь алфавит: модули 1–4 · 44 урока. Выбирать отдельные уроки не нужно.';
+      } else if (isEarlyGroup()) {
         guide.textContent = state.tariff === 'single'
           ? 'Нажмите на один урок в списке — его и оплатите.'
           : 'В тарифе уже все 8 уроков модуля — выбирать уроки не нужно.';
@@ -2147,21 +2161,45 @@ if (faqList) {
   function updateEarlyEnrollUi() {
     var early = isEarlyGroup();
     var cohort = isCohortGroup();
+    var letters = state.group === 'early-letters';
+    var pack = state.tariff === 'alphabet_pack';
     var root = document.getElementById('chit-main');
     if (root) {
       root.classList.toggle('is-early-course', early);
       root.classList.toggle('is-cohort-course', cohort);
+      root.classList.toggle('is-letters-pack', letters);
+    }
+    var packPick = document.querySelector('#chit-tariffs [data-tariff="alphabet_pack"]');
+    if (packPick) {
+      packPick.hidden = !letters;
+      packPick.style.display = letters ? '' : 'none';
+      if (!letters && packPick.classList.contains('is-active')) {
+        var selfPick = document.querySelector('#chit-tariffs [data-tariff="self_paced"]');
+        if (selfPick) selfPick.click();
+        else {
+          state.tariff = 'self_paced';
+          pack = false;
+        }
+      }
     }
     var stage1 = document.querySelector('#chit-stages [data-stage="1"]');
     var stage2 = document.querySelector('#chit-stages [data-stage="2"]');
+    var stageRow = document.getElementById('chit-stages');
     if (stage1) {
       stage1.textContent = early ? 'Модуль 1 · 8 уроков' : (cohort ? 'Модуль · 4 урока' : 'Блок 1 · сказки 1–4');
     }
     if (stage2) {
-      stage2.hidden = early || cohort;
-      stage2.style.setProperty('display', (early || cohort) ? 'none' : '', 'important');
+      stage2.hidden = early || cohort || pack;
+      stage2.style.setProperty('display', (early || cohort || pack) ? 'none' : '', 'important');
     }
-    if ((early || cohort) && state.stage !== '1') {
+    if (stageRow) {
+      stageRow.hidden = !!pack;
+      stageRow.style.setProperty('display', pack ? 'none' : '', 'important');
+    }
+    if (pack) {
+      state.stage = 'all';
+      state.taleNum = 0;
+    } else if ((early || cohort) && (state.stage !== '1')) {
       state.stage = '1';
       state.taleNum = state.tariff === 'single' ? (state.taleNum || 1) : 0;
       document.querySelectorAll('#chit-stages .pill').forEach(function(p) {
@@ -2174,7 +2212,11 @@ if (faqList) {
     }
     var selfHint = document.querySelector('#chit-tariffs [data-tariff="self_paced"] .pick-card__hint');
     if (selfHint) {
-      selfHint.textContent = early ? '8 уроков · 1 990 ₽, без встреч' : (cohort ? '4 урока · 1 990 ₽, без встреч' : '4 сказки · 1 990 ₽, без встреч');
+      selfHint.textContent = early ? 'модуль 1 · 8 уроков · 1 990 ₽' : (cohort ? '4 урока · 1 990 ₽, без встреч' : '4 сказки · 1 990 ₽, без встреч');
+    }
+    var packHint = document.querySelector('#chit-tariffs [data-tariff="alphabet_pack"] .pick-card__hint');
+    if (packHint) {
+      packHint.textContent = '4 модуля · 44 урока · 5 990 ₽';
     }
     var teachHint = document.querySelector('#chit-tariffs [data-tariff="with_teacher"] .pick-card__hint');
     if (teachHint) {
@@ -2385,12 +2427,28 @@ if (faqList) {
     function refreshModalTariffs() {
       if (!fareTrack) return;
       var blocked = ctx.group && NO_WITH_TEACHER_GROUPS.indexOf(ctx.group) >= 0;
+      var letters = ctx.group === 'early-letters';
       fareTrack.querySelectorAll('[data-fare="with_teacher"]').forEach(function(card) {
         card.classList.toggle('is-disabled', blocked);
         card.disabled = blocked;
         card.setAttribute('aria-disabled', blocked ? 'true' : 'false');
       });
+      fareTrack.querySelectorAll('[data-fare="alphabet_pack"]').forEach(function(card) {
+        card.hidden = !letters;
+        card.style.display = letters ? '' : 'none';
+        card.classList.toggle('fare-card--rec', letters);
+      });
+      var selfCard = fareTrack.querySelector('[data-fare="self_paced"]');
+      if (selfCard) {
+        selfCard.classList.toggle('fare-card--rec', !letters);
+        var badge = selfCard.querySelector('.fare-card__badge');
+        if (badge) badge.hidden = !!letters;
+      }
       if (blocked && ctx.tariff === 'with_teacher') setModalFare('self_paced');
+      if (!letters && ctx.tariff === 'alphabet_pack') setModalFare('self_paced');
+      if (letters && ctx.tariff === 'self_paced') {
+        /* keep self_paced as default; pack is optional */
+      }
     }
 
     function setModalFare(tariff) {
@@ -2409,7 +2467,7 @@ if (faqList) {
       ctx.enroll = card.getAttribute('data-enroll') || (ctx.group ? 'pay' : 'lead');
       ctx.title = card.getAttribute('data-course-title') || '';
       ctx.meta = card.getAttribute('data-course-meta') || '';
-      setModalFare('self_paced');
+      setModalFare(ctx.group === 'early-letters' ? 'alphabet_pack' : 'self_paced');
       refreshModalTariffs();
       refreshFareMarketingCopy(ctx.group);
       if (fareCourseEl) {

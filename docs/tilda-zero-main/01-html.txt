@@ -851,6 +851,12 @@
             <div class="pick-card__price">1 990 ₽</div>
             <div class="pick-card__hint">4 сказки или 8 уроков · 1 990 ₽</div>
           </div>
+          <div class="pick-card" data-tariff="alphabet_pack" hidden>
+            <div class="pick-card__tag">Весь путь</div>
+            <div class="pick-card__name">Весь алфавит</div>
+            <div class="pick-card__price">5 990 ₽</div>
+            <div class="pick-card__hint">4 модуля · 44 урока · 33 буквы</div>
+          </div>
           <div class="pick-card" data-tariff="with_teacher">
             <div class="pick-card__tag">С поддержкой</div>
             <div class="pick-card__name">С преподавателем</div>
@@ -1176,6 +1182,21 @@
           <li class="is-yes">Видео и задания на смысл</li>
           <li class="is-yes">Личная страница прогресса</li>
           <li class="is-yes">Модуль целиком</li>
+          <li class="is-no">Живые встречи</li>
+        </ul>
+      </button>
+      <button type="button" class="fare-card" role="radio" aria-checked="false" data-fare="alphabet_pack" hidden>
+        <span class="fare-card__badge">Выгоднее</span>
+        <span class="fare-card__radio" aria-hidden="true"></span>
+        <span class="fare-card__name">Весь алфавит</span>
+        <span class="fare-card__price">5 990 ₽</span>
+        <span class="fare-card__delta">вместо 7 960 ₽ по модулям</span>
+        <span class="fare-card__sub">4 модуля · 44 урока · 33 буквы</span>
+        <ul class="fare-card__feats">
+          <li class="is-yes">Модули 1–4 по мере открытия</li>
+          <li class="is-yes">Все буквы алфавита со Словиком</li>
+          <li class="is-yes">Личная страница прогресса</li>
+          <li class="is-yes">Весь путь выгоднее</li>
           <li class="is-no">Живые встречи</li>
         </ul>
       </button>
