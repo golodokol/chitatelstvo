@@ -26,11 +26,21 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=str(ROOT / "static")), name="static")
 
 _LLMS = ROOT / "docs" / "course-pages" / "llms.txt"
+_EDU_FEED = ROOT / "static" / "feeds" / "education.yml"
 
 
 @app.get("/llms.txt", include_in_schema=False)
 def llms_txt() -> FileResponse:
     return FileResponse(_LLMS, media_type="text/plain; charset=utf-8")
+
+
+@app.get("/feeds/education.yml", include_in_schema=False)
+def education_feed() -> FileResponse:
+    return FileResponse(
+        _EDU_FEED,
+        media_type="application/xml; charset=utf-8",
+        filename="education.yml",
+    )
 
 
 app.include_router(admin.router)
