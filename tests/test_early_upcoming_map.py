@@ -1,4 +1,4 @@
-"""Staff preview: уроки 1–8 модуля открыты только в указанном кабинете."""
+"""Staff preview: early-уроки открыты только в указанном кабинете."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from gamification import cabinet_ui
 from lessons.staff_preview import (
     is_staff_preview_draft_lesson,
     is_staff_preview_token,
+    list_staff_preview_catalog,
     staff_preview_lesson_slug,
 )
 
@@ -39,7 +40,8 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
             staff_preview=True,
             child_id="11111111-1111-1111-1111-111111111111",
         )
-        program_map = cabinet_ui._early_letters_program_map(rows)
+        stage1 = [r for r in rows if str(r.get("stage") or "stage-1") == "stage-1"][:8]
+        program_map = cabinet_ui._early_letters_program_map(stage1)
         self.assertIsNotNone(program_map)
         assert program_map is not None
         self.assertIn("scene-map-sounds-final.png", program_map["image_url"])
@@ -56,18 +58,28 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][1]["tip"], "above")
         self.assertEqual(program_map["pins"][7]["tip"], "above")
 
-    def test_upcoming_opens_all_eight_for_staff_preview(self):
+    def test_upcoming_opens_full_alphabet_catalog_for_staff_preview(self):
         rows = cabinet_ui._upcoming_module_lessons(
             group_code="early-letters",
             assets_base="https://example.test",
             staff_preview=True,
             child_id="11111111-1111-1111-1111-111111111111",
         )
-        self.assertEqual(len(rows), 8)
+        catalog = list_staff_preview_catalog("early-letters")
+        self.assertGreaterEqual(len(catalog), 44)
+        self.assertEqual(len(rows), len(catalog))
         self.assertTrue(all(row["unlocked"] for row in rows))
         self.assertTrue(all(row["url"] for row in rows))
         self.assertIn("early-letters-self_paced-stage-1-lesson-01", rows[0]["url"])
-        self.assertIn("early-letters-self_paced-stage-1-lesson-08", rows[7]["url"])
+        self.assertTrue(
+            any("stage-1-lesson-08" in (row.get("url") or "") for row in rows)
+        )
+        self.assertTrue(
+            any("stage-2-lesson-01" in (row.get("url") or "") for row in rows)
+        )
+        self.assertTrue(
+            any("stage-4-lesson-14" in (row.get("url") or "") for row in rows)
+        )
 
     def test_staff_preview_helpers(self):
         token = "rPUXWKEkXj21YesZFgR3Zx9bX73GP3Dq-SSRauOZVPg"
@@ -76,6 +88,10 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(
             staff_preview_lesson_slug("early-stories", 2),
             "early-stories-self_paced-stage-1-lesson-02",
+        )
+        self.assertEqual(
+            staff_preview_lesson_slug("early-letters", 3, stage="stage-2"),
+            "early-letters-self_paced-stage-2-lesson-03",
         )
         self.assertTrue(
             is_staff_preview_draft_lesson(
@@ -92,15 +108,17 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
                     "group_code": "early-letters",
                     "tariff_code": "self_paced",
                     "lesson_number": 8,
+                    "stage": "stage-1",
                 }
             )
         )
-        self.assertFalse(
+        self.assertTrue(
             is_staff_preview_draft_lesson(
                 {
                     "group_code": "early-letters",
                     "tariff_code": "self_paced",
-                    "lesson_number": 9,
+                    "lesson_number": 10,
+                    "stage": "stage-2",
                 }
             )
         )

@@ -674,16 +674,69 @@ def _upcoming_module_lessons(
     staff_preview: bool = False,
     child_id: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Плейсхолдеры уроков 1–8 модуля: для всех «скоро», без перехода.
+    """Плейсхолдеры уроков модуля: для всех «скоро», без перехода.
 
-    В staff-кабинете уроки 1–8 получают ссылку на черновик.
+    В staff-кабинете:
+    - «Буквы оживают» — весь каталог self_paced (модули 1–4);
+    - «Первые истории» — уроки 1–8 модуля 1.
     """
-    from lessons.staff_preview import STAFF_PREVIEW_LESSON_MAX, staff_preview_lesson_slug
+    from lessons.staff_preview import (
+        STAFF_PREVIEW_LESSON_MAX,
+        list_staff_preview_catalog,
+        staff_preview_lesson_slug,
+    )
 
-    titles = EARLY_MODULE_LESSON_TITLES.get(group_code) or [f"Урок {i}" for i in range(1, 9)]
     fallback_cover = _course_cover_url(assets_base, group_code)
     buy_url = _buy_url_for_group(group_code)
     rows: list[dict[str, Any]] = []
+
+    if staff_preview and child_id and group_code == "early-letters":
+        from api.lesson_signing import build_lesson_url
+
+        for les in list_staff_preview_catalog(group_code):
+            try:
+                idx = int(les.get("lesson_number") or les.get("module_week") or 0)
+            except (TypeError, ValueError):
+                idx = 0
+            stage = str(les.get("stage") or "stage-1")
+            stage_label = str(les.get("stage_label") or "")
+            title = str(les.get("title") or f"Урок {idx}")
+            if stage != "stage-1" and stage_label:
+                short = stage_label.split("·")[0].strip()
+                title = f"{short}: {title}"
+            date_label = (
+                EARLY_MODULE_OPEN_LABELS[idx - 1]
+                if stage == "stage-1" and 1 <= idx <= len(EARLY_MODULE_OPEN_LABELS)
+                else (stage_label or "черновик")
+            )
+            slug = str(les.get("slug") or staff_preview_lesson_slug(group_code, idx, stage=stage))
+            url = build_lesson_url(child_id, slug)
+            cover = (
+                _early_letters_where_map_url(idx)
+                if stage == "stage-1" and 1 <= idx <= 8
+                else fallback_cover
+            )
+            rows.append(
+                {
+                    "week_in_stage": idx,
+                    "title": title,
+                    "cover_url": cover,
+                    "cover_state": "soon",
+                    "opens_on_label": date_label,
+                    "overlay_label": "тест",
+                    "preview_open": True,
+                    "buy_url": buy_url,
+                    "group_code": group_code,
+                    "stage": stage,
+                    "stage_label": stage_label,
+                    "slug": slug,
+                    "url": url,
+                    "unlocked": True,
+                }
+            )
+        return rows
+
+    titles = EARLY_MODULE_LESSON_TITLES.get(group_code) or [f"Урок {i}" for i in range(1, 9)]
     for idx, title in enumerate(titles, start=1):
         date_label = (
             EARLY_MODULE_OPEN_LABELS[idx - 1]
@@ -710,6 +763,7 @@ def _upcoming_module_lessons(
                 "preview_open": bool(url),
                 "buy_url": buy_url,
                 "group_code": group_code,
+                "stage": "stage-1",
                 "url": url,
                 "unlocked": bool(url),
             }
@@ -1814,11 +1868,14 @@ def _build_track_section(
             child_id=child_id,
         )
         stories_title = f"Дальше в программе · {track.get('group_label') or ''}".strip(" ·")
-        stories_subtitle = (
-            "Режим проверки: уроки 1–8 открыты только в этом кабинете."
-            if staff_preview
-            else "8 уроков модуля — по вторникам и четвергам с 1 сентября"
-        )
+        if staff_preview and group_code == "early-letters":
+            stories_subtitle = (
+                "Режим проверки: все уроки модулей 1–4 открыты только в этом кабинете."
+            )
+        elif staff_preview:
+            stories_subtitle = "Режим проверки: уроки 1–8 открыты только в этом кабинете."
+        else:
+            stories_subtitle = "8 уроков модуля — по вторникам и четвергам с 1 сентября"
     else:
         story_stages = _story_stages(lesson_links, claimed_slugs=claimed)
         upcoming_lessons = []
@@ -1828,9 +1885,14 @@ def _build_track_section(
             else f"Мои сказки · {track.get('group_label') or ''}".strip(" ·")
         )
         stories_subtitle = None
+    map_lessons = [
+        row
+        for row in (upcoming_lessons or [])
+        if str(row.get("stage") or "stage-1") == "stage-1"
+    ][:8]
     program_map = (
-        _early_letters_program_map(upcoming_lessons)
-        if group_code == "early-letters" and upcoming_lessons
+        _early_letters_program_map(map_lessons)
+        if group_code == "early-letters" and map_lessons
         else None
     )
     treasury = _treasury_for_track(claims, lesson_links)
