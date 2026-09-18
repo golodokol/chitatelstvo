@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260918a">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260918b">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -425,7 +425,7 @@
                   <div class="chit-story-card__placeholder" aria-hidden="true"></div>
                   {% endif %}
                   <div class="chit-story-card__overlay">
-                    <span class="chit-story-card__overlay-label">{{ tale.opens_on_label or 'Скоро' }}</span>
+                    <span class="chit-story-card__overlay-label">{{ tale.overlay_label or 'скоро' }}</span>
                   </div>
                 </div>
                 <div class="chit-story-card__meta">

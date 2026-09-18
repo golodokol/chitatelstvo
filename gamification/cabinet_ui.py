@@ -571,7 +571,7 @@ def _early_letters_program_map(lessons: list[dict[str, Any]]) -> dict[str, Any] 
                 "label": (
                     lesson.get("overlay_label")
                     if unlocked
-                    else (lesson.get("opens_on_label") or "Скоро")
+                    else (lesson.get("overlay_label") or "скоро")
                 ),
                 "url": lesson.get("url"),
                 "buy_url": lesson.get("buy_url"),
@@ -1926,7 +1926,7 @@ def _build_track_section(
         elif staff_preview:
             stories_subtitle = "Режим проверки: уроки 1–8 открыты только в этом кабинете."
         else:
-            stories_subtitle = "8 уроков модуля — по вторникам и четвергам с 1 сентября"
+            stories_subtitle = "8 уроков модуля 1 · дальше — модули 2–4"
     else:
         story_stages = _story_stages(lesson_links, claimed_slugs=claimed)
         upcoming_lessons = []

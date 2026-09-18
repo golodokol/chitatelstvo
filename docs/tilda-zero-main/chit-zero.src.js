@@ -731,6 +731,18 @@ if (faqList) {
     'rus-10-12': { single: 37, self_paced: 38, with_teacher: 39, label: 'Русские сказки · 10–12 лет' }
   };
   var NO_WITH_TEACHER_GROUPS = ['grade-1', 'grade-2', 'grade-3', 'grade-4', 'extra-6-8', 'extra-9-11'];
+  /** Ранние курсы: «С преподавателем» не продаём — только заявка «узнать о начале». */
+  var EARLY_TEACHER_WAITLIST_GROUPS = ['early-letters', 'early-stories'];
+  /** Модули «Буквы оживают» по этапам (тот же товар 1 990 ₽, разный module_id). */
+  var EARLY_LETTERS_STAGE_MODULES = { '1': 21, '2': 41, '3': 42, '4': 43 };
+  /** Какие модули уже можно купить отдельно (остальные — «скоро»). */
+  var EARLY_LETTERS_OPEN_STAGES = { '1': true };
+  var EARLY_LETTERS_STAGE_TITLES = {
+    '1': 'Модуль 1 · старт',
+    '2': 'Модуль 2 · скоро',
+    '3': 'Модуль 3 · скоро',
+    '4': 'Модуль 4 · скоро'
+  };
   var COHORT_GROUPS = ['wind', 'garden', 'rus-6-9', 'rus-10-12'];
   var TARIFF_LABEL = { single: 'Разовое', self_paced: 'Индивидуальное', with_teacher: 'С преподавателем', trial: 'Пробный', alphabet_pack: 'Весь алфавит' };
   var TARIFF_PRICE = { single: 799, self_paced: 1990, with_teacher: 4990, trial: 0, alphabet_pack: 5990 };
@@ -923,6 +935,11 @@ if (faqList) {
     return !!(g && g.indexOf('early-') === 0);
   }
 
+  function isEarlyTeacherWaitlist(group) {
+    var g = group || state.group;
+    return !!(g && EARLY_TEACHER_WAITLIST_GROUPS.indexOf(g) >= 0);
+  }
+
   function isCohortGroup(group) {
     var g = group || state.group;
     return !!(g && COHORT_GROUPS.indexOf(g) >= 0);
@@ -935,10 +952,28 @@ if (faqList) {
   function refreshTariffAvailability() {
     var teachCard = document.querySelector('#chit-tariffs [data-tariff="with_teacher"]');
     if (!teachCard) return;
-    var blocked = state.group && NO_WITH_TEACHER_GROUPS.indexOf(state.group) >= 0;
-    teachCard.classList.toggle('is-disabled', blocked);
-    teachCard.setAttribute('aria-disabled', blocked ? 'true' : 'false');
-    if (blocked && state.tariff === 'with_teacher') {
+    var gradeBlocked = state.group && NO_WITH_TEACHER_GROUPS.indexOf(state.group) >= 0;
+    var earlyWait = isEarlyTeacherWaitlist(state.group);
+    teachCard.classList.toggle('is-disabled', !!gradeBlocked && !earlyWait);
+    teachCard.classList.toggle('is-waitlist', !!earlyWait);
+    teachCard.setAttribute('aria-disabled', gradeBlocked && !earlyWait ? 'true' : 'false');
+    var tag = teachCard.querySelector('.pick-card__tag');
+    var price = teachCard.querySelector('.pick-card__price');
+    var hint = teachCard.querySelector('.pick-card__hint');
+    if (earlyWait) {
+      if (tag) tag.textContent = 'Живые встречи';
+      if (price) price.textContent = 'Скоро';
+      if (hint) hint.textContent = 'Узнать о начале занятий · оставить email';
+    } else {
+      if (tag) tag.textContent = 'С поддержкой';
+      if (price) price.textContent = '4 990 ₽';
+      if (hint) {
+        hint.textContent = isEarlyGroup()
+          ? '8 уроков · 4 990 ₽ + 4 встречи'
+          : (isCohortGroup() ? '4 урока · 4 990 ₽ + встречи' : '4 сказки / 8 уроков + встречи');
+      }
+    }
+    if (gradeBlocked && !earlyWait && state.tariff === 'with_teacher') {
       state.tariff = 'self_paced';
       var selfCard = document.querySelector('#chit-tariffs [data-tariff="self_paced"]');
       if (selfCard) {
@@ -1079,6 +1114,13 @@ if (faqList) {
 
   function updatePayButton() {
     if (!payBtn) return;
+    if (isEarlyTeacherWaitlist() && state.tariff === 'with_teacher') {
+      payBtn.disabled = false;
+      payBtn.textContent = 'Узнать о начале занятий';
+      promoQuotePrice = null;
+      promoQuotePending = false;
+      return;
+    }
     var ready = isTariffReadyForPay();
     var base = ready && state.tariff ? TARIFF_PRICE[state.tariff] : 0;
     if (ready && base) {
@@ -1934,7 +1976,15 @@ if (faqList) {
   }
 
   function syncHidden() {
-    hidMid.value = (state.group && state.tariff && MODULES[state.group]) ? MODULES[state.group][state.tariff] : '';
+    var mid = '';
+    if (state.group && state.tariff && MODULES[state.group]) {
+      if (state.group === 'early-letters' && state.tariff === 'self_paced' && state.stage) {
+        mid = String(EARLY_LETTERS_STAGE_MODULES[state.stage] || EARLY_LETTERS_STAGE_MODULES['1']);
+      } else {
+        mid = MODULES[state.group][state.tariff] || '';
+      }
+    }
+    hidMid.value = mid;
     hidStage.value = state.stage || '';
     hidTale.value = state.tariff === 'single' && state.taleNum ? String(state.taleNum) : '';
     syncToTildaForm();
@@ -1947,6 +1997,13 @@ if (faqList) {
     }
     elSummary.classList.remove('is-empty');
     var html = '<strong>' + MODULES[state.group].label + '</strong> · ' + TARIFF_LABEL[state.tariff];
+    if (isEarlyTeacherWaitlist() && state.tariff === 'with_teacher') {
+      html += '<br>Живые встречи скоро — оставьте email, напишем о старте набора';
+      elSummary.innerHTML = html;
+      updatePayButton();
+      schedulePromoQuoteRefresh();
+      return;
+    }
     if (state.tariff === 'single') {
       if (state.stage && state.taleNum) {
         html += '<br>' + stageLabelFor(state.stage) + ' · ' + TALES[state.group][state.stage][state.taleNum - 1];
@@ -1967,8 +2024,13 @@ if (faqList) {
       html += '<br>' + formatPrice(TARIFF_PRICE.alphabet_pack) + ' · весь путь';
     } else if (state.stage) {
       if (isEarlyGroup()) {
-        html += '<br>' + stageLabelFor(state.stage);
-        if (state.tariff === 'with_teacher') html += ' + живые встречи';
+        if (state.group === 'early-letters' && state.tariff === 'self_paced') {
+          html += '<br>' + (EARLY_LETTERS_STAGE_TITLES[state.stage] || stageLabelFor(state.stage));
+          html += '<br>' + formatPrice(TARIFF_PRICE.self_paced) + ' · один модуль';
+        } else {
+          html += '<br>' + stageLabelFor(state.stage);
+          if (state.tariff === 'with_teacher') html += ' + живые встречи';
+        }
       } else if (isCohortGroup()) {
         html += '<br>' + stageLabelFor(state.stage);
         if (state.tariff === 'with_teacher') html += ' + встречи';
@@ -2163,11 +2225,14 @@ if (faqList) {
     var cohort = isCohortGroup();
     var letters = state.group === 'early-letters';
     var pack = state.tariff === 'alphabet_pack';
+    var lettersModules = letters && state.tariff === 'self_paced';
+    var earlyWait = isEarlyTeacherWaitlist() && state.tariff === 'with_teacher';
     var root = document.getElementById('chit-main');
     if (root) {
       root.classList.toggle('is-early-course', early);
       root.classList.toggle('is-cohort-course', cohort);
       root.classList.toggle('is-letters-pack', letters);
+      root.classList.toggle('is-early-teacher-waitlist', !!earlyWait);
     }
     var packPick = document.querySelector('#chit-tariffs [data-tariff="alphabet_pack"]');
     if (packPick) {
@@ -2182,22 +2247,30 @@ if (faqList) {
         }
       }
     }
+    refreshLettersModulePills(lettersModules, pack || earlyWait);
     var stage1 = document.querySelector('#chit-stages [data-stage="1"]');
     var stage2 = document.querySelector('#chit-stages [data-stage="2"]');
     var stageRow = document.getElementById('chit-stages');
-    if (stage1) {
+    if (stage1 && !lettersModules) {
       stage1.textContent = early ? 'Модуль 1 · 8 уроков' : (cohort ? 'Модуль · 4 урока' : 'Блок 1 · сказки 1–4');
     }
-    if (stage2) {
-      stage2.hidden = early || cohort || pack;
-      stage2.style.setProperty('display', (early || cohort || pack) ? 'none' : '', 'important');
+    if (stage2 && !lettersModules) {
+      stage2.hidden = early || cohort || pack || earlyWait;
+      stage2.style.setProperty('display', (early || cohort || pack || earlyWait) ? 'none' : '', 'important');
     }
     if (stageRow) {
-      stageRow.hidden = !!pack;
-      stageRow.style.setProperty('display', pack ? 'none' : '', 'important');
+      stageRow.hidden = !!pack || !!earlyWait;
+      stageRow.style.setProperty('display', (pack || earlyWait) ? 'none' : '', 'important');
     }
     if (pack) {
       state.stage = 'all';
+      state.taleNum = 0;
+    } else if (earlyWait) {
+      state.stage = '1';
+      state.taleNum = 0;
+    } else if (lettersModules) {
+      if (!state.stage || state.stage === 'all') state.stage = '1';
+      if (!EARLY_LETTERS_OPEN_STAGES[state.stage]) state.stage = '1';
       state.taleNum = 0;
     } else if ((early || cohort) && (state.stage !== '1')) {
       state.stage = '1';
@@ -2212,18 +2285,46 @@ if (faqList) {
     }
     var selfHint = document.querySelector('#chit-tariffs [data-tariff="self_paced"] .pick-card__hint');
     if (selfHint) {
-      selfHint.textContent = early ? 'модуль 1 · 8 уроков · 1 990 ₽' : (cohort ? '4 урока · 1 990 ₽, без встреч' : '4 сказки · 1 990 ₽, без встреч');
+      selfHint.textContent = letters
+        ? 'один модуль · 1 990 ₽ (сейчас открыт модуль 1)'
+        : (early ? 'модуль 1 · 8 уроков · 1 990 ₽' : (cohort ? '4 урока · 1 990 ₽, без встреч' : '4 сказки · 1 990 ₽, без встреч'));
     }
     var packHint = document.querySelector('#chit-tariffs [data-tariff="alphabet_pack"] .pick-card__hint');
     if (packHint) {
       packHint.textContent = '4 модуля · 44 урока · 5 990 ₽';
     }
-    var teachHint = document.querySelector('#chit-tariffs [data-tariff="with_teacher"] .pick-card__hint');
-    if (teachHint) {
-      teachHint.textContent = early ? '8 уроков · 4 990 ₽ + 4 встречи' : (cohort ? '4 урока · 4 990 ₽ + встречи' : '4 сказки · 4 990 ₽ + встречи');
-    }
     refreshFareMarketingCopy(state.group);
     refreshTariffAvailability();
+  }
+
+  function refreshLettersModulePills(active, hide) {
+    var stageRow = document.getElementById('chit-stages');
+    if (!stageRow) return;
+    if (!active || hide) {
+      if (stageRow.getAttribute('data-letters-modules') === '1') {
+        stageRow.removeAttribute('data-letters-modules');
+        stageRow.innerHTML =
+          '<button type="button" class="pill is-active" data-stage="1">Блок 1 · сказки 1–4</button>' +
+          '<button type="button" class="pill" data-stage="2">Блок 2 · сказки 5–8</button>';
+      }
+      return;
+    }
+    var html = '';
+    ['1', '2', '3', '4'].forEach(function(stage) {
+      var open = !!EARLY_LETTERS_OPEN_STAGES[stage];
+      var title = EARLY_LETTERS_STAGE_TITLES[stage] || ('Модуль ' + stage);
+      html +=
+        '<button type="button" class="pill' +
+        (state.stage === stage ? ' is-active' : '') +
+        (open ? '' : ' is-disabled') +
+        '" data-stage="' + stage + '"' +
+        (open ? '' : ' disabled aria-disabled="true" title="Модуль скоро откроется"') +
+        '>' + title + '</button>';
+    });
+    stageRow.setAttribute('data-letters-modules', '1');
+    stageRow.innerHTML = html;
+    stageRow.hidden = false;
+    stageRow.style.setProperty('display', '', 'important');
   }
 
   function refreshStageAvailability() {
@@ -2328,7 +2429,17 @@ if (faqList) {
       alert('На тарифе «С преподавателем» блок 1 сейчас недоступен. Выберите блок 2.');
       return;
     }
-    state.stage = btn.getAttribute('data-stage'); state.taleNum = 0;
+    var nextStage = btn.getAttribute('data-stage');
+    if (
+      state.group === 'early-letters' &&
+      state.tariff === 'self_paced' &&
+      nextStage &&
+      !EARLY_LETTERS_OPEN_STAGES[nextStage]
+    ) {
+      alert('Этот модуль скоро откроется. Сейчас можно купить модуль 1 или весь алфавит.');
+      return;
+    }
+    state.stage = nextStage; state.taleNum = 0;
     if (state.tariff === 'single') state.taleNum = 1;
     document.querySelectorAll('#chit-stages .pill').forEach(function(p) { p.classList.toggle('is-active', p === btn); });
     renderTales(); syncHidden();
@@ -2336,6 +2447,19 @@ if (faqList) {
 
   if (payBtn) {
     payBtn.addEventListener('click', function() {
+      if (isEarlyTeacherWaitlist() && state.tariff === 'with_teacher') {
+        try {
+          sessionStorage.setItem('chit_lead_course', JSON.stringify({
+            title: MODULES[state.group] ? MODULES[state.group].label : '',
+            meta: 'живой набор · скоро',
+            tariff: 'with_teacher',
+            group: state.group
+          }));
+        } catch (err) {}
+        var lead = document.getElementById('lead');
+        if (lead) lead.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
       openCart(state.tariff);
     });
   }
@@ -2428,10 +2552,20 @@ if (faqList) {
       if (!fareTrack) return;
       var blocked = ctx.group && NO_WITH_TEACHER_GROUPS.indexOf(ctx.group) >= 0;
       var letters = ctx.group === 'early-letters';
+      var earlyWait = isEarlyTeacherWaitlist(ctx.group);
       fareTrack.querySelectorAll('[data-fare="with_teacher"]').forEach(function(card) {
-        card.classList.toggle('is-disabled', blocked);
-        card.disabled = blocked;
-        card.setAttribute('aria-disabled', blocked ? 'true' : 'false');
+        card.classList.toggle('is-disabled', blocked && !earlyWait);
+        card.classList.toggle('is-waitlist', !!earlyWait);
+        card.disabled = blocked && !earlyWait;
+        card.setAttribute('aria-disabled', blocked && !earlyWait ? 'true' : 'false');
+        if (earlyWait) {
+          var price = card.querySelector('.fare-card__price');
+          var delta = card.querySelector('.fare-card__delta');
+          var sub = card.querySelector('.fare-card__sub');
+          if (price) price.textContent = 'Скоро';
+          if (delta) delta.textContent = 'живой набор ещё готовим';
+          if (sub) sub.textContent = 'оставить email — напишем о старте';
+        }
       });
       fareTrack.querySelectorAll('[data-fare="alphabet_pack"]').forEach(function(card) {
         card.hidden = !letters;
@@ -2444,7 +2578,7 @@ if (faqList) {
         var badge = selfCard.querySelector('.fare-card__badge');
         if (badge) badge.hidden = !!letters;
       }
-      if (blocked && ctx.tariff === 'with_teacher') setModalFare('self_paced');
+      if (blocked && !earlyWait && ctx.tariff === 'with_teacher') setModalFare('self_paced');
       if (!letters && ctx.tariff === 'alphabet_pack') setModalFare('self_paced');
       if (letters && ctx.tariff === 'self_paced') {
         /* keep self_paced as default; pack is optional */
@@ -2479,7 +2613,11 @@ if (faqList) {
           : 'Для этой программы пока заявка — оплата откроется после старта набора';
       }
       if (fareContinueBtn) {
-        fareContinueBtn.textContent = ctx.enroll === 'pay' ? 'Продолжить запись' : 'Оставить заявку';
+        if (ctx.enroll === 'pay' && ctx.tariff === 'with_teacher' && isEarlyTeacherWaitlist(ctx.group)) {
+          fareContinueBtn.textContent = 'Узнать о начале занятий';
+        } else {
+          fareContinueBtn.textContent = ctx.enroll === 'pay' ? 'Продолжить запись' : 'Оставить заявку';
+        }
       }
       fareModal.classList.add('is-open');
       fareModal.setAttribute('aria-hidden', 'false');
@@ -2495,6 +2633,14 @@ if (faqList) {
 
     function continueFromFareModal() {
       closeFareModal();
+      if (ctx.tariff === 'with_teacher' && isEarlyTeacherWaitlist(ctx.group)) {
+        var waitCard = document.createElement('div');
+        waitCard.setAttribute('data-course-title', ctx.title);
+        waitCard.setAttribute('data-course-meta', ctx.meta);
+        waitCard.setAttribute('data-group', ctx.group);
+        startLeadFromCard(waitCard, 'with_teacher');
+        return;
+      }
       if (ctx.enroll === 'pay' && ctx.group) {
         setCourseLock(ctx.title, ctx.meta, true);
         applyCourseGroup(ctx.group);
@@ -2689,6 +2835,12 @@ if (faqList) {
     if (state.tariff === 'alphabet_pack') {
       state.stage = 'all';
       hidStage.value = 'all';
+    }
+    if (isEarlyTeacherWaitlist() && state.tariff === 'with_teacher') {
+      alert('Живые встречи для этого курса скоро. Оставьте email в форме ниже — напишем о старте.');
+      var leadBox = document.getElementById('lead');
+      if (leadBox) leadBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return false;
     }
     if (state.tariff !== 'single' && state.tariff !== 'alphabet_pack' && !hidStage.value) { alert('Выберите дату старта.'); elDateBox.classList.add('is-visible'); return false; }
     var parentName = document.querySelector('#chit-main [name="parent_name"]');

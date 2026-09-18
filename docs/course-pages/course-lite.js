@@ -81,8 +81,11 @@
   var tariffsHref = hasTariffsBlock ? '#tariffs' : enroll;
 
   function pricingNote() {
+    if (group === 'early-letters') {
+      return 'Разовое — 799 ₽ · один модуль — 1 990 ₽ (сейчас открыт модуль 1) · весь алфавит — 5 990 ₽.\nЖивые встречи с преподавателем скоро — можно оставить email на главной.';
+    }
     if (isEarly) {
-      return 'Разовое — 799 ₽ за 1 урок · самостоятельное прохождение — 1 990 ₽ за 8 уроков модуля.\nС преподавателем — 4 990 ₽ (8 уроков + 4 встречи). Оплата — на главной.';
+      return 'Разовое — 799 ₽ за 1 урок · самостоятельное прохождение — 1 990 ₽ за 8 уроков модуля.\nЖивые встречи с преподавателем скоро — можно оставить email на главной.';
     }
     var vol = '4 урока';
     return 'Разовое — 799 ₽ · самостоятельное прохождение курса — 1 990 ₽ за ' + vol + '.\nС преподавателем — 4 990 ₽. Оплата и запись — на главной.';
@@ -91,9 +94,14 @@
   function earlyFareCardsHtml() {
     var isLetters = group === 'early-letters';
     function card(opts) {
+      var href = opts.waitlist
+        ? 'https://chitatelstvo.ru/#lead'
+        : enroll;
+      var cta = opts.cta || (opts.waitlist ? 'Узнать о начале' : 'Записаться');
       return (
-        '<article class="ccl-fare' + (opts.rec ? ' ccl-fare--rec' : '') + '">' +
+        '<article class="ccl-fare' + (opts.rec ? ' ccl-fare--rec' : '') + (opts.waitlist ? ' ccl-fare--waitlist' : '') + '">' +
           (opts.rec ? '<span class="ccl-fare__badge">Рекомендуем</span>' : '') +
+          (opts.waitlist ? '<span class="ccl-fare__badge ccl-fare__badge--soft">Скоро</span>' : '') +
           '<h3 class="ccl-fare__name">' + esc(opts.name) + '</h3>' +
           '<p class="ccl-fare__price">' + esc(opts.price) + '</p>' +
           (opts.delta ? '<p class="ccl-fare__delta">' + esc(opts.delta) + '</p>' : '') +
@@ -103,8 +111,10 @@
               return '<li class="' + (f.yes ? 'is-yes' : 'is-no') + '">' + esc(f.text) + '</li>';
             }).join('') +
           '</ul>' +
-          '<a class="ccl-fare__cta" href="' + esc(enroll) + '" data-enroll-tariff="' + esc(opts.tariff) + '">' +
-            esc(opts.cta || 'Записаться') +
+          '<a class="ccl-fare__cta" href="' + esc(href) + '"' +
+            (opts.waitlist ? ' data-waitlist="1"' : ' data-enroll-tariff="' + esc(opts.tariff) + '"') +
+          '>' +
+            esc(cta) +
           '</a>' +
         '</article>'
       );
@@ -159,15 +169,17 @@
       card({
         tariff: 'with_teacher',
         name: 'С преподавателем',
-        price: '4 990 ₽',
-        delta: '4 990 ₽ за модуль',
-        sub: 'модуль + 4 встречи',
+        price: 'Скоро',
+        delta: 'живой набор ещё готовим',
+        sub: 'оставить email — напишем о старте',
+        waitlist: true,
+        cta: 'Узнать о начале',
         feats: [
           { yes: true, text: 'Уроки модуля на платформе' },
           { yes: true, text: 'Квест и задания' },
           { yes: true, text: 'Личная страница прогресса' },
           { yes: true, text: 'Модуль целиком' },
-          { yes: true, text: 'Живые встречи' }
+          { yes: true, text: 'Живые встречи — когда откроем набор' }
         ]
       })
     );
@@ -669,6 +681,18 @@
   root.querySelectorAll('a[href="' + D.MAIN_URL + '"]').forEach(function (a) {
     a.addEventListener('click', function () {
       rememberEnroll(a.getAttribute('data-enroll-tariff') || '');
+    });
+  });
+  root.querySelectorAll('a[data-waitlist]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      try {
+        sessionStorage.setItem('chit_lead_course', JSON.stringify({
+          title: course.h1 || '',
+          meta: 'живой набор · скоро',
+          tariff: 'with_teacher',
+          group: group
+        }));
+      } catch (err) {}
     });
   });
 
