@@ -58,6 +58,43 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][1]["tip"], "above")
         self.assertEqual(program_map["pins"][7]["tip"], "above")
 
+    def test_track_section_keeps_map_pins_without_module1_cards(self):
+        track = {
+            "group_code": "early-letters",
+            "group_label": "Буквы оживают",
+            "tariff_code": "trial",
+            "module_id": 20,
+            "module_title": "Модуль 1",
+            "lesson_links": [
+                {
+                    "slug": f"early-letters-self_paced-stage-1-lesson-{i:02d}",
+                    "title": f"Урок {i}",
+                    "group_code": "early-letters",
+                    "tariff_code": "trial",
+                    "url": f"/lesson/{i}",
+                    "week_in_stage": i,
+                    "stage": "stage-1",
+                }
+                for i in range(1, 9)
+            ],
+        }
+        cab = cabinet_ui._build_track_section(
+            track=track,
+            events=[],
+            claims=[],
+            points=0,
+            assets_base="https://example.test",
+            cabinet_mode="trial_early",
+            staff_preview=False,
+            child_id=None,
+        )
+        self.assertIsNotNone(cab.get("program_map"))
+        self.assertEqual(len(cab["program_map"]["pins"]), 8)
+        upcoming = cab.get("upcoming_lessons") or []
+        self.assertEqual(len(upcoming), 3)
+        self.assertTrue(all(str(r.get("stage")) != "stage-1" for r in upcoming))
+        self.assertTrue(all(r.get("inactive") for r in upcoming))
+
     def test_upcoming_teaser_includes_locked_modules_2_to_4(self):
         rows = cabinet_ui._upcoming_module_lessons(
             group_code="early-letters",

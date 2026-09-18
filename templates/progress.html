@@ -340,7 +340,7 @@
         {% endmacro %}
 
         {% macro render_upcoming_lessons(track) %}
-        {% if track.upcoming_lessons %}
+        {% if track.upcoming_lessons or track.program_map %}
         <section class="chit-panel chit-panel--stories chit-panel--upcoming{% if track.program_map %} chit-panel--program-map{% endif %}">
           <h2 class="chit-section-title">{{ track.stories_title or ('Дальше в программе · ' ~ track.group_label) }}</h2>
           {% if track.stories_subtitle %}
@@ -376,6 +376,7 @@
             </ul>
           </div>
           {% endif %}
+          {% if track.upcoming_lessons %}
           <div class="chit-story-grid">
             {% for tale in track.upcoming_lessons %}
             {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
@@ -438,6 +439,7 @@
             </article>
             {% endfor %}
           </div>
+          {% endif %}
         </section>
         {% endif %}
         {% endmacro %}

@@ -1946,6 +1946,13 @@ def _build_track_section(
         if group_code == "early-letters" and map_lessons
         else None
     )
+    # Карта уже показывает уроки 1–8 — в сетке оставляем только модули 2–4.
+    if program_map:
+        upcoming_lessons = [
+            row
+            for row in (upcoming_lessons or [])
+            if str(row.get("stage") or "stage-1") != "stage-1"
+        ]
     treasury = _treasury_for_track(claims, lesson_links)
     weekly_cards = _weekly_lesson_cards(weekly_source, claimed_slugs=claimed)
     next_offer = None
