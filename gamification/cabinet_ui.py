@@ -546,10 +546,15 @@ def _early_letters_locked_module_cards(buy_url: str | None) -> list[dict[str, An
     return rows
 
 
-def _early_letters_program_map(lessons: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Одна карта + пины уроков; для сетки карточек не используется."""
+def _early_letters_program_map(
+    lessons: list[dict[str, Any]],
+    *,
+    completed_slugs: set[str] | None = None,
+) -> dict[str, Any] | None:
+    """Одна карта + пины уроков; яркие только после прохождения."""
     if not lessons:
         return None
+    done_slugs = completed_slugs or set()
     pins: list[dict[str, Any]] = []
     for lesson in lessons:
         try:
@@ -561,6 +566,17 @@ def _early_letters_program_map(lessons: list[dict[str, Any]]) -> dict[str, Any] 
         x, y = EARLY_LETTERS_MAP_PADS[n - 1]
         tip = EARLY_LETTERS_MAP_TIP[n - 1]
         unlocked = bool(lesson.get("unlocked") and lesson.get("url"))
+        slug = canonical_tale_slug(lesson.get("slug") or lesson.get("tale_slug") or "")
+        done = bool(slug and slug in done_slugs) or bool(lesson.get("completed"))
+        if done:
+            state = "done"
+            label = "пройден"
+        elif unlocked:
+            state = "open"
+            label = "пройти"
+        else:
+            state = "soon"
+            label = lesson.get("overlay_label") or "скоро"
         pins.append(
             {
                 "n": n,
@@ -568,15 +584,12 @@ def _early_letters_program_map(lessons: list[dict[str, Any]]) -> dict[str, Any] 
                 "y": round(y * 100, 2),
                 "tip": tip,
                 "title": lesson.get("title") or f"Урок {n}",
-                "label": (
-                    lesson.get("overlay_label")
-                    if unlocked
-                    else (lesson.get("overlay_label") or "скоро")
-                ),
+                "label": label,
                 "url": lesson.get("url"),
                 "buy_url": lesson.get("buy_url"),
                 "unlocked": unlocked,
-                "state": "open" if unlocked else "soon",
+                "completed": done,
+                "state": state,
             }
         )
     if not pins:
@@ -769,7 +782,7 @@ def _upcoming_module_lessons(
                     "cover_url": cover,
                     "cover_state": "soon",
                     "opens_on_label": date_label,
-                    "overlay_label": "тест",
+                    "overlay_label": "пройти",
                     "preview_open": True,
                     "buy_url": buy_url,
                     "group_code": group_code,
@@ -807,7 +820,7 @@ def _upcoming_module_lessons(
                 "cover_url": cover,
                 "cover_state": "soon",
                 "opens_on_label": date_label,
-                "overlay_label": "скоро" if not url else "тест",
+                "overlay_label": "скоро" if not url else "пройти",
                 "preview_open": bool(url),
                 "buy_url": buy_url,
                 "group_code": group_code,
@@ -1942,7 +1955,10 @@ def _build_track_section(
         if str(row.get("stage") or "stage-1") == "stage-1"
     ][:8]
     program_map = (
-        _early_letters_program_map(map_lessons)
+        _early_letters_program_map(
+            map_lessons,
+            completed_slugs=_completed_lesson_slugs(events) | claimed,
+        )
         if group_code == "early-letters" and map_lessons
         else None
     )

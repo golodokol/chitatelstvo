@@ -51,12 +51,30 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][0]["y"], 56.81)
         self.assertEqual(program_map["pins"][0]["tip"], "right")
         self.assertEqual(program_map["pins"][0]["state"], "open")
+        self.assertEqual(program_map["pins"][0]["label"], "пройти")
         self.assertEqual(program_map["pins"][4]["state"], "open")
         self.assertEqual(program_map["pins"][7]["state"], "open")
+        self.assertTrue(all(p["state"] != "done" for p in program_map["pins"]))
         self.assertEqual(program_map["pins"][1]["x"], 20.7)
         self.assertEqual(program_map["pins"][1]["y"], 36.94)
         self.assertEqual(program_map["pins"][1]["tip"], "above")
         self.assertEqual(program_map["pins"][7]["tip"], "above")
+
+    def test_program_map_marks_completed_pins_as_done(self):
+        rows = cabinet_ui._upcoming_module_lessons(
+            group_code="early-letters",
+            assets_base="https://example.test",
+            staff_preview=True,
+            child_id="11111111-1111-1111-1111-111111111111",
+        )
+        stage1 = [r for r in rows if str(r.get("stage") or "stage-1") == "stage-1"][:8]
+        done = {cabinet_ui.canonical_tale_slug(stage1[0]["slug"])}
+        program_map = cabinet_ui._early_letters_program_map(stage1, completed_slugs=done)
+        assert program_map is not None
+        self.assertEqual(program_map["pins"][0]["state"], "done")
+        self.assertEqual(program_map["pins"][0]["label"], "пройден")
+        self.assertEqual(program_map["pins"][1]["state"], "open")
+        self.assertEqual(program_map["pins"][1]["label"], "пройти")
 
     def test_track_section_keeps_map_pins_without_module1_cards(self):
         track = {

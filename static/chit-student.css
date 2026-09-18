@@ -3662,6 +3662,13 @@ a.chit-lesson-companion--link.is-disabled {
 }
 
 .chit-program-map__pin--open .chit-program-map__hit {
+  background: radial-gradient(circle at 35% 30%, #fff6df 0%, #f0d39a 62%, #c98a3c 100%);
+  box-shadow:
+    0 0 0 2px rgba(157, 91, 45, 0.28),
+    0 8px 18px rgba(58, 42, 26, 0.22);
+}
+
+.chit-program-map__pin--done .chit-program-map__hit {
   background: radial-gradient(circle at 35% 30%, #fff9e8 0%, #f5c35a 55%, #e08a1f 100%);
   box-shadow:
     0 0 0 3px rgba(239, 174, 55, 0.55),
