@@ -676,7 +676,7 @@ def _upcoming_module_lessons(
 ) -> list[dict[str, Any]]:
     """Плейсхолдеры уроков 1–8 модуля: для всех «скоро», без перехода.
 
-    В staff-кабинете уроки 1–4 получают ссылку на черновик.
+    В staff-кабинете уроки 1–8 получают ссылку на черновик.
     """
     from lessons.staff_preview import STAFF_PREVIEW_LESSON_MAX, staff_preview_lesson_slug
 
@@ -1815,7 +1815,7 @@ def _build_track_section(
         )
         stories_title = f"Дальше в программе · {track.get('group_label') or ''}".strip(" ·")
         stories_subtitle = (
-            "Режим проверки: уроки 1–4 открыты только в этом кабинете."
+            "Режим проверки: уроки 1–8 открыты только в этом кабинете."
             if staff_preview
             else "8 уроков модуля — по вторникам и четвергам с 1 сентября"
         )

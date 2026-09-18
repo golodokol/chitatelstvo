@@ -91,7 +91,7 @@ VIDEO_UNLOCK_SECONDS = int(os.getenv("VIDEO_UNLOCK_SECONDS", "180"))
 VIDEO_WATCH_THRESHOLD = float(os.getenv("VIDEO_WATCH_THRESHOLD", str(VIDEO_BADGE_THRESHOLD)))
 # Секрет для /test/urok/{secret} — приватная страница теста урока (пусто = выключено)
 TEST_LESSON_SECRET = os.getenv("TEST_LESSON_SECRET", "").strip()
-# Кабинеты, где можно играть черновики уроков 1–4 ранних курсов (токен из /progress/…)
+# Кабинеты, где можно играть черновики уроков 1–8 ранних курсов (токен из /progress/…)
 STAFF_PREVIEW_PROGRESS_TOKENS = frozenset(
     t.strip()
     for t in os.getenv(

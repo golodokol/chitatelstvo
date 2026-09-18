@@ -1,4 +1,4 @@
-"""Staff preview: уроки 1–4 открыты только в указанном кабинете."""
+"""Staff preview: уроки 1–8 модуля открыты только в указанном кабинете."""
 
 from __future__ import annotations
 
@@ -49,13 +49,14 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][0]["y"], 56.81)
         self.assertEqual(program_map["pins"][0]["tip"], "right")
         self.assertEqual(program_map["pins"][0]["state"], "open")
-        self.assertEqual(program_map["pins"][4]["state"], "soon")
+        self.assertEqual(program_map["pins"][4]["state"], "open")
+        self.assertEqual(program_map["pins"][7]["state"], "open")
         self.assertEqual(program_map["pins"][1]["x"], 20.7)
         self.assertEqual(program_map["pins"][1]["y"], 36.94)
         self.assertEqual(program_map["pins"][1]["tip"], "above")
         self.assertEqual(program_map["pins"][7]["tip"], "above")
 
-    def test_upcoming_opens_first_four_for_staff_preview(self):
+    def test_upcoming_opens_all_eight_for_staff_preview(self):
         rows = cabinet_ui._upcoming_module_lessons(
             group_code="early-letters",
             assets_base="https://example.test",
@@ -63,12 +64,10 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
             child_id="11111111-1111-1111-1111-111111111111",
         )
         self.assertEqual(len(rows), 8)
-        self.assertTrue(all(row["unlocked"] for row in rows[:4]))
-        self.assertTrue(all(row["url"] for row in rows[:4]))
-        self.assertTrue(all(row["url"] is None for row in rows[4:]))
-        self.assertTrue(all(row["unlocked"] is False for row in rows[4:]))
+        self.assertTrue(all(row["unlocked"] for row in rows))
+        self.assertTrue(all(row["url"] for row in rows))
         self.assertIn("early-letters-self_paced-stage-1-lesson-01", rows[0]["url"])
-        self.assertIn("early-letters-self_paced-stage-1-lesson-04", rows[3]["url"])
+        self.assertIn("early-letters-self_paced-stage-1-lesson-08", rows[7]["url"])
 
     def test_staff_preview_helpers(self):
         token = "rPUXWKEkXj21YesZFgR3Zx9bX73GP3Dq-SSRauOZVPg"
@@ -84,6 +83,24 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
                     "group_code": "early-letters",
                     "tariff_code": "self_paced",
                     "lesson_number": 3,
+                }
+            )
+        )
+        self.assertTrue(
+            is_staff_preview_draft_lesson(
+                {
+                    "group_code": "early-letters",
+                    "tariff_code": "self_paced",
+                    "lesson_number": 8,
+                }
+            )
+        )
+        self.assertFalse(
+            is_staff_preview_draft_lesson(
+                {
+                    "group_code": "early-letters",
+                    "tariff_code": "self_paced",
+                    "lesson_number": 9,
                 }
             )
         )

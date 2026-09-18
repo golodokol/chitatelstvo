@@ -6,7 +6,8 @@ from typing import Any
 
 from config.settings import STAFF_PREVIEW_PROGRESS_TOKENS
 
-STAFF_PREVIEW_LESSON_MAX = 4
+# Весь модуль 1 (буквы + истории): черновики 1–8 открыты только в staff-кабинете.
+STAFF_PREVIEW_LESSON_MAX = 8
 
 
 def is_staff_preview_token(token: str | None) -> bool:
