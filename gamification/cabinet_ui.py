@@ -520,8 +520,9 @@ def _early_letters_module_soon_url() -> str:
 
 
 def _early_letters_locked_module_cards(buy_url: str | None) -> list[dict[str, Any]]:
-    """Три неактивных окна модулей 2–4 с общей картинкой «скоро»."""
+    """Три окна модулей 2–4 «скоро» — ведут на запись с главной."""
     cover = _early_letters_module_soon_url()
+    enroll_url = "https://chitatelstvo.ru/#programs"
     rows: list[dict[str, Any]] = []
     for mod in EARLY_LETTERS_LOCKED_MODULES:
         rows.append(
@@ -533,7 +534,7 @@ def _early_letters_locked_module_cards(buy_url: str | None) -> list[dict[str, An
                 "opens_on_label": "скоро",
                 "overlay_label": "скоро",
                 "preview_open": False,
-                "buy_url": buy_url,
+                "buy_url": enroll_url,
                 "group_code": "early-letters",
                 "stage": mod["stage"],
                 "stage_label": mod["stage_label"],

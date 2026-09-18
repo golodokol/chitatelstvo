@@ -129,6 +129,9 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertTrue(all(r["url"] is None for r in locked))
         self.assertTrue(all(r["unlocked"] is False for r in locked))
         self.assertTrue(
+            all((r["buy_url"] or "").endswith("#programs") for r in locked)
+        )
+        self.assertTrue(
             all("module-soon-path.jpg" in (r["cover_url"] or "") for r in locked)
         )
 

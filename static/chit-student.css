@@ -3563,6 +3563,13 @@ a.chit-lesson-companion--link.is-disabled {
   gap: 14px;
 }
 
+.chit-story-grid--modules {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 20px;
+  margin-top: 18px;
+  width: 100%;
+}
+
 .chit-story-card { margin: 0; }
 
 .chit-story-card__link {
@@ -3931,16 +3938,21 @@ a.chit-lesson-companion--link.is-disabled {
 
 .chit-story-card--inactive {
   opacity: 0.92;
-  cursor: default;
 }
 
-.chit-story-card--inactive .chit-story-card__link--inactive {
+.chit-story-card--inactive .chit-story-card__link {
   display: block;
   text-decoration: none;
   color: inherit;
-  cursor: default;
-  pointer-events: none;
-  user-select: none;
+}
+
+.chit-story-card--inactive .chit-story-card__link:hover {
+  transform: translateY(-2px);
+}
+
+.chit-story-card--inactive .chit-story-card__link:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
 }
 
 .chit-story-card--inactive .chit-story-card__cover--soon img {
@@ -3951,8 +3963,8 @@ a.chit-lesson-companion--link.is-disabled {
   color: var(--accent);
 }
 
-.chit-panel--upcoming .chit-story-card--inactive .chit-story-card__link--inactive:hover .chit-story-card__buy {
-  color: var(--muted);
+.chit-panel--upcoming .chit-story-card--inactive .chit-story-card__link:hover .chit-story-card__buy {
+  color: var(--accent);
 }
 
 .chit-panel--schedule summary { cursor: pointer; list-style: none; }
@@ -4034,6 +4046,7 @@ a.chit-lesson-companion--link.is-disabled {
     padding-inline: 2px;
   }
   .chit-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chit-story-grid--modules { grid-template-columns: 1fr; }
   .chit-badge-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; }
   .chit-level-step { min-width: 84px; }
   .chit-level-step__img { width: 68px; height: 68px; }

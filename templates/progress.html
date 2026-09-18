@@ -377,7 +377,7 @@
           </div>
           {% endif %}
           {% if track.upcoming_lessons %}
-          <div class="chit-story-grid">
+          <div class="chit-story-grid{% if track.program_map %} chit-story-grid--modules{% endif %}">
             {% for tale in track.upcoming_lessons %}
             {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
             <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}{% if tale.inactive %} chit-story-card--inactive{% endif %}">
@@ -400,7 +400,7 @@
                 </div>
               </a>
               {% elif tale.inactive %}
-              <div class="chit-story-card__link chit-story-card__link--inactive" aria-disabled="true">
+              <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener" aria-label="{{ tale.stage_label or tale.title }} · записаться на программу">
                 <div class="chit-story-card__cover chit-story-card__cover--soon">
                   {% if tale.cover_url %}
                   <img src="{{ tale.cover_url }}" alt="{{ tale.stage_label or tale.title }} · скоро" loading="lazy">
@@ -414,9 +414,9 @@
                 <div class="chit-story-card__meta">
                   <span class="chit-story-card__week">{{ tale.stage_label or 'Модуль' }}</span>
                   <h4 class="chit-story-card__title">{{ tale.title }}</h4>
-                  <span class="chit-story-card__buy chit-story-card__buy--muted">Скоро</span>
+                  <span class="chit-story-card__buy">Записаться</span>
                 </div>
-              </div>
+              </a>
               {% else %}
               <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
                 <div class="chit-story-card__cover chit-story-card__cover--soon{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
