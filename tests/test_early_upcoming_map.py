@@ -22,15 +22,15 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
             group_code="early-letters",
             assets_base="https://example.test",
         )
-        self.assertEqual(len(rows), 8)
-        self.assertTrue(all(row["url"] is None for row in rows))
-        self.assertTrue(all(row["unlocked"] is False for row in rows))
+        self.assertEqual(len(rows), 11)
+        self.assertTrue(all(row["url"] is None for row in rows[:8]))
+        self.assertTrue(all(row["unlocked"] is False for row in rows[:8]))
         self.assertEqual(rows[0]["title"], "Машина на поляне")
         self.assertIn("scene-map-sounds-where-01.png", rows[0]["cover_url"])
         self.assertIn("scene-map-sounds-where-08.png", rows[7]["cover_url"])
         self.assertEqual(
             cabinet_ui._early_letters_where_map_url(3),
-            "/static/early/letters/scene-map-sounds-where-03.png?v=20260909e",
+            "/static/early/letters/scene-map-sounds-where-03.png?v=20260918a",
         )
 
     def test_program_map_uses_single_base_and_eight_pins(self):
@@ -58,27 +58,44 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][1]["tip"], "above")
         self.assertEqual(program_map["pins"][7]["tip"], "above")
 
-    def test_upcoming_opens_full_alphabet_catalog_for_staff_preview(self):
+    def test_upcoming_teaser_includes_locked_modules_2_to_4(self):
+        rows = cabinet_ui._upcoming_module_lessons(
+            group_code="early-letters",
+            assets_base="https://example.test",
+        )
+        self.assertEqual(len(rows), 11)
+        locked = [r for r in rows if r.get("inactive")]
+        self.assertEqual(len(locked), 3)
+        self.assertEqual(
+            [r["stage"] for r in locked],
+            ["stage-2", "stage-3", "stage-4"],
+        )
+        self.assertTrue(all(r["overlay_label"] == "скоро" for r in locked))
+        self.assertTrue(all(r["url"] is None for r in locked))
+        self.assertTrue(all(r["unlocked"] is False for r in locked))
+        self.assertTrue(
+            all("module-soon-path.jpg" in (r["cover_url"] or "") for r in locked)
+        )
+
+    def test_upcoming_opens_module1_and_locks_later_modules_for_staff(self):
         rows = cabinet_ui._upcoming_module_lessons(
             group_code="early-letters",
             assets_base="https://example.test",
             staff_preview=True,
             child_id="11111111-1111-1111-1111-111111111111",
         )
-        catalog = list_staff_preview_catalog("early-letters")
-        self.assertGreaterEqual(len(catalog), 44)
-        self.assertEqual(len(rows), len(catalog))
-        self.assertTrue(all(row["unlocked"] for row in rows))
-        self.assertTrue(all(row["url"] for row in rows))
-        self.assertIn("early-letters-self_paced-stage-1-lesson-01", rows[0]["url"])
+        stage1 = [r for r in rows if str(r.get("stage") or "stage-1") == "stage-1"]
+        locked = [r for r in rows if r.get("inactive")]
+        self.assertEqual(len(stage1), 8)
+        self.assertTrue(all(row["unlocked"] for row in stage1))
+        self.assertTrue(all(row["url"] for row in stage1))
+        self.assertIn("early-letters-self_paced-stage-1-lesson-01", stage1[0]["url"])
+        self.assertEqual(len(locked), 3)
+        self.assertEqual(locked[0]["title"], "Шипящая тропа")
+        self.assertEqual(locked[2]["stage"], "stage-4")
+        self.assertTrue(all(r["overlay_label"] == "скоро" for r in locked))
         self.assertTrue(
-            any("stage-1-lesson-08" in (row.get("url") or "") for row in rows)
-        )
-        self.assertTrue(
-            any("stage-2-lesson-01" in (row.get("url") or "") for row in rows)
-        )
-        self.assertTrue(
-            any("stage-4-lesson-14" in (row.get("url") or "") for row in rows)
+            all("module-soon-path.jpg" in (r["cover_url"] or "") for r in locked)
         )
 
     def test_staff_preview_helpers(self):

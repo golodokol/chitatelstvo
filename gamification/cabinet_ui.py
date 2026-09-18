@@ -152,7 +152,26 @@ _POST_VIDEO_CHEST_STEPS = (
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260909e"
+EARLY_ASSETS_VERSION = "20260918a"
+
+# Закрытые модули 2–4 «Буквы оживают»: одна неактивная карточка на модуль.
+EARLY_LETTERS_LOCKED_MODULES: tuple[dict[str, str], ...] = (
+    {
+        "stage": "stage-2",
+        "stage_label": "Модуль 2 · Шипящая тропа",
+        "title": "Шипящая тропа",
+    },
+    {
+        "stage": "stage-3",
+        "stage_label": "Модуль 3 · Звонкие и поющие",
+        "title": "Звонкие и поющие",
+    },
+    {
+        "stage": "stage-4",
+        "stage_label": "Модуль 4 · Последние на тропе",
+        "title": "Последние на тропе",
+    },
+)
 
 # Площадки уроков 1–8 на единой карте «Страны звуков» (доли ширины/высоты 1280×720).
 # Порядок = номер урока, не порядок генерации старых where-кадров.
@@ -495,6 +514,38 @@ def _early_letters_program_map_url() -> str:
     return f"/static/early/letters/scene-map-sounds-final.png?v={EARLY_ASSETS_VERSION}"
 
 
+def _early_letters_module_soon_url() -> str:
+    """Обложка закрытых модулей 2–4: тропа со Словиком, «скоро»."""
+    return f"/static/early/letters/module-soon-path.jpg?v={EARLY_ASSETS_VERSION}"
+
+
+def _early_letters_locked_module_cards(buy_url: str | None) -> list[dict[str, Any]]:
+    """Три неактивных окна модулей 2–4 с общей картинкой «скоро»."""
+    cover = _early_letters_module_soon_url()
+    rows: list[dict[str, Any]] = []
+    for mod in EARLY_LETTERS_LOCKED_MODULES:
+        rows.append(
+            {
+                "week_in_stage": 0,
+                "title": mod["title"],
+                "cover_url": cover,
+                "cover_state": "soon",
+                "opens_on_label": "скоро",
+                "overlay_label": "скоро",
+                "preview_open": False,
+                "buy_url": buy_url,
+                "group_code": "early-letters",
+                "stage": mod["stage"],
+                "stage_label": mod["stage_label"],
+                "slug": None,
+                "url": None,
+                "unlocked": False,
+                "inactive": True,
+            }
+        )
+    return rows
+
+
 def _early_letters_program_map(lessons: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Одна карта + пины уроков; для сетки карточек не используется."""
     if not lessons:
@@ -694,25 +745,23 @@ def _upcoming_module_lessons(
         from api.lesson_signing import build_lesson_url
 
         for les in list_staff_preview_catalog(group_code):
+            stage = str(les.get("stage") or "stage-1")
+            if stage != "stage-1":
+                continue
             try:
                 idx = int(les.get("lesson_number") or les.get("module_week") or 0)
             except (TypeError, ValueError):
                 idx = 0
-            stage = str(les.get("stage") or "stage-1")
             stage_label = str(les.get("stage_label") or "")
             title = str(les.get("title") or f"Урок {idx}")
             date_label = (
                 EARLY_MODULE_OPEN_LABELS[idx - 1]
-                if stage == "stage-1" and 1 <= idx <= len(EARLY_MODULE_OPEN_LABELS)
+                if 1 <= idx <= len(EARLY_MODULE_OPEN_LABELS)
                 else (stage_label or "черновик")
             )
             slug = str(les.get("slug") or staff_preview_lesson_slug(group_code, idx, stage=stage))
             url = build_lesson_url(child_id, slug)
-            cover = (
-                _early_letters_where_map_url(idx)
-                if stage == "stage-1" and 1 <= idx <= 8
-                else fallback_cover
-            )
+            cover = _early_letters_where_map_url(idx) if 1 <= idx <= 8 else fallback_cover
             rows.append(
                 {
                     "week_in_stage": idx,
@@ -729,8 +778,10 @@ def _upcoming_module_lessons(
                     "slug": slug,
                     "url": url,
                     "unlocked": True,
+                    "inactive": False,
                 }
             )
+        rows.extend(_early_letters_locked_module_cards(buy_url))
         return rows
 
     titles = EARLY_MODULE_LESSON_TITLES.get(group_code) or [f"Урок {i}" for i in range(1, 9)]
@@ -763,8 +814,11 @@ def _upcoming_module_lessons(
                 "stage": "stage-1",
                 "url": url,
                 "unlocked": bool(url),
+                "inactive": False,
             }
         )
+    if group_code == "early-letters":
+        rows.extend(_early_letters_locked_module_cards(buy_url))
     return rows
 
 
@@ -1867,7 +1921,7 @@ def _build_track_section(
         stories_title = f"Дальше в программе · {track.get('group_label') or ''}".strip(" ·")
         if staff_preview and group_code == "early-letters":
             stories_subtitle = (
-                "Режим проверки: все уроки модулей 1–4 открыты только в этом кабинете."
+                "Режим проверки: модуль 1 открыт. Модули 2–4 пока «скоро» — окна неактивны."
             )
         elif staff_preview:
             stories_subtitle = "Режим проверки: уроки 1–8 открыты только в этом кабинете."

@@ -3914,8 +3914,38 @@ a.chit-lesson-companion--link.is-disabled {
   text-underline-offset: 2px;
 }
 
+.chit-story-card__buy--muted {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+}
+
+.chit-story-card--inactive {
+  opacity: 0.92;
+  cursor: default;
+}
+
+.chit-story-card--inactive .chit-story-card__link--inactive {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+}
+
+.chit-story-card--inactive .chit-story-card__cover--soon img {
+  filter: grayscale(0.2) brightness(0.78) saturate(0.9);
+}
+
 .chit-panel--upcoming .chit-story-card__link:hover .chit-story-card__buy {
   color: var(--accent);
+}
+
+.chit-panel--upcoming .chit-story-card--inactive .chit-story-card__link--inactive:hover .chit-story-card__buy {
+  color: var(--muted);
 }
 
 .chit-panel--schedule summary { cursor: pointer; list-style: none; }

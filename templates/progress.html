@@ -7,7 +7,7 @@
   <title>Читательство — комната приключений</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/chit-student.css?v=20260909g">
+  <link rel="stylesheet" href="/static/chit-student.css?v=20260918a">
 </head>
 <body class="chit-student chit-cabinet">
   <div class="chit-wrap chit-wrap--wide">
@@ -379,7 +379,7 @@
           <div class="chit-story-grid">
             {% for tale in track.upcoming_lessons %}
             {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
-            <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}">
+            <article class="chit-story-card {% if tale.unlocked and tale.url %}chit-story-card--open{% else %}chit-story-card--soon{% endif %}{% if tale.inactive %} chit-story-card--inactive{% endif %}">
               {% if tale.unlocked and tale.url %}
               <a class="chit-story-card__link" href="{{ tale.url }}">
                 <div class="chit-story-card__cover{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
@@ -398,6 +398,24 @@
                   <span class="chit-story-card__buy">Открыть черновик</span>
                 </div>
               </a>
+              {% elif tale.inactive %}
+              <div class="chit-story-card__link chit-story-card__link--inactive" aria-disabled="true">
+                <div class="chit-story-card__cover chit-story-card__cover--soon">
+                  {% if tale.cover_url %}
+                  <img src="{{ tale.cover_url }}" alt="{{ tale.stage_label or tale.title }} · скоро" loading="lazy">
+                  {% else %}
+                  <div class="chit-story-card__placeholder" aria-hidden="true"></div>
+                  {% endif %}
+                  <div class="chit-story-card__overlay">
+                    <span class="chit-story-card__overlay-label">{{ tale.overlay_label or 'скоро' }}</span>
+                  </div>
+                </div>
+                <div class="chit-story-card__meta">
+                  <span class="chit-story-card__week">{{ tale.stage_label or 'Модуль' }}</span>
+                  <h4 class="chit-story-card__title">{{ tale.title }}</h4>
+                  <span class="chit-story-card__buy chit-story-card__buy--muted">Скоро</span>
+                </div>
+              </div>
               {% else %}
               <a class="chit-story-card__link" href="{{ tale.buy_url or track.buy_url or 'https://chitatelstvo.ru/#programs' }}" target="_blank" rel="noopener">
                 <div class="chit-story-card__cover chit-story-card__cover--soon{% if is_map_cover %} chit-story-card__cover--map{% endif %}">
