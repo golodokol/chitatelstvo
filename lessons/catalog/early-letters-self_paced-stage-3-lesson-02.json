@@ -1,0 +1,45 @@
+{
+  "slug": "early-letters-self_paced-stage-3-lesson-02",
+  "title": "Ч — чашка",
+  "tale_title": "Ч — чашка",
+  "module_id": 42,
+  "group_code": "early-letters",
+  "group_label": "Буквы оживают",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-3",
+  "stage_label": "Модуль 3 · Звонкие и поющие",
+  "lesson_number": 2,
+  "tale_number": 2,
+  "tale_slug": "early-letters-stage3-tale-02",
+  "module_week": 2,
+  "meeting_number": 0,
+  "badge": "Скоро",
+  "points": 2,
+  "active": false,
+  "status": "каркас",
+  "note": "Заготовка модуля: станции появятся по мере публикации.",
+  "lesson_format": "quest",
+  "stations": [
+    {
+      "id": "trail",
+      "title": "Скоро на тропе",
+      "kind": "intro_video",
+      "slovik_line": "Урок «Ч — чашка» из модуль 3 · звонкие и поющие ещё готовится. Скоро откроем!",
+      "slovik_pose": "wave",
+      "scene_image": "/static/early/letters/scene-map-sounds-where-01.png",
+      "audio": "bo-m1-l01-hi",
+      "cta_label": "Понятно",
+      "spark": false
+    },
+    {
+      "id": "chest",
+      "title": "Пока ждём",
+      "kind": "reward",
+      "slovik_line": "А пока можно перечитать модуль 1 — буквы А М У О С Р Т.",
+      "audio": "bo-m1-l01-reward",
+      "spark": false,
+      "parent": "Этот урок ещё в работе. Ребёнку доступен модуль 1."
+    }
+  ]
+}

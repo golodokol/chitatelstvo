@@ -1553,7 +1553,7 @@ def _story_stages(
     def stage_key(stage: str) -> tuple:
         items = by_stage[stage]
         has_url = any(les.get("url") for les in items)
-        preferred = {"stage-1": 0, "stage-2": 1}.get(stage, 9)
+        preferred = {"stage-1": 0, "stage-2": 1, "stage-3": 2, "stage-4": 3}.get(stage, 9)
         return (0 if has_url else 1, preferred, stage)
 
     stages: list[dict] = []

@@ -1,0 +1,45 @@
+{
+  "slug": "early-letters-self_paced-stage-2-lesson-10",
+  "title": "Праздник шипящей тропы",
+  "tale_title": "Праздник шипящей тропы",
+  "module_id": 41,
+  "group_code": "early-letters",
+  "group_label": "Буквы оживают",
+  "tariff_code": "self_paced",
+  "tariff_label": "Индивидуальное обучение",
+  "stage": "stage-2",
+  "stage_label": "Модуль 2 · Шипящая тропа",
+  "lesson_number": 10,
+  "tale_number": 10,
+  "tale_slug": "early-letters-stage2-tale-10",
+  "module_week": 10,
+  "meeting_number": 0,
+  "badge": "Скоро",
+  "points": 2,
+  "active": false,
+  "status": "каркас",
+  "note": "Заготовка модуля: станции появятся по мере публикации.",
+  "lesson_format": "quest",
+  "stations": [
+    {
+      "id": "trail",
+      "title": "Скоро на тропе",
+      "kind": "intro_video",
+      "slovik_line": "Урок «Праздник шипящей тропы» из модуль 2 · шипящая тропа ещё готовится. Скоро откроем!",
+      "slovik_pose": "wave",
+      "scene_image": "/static/early/letters/scene-map-sounds-where-01.png",
+      "audio": "bo-m1-l01-hi",
+      "cta_label": "Понятно",
+      "spark": false
+    },
+    {
+      "id": "chest",
+      "title": "Пока ждём",
+      "kind": "reward",
+      "slovik_line": "А пока можно перечитать модуль 1 — буквы А М У О С Р Т.",
+      "audio": "bo-m1-l01-reward",
+      "spark": false,
+      "parent": "Этот урок ещё в работе. Ребёнку доступен модуль 1."
+    }
+  ]
+}
