@@ -1803,6 +1803,20 @@
       box-shadow: none;
     }
     .pick-card.is-disabled:hover { border-color: var(--border); transform: none; box-shadow: none; }
+    .pick-card.is-waitlist {
+      border-color: #c9d7e8;
+      background: #f5f8fc;
+    }
+    .pick-card.is-waitlist .pick-card__price { color: var(--blue); }
+    .pick-card.is-waitlist.is-active { border-color: var(--blue); background: var(--blue-pale); }
+    #chit-main.is-letters-pack .tariff-pick {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (min-width: 900px) {
+      #chit-main.is-letters-pack .tariff-pick {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
     .pick-card__tag { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
     .pick-card__name { font-size: 16px; font-weight: 800; color: var(--blue); margin: 6px 0; }
     .pick-card__price { font-size: 20px; font-weight: 800; color: var(--text); }
@@ -3928,6 +3942,13 @@
   border-color: var(--border);
   transform: none;
   box-shadow: none;
+}
+.fare-modal .fare-card.is-waitlist {
+  border-color: #c9d7e8;
+  background: #f5f8fc;
+}
+.fare-modal .fare-card.is-waitlist .fare-card__price {
+  color: var(--blue);
 }
 .fare-modal {
   position: fixed;

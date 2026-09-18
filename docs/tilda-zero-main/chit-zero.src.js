@@ -2220,7 +2220,54 @@ if (faqList) {
     });
   }
 
+  function ensureAlphabetPackCards() {
+    var tariffs = document.getElementById('chit-tariffs');
+    if (tariffs && !tariffs.querySelector('[data-tariff="alphabet_pack"]')) {
+      var selfCard = tariffs.querySelector('[data-tariff="self_paced"]');
+      var pack = document.createElement('div');
+      pack.className = 'pick-card';
+      pack.setAttribute('data-tariff', 'alphabet_pack');
+      pack.hidden = true;
+      pack.innerHTML =
+        '<div class="pick-card__tag">Весь путь</div>' +
+        '<div class="pick-card__name">Весь алфавит</div>' +
+        '<div class="pick-card__price">5 990 ₽</div>' +
+        '<div class="pick-card__hint">4 модуля · 44 урока · 33 буквы</div>';
+      if (selfCard && selfCard.nextSibling) selfCard.parentNode.insertBefore(pack, selfCard.nextSibling);
+      else tariffs.appendChild(pack);
+    }
+    var fareTrack = document.getElementById('fare-modal-track');
+    if (fareTrack && !fareTrack.querySelector('[data-fare="alphabet_pack"]')) {
+      var selfFare = fareTrack.querySelector('[data-fare="self_paced"]');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'fare-card';
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', 'false');
+      btn.setAttribute('data-fare', 'alphabet_pack');
+      btn.hidden = true;
+      btn.innerHTML =
+        '<span class="fare-card__badge">Выгоднее</span>' +
+        '<span class="fare-card__radio" aria-hidden="true"></span>' +
+        '<span class="fare-card__name">Весь алфавит</span>' +
+        '<span class="fare-card__price">5 990 ₽</span>' +
+        '<span class="fare-card__delta">вместо 7 960 ₽ по модулям</span>' +
+        '<span class="fare-card__sub">4 модуля · 44 урока · 33 буквы</span>' +
+        '<ul class="fare-card__feats">' +
+        '<li class="is-yes">Модули 1–4 по мере открытия</li>' +
+        '<li class="is-yes">Все буквы алфавита со Словиком</li>' +
+        '<li class="is-yes">Личная страница прогресса</li>' +
+        '<li class="is-yes">Весь путь выгоднее</li>' +
+        '<li class="is-no">Живые встречи</li>' +
+        '</ul>';
+      if (selfFare && selfFare.nextSibling) selfFare.parentNode.insertBefore(btn, selfFare.nextSibling);
+      else if (selfFare) selfFare.parentNode.appendChild(btn);
+      else fareTrack.appendChild(btn);
+    }
+  }
+
   function updateEarlyEnrollUi() {
+    ensureAlphabetPackCards();
     var early = isEarlyGroup();
     var cohort = isCohortGroup();
     var letters = state.group === 'early-letters';
@@ -2292,6 +2339,22 @@ if (faqList) {
     var packHint = document.querySelector('#chit-tariffs [data-tariff="alphabet_pack"] .pick-card__hint');
     if (packHint) {
       packHint.textContent = '4 модуля · 44 урока · 5 990 ₽';
+    }
+    var tariffHint = document.getElementById('chit-step-tariff-hint');
+    if (tariffHint) {
+      if (letters) {
+        tariffHint.textContent =
+          'Один модуль — 1 990 ₽ (сейчас открыт модуль 1). Весь алфавит — 5 990 ₽. Разовое — один урок. Живые встречи скоро — можно оставить email.';
+      } else if (early) {
+        tariffHint.textContent =
+          'Индивидуальное — 1 990 ₽ за модуль (8 уроков). Разовое — один урок. Живые встречи скоро — можно оставить email.';
+      } else if (cohort) {
+        tariffHint.textContent =
+          'Индивидуальное — 1 990 ₽ за модуль (4 урока). Разовое — один урок. С преподавателем — модуль плюс живые встречи.';
+      } else {
+        tariffHint.textContent =
+          'Индивидуальное — 1 990 ₽ за модуль (4 сказки или 8 уроков). Разовое — один урок или одна сказка. С преподавателем — модуль плюс живые встречи';
+      }
     }
     refreshFareMarketingCopy(state.group);
     refreshTariffAvailability();
@@ -2550,6 +2613,7 @@ if (faqList) {
 
     function refreshModalTariffs() {
       if (!fareTrack) return;
+      ensureAlphabetPackCards();
       var blocked = ctx.group && NO_WITH_TEACHER_GROUPS.indexOf(ctx.group) >= 0;
       var letters = ctx.group === 'early-letters';
       var earlyWait = isEarlyTeacherWaitlist(ctx.group);
