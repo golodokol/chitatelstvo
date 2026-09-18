@@ -375,7 +375,7 @@
               {% endfor %}
             </ul>
           </div>
-          {% else %}
+          {% endif %}
           <div class="chit-story-grid">
             {% for tale in track.upcoming_lessons %}
             {% set is_map_cover = tale.cover_url and 'scene-map-sounds-where-' in tale.cover_url %}
@@ -393,7 +393,7 @@
                   </div>
                 </div>
                 <div class="chit-story-card__meta">
-                  <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                  <span class="chit-story-card__week">{% if tale.stage_label %}{{ tale.stage_label.split('·')[0].strip() }} · {% endif %}Урок {{ tale.week_in_stage }}</span>
                   <h4 class="chit-story-card__title">{{ tale.title }}</h4>
                   <span class="chit-story-card__buy">Открыть черновик</span>
                 </div>
@@ -411,7 +411,7 @@
                   </div>
                 </div>
                 <div class="chit-story-card__meta">
-                  <span class="chit-story-card__week">Урок {{ tale.week_in_stage }}</span>
+                  <span class="chit-story-card__week">{% if tale.stage_label %}{{ tale.stage_label.split('·')[0].strip() }} · {% endif %}Урок {{ tale.week_in_stage }}</span>
                   <h4 class="chit-story-card__title">{{ tale.title }}</h4>
                   <span class="chit-story-card__buy">Выбрать тариф</span>
                 </div>
@@ -420,7 +420,6 @@
             </article>
             {% endfor %}
           </div>
-          {% endif %}
         </section>
         {% endif %}
         {% endmacro %}
