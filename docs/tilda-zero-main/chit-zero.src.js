@@ -2666,8 +2666,8 @@ if (faqList) {
       ctx.title = card.getAttribute('data-course-title') || '';
       ctx.meta = card.getAttribute('data-course-meta') || '';
       setModalFare(ctx.group === 'early-letters' ? 'alphabet_pack' : 'self_paced');
-      refreshModalTariffs();
       refreshFareMarketingCopy(ctx.group);
+      refreshModalTariffs();
       if (fareCourseEl) {
         fareCourseEl.textContent = ctx.title + (ctx.meta ? ' · ' + ctx.meta : '');
       }
