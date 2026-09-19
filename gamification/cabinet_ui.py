@@ -152,7 +152,7 @@ _POST_VIDEO_CHEST_STEPS = (
 
 PAID_TARIFF_CODES = frozenset({"self_paced", "with_teacher", "single"})
 
-EARLY_ASSETS_VERSION = "20260918a"
+EARLY_ASSETS_VERSION = "20260919a"
 
 # Закрытые модули 2–4 «Буквы оживают»: одна неактивная карточка на модуль.
 EARLY_LETTERS_LOCKED_MODULES: tuple[dict[str, str], ...] = (
@@ -196,6 +196,30 @@ EARLY_LETTERS_MAP_TIP: tuple[str, ...] = (
     "above",   # 6
     "above",   # 7
     "above",   # 8 — left наезжал на урок 7
+)
+
+# Площадки уроков 1–8 на карте «Дом, где просыпаются книжки» (1024×576).
+# Порядок = путь: верх L→R, затем низ R→L.
+EARLY_STORIES_MAP_PADS: tuple[tuple[float, float], ...] = (
+    (0.160, 0.338),  # 1 — кот в коробке
+    (0.333, 0.326),  # 2 — дождь за окном
+    (0.608, 0.362),  # 3 — мяч в гостиной
+    (0.862, 0.350),  # 4 — уголок памяти / книжки
+    (0.857, 0.734),  # 5 — нижняя комната (к мокрому коту по пути)
+    (0.633, 0.731),  # 6 — крыльцо · Словик
+    (0.376, 0.740),  # 7 — плед / спальня
+    (0.151, 0.688),  # 8 — ванная · дом
+)
+
+EARLY_STORIES_MAP_TIP: tuple[str, ...] = (
+    "right",
+    "above",
+    "above",
+    "left",
+    "left",
+    "above",
+    "above",
+    "right",
 )
 
 INTRO_TRIAL_COVERS: dict[str, str] = {
@@ -514,6 +538,11 @@ def _early_letters_program_map_url() -> str:
     return f"/static/early/letters/scene-map-sounds-final.png?v={EARLY_ASSETS_VERSION}"
 
 
+def _early_stories_program_map_url() -> str:
+    """Карта «Дом, где просыпаются книжки» для «Первые истории»."""
+    return f"/static/early/stories/scene-map-stories-final.jpg?v={EARLY_ASSETS_VERSION}"
+
+
 def _early_letters_module_soon_url() -> str:
     """Обложка закрытых модулей 2–4: тропа со Словиком, «скоро»."""
     return f"/static/early/letters/module-soon-path.jpg?v={EARLY_ASSETS_VERSION}"
@@ -547,12 +576,25 @@ def _early_letters_locked_module_cards(buy_url: str | None) -> list[dict[str, An
     return rows
 
 
-def _early_letters_program_map(
+def _early_program_map(
+    group_code: str,
     lessons: list[dict[str, Any]],
     *,
     completed_slugs: set[str] | None = None,
 ) -> dict[str, Any] | None:
-    """Одна карта + пины уроков; яркие только после прохождения."""
+    """Карта модуля + пины: буквы или первые истории; яркие только после прохождения."""
+    if group_code == "early-letters":
+        pads = EARLY_LETTERS_MAP_PADS
+        tips = EARLY_LETTERS_MAP_TIP
+        image_url = _early_letters_program_map_url()
+        alt = "Карта страны звуков — восемь уроков модуля"
+    elif group_code == "early-stories":
+        pads = EARLY_STORIES_MAP_PADS
+        tips = EARLY_STORIES_MAP_TIP
+        image_url = _early_stories_program_map_url()
+        alt = "Дом, где просыпаются книжки — восемь уроков модуля"
+    else:
+        return None
     if not lessons:
         return None
     done_slugs = completed_slugs or set()
@@ -562,10 +604,10 @@ def _early_letters_program_map(
             n = int(lesson.get("week_in_stage") or 0)
         except (TypeError, ValueError):
             n = 0
-        if n < 1 or n > len(EARLY_LETTERS_MAP_PADS):
+        if n < 1 or n > len(pads):
             continue
-        x, y = EARLY_LETTERS_MAP_PADS[n - 1]
-        tip = EARLY_LETTERS_MAP_TIP[n - 1]
+        x, y = pads[n - 1]
+        tip = tips[n - 1]
         unlocked = bool(lesson.get("unlocked") and lesson.get("url"))
         slug = canonical_tale_slug(lesson.get("slug") or lesson.get("tale_slug") or "")
         done = bool(slug and slug in done_slugs) or bool(lesson.get("completed"))
@@ -596,10 +638,23 @@ def _early_letters_program_map(
     if not pins:
         return None
     return {
-        "image_url": _early_letters_program_map_url(),
-        "alt": "Карта страны звуков — восемь уроков модуля",
+        "image_url": image_url,
+        "alt": alt,
         "pins": pins,
     }
+
+
+def _early_letters_program_map(
+    lessons: list[dict[str, Any]],
+    *,
+    completed_slugs: set[str] | None = None,
+) -> dict[str, Any] | None:
+    """Совместимость: карта «Буквы оживают»."""
+    return _early_program_map(
+        "early-letters",
+        lessons,
+        completed_slugs=completed_slugs,
+    )
 
 
 def _intro_trial_cover_url(assets_base: str, group_code: str) -> str | None:
@@ -1937,8 +1992,14 @@ def _build_track_section(
             stories_subtitle = (
                 "Режим проверки: модуль 1 открыт. Модули 2–4 пока «скоро» — окна неактивны."
             )
+        elif staff_preview and group_code == "early-stories":
+            stories_subtitle = (
+                "Режим проверки: уроки 1–8 на карте дома открыты только в этом кабинете."
+            )
         elif staff_preview:
             stories_subtitle = "Режим проверки: уроки 1–8 открыты только в этом кабинете."
+        elif group_code == "early-stories":
+            stories_subtitle = "8 уроков модуля 1 — тропа по дому со Словиком"
         else:
             stories_subtitle = "8 уроков модуля 1 · дальше — модули 2–4"
     else:
@@ -1956,14 +2017,15 @@ def _build_track_section(
         if str(row.get("stage") or "stage-1") == "stage-1"
     ][:8]
     program_map = (
-        _early_letters_program_map(
+        _early_program_map(
+            group_code,
             map_lessons,
             completed_slugs=_completed_lesson_slugs(events) | claimed,
         )
-        if group_code == "early-letters" and map_lessons
+        if group_code in ("early-letters", "early-stories") and map_lessons
         else None
     )
-    # Карта уже показывает уроки 1–8 — в сетке оставляем только модули 2–4.
+    # Карта уже показывает уроки 1–8 — в сетке оставляем только модули 2–4 (если есть).
     if program_map:
         upcoming_lessons = [
             row

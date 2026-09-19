@@ -30,7 +30,7 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertIn("scene-map-sounds-where-08.png", rows[7]["cover_url"])
         self.assertEqual(
             cabinet_ui._early_letters_where_map_url(3),
-            "/static/early/letters/scene-map-sounds-where-03.png?v=20260918a",
+            f"/static/early/letters/scene-map-sounds-where-03.png?v={cabinet_ui.EARLY_ASSETS_VERSION}",
         )
 
     def test_program_map_uses_single_base_and_eight_pins(self):
@@ -59,6 +59,62 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][1]["y"], 36.94)
         self.assertEqual(program_map["pins"][1]["tip"], "above")
         self.assertEqual(program_map["pins"][7]["tip"], "above")
+
+    def test_stories_program_map_uses_home_map_and_open_labels(self):
+        rows = cabinet_ui._upcoming_module_lessons(
+            group_code="early-stories",
+            assets_base="https://example.test",
+            staff_preview=True,
+            child_id="11111111-1111-1111-1111-111111111111",
+        )
+        stage1 = [r for r in rows if str(r.get("stage") or "stage-1") == "stage-1"][:8]
+        self.assertEqual(len(stage1), 8)
+        program_map = cabinet_ui._early_program_map("early-stories", stage1)
+        self.assertIsNotNone(program_map)
+        assert program_map is not None
+        self.assertIn("scene-map-stories-final.jpg", program_map["image_url"])
+        self.assertEqual(len(program_map["pins"]), 8)
+        self.assertEqual(program_map["pins"][0]["x"], 16.0)
+        self.assertEqual(program_map["pins"][0]["y"], 33.8)
+        self.assertEqual(program_map["pins"][0]["label"], "пройти")
+        self.assertEqual(program_map["pins"][0]["state"], "open")
+        self.assertTrue(all(p["state"] == "open" for p in program_map["pins"]))
+        self.assertEqual(program_map["pins"][3]["tip"], "left")
+        self.assertEqual(program_map["pins"][7]["x"], 15.1)
+
+    def test_stories_track_hides_lesson_cards_under_map(self):
+        track = {
+            "group_code": "early-stories",
+            "group_label": "Первые истории",
+            "tariff_code": "trial",
+            "module_id": 23,
+            "module_title": "Модуль 1",
+            "lesson_links": [
+                {
+                    "slug": f"early-stories-self_paced-stage-1-lesson-{i:02d}",
+                    "title": f"Урок {i}",
+                    "group_code": "early-stories",
+                    "tariff_code": "trial",
+                    "url": f"/lesson/{i}",
+                    "week_in_stage": i,
+                    "stage": "stage-1",
+                }
+                for i in range(1, 9)
+            ],
+        }
+        cab = cabinet_ui._build_track_section(
+            track=track,
+            events=[],
+            claims=[],
+            points=0,
+            assets_base="https://example.test",
+            cabinet_mode="trial_early",
+            staff_preview=False,
+            child_id=None,
+        )
+        self.assertIsNotNone(cab.get("program_map"))
+        self.assertEqual(len(cab["program_map"]["pins"]), 8)
+        self.assertEqual(cab.get("upcoming_lessons") or [], [])
 
     def test_program_map_marks_completed_pins_as_done(self):
         rows = cabinet_ui._upcoming_module_lessons(
