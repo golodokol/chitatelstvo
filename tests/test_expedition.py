@@ -58,7 +58,7 @@ def test_expedition_cabinet_guest_state():
     body = res.json()
     assert body["signed_in"] is False
     assert body["access"]["tsarevna-lyagushka"] == "demo"
-    assert body["access"]["morozko"] == "locked"
+    assert body["access"]["morozko"] == "open"
 
 
 def test_expedition_register_and_progress(tmp_path, monkeypatch):

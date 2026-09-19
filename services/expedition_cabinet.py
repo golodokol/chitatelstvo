@@ -397,32 +397,13 @@ def _has_route_access(progress: dict, route_slug: str | None, region_slug: str |
 
 
 def story_access(story: dict, profile: dict | None) -> str:
-    """guest | demo | free | open | locked"""
-    flag = story.get("access") or "locked"
+    """Stories are open to try. Saving a passport and stamps needs a registered profile."""
+    if story.get("status") == "hidden":
+        return "locked"
+    flag = story.get("access") or "open"
     if flag == "demo":
         return "demo"
-    if profile is None:
-        return "locked" if flag != "demo" else "demo"
-    if flag == "free":
-        return "free"
-    progress = profile.get("progress") or empty_progress()
-    slug = story.get("slug")
-    rec = (progress.get("stories") or {}).get(slug) or {}
-    if rec.get("done") or rec.get("unlocked"):
-        return "open"
-    if _has_route_access(progress, story.get("route"), story.get("region")):
-        return "open"
-    region_slug = story.get("region")
-    catalog = load_catalog()
-    if region_slug != START_REGION:
-        return "locked"
-    region_stories = [
-        s["slug"] for s in catalog.get("stories") or [] if s.get("region") == region_slug
-    ]
-    story_index = region_stories.index(slug) if slug in region_stories else 99
-    if story_index < FREE_REGISTERED_PER_REGION:
-        return "free"
-    return "locked"
+    return "open"
 
 
 def access_map(profile: dict | None) -> dict[str, str]:

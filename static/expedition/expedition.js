@@ -16,6 +16,8 @@
   let accessMap = {};
   let tariffs = [];
   let mapState = { scale: 1, x: 0, y: 0, atlas: false, filters: { q: "", age: "", theme: "", audio: "", status: "" } };
+  let passState = { i: 0, side: 0 };
+  let passSpreadsCache = [];
 
   const TITLE_DEFAULT = "Читательская экспедиция — Читательство";
 
@@ -87,6 +89,7 @@
     progress.route = progress.route || "";
     progress.quiz = progress.quiz || {};
     progress.listened = progress.listened || [];
+    progress.finds = progress.finds || {};
   }
 
   function img(name) {
@@ -146,15 +149,10 @@
   }
   function storyAccess(s) {
     if (!s) return "locked";
-    if (accessMap[s.slug]) return accessMap[s.slug];
+    if (s.status === "hidden") return "locked";
+    if (accessMap[s.slug] && accessMap[s.slug] !== "locked") return accessMap[s.slug];
     if (s.access === "demo") return "demo";
-    if (profile && (s.access === "free" || storyDone(s.slug))) return "free";
-    if (profile && s.region === "yaroslavskaya-oblast") {
-      const regionStories = DATA.stories.filter(function (x) { return x.region === s.region; });
-      const idx = regionStories.findIndex(function (x) { return x.slug === s.slug; });
-      if (idx > -1 && idx < 2) return "free";
-    }
-    return "locked";
+    return "open";
   }
   function isOpenStory(s) {
     const a = storyAccess(s);
@@ -172,10 +170,8 @@
       return '<article class="chit-card"><h3>' + escapeHtml(t.title) + "</h3><p>" + escapeHtml(t.blurb || "") + "</p><p><strong>" + escapeHtml(String(price)) + "</strong></p></article>";
     }).join("");
   }
-  function stampSvg(symbol, color, level) {
-    const c = color || "#C6A15B";
-    const gold = level === "gold";
-    const inner = {
+  function stampMotif(symbol) {
+    return {
       frog: '<circle cx="32" cy="28" r="10"/><ellipse cx="32" cy="44" rx="14" ry="8"/><circle cx="24" cy="22" r="4"/><circle cx="40" cy="22" r="4"/>',
       frost: '<path d="M32 10v44M16 32h32M20 18l12 14 12-14M20 46l12-14 12 14"/>',
       star: '<path d="M32 12l5 14h15l-12 9 5 14-13-9-13 9 5-14-12-9h15z"/>',
@@ -188,58 +184,165 @@
       pine: '<path d="M32 10l14 18H18zM32 22l16 20H16zM29 42h6v12h-6z"/>',
       stone: '<path d="M12 42l8-16 14-8 16 10 4 14H12z"/>'
     }[symbol] || '<circle cx="32" cy="32" r="14"/><path d="M32 18v28M20 32h24"/>';
-    return '<svg class="chit-stamp-svg" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="' + (gold ? c : "transparent") + '" fill-opacity="' + (gold ? "0.18" : "0") + '" stroke="' + c + '" stroke-width="3"/><g fill="none" stroke="' + c + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' + inner + "</g></svg>";
+  }
+  function stampSvg(symbol, color, level, ghost) {
+    const c = color || "#8B3A42";
+    const gold = level === "gold";
+    const op = ghost ? "0.35" : "1";
+    return '<svg class="chit-stamp-svg" viewBox="0 0 64 64" aria-hidden="true" style="opacity:' + op + '"><circle cx="32" cy="32" r="30" fill="' + (gold ? c : "transparent") + '" fill-opacity="' + (gold ? "0.18" : "0") + '" stroke="' + c + '" stroke-width="3"/><g fill="none" stroke="' + c + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' + stampMotif(symbol) + "</g></svg>";
+  }
+  function stampSealSvg(opts) {
+    const c = opts.color || "#8B3A42";
+    const gold = opts.level === "gold";
+    const ghost = !!opts.ghost;
+    const uid = "chit-ring-" + String(opts.uid || "x").replace(/[^a-z0-9_-]/gi, "");
+    const region = escapeHtml(opts.regionName || "");
+    const poetic = escapeHtml(opts.poetic || "");
+    const date = escapeHtml(opts.date || "");
+    const fill = gold ? "rgba(196,165,106,0.18)" : "rgba(255,248,236,0.4)";
+    const label = region + (poetic ? ". " + poetic : "") + (date ? ". " + date : "");
+    return '<div class="chit-seal' + (ghost ? " is-ghost" : "") + (opts.sample ? " is-sample" : "") + '">' +
+      '<svg class="chit-seal-svg" viewBox="0 0 200 200" role="img" aria-label="' + label + '">' +
+      '<defs><path id="' + uid + '" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>' +
+      '<circle cx="100" cy="100" r="96" fill="' + fill + '" stroke="' + c + '" stroke-width="' + (gold ? 5 : 3.2) + '" stroke-dasharray="' + (ghost ? "5 6" : "0") + '"/>' +
+      '<circle cx="100" cy="100" r="82" fill="none" stroke="' + c + '" stroke-width="1.1" opacity="0.65"/>' +
+      '<text fill="' + c + '" font-size="8.2" font-family="Georgia, serif" letter-spacing="1.8">' +
+      '<textPath href="#' + uid + '" startOffset="0%">ЧИТАТЕЛЬСКАЯ ЭКСПЕДИЦИЯ · ЧИТАТЕЛЬСТВО · ЧИТАТЕЛЬСКАЯ ЭКСПЕДИЦИЯ · </textPath></text>' +
+      '<text x="100" y="56" text-anchor="middle" fill="' + c + '" font-size="8" font-family="Georgia, serif" font-weight="700">' + region + "</text>" +
+      '<g transform="translate(68 68)" fill="none" stroke="' + c + '" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + stampMotif(opts.symbol) + "</g>" +
+      '<text x="100" y="146" text-anchor="middle" fill="' + c + '" font-size="8.4" font-family="Georgia, serif">' + poetic + "</text>" +
+      (date ? '<text x="100" y="164" text-anchor="middle" fill="' + c + '" font-size="7" opacity="0.85">' + date + "</text>" : "") +
+      '<text x="100" y="178" text-anchor="middle" fill="' + c + '" font-size="11">✦</text>' +
+      "</svg></div>";
   }
   function stampCardHtml(r, st) {
     const meta = r.stamp || {};
     const on = !!st;
-    const color = (st && st.color) || meta.color || "#C6A15B";
+    const color = (st && st.color) || meta.color || "#8B3A42";
     const level = (st && st.level) || "";
     const title = (st && st.poetic_title) || meta.poetic_title || r.pin;
-    const date = st && st.earned_at ? String(st.earned_at).slice(0, 10) : "ещё в пути";
+    const date = st && st.earned_at ? formatRuDate(st.earned_at) : "ждёт миссии";
     return '<div class="chit-stamp' + (on ? " is-on" : "") + '" style="--stamp:' + color + '">' +
-      (on ? stampSvg(meta.symbol, color, level) : '<div class="chit-stamp__mark">○</div>') +
+      stampSvg(meta.symbol, color, level, !on) +
       "<strong>" + escapeHtml(title) + "</strong>" +
       "<small>" + escapeHtml(r.name) + (level ? " · " + level : "") + " · " + escapeHtml(date) + "</small></div>";
   }
+  function formatRuDate(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso).slice(0, 10);
+    return d.toLocaleDateString("ru-RU");
+  }
+  function childLevel() {
+    const n = DATA.stories.filter(function (s) { return storyDone(s.slug); }).length;
+    if (n >= 8) return "Литературный детектив";
+    if (n >= 5) return "Мастер слова";
+    if (n >= 3) return "Исследователь";
+    if (n >= 1) return "Юный читатель";
+    return "Старт";
+  }
+  function seasonRegions() {
+    return (DATA.regions || []).slice(0, 12);
+  }
   function awardStamp(regionSlug, levelHint) {
     const region = regionBy(regionSlug);
-    if (!region) return;
+    if (!region) return null;
     ensureProg();
     const stories = DATA.stories.filter(function (s) { return s.region === regionSlug; });
     const done = stories.filter(function (s) { return storyDone(s.slug); }).length;
     let level = levelHint || "";
     if (done >= 3) level = "gold";
     else if (done >= 1) level = "basic";
-    else if (!level) return;
+    else if (!level) return null;
     const prev = progress.stamps[regionSlug] || {};
     const rank = { marker: 1, basic: 2, gold: 3 };
-    if ((rank[level] || 0) <= (rank[prev.level] || 0)) return;
+    if ((rank[level] || 0) <= (rank[prev.level] || 0)) return progress.stamps[regionSlug];
     const meta = region.stamp || {};
     progress.stamps[regionSlug] = {
       level: level,
       poetic_title: meta.poetic_title || region.pin,
       motif: meta.motif || "",
       symbol: meta.symbol || "",
-      color: meta.color || "#C6A15B",
+      color: meta.color || "#8B3A42",
       region_name: region.name,
       earned_at: new Date().toISOString()
     };
+    progress.regions[regionSlug] = true;
     saveProgress();
-    showStampToast(progress.stamps[regionSlug], meta.symbol);
+    return progress.stamps[regionSlug];
   }
-  function showStampToast(stamp, symbol) {
+  function showNewStampModal(stamp, region) {
     const existing = document.querySelector(".chit-stamp-press");
     if (existing) existing.remove();
+    const meta = (region && region.stamp) || {};
     const el = document.createElement("div");
     el.className = "chit-stamp-press";
-    el.setAttribute("role", "status");
+    el.setAttribute("role", "dialog");
+    el.setAttribute("aria-labelledby", "chit-new-stamp-title");
+    const saveBlock = profile
+      ? ""
+      : "<p class=\"chit-note\">Чтобы штамп остался в паспорте, попроси взрослого помочь открыть его.</p>" +
+        '<p><button class="chit-btn chit-btn--primary" type="button" data-act="open-passport">Открыть паспорт с взрослым</button></p>';
     el.innerHTML = '<div class="chit-stamp-press__seal">' +
-      stampSvg(symbol || stamp.symbol, stamp.color, stamp.level) +
-      "<strong>Печать поставлена</strong>" +
-      "<span>«" + escapeHtml(stamp.poetic_title || "штамп") + "»</span></div>";
+      stampSealSvg({
+        uid: "modal-" + ((region && region.slug) || "x"),
+        regionName: stamp.region_name || (region && region.name) || "",
+        poetic: stamp.poetic_title || meta.poetic_title,
+        symbol: stamp.symbol || meta.symbol,
+        color: stamp.color || meta.color,
+        level: stamp.level,
+        date: formatRuDate(stamp.earned_at)
+      }) +
+      '<strong id="chit-new-stamp-title">Новый штамп!</strong>' +
+      "<span>«" + escapeHtml(stamp.poetic_title || "Печать экспедиции") + "»</span>" +
+      "<span>" + escapeHtml(stamp.region_name || "") + "</span>" +
+      "<p>Ты заметил важные детали в сказке и выполнил миссию читателя.</p>" +
+      saveBlock +
+      '<div class="chit-stamp-press__actions">' +
+      '<a class="chit-btn chit-btn--primary" data-go="/passport" href="' + href("/passport") + '">Посмотреть в паспорте</a>' +
+      '<button class="chit-btn chit-btn--ghost" type="button" data-act="close-stamp">Продолжить путешествие</button>' +
+      "</div></div>";
     document.body.appendChild(el);
-    setTimeout(function () { el.remove(); }, 2400);
+    el.addEventListener("click", function (e) {
+      const goEl = e.target.closest("[data-go]");
+      if (goEl) {
+        e.preventDefault();
+        const slug = region && region.slug;
+        if (slug) {
+          const idx = seasonRegions().findIndex(function (r) { return r.slug === slug; });
+          passState.i = idx >= 0 ? idx + 2 : 0;
+          passState.side = 1;
+        }
+        closeStampModal();
+        go(goEl.getAttribute("data-go"));
+        return;
+      }
+      const act = e.target.closest("[data-act]");
+      if (!act) return;
+      const name = act.getAttribute("data-act");
+      if (name === "close-stamp") closeStampModal();
+      if (name === "open-passport") {
+        closeStampModal();
+        openPassportModal();
+      }
+    });
+  }
+  function closeStampModal() {
+    const el = document.querySelector(".chit-stamp-press");
+    if (el) el.remove();
+  }
+  function placeStoryStamp(s) {
+    if (!s) return;
+    ensureProg();
+    if (!storyDone(s.slug)) return;
+    const stamp = awardStamp(s.region);
+    const region = regionBy(s.region);
+    if (!stamp) return;
+    showNewStampModal(stamp, region);
+    const ritual = document.getElementById("chit-ritual");
+    if (ritual) {
+      ritual.innerHTML = "<p>Экспедиция в регионе «" + escapeHtml((region && region.name) || "экспедиции") + "» завершена. Печать стоит в паспорте.</p>";
+    }
   }
   function grantBadge(id) {
     ensureProg();
@@ -265,14 +368,14 @@
   function header(active) {
     const signed = !!(profile && profile.child_name);
     const links = [
-      ["/cabinet", "Моя экспедиция"],
-      ["/passport", "Паспорт"],
       ["/map", "Карта"],
-      ["/collection", "Коллекция"],
       ["/routes", "Маршруты"],
-      ["/parents", "Родителям"],
-      ["/libraries", "Для библиотек"]
+      ["/passport", "Паспорт"],
+      ["/collection", "Мои истории"]
     ];
+    const account = signed
+      ? '<a class="chit-account" data-go="/passport" href="' + href("/passport") + '">' + escapeHtml(profile.child_name) + "</a>"
+      : '<a class="chit-account" href="#" data-act="open-passport">Сохранить паспорт</a>';
     return (
       '<header class="chit-exp-header"><div class="chit-exp-header__inner">' +
       '<a class="chit-exp-logo" href="https://chitatelstvo.ru">' +
@@ -282,9 +385,7 @@
       links.map(function (l) {
         return '<a href="' + href(l[0]) + '" class="' + (active === l[0] ? "is-on" : "") + '" data-go="' + l[0] + '">' + l[1] + "</a>";
       }).join("") +
-      (signed
-        ? '<a class="chit-account" data-go="/cabinet" href="' + href("/cabinet") + '">' + escapeHtml(profile.child_name) + "</a>"
-        : '<a class="chit-account" data-go="/parents" href="' + href("/parents") + '">Вход</a>') +
+      account +
       "</nav></div></header>"
     );
   }
@@ -295,6 +396,8 @@
       "<p>Читательская экспедиция от литературной школы «Читательство».</p>" +
       '<p><a href="https://chitatelstvo.ru">chitatelstvo.ru</a> · ' +
       '<a href="mailto:info@chitatelstvo.ru">info@chitatelstvo.ru</a> · ' +
+      '<a data-go="/parents" href="' + href("/parents") + '">Родителям</a> · ' +
+      '<a data-go="/libraries" href="' + href("/libraries") + '">Для библиотек</a> · ' +
       '<a data-go="/add-legend" href="' + href("/add-legend") + '">Предложить легенду</a> · ' +
       '<a data-go="/about" href="' + href("/about") + '">Сообщить об ошибке</a></p>' +
       "<p>Полные занятия, игровые задания и читательский путь — в школе «Читательство».</p>" +
@@ -342,7 +445,7 @@
       '<a class="chit-btn chit-btn--ghost" data-go="/map" href="' + href("/map") + '">Открыть карту</a>' +
       '<a class="chit-btn chit-btn--ghost" data-go="/libraries" href="' + href("/libraries") + '">Я библиотека / педагог</a>' +
       "</div>" +
-      "<p class=\"chit-note\">Пройдите первую мини-экспедицию бесплатно и получите отметку в читательском паспорте.</p>" +
+      "<p class=\"chit-note\">Истории открыты для знакомства. Чтобы сохранить штамп и паспорт, попросите взрослого оставить контакт.</p>" +
       "</div>" +
       '<div class="chit-hero__visual"><img src="' + img("hero-map.png") + '" alt="Иллюстрированная карта читательского путешествия по России"></div>' +
       "</div></section>" +
@@ -367,9 +470,9 @@
       '<p style="margin-top:16px"><a class="chit-btn chit-btn--primary" data-go="/libraries" href="' + href("/libraries") + '">Узнать об участии библиотеки</a></p>' +
       "</div>" +
       '<div class="chit-card"><img src="' + img("passport.png") + '" alt="Читательский паспорт" style="border-radius:12px;margin-bottom:12px;aspect-ratio:16/9;object-fit:cover;width:100%">' +
-      "<h2 class=\"chit-h2\">Паспорт читателя</h2>" +
-      "<p>Пройденные регионы, истории, бейджи и следующий шаг маршрута хранятся в вашем паспорте. Бейджи входят в игровую логику школы «Читательство».</p>" +
-      '<p style="margin-top:16px"><a class="chit-btn chit-btn--ghost" data-go="/passport" href="' + href("/passport") + '">Открыть паспорт</a></p>' +
+      "<h2 class=\"chit-h2\">Паспорт читательской экспедиции</h2>" +
+      "<p>Разворот паспорта, штампы регионов, книжная полка и следующая остановка. Можно листать до регистрации — сохранение печати просит помощи взрослого.</p>" +
+      '<p style="margin-top:16px"><a class="chit-btn chit-btn--ghost" data-go="/passport" href="' + href("/passport") + '">Листать паспорт</a></p>' +
       "</div></div></section>" +
 
       '<section class="chit-cta-band"><div class="chit-wrap">' +
@@ -599,7 +702,7 @@
       "<p class=\"chit-lead\">" + escapeHtml(r.short) + "</p>" +
       '<div class="chit-card__meta">' + chip(stories.length + " историй") + chip(heroes.length + " героев") + chip("аудио и задания") + "</div>" +
       (first ? '<p style="margin:18px 0"><a class="chit-btn chit-btn--primary" data-go="/stories/' + first.slug + '" href="' + href("/stories/" + first.slug) + '">Начать маршрут</a></p>' : "") +
-      (first ? "<h2 class=\"chit-h2\">История для первого знакомства</h2><p>Один бесплатный короткий материал: иллюстрация, герой, аудио, фрагмент, одно задание, отметка в паспорте.</p>" : "") +
+      (first ? "<h2 class=\"chit-h2\">История региона</h2><p>Иллюстрация, герой, аудио, фрагмент и миссия читателя. После миссии можно поставить штамп в паспорт.</p>" : "") +
       "<h2 class=\"chit-h2\">Герои и истории региона</h2>" +
       '<div class="chit-grid-3">' + stories.map(function (s) {
         const open = isOpenStory(s) || storyDone(s.slug);
@@ -654,6 +757,13 @@
         return '<button class="chit-option" type="button" data-opt="' + o.id + '">' + escapeHtml(o.text) + "</button>";
       }).join("") +
       '<p class="chit-explain" hidden></p></div>' +
+      '<div class="chit-stamp-ritual" id="chit-ritual"' + (storyDone(s.slug) ? "" : " hidden") + ">" +
+      (progress.stamps[s.region]
+        ? "<p>Экспедиция в этом регионе завершена. Печать уже в паспорте.</p>"
+        : "<p>История прочитана. Поставь печать — и регион останется на странице паспорта.</p>" +
+          '<button class="chit-btn chit-btn--primary" type="button" data-act="place-stamp" data-story="' + s.slug + '">Я готов поставить штамп</button>') +
+      (!profile ? "<p class=\"chit-note\">Чтобы сохранить штамп, попроси взрослого помочь открыть паспорт.</p>" : "") +
+      "</div>" +
       '<div class="chit-creative"><h2>Создайте свой ответ</h2><p>' + escapeHtml(s.creative) + "</p>" +
       '<textarea placeholder="Письмо, идея рисунка, карта или продолжение" data-creative>' + escapeHtml(saved.creative || "") + "</textarea>" +
       '<p style="margin-top:8px"><button class="chit-btn chit-btn--primary" type="button" data-act="save-creative">Сохранить отклик</button></p>' +
@@ -698,7 +808,6 @@
 
   function completeStory(s) {
     ensureProg();
-    const firstReward = !storyDone(s.slug);
     progress.stories[s.slug] = progress.stories[s.slug] || {};
     progress.stories[s.slug].done = true;
     progress.regions[s.region] = true;
@@ -708,8 +817,11 @@
     const doneCount = Object.keys(progress.stories).filter(function (k) { return progress.stories[k].done; }).length;
     if (doneCount >= 3) grantBadge("explorer");
     if (Object.keys(progress.regions).length >= 2) grantBadge("traveler");
-    awardStamp(s.region);
-    if (firstReward && !profile) setTimeout(openPassportModal, 1600);
+    const ritual = document.getElementById("chit-ritual");
+    if (ritual) ritual.hidden = false;
+    if (!progress.stamps[s.region] && ritual) {
+      ritual.querySelector("[data-act='place-stamp']") && ritual.querySelector("[data-act='place-stamp']").focus();
+    }
   }
 
   function markListen(slug) {
@@ -717,8 +829,6 @@
     if (progress.listened.indexOf(slug) === -1) progress.listened.push(slug);
     saveProgress();
     grantBadge("listener");
-    const s = storyBy(slug);
-    if (s && s.region && !storyDone(slug)) awardStamp(s.region, "marker");
   }
 
   function speak(text, rate) {
@@ -783,64 +893,218 @@
   }
 
   function renderPassport() {
-    document.title = "Паспорт экспедитора — Читательство";
+    document.title = "Паспорт читательской экспедиции — Читательство";
     ensureProg();
-    const page = (location.hash.match(/page=([a-z]+)/) || [])[1] || "cover";
-    const name = (profile && profile.child_name) || "Экспедитор";
-    const avatar = AVATARS[(profile && profile.avatar) || "compass"] || "🧭";
-    const started = (profile && profile.started_at) ? String(profile.started_at).slice(0, 10) : "ещё не открыт";
+    passSpreadsCache = buildPassportSpreads();
+    if (passState.i >= passSpreadsCache.length) passState.i = 0;
     const rec = recommend();
-    const tabs = [
-      ["cover", "Титул"],
-      ["map", "Карта"],
-      ["stamps", "Штампы"],
-      ["badges", "Бейджи"],
-      ["finds", "Открытия"],
-      ["next", "Дальше"]
-    ];
-    const cover =
-      '<div class="chit-passport-cover"><div class="chit-avatar" aria-hidden="true">' + avatar + "</div><div>" +
-      '<p class="chit-kicker">Паспорт экспедитора</p>' +
-      '<h1 class="chit-h1">' + escapeHtml(name) + "</h1>" +
-      "<p>Дата начала: <strong>" + escapeHtml(started) + "</strong> · уровень: <strong>" + escapeHtml((profile && profile.level) || "Старт") + "</strong></p>" +
-      "<p>Регионов: <strong>" + Object.keys(progress.regions).length + "</strong> · историй: <strong>" + DATA.stories.filter(function (s) { return storyDone(s.slug); }).length + "</strong> · штампов: <strong>" + Object.keys(progress.stamps).length + "</strong> · бейджей: <strong>" + (progress.badges || []).length + "</strong></p>" +
-      (!profile ? '<p style="margin-top:12px"><button class="chit-btn chit-btn--primary" type="button" data-act="open-passport">Откроем Паспорт экспедитора</button></p>' : "") +
-      "</div></div>";
-    const mapPage = '<h2>Мини-карта открытий</h2><div class="chit-mini-map">' + DATA.regions.map(function (r) {
-      const on = !!progress.regions[r.slug];
-      return '<a data-go="/regions/' + r.slug + '" href="' + href("/regions/" + r.slug) + '" class="' + (on ? "is-open" : "") + '">' + escapeHtml(r.pin || r.name) + (on ? " · открыт" : "") + "</a>";
-    }).join("") + "</div>";
-    const stampsPage = '<h2>Коллекция штампов</h2><p class="chit-note">Штамп ставится за историю и миссию, не за клик по карте.</p><div class="chit-stamp-grid">' + DATA.regions.map(function (r) {
-      return stampCardHtml(r, progress.stamps[r.slug]);
-    }).join("") + "</div>";
-    const badgesPage = "<h2>Бейджи</h2>" + DATA.badges.map(function (b) {
-      const on = progress.badges.indexOf(b.id) !== -1;
-      return '<div class="chit-badge' + (on ? " is-on" : "") + '"><div class="mark">' + (on ? "★" : "·") + "</div><div><strong>" + escapeHtml(b.name) + "</strong><br><span style=\"color:var(--chit-muted);font-size:13px\">" + escapeHtml(b.how) + "</span></div></div>";
+    const toNext = rec && !progress.stamps[rec.region] ? 1 : 0;
+    const dots = passSpreadsCache.map(function (_, i) {
+      return "<span class=\"" + (i === passState.i ? "is-on" : "") + "\"></span>";
     }).join("");
-    const done = DATA.stories.filter(function (s) { return storyDone(s.slug); });
-    const findsPage = "<h2>Мои открытия</h2>" +
-      "<p>Любимая история: <strong>" + escapeHtml(progress.favorite_story || (done[0] && done[0].title) || "откроется после первой миссии") + "</strong></p>" +
-      "<p>Любимый герой: <strong>" + escapeHtml(progress.favorite_hero || "ещё выбираем") + "</strong></p>" +
-      "<p>Последняя работа: <strong>" + escapeHtml(progress.last_work || "сохраните отклик в истории") + "</strong></p>";
-    const nextPage = rec
-      ? '<h2>Следующая остановка</h2><div class="chit-card"><h3>' + escapeHtml(rec.title) + "</h3><p>" + escapeHtml((regionBy(rec.region) || {}).name || "") + "</p>" +
-        '<p style="margin-top:8px"><a class="chit-btn chit-btn--primary" data-go="/stories/' + rec.slug + '" href="' + href("/stories/" + rec.slug) + '">Продолжить путь</a></p></div>'
-      : "<p>Все открытые истории пройдены. Новый маршрут появится в сезоне.</p>";
-    const pages = { cover: cover, map: mapPage, stamps: stampsPage, badges: badgesPage, finds: findsPage, next: nextPage };
-    root.innerHTML = header("/passport") + '<main class="chit-exp-main"><div class="chit-wrap" style="padding:32px 20px 64px">' +
-      '<div class="chit-passport-book">' +
-      '<div class="chit-passport-tabs">' + tabs.map(function (t) {
-        return '<button type="button" data-pass="' + t[0] + '" class="' + (page === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
-      }).join("") + "</div>" +
-      '<div class="chit-passport-page" id="chit-pass-page">' + (pages[page] || cover) + "</div></div></div></main>" + footer();
-    root.querySelectorAll("[data-pass]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        root.querySelectorAll("[data-pass]").forEach(function (b) { b.classList.toggle("is-on", b === btn); });
-        document.getElementById("chit-pass-page").innerHTML = pages[btn.getAttribute("data-pass")] || cover;
-      });
+    root.innerHTML = header("/passport") +
+      '<main class="chit-exp-main chit-pass-desk">' +
+      '<div class="chit-pass-hero">' +
+      '<p class="chit-kicker">Читательская экспедиция</p>' +
+      '<h1 class="chit-h1">Паспорт читательской экспедиции</h1>' +
+      "<p class=\"chit-lead\">Здесь сохраняются сказки, которые ты открыл, регионы, которые исследовал, и штампы, которые заслужил.</p>" +
+      "</div>" +
+      '<div class="chit-pass-cover">' +
+      '<div class="chit-pass-cover__foil">Читательская экспедиция</div>' +
+      '<div class="chit-pass-book" id="chit-pass-book" data-side="' + (passState.side ? "right" : "left") + '">' +
+      '<div id="chit-pass-stage"></div></div></div>' +
+      '<div class="chit-pass-toolbar">' +
+      '<button class="chit-btn chit-btn--ghost chit-btn--small" type="button" data-act="pass-prev" aria-label="Назад">←</button>' +
+      '<div class="chit-pass-pager"><span id="chit-pass-num"></span></div>' +
+      '<button class="chit-btn chit-btn--ghost chit-btn--small" type="button" data-act="pass-next" aria-label="Вперёд">→</button>' +
+      '<button class="chit-btn chit-btn--primary chit-btn--small" type="button" data-act="pass-next">Листать паспорт</button>' +
+      '<a class="chit-btn chit-btn--ghost chit-btn--small" data-go="/map" href="' + href("/map") + '">Открыть карту</a>' +
+      "</div>" +
+      '<div class="chit-pass-dots" aria-hidden="true">' + dots + "</div>" +
+      '<p class="chit-pass-hint">' + (toNext ? "До следующего штампа — 1 история." : "Следующая остановка уже открыта в паспорте.") + "</p>" +
+      '<aside class="chit-pass-parent"><div><p><strong>Кабинет родителя.</strong> Тариф, доступ, данные профиля и прогресс ребёнка — отдельно от детских страниц.</p></div>' +
+      '<a class="chit-btn chit-btn--ghost chit-btn--small" data-go="/parents" href="' + href("/parents") + '">Родителям</a></aside>' +
+      "</main>" + footer();
+    paintPassportSpread();
+    bindPassportSwipe();
+  }
+  function buildPassportSpreads() {
+    ensureProg();
+    const name = (profile && profile.child_name) || "Юный экспедитор";
+    const avatar = AVATARS[(profile && profile.avatar) || "compass"] || "🧭";
+    const started = (profile && profile.started_at) ? formatRuDate(profile.started_at) : "сегодня, на этой странице";
+    const rec = recommend();
+    const doneStories = DATA.stories.filter(function (s) { return storyDone(s.slug); });
+    const stampCount = Object.keys(progress.stamps || {}).length;
+    const regionCount = Object.keys(progress.regions || {}).length;
+    const sampleRegion = seasonRegions()[0];
+    const sampleMeta = (sampleRegion && sampleRegion.stamp) || {};
+    const titleLeft =
+      '<p class="chit-pass-kicker">Читательская экспедиция</p>' +
+      "<h2>Паспорт юного читателя</h2>" +
+      '<div class="chit-passport-cover" style="margin-top:18px"><div class="chit-avatar" aria-hidden="true">' + avatar + "</div><div>" +
+      "<p>Имя: <strong>" + escapeHtml(name) + "</strong></p>" +
+      "<p>Экспедитор с: <strong>" + escapeHtml(started) + "</strong></p>" +
+      "<p>Уровень: <strong>" + escapeHtml((profile && profile.level) || childLevel()) + "</strong></p>" +
+      "<p style=\"margin-top:12px;font-style:italic\">«Я читаю, замечаю, думаю и открываю».</p>" +
+      (!profile ? '<p style="margin-top:14px"><button class="chit-btn chit-btn--primary" type="button" data-act="open-passport">Открыть паспорт с взрослым</button></p>' : "") +
+      "</div></div>";
+    const titleRight =
+      '<p class="chit-pass-kicker">Мои открытия</p>' +
+      "<h2>Общий прогресс</h2>" +
+      '<div class="chit-pass-stat"><span>Регионов открыто</span><strong>' + regionCount + "</strong></div>" +
+      '<div class="chit-pass-stat"><span>Историй пройдено</span><strong>' + doneStories.length + "</strong></div>" +
+      '<div class="chit-pass-stat"><span>Штампов собрано</span><strong>' + stampCount + "</strong></div>" +
+      '<div class="chit-pass-stat"><span>Бейджей</span><strong>' + (progress.badges || []).length + "</strong></div>" +
+      (rec ? "<p style=\"margin-top:16px\">Следующая остановка: <strong>" + escapeHtml((regionBy(rec.region) || {}).name || rec.title) + "</strong></p>" +
+        '<p style="margin-top:8px"><a class="chit-btn chit-btn--primary" data-go="/stories/' + rec.slug + '" href="' + href("/stories/" + rec.slug) + '">Продолжить путь →</a></p>' : "") +
+      (stampCount === 0 && sampleRegion ? stampSealSvg({
+        uid: "sample",
+        regionName: sampleRegion.name,
+        poetic: sampleMeta.poetic_title,
+        symbol: sampleMeta.symbol,
+        color: sampleMeta.color,
+        date: "образец печати",
+        sample: true
+      }) + "<p class=\"chit-note\">Так выглядит печать экспедиции. Ваша появится после первой миссии.</p>" : "");
+    const mapLeft =
+      '<p class="chit-pass-kicker">Сезон первый</p><h2>Карта моих открытий</h2>' +
+      "<p>Пройденные регионы подсвечены. На закрытых — лёгкий контур. Клик открывает историю края.</p>" +
+      "<p class=\"chit-note\">Ты открыл " + regionCount + " из " + seasonRegions().length + " регионов первого сезона.</p>";
+    const mapRight = '<div class="chit-mini-map chit-mini-map--pass">' + seasonRegions().map(function (r) {
+      const on = !!progress.regions[r.slug];
+      return '<a data-go="/regions/' + r.slug + '" href="' + href("/regions/" + r.slug) + '" class="' + (on ? "is-open" : "") + '">' + escapeHtml(r.pin || r.name) + "</a>";
+    }).join("") + "</div>";
+    const finds = progress.finds || {};
+    const spreads = [
+      { id: "title", left: titleLeft, right: titleRight },
+      { id: "map", left: mapLeft, right: mapRight }
+    ];
+    seasonRegions().forEach(function (r) {
+      spreads.push(regionPassportSpread(r, doneStories.length));
     });
-    const openBtn = root.querySelector("[data-act='open-passport']");
-    if (openBtn) openBtn.addEventListener("click", openPassportModal);
+    const badgesLeft = '<p class="chit-pass-kicker">Коллекция</p><h2>Мои бейджи</h2><p>Полученные знаки — с датой и подписью. Будущие ждут в следующей истории.</p>';
+    const badgesRight = DATA.badges.map(function (b) {
+      const on = progress.badges.indexOf(b.id) !== -1;
+      return '<div class="chit-badge' + (on ? " is-on" : "") + '"><div class="mark">' + (on ? "★" : "·") + "</div><div><strong>" + escapeHtml(b.name) + "</strong><br><span style=\"color:var(--chit-muted);font-size:13px\">" +
+        (on ? escapeHtml(b.how) : "Этот бейдж ждёт тебя в следующей истории.") + "</span></div></div>";
+    }).join("");
+    const shelfLeft = '<p class="chit-pass-kicker">Библиотека</p><h2>Моя книжная полка</h2><p>Сказки, которые ты уже открыл. Можно вернуться к истории.</p>';
+    const shelfRight = doneStories.length
+      ? '<div class="chit-shelf">' + doneStories.map(function (s) {
+        const r = regionBy(s.region) || {};
+        const recs = progress.stories[s.slug] || {};
+        const marks = [storyDone(s.slug) ? "прочитал" : "", (progress.listened || []).indexOf(s.slug) !== -1 ? "слушал" : "", recs.creative ? "выполнил миссию" : ""].filter(Boolean).join(" · ");
+        return '<a class="chit-shelf-card" data-go="/stories/' + s.slug + '" href="' + href("/stories/" + s.slug) + '">' +
+          '<img src="' + img(s.image) + '" alt="">' +
+          "<div><h3>" + escapeHtml(s.title) + "</h3><p>" + escapeHtml(r.name || "") + "</p><p>" + escapeHtml(marks || "открыто") + "</p></div></a>";
+      }).join("") + "</div>"
+      : "<p>Первая книга появится после миссии читателя.</p>";
+    const findsLeft = '<p class="chit-pass-kicker">Дневник</p><h2>Мои открытия</h2><p>Короткие ответы — карточками или своими словами. Это личная страница, без сравнений с другими детьми.</p>';
+    const findsRight = '<form class="chit-form" data-form="finds">' +
+      '<label>Самый запомнившийся герой<input name="hero" value="' + escapeHtml(finds.hero || "") + '"></label>' +
+      '<label>Самый загадочный предмет<input name="object" value="' + escapeHtml(finds.object || "") + '"></label>' +
+      '<label>История, которую я хочу рассказать кому-то<input name="tell" value="' + escapeHtml(finds.tell || "") + '"></label>' +
+      '<label>Сказка, в которой я бы хотел побывать<input name="visit" value="' + escapeHtml(finds.visit || "") + '"></label>' +
+      '<label>Мой любимый штамп<input name="favorite_stamp" value="' + escapeHtml(finds.favorite_stamp || "") + '"></label>' +
+      '<button class="chit-btn chit-btn--primary" type="submit">Сохранить открытия</button></form>';
+    const nextLeft = '<p class="chit-pass-kicker">В пути</p><h2>Следующая остановка</h2>' +
+      (rec ? "<p>Тебя ждёт «" + escapeHtml(rec.title) + "».</p><p class=\"chit-note\">" + escapeHtml(String(rec.minutes || 10)) + " минут · 1 история · новая миссия</p>" : "<p>Новый маршрут появится в следующем сезоне.</p>");
+    const nextMeta = rec ? ((regionBy(rec.region) || {}).stamp || {}) : {};
+    const nextRight = rec
+      ? stampSealSvg({
+        uid: "next-" + rec.region,
+        regionName: (regionBy(rec.region) || {}).name,
+        poetic: nextMeta.poetic_title,
+        symbol: nextMeta.symbol,
+        color: nextMeta.color,
+        ghost: !progress.stamps[rec.region],
+        date: progress.stamps[rec.region] ? formatRuDate(progress.stamps[rec.region].earned_at) : "контур следующей печати"
+      }) + '<p style="margin-top:12px"><a class="chit-btn chit-btn--primary" data-go="/stories/' + rec.slug + '" href="' + href("/stories/" + rec.slug) + '">Начать следующую экспедицию</a></p>'
+      : "";
+    spreads.push({ id: "badges", left: badgesLeft, right: badgesRight });
+    spreads.push({ id: "shelf", left: shelfLeft, right: shelfRight });
+    spreads.push({ id: "finds", left: findsLeft, right: findsRight });
+    spreads.push({ id: "next", left: nextLeft, right: nextRight });
+    return spreads;
+  }
+  function regionPassportSpread(r, doneTotal) {
+    const st = progress.stamps[r.slug];
+    const meta = r.stamp || {};
+    const stories = DATA.stories.filter(function (s) { return s.region === r.slug; });
+    const doneHere = stories.filter(function (s) { return storyDone(s.slug); });
+    const first = stories[0];
+    const left =
+      '<p class="chit-pass-kicker">Регион</p>' +
+      "<h2>" + escapeHtml(r.name) + "</h2>" +
+      "<p>«" + escapeHtml(meta.poetic_title || r.pin) + "»</p>" +
+      "<p>Ты открыл:</p><ul>" +
+      (doneHere.length ? doneHere.map(function (s) { return "<li>✓ Историю «" + escapeHtml(s.title) + "»</li>"; }).join("") : "<li>История региона ждёт первой миссии.</li>") +
+      (doneHere.length ? "<li>✓ Нашёл подсказки автора</li><li>✓ Выполнил миссию читателя</li>" : "") +
+      "</ul>" +
+      (first ? '<p style="margin-top:12px"><a class="chit-btn chit-btn--ghost chit-btn--small" data-go="/stories/' + first.slug + '" href="' + href("/stories/" + first.slug) + '">Открыть историю ещё раз</a></p>' : "") +
+      (doneTotal >= 2 && (!st || st.level !== "gold")
+        ? "<p class=\"chit-note\">В этом регионе можно собрать золотую печать «Хранитель " + escapeHtml(r.pin || r.name) + "».</p>" +
+          '<p><a class="chit-btn chit-btn--ghost chit-btn--small" data-go="/parents" href="' + href("/parents") + '">Открыть полный маршрут</a></p>'
+        : "");
+    const right = stampSealSvg({
+      uid: r.slug,
+      regionName: r.name,
+      poetic: (st && st.poetic_title) || meta.poetic_title,
+      symbol: meta.symbol,
+      color: meta.color,
+      level: st && st.level,
+      date: st ? formatRuDate(st.earned_at) : "",
+      ghost: !st
+    }) + (st ? "<p>Дата: " + escapeHtml(formatRuDate(st.earned_at)) + "</p>" : "<p class=\"chit-note\">Контур печати. Она станет цветной после миссии.</p>");
+    return { id: "region-" + r.slug, left: left, right: right };
+  }
+  function paintPassportSpread() {
+    const stage = document.getElementById("chit-pass-stage");
+    const book = document.getElementById("chit-pass-book");
+    const num = document.getElementById("chit-pass-num");
+    if (!stage || !passSpreadsCache.length) return;
+    const spread = passSpreadsCache[passState.i];
+    stage.innerHTML = '<div class="chit-pass-spread">' +
+      '<div class="chit-pass-leaf chit-pass-leaf--left">' + (spread.left || "") + "</div>" +
+      '<div class="chit-pass-leaf chit-pass-leaf--right">' + (spread.right || "") + "</div></div>";
+    if (book) book.setAttribute("data-side", passState.side ? "right" : "left");
+    if (num) num.textContent = (passState.i + 1) + " / " + passSpreadsCache.length;
+    const dots = document.querySelectorAll(".chit-pass-dots span");
+    dots.forEach(function (d, i) { d.classList.toggle("is-on", i === passState.i); });
+  }
+  function passTurn(dir) {
+    const n = passSpreadsCache.length;
+    if (!n) return;
+    const mobile = window.innerWidth <= 880;
+    if (mobile) {
+      if (dir > 0) {
+        if (passState.side === 0) passState.side = 1;
+        else { passState.i = Math.min(n - 1, passState.i + 1); passState.side = 0; }
+      } else {
+        if (passState.side === 1) passState.side = 0;
+        else { passState.i = Math.max(0, passState.i - 1); passState.side = 1; }
+      }
+    } else {
+      passState.i = Math.max(0, Math.min(n - 1, passState.i + dir));
+      passState.side = 0;
+    }
+    paintPassportSpread();
+  }
+  function bindPassportSwipe() {
+    const book = document.getElementById("chit-pass-book");
+    if (!book) return;
+    let x0 = null;
+    book.addEventListener("touchstart", function (e) {
+      x0 = e.changedTouches[0].clientX;
+    }, { passive: true });
+    book.addEventListener("touchend", function (e) {
+      if (x0 == null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      x0 = null;
+      if (Math.abs(dx) < 40) return;
+      passTurn(dx < 0 ? 1 : -1);
+    });
   }
 
   function renderCabinet() {
@@ -868,20 +1132,21 @@
   }
 
   function renderCollection() {
-    document.title = "Коллекция — Читательская экспедиция";
+    document.title = "Мои истории — Читательская экспедиция";
+    const done = DATA.stories.filter(function (s) { return storyDone(s.slug); });
     root.innerHTML = header("/collection") + '<main class="chit-exp-main"><div class="chit-wrap" style="padding:32px 20px 64px">' +
-      '<p class="chit-kicker">Коллекция</p><h1 class="chit-h1">Истории экспедиции</h1>' +
+      '<p class="chit-kicker">Книжная полка</p><h1 class="chit-h1">Мои истории</h1>' +
+      "<p class=\"chit-lead\">Пройденные сказки и открытые маршруты. Все истории сезона можно читать сразу.</p>" +
+      (done.length ? "<h2>Уже на полке</h2><div class=\"chit-shelf\" style=\"margin-bottom:28px\">" + done.map(function (s) {
+        const r = regionBy(s.region) || {};
+        return '<a class="chit-shelf-card" data-go="/stories/' + s.slug + '" href="' + href("/stories/" + s.slug) + '">' +
+          '<img src="' + img(s.image) + '" alt=""><div><h3>' + escapeHtml(s.title) + "</h3><p>" + escapeHtml(r.name || "") + "</p></div></a>";
+      }).join("") + "</div>" : "") +
+      "<h2>Все истории сезона</h2>" +
       '<div class="chit-grid-3">' + DATA.stories.map(function (s) {
-        if (isOpenStory(s) || storyDone(s.slug)) {
-          return '<a class="chit-card chit-card--link" data-go="/stories/' + s.slug + '" href="' + href("/stories/" + s.slug) + '">' +
-            (storyDone(s.slug) ? chip("пройдено", "sage") : chip("открыто")) +
-            "<h3>" + escapeHtml(s.title) + "</h3><p>" + escapeHtml((regionBy(s.region) || {}).name || "") + "</p></a>";
-        }
-        return '<div class="chit-teaser is-locked"><span class="chit-lock">Скоро откроется</span><h3>' + escapeHtml(s.title) + "</h3>" +
-          "<p>" + escapeHtml(s.learn || "Новая остановка маршрута.") + "</p>" +
-          (s.stampUnlock ? "<p>Штамп: «" + escapeHtml(s.stampUnlock) + "»</p>" : "") +
-          (s.badgeUnlock ? "<p>Бейдж: «" + escapeHtml(s.badgeUnlock) + "»</p>" : "") +
-          '<p style="margin-top:8px"><a data-go="/stories/' + s.slug + '" href="' + href("/stories/" + s.slug) + '">Смотреть тизер</a></p></div>';
+        return '<a class="chit-card chit-card--link" data-go="/stories/' + s.slug + '" href="' + href("/stories/" + s.slug) + '">' +
+          (storyDone(s.slug) ? chip("пройдено", "sage") : chip("открыто")) +
+          "<h3>" + escapeHtml(s.title) + "</h3><p>" + escapeHtml((regionBy(s.region) || {}).name || "") + "</p></a>";
       }).join("") + "</div></div></main>" + footer();
   }
 
@@ -900,7 +1165,7 @@
       '<div class="chit-card" style="margin:16px 0"><h3>Сейчас у ' + escapeHtml(name) + "</h3>" +
       "<p>Историй: " + DATA.stories.filter(function (s) { return storyDone(s.slug); }).length + " · штампов: " + Object.keys(progress.stamps || {}).length + " · бейджей: " + (progress.badges || []).length + "</p>" +
       (recommend() ? "<p>Следующая остановка: «" + escapeHtml(recommend().title) + "»</p>" : "") +
-      (!profile ? '<p style="margin-top:12px"><button class="chit-btn chit-btn--primary" type="button" data-act="open-passport">Откроем Паспорт экспедитора</button></p>' : "") +
+      (!profile ? '<p style="margin-top:12px"><button class="chit-btn chit-btn--primary" type="button" data-act="open-passport">Открыть паспорт с взрослым</button></p>' : "") +
       login +
       "</div><h2>Тарифы экспедиции</h2><div class=\"chit-grid-3\">" + tariffCardsHtml("parent") + "</div>" +
       "<p class=\"chit-note\">Оплата, прогресс ребёнка и тарифы экспедиции — в этом кабинете.</p></div></main>" + footer();
@@ -928,8 +1193,8 @@
       return '<label class="chit-check"><input type="radio" name="avatar" value="' + a.id + '"' + (a.id === "compass" ? " checked" : "") + "> " + escapeHtml(a.label) + "</label>";
     }).join("");
     return '<form class="chit-form" data-form="passport">' +
-      "<h2 id=\"chit-pass-title\">Откроем Паспорт экспедитора</h2>" +
-      "<p>Имя ребёнка, возраст и контакт родителя. Дальше прогресс, штампы и бейджи сохранятся.</p>" +
+      "<h2 id=\"chit-pass-title\">Открыть паспорт с взрослым</h2>" +
+      "<p>Имя ребёнка, возраст и контакт родителя. Штампы и страницы паспорта сохранятся.</p>" +
       '<div class="row"><label>Имя или никнейм ребёнка<input name="child_name" required></label><label>Возраст ребёнка<input name="child_age" type="number" min="4" max="16" required></label></div>' +
       '<label>Имя родителя<input name="parent_name" required></label>' +
       '<label>Email<input type="email" name="email" required></label>' +
@@ -937,7 +1202,7 @@
       "<p>Аватар</p>" + avatars +
       '<label class="chit-check"><input type="checkbox" name="pd" required> Согласие на обработку персональных данных</label>' +
       '<label class="chit-check"><input type="checkbox" name="expedition" required> Согласие на создание паспорта экспедиции</label>' +
-      '<button class="chit-btn chit-btn--primary" type="submit">Создать паспорт</button>' +
+      '<button class="chit-btn chit-btn--primary" type="submit">Сохранить паспорт</button>' +
       '<button class="chit-btn chit-btn--ghost" type="button" data-act="close-modal">Позже</button></form>';
   }
 
@@ -1211,6 +1476,13 @@
       e.preventDefault();
       openPassportModal();
     }
+    if (act && act.getAttribute("data-act") === "pass-next") { e.preventDefault(); passTurn(1); }
+    if (act && act.getAttribute("data-act") === "pass-prev") { e.preventDefault(); passTurn(-1); }
+    if (act && act.getAttribute("data-act") === "close-stamp") { e.preventDefault(); closeStampModal(); }
+    if (act && act.getAttribute("data-act") === "place-stamp") {
+      e.preventDefault();
+      placeStoryStamp(storyBy(act.getAttribute("data-story")));
+    }
   }
 
   function bindSubmit(e) {
@@ -1220,6 +1492,14 @@
     const kind = form.getAttribute("data-form");
     if (kind === "passport") return submitPassport(e);
     if (kind === "login") return submitLogin(e);
+    if (kind === "finds") {
+      ensureProg();
+      progress.finds = progress.finds || {};
+      new FormData(form).forEach(function (v, k) { progress.finds[k] = v; });
+      saveProgress();
+      toast("Открытия сохранены в паспорте");
+      return;
+    }
     sendForm(kind, form);
   }
 
