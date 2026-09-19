@@ -965,12 +965,14 @@
       font-size: 15px; color: var(--muted); line-height: 1.55;
     }
 
+    /* width:100% — не 100vw: иначе при узком Tilda-артборде + overflow:hidden
+       карточка справа обрезается (видна только полоска). */
     .final-cta-scroller {
       height: max(135vh, 1020px);
-      width: 100vw;
-      max-width: 100vw;
-      margin-left: calc(50% - 50vw);
-      margin-right: calc(50% - 50vw);
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      margin-right: 0;
       position: relative;
       box-sizing: border-box;
     }
@@ -2486,7 +2488,13 @@
       .t396__artboard { min-width: 0 !important; }
 
       /* Блок с «прилипанием» на мобиле ломает скролл */
-      .final-cta-scroller { height: auto !important; }
+      .final-cta-scroller {
+        height: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
       .final-cta {
         position: relative !important;
         min-height: 620px !important;
@@ -2496,6 +2504,7 @@
       .final-cta__frame {
         opacity: 1 !important;
         transform: none !important;
+        max-width: min(420px, 100%) !important;
       }
       .final-cta__bg {
         transform: none !important;
@@ -3038,44 +3047,52 @@
   }
 }
 
-/* Mobile: split bottom tabs — quiz left, feedback right */
+/* Mobile: hide gift/questions docks; pin header */
 @media (max-width: 720px) {
   #allrecords #chit-main .qz-launcher,
-  #chit-main .qz-launcher {
-    left: 0 !important;
-    right: 50% !important;
-    width: auto !important;
-    max-width: none !important;
-    justify-content: center !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    z-index: 199 !important;
-  }
+  #chit-main .qz-launcher,
   #allrecords #chit-main .feedback-tab,
   #chit-main .feedback-tab {
-    left: 50% !important;
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
+  #allrecords #chit-main,
+  #chit-main {
+    padding-bottom: 0 !important;
+  }
+}
+
+@media (max-width: 960px) {
+  #allrecords #chit-main .site-header,
+  #chit-main .site-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
     right: 0 !important;
-    width: auto !important;
-    max-width: none !important;
-    z-index: 200 !important;
-  }
-  #allrecords #chit-main .feedback-tab__toggle,
-  #chit-main .feedback-tab__toggle {
     width: 100% !important;
-    justify-content: center !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    border-left: 1px solid rgba(255, 255, 255, 0.28) !important;
-    padding: 12px 10px max(14px, env(safe-area-inset-bottom)) !important;
-    font-size: 13px !important;
-    line-height: 1.2 !important;
-    white-space: nowrap !important;
+    max-width: 100vw !important;
+    z-index: 5000 !important;
+    background: rgba(255, 255, 255, 0.97) !important;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
-  #allrecords #chit-main .feedback-tab__panel,
-  #chit-main .feedback-tab__panel {
-    width: min(100vw - 16px, 320px) !important;
-    right: 8px !important;
-    left: auto !important;
+  #allrecords #chit-main,
+  #chit-main {
+    padding-top: 68px !important;
+  }
+}
+
+/* was: Mobile split bottom tabs — quiz left, feedback right (removed on mobile) */
+@media (max-width: 720px) {
+  #allrecords #chit-main .qz-launcher,
+  #chit-main .qz-launcher,
+  #allrecords #chit-main .feedback-tab,
+  #chit-main .feedback-tab {
+    display: none !important;
   }
   body.qz-modal-open #chit-main .feedback-tab {
     display: none !important;
@@ -4098,4 +4115,15 @@ body.fare-modal-open { overflow: hidden; }
   }
   .fare-modal__head { flex-direction: column; gap: 8px; }
   .fare-modal__dialog { padding: 22px 14px 16px; }
+}
+
+/* CTA card clip fix: beat inline #chit-cta-fix { width:100vw } when Tilda artboard is narrow */
+#allrecords #chit-main .final-cta-scroller {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+#allrecords #chit-main .final-cta__frame {
+  max-width: min(420px, 100%) !important;
 }

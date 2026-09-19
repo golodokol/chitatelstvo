@@ -33,7 +33,7 @@ from services.quiz_leads import (
     set_quiz_lead_replied,
 )
 from services.early_trial_leads import build_early_trial_lead_rows, load_early_trial_leads
-from services.meeting_attendance import mark_meeting_attendance, meeting_tale_options
+from services.expedition_cabinet import load_tariffs, save_tariffs
 from services.registration import grant_enrollment_to_child, process_registration
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -495,6 +495,7 @@ def admin_page(
             "modules": _admin_modules(),
             "module_groups": _admin_module_groups(),
             "tariff_labels": _TARIFF_LABELS,
+            "expedition_tariffs": load_tariffs(),
             "flash": _flash_from_query(request),
         },
     )
@@ -531,6 +532,46 @@ def admin_logout() -> RedirectResponse:
     response = RedirectResponse("/admin", status_code=303)
     clear_admin_cookie(response)
     return response
+
+
+@router.post("/expedition-tariffs")
+async def admin_save_expedition_tariffs(request: Request) -> RedirectResponse:
+    require_admin(request)
+    form = await request.form()
+    current = load_tariffs()
+    items = []
+    for item in current.get("items") or []:
+        tid = item["id"]
+
+        def _val(key: str, default: str = "") -> str:
+            return str(form.get(f"{key}__{tid}") or default).strip()
+
+        def _num(key: str):
+            raw = _val(key)
+            if raw == "":
+                return None
+            try:
+                return int(raw)
+            except ValueError:
+                return item.get(key)
+
+        def _csv(key: str) -> list[str]:
+            return [part.strip() for part in _val(key).split(",") if part.strip()]
+
+        updated = dict(item)
+        updated["title"] = _val("title") or item.get("title")
+        updated["blurb"] = _val("blurb")
+        updated["price_rub"] = _num("price_rub")
+        updated["period_days"] = _num("period_days")
+        profiles = _num("child_profiles")
+        updated["child_profiles"] = profiles if profiles is not None else item.get("child_profiles") or 1
+        updated["region_slugs"] = _csv("region_slugs")
+        updated["route_slugs"] = _csv("route_slugs")
+        updated["materials"] = _csv("materials")
+        updated["active"] = f"active__{tid}" in form
+        items.append(updated)
+    save_tariffs({**current, "items": items})
+    return RedirectResponse("/admin?ok=1&msg=Тарифы%20экспедиции%20сохранены#expedition-tariffs", status_code=303)
 
 
 @router.post("/enroll")

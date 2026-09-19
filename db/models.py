@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, Date, ForeignKey, Integer, SmallInteger, Text, func
+from sqlalchemy import BigInteger, Boolean, Date, ForeignKey, Integer, SmallInteger, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -152,3 +152,154 @@ class TaleRating(Base):
     rating: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+
+
+class ExpeditionProfile(Base):
+    """Профиль ребёнка внутри Читательской экспедиции (не LMS-кабинет)."""
+
+    __tablename__ = "expedition_profiles"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), unique=True)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"))
+    nickname: Mapped[str | None] = mapped_column(Text)
+    avatar: Mapped[str] = mapped_column(Text, default="compass")
+    started_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    level: Mapped[str] = mapped_column(Text, default="Старт")
+    payload: Mapped[dict | None] = mapped_column(JSONB)
+
+
+class ExpeditionPassport(Base):
+    __tablename__ = "expedition_passports"
+
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("expedition_profiles.id", ondelete="CASCADE"), primary_key=True
+    )
+    favorite_story: Mapped[str | None] = mapped_column(Text)
+    favorite_hero: Mapped[str | None] = mapped_column(Text)
+    last_work: Mapped[str | None] = mapped_column(Text)
+    next_stop: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+
+
+class UserStoryProgress(Base):
+    __tablename__ = "expedition_story_progress"
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), primary_key=True)
+    story_slug: Mapped[str] = mapped_column(Text, primary_key=True)
+    status: Mapped[str] = mapped_column(Text, default="open")
+    creative: Mapped[str | None] = mapped_column(Text)
+    completed_at: Mapped[datetime | None] = mapped_column()
+    payload: Mapped[dict | None] = mapped_column(JSONB)
+
+
+class UserRegionStamp(Base):
+    __tablename__ = "expedition_region_stamps"
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), primary_key=True)
+    region_slug: Mapped[str] = mapped_column(Text, primary_key=True)
+    stamp_level: Mapped[str] = mapped_column(Text, default="marker")
+    poetic_title: Mapped[str | None] = mapped_column(Text)
+    earned_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class ExpeditionTariff(Base):
+    __tablename__ = "expedition_tariffs"
+
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    code: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    blurb: Mapped[str | None] = mapped_column(Text)
+    price_rub: Mapped[int | None] = mapped_column(Integer)
+    period_days: Mapped[int | None] = mapped_column(Integer)
+    child_profiles: Mapped[int] = mapped_column(SmallInteger, default=1)
+    features: Mapped[dict | None] = mapped_column(JSONB)
+    audience: Mapped[str] = mapped_column(Text, default="parent")
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class ExpeditionPurchase(Base):
+    __tablename__ = "expedition_purchases"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"))
+    tariff_id: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(Text, default="pending")
+    payload: Mapped[dict | None] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class ExpeditionUserBadge(Base):
+    __tablename__ = "expedition_user_badges"
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), primary_key=True)
+    badge_id: Mapped[str] = mapped_column(Text, primary_key=True)
+    earned_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class ExpeditionRouteProgress(Base):
+    __tablename__ = "expedition_route_progress"
+
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"), primary_key=True)
+    route_slug: Mapped[str] = mapped_column(Text, primary_key=True)
+    step_index: Mapped[int] = mapped_column(SmallInteger, default=0)
+    status: Mapped[str] = mapped_column(Text, default="open")
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+
+
+class ExpeditionTaskAttempt(Base):
+    __tablename__ = "expedition_task_attempts"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    child_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("children.id", ondelete="CASCADE"))
+    story_slug: Mapped[str] = mapped_column(Text, nullable=False)
+    option_id: Mapped[str | None] = mapped_column(Text)
+    ok: Mapped[bool | None] = mapped_column(Boolean)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class ExpeditionSubscription(Base):
+    __tablename__ = "expedition_subscriptions"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("families.id", ondelete="CASCADE"))
+    tariff_id: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(Text, default="active")
+    starts_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    ends_at: Mapped[datetime | None] = mapped_column()
+    payload: Mapped[dict | None] = mapped_column(JSONB)
+
+
+class LibraryPartner(Base):
+    __tablename__ = "expedition_library_partners"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    org: Mapped[str] = mapped_column(Text, nullable=False)
+    city: Mapped[str | None] = mapped_column(Text)
+    region: Mapped[str | None] = mapped_column(Text)
+    contact: Mapped[str | None] = mapped_column(Text)
+    email: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(Text, default="new")
+    payload: Mapped[dict | None] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class LibraryEvent(Base):
+    __tablename__ = "expedition_library_events"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    partner_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("expedition_library_partners.id", ondelete="SET NULL"))
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    event_date: Mapped[date | None] = mapped_column(Date)
+    payload: Mapped[dict | None] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class LibraryQRCode(Base):
+    __tablename__ = "expedition_library_qr"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    partner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("expedition_library_partners.id", ondelete="CASCADE"))
+    code: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    target_url: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())

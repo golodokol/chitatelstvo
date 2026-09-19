@@ -520,20 +520,23 @@
     // Квиз только после действия пользователя. Старые вставки Tilda ещё могут
     // вызывать chitQuizOpen() из sessionStorage / #quiz — это блокируем.
     var quizUserIntentAt = 0;
+    var quizClickIntentAt = 0;
     var quizIntentSel = '[href="#quiz"], [href="/quiz"], [href$="/quiz"], a[href*="/quiz"], [data-qz-open], .course-card__btn--trial, .qz-launcher';
     function noteQuizIntent() {
       quizUserIntentAt = Date.now();
       try { window.__chitQuizUserIntent = quizUserIntentAt; } catch (err) {}
     }
+    function noteQuizClickIntent() {
+      quizClickIntentAt = Date.now();
+      noteQuizIntent();
+      try { window.__chitQuizClickIntent = quizClickIntentAt; } catch (err) {}
+    }
     function hasQuizIntent() {
-      if (quizUserIntentAt > 0 && (Date.now() - quizUserIntentAt) < 60000) return true;
+      if (quizClickIntentAt > 0 && (Date.now() - quizClickIntentAt) < 60000) return true;
       try {
-        if (window.__chitQuizUserIntent && (Date.now() - window.__chitQuizUserIntent) < 60000) return true;
+        if (window.__chitQuizClickIntent && (Date.now() - window.__chitQuizClickIntent) < 60000) return true;
       } catch (err) {}
-      // Клик был до загрузки chit-quiz.js — User Activation это видит.
-      try {
-        if (navigator.userActivation && navigator.userActivation.hasBeenActive) return true;
-      } catch (err2) {}
+      // Старый флаг __chitQuizUserIntent без клика не считаем — touchend после скролла его ставил.
       return false;
     }
     function autoOpenAllowed() {
@@ -541,22 +544,16 @@
     }
     function openFromApi(fromEl) {
       if (!autoOpenAllowed() && !hasQuizIntent()) {
-        // Без User Activation API не ломаем старые браузеры кликом через loader.
-        var hasUA = false;
-        try { hasUA = 'userActivation' in navigator; } catch (err) {}
-        if (hasUA) return;
+        return;
       }
       if (fromEl) rememberTrialFromEl(fromEl);
       openQuizModal('manual', fromEl);
     }
     document.addEventListener('pointerdown', function (e) {
-      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizIntent();
+      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizClickIntent();
     }, true);
     document.addEventListener('click', function (e) {
-      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizIntent();
-    }, true);
-    document.addEventListener('touchend', function (e) {
-      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizIntent();
+      if (e.target && e.target.closest && e.target.closest(quizIntentSel)) noteQuizClickIntent();
     }, true);
     try { sessionStorage.removeItem('chit_open_quiz'); } catch (err) {}
     window.chitQuizOpen = function () { openFromApi(null); };
@@ -565,7 +562,7 @@
     document.querySelectorAll('[href="#quiz"], [data-qz-open]').forEach(function (el) {
       el.addEventListener('click', function (e) {
         e.preventDefault();
-        noteQuizIntent();
+        noteQuizClickIntent();
         rememberTrialFromEl(el);
         openQuizModal('manual', el);
       });

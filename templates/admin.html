@@ -312,6 +312,7 @@
       <a href="#quiz-leads">Заявки квиза{% if quiz_count %} ({{ quiz_count }}){% endif %}</a>
       <a href="#early-leads">Early пробные{% if early_count %} ({{ early_count }}){% endif %}</a>
       <a href="#meetings">Присутствие на встрече</a>
+      <a href="#expedition-tariffs">Тарифы экспедиции</a>
     </nav>
 
     {% if flash %}
@@ -666,6 +667,61 @@
       {% else %}
       <div class="panel empty">Пока нет активных записей «С преподавателем» для отметки встреч.</div>
       {% endif %}
+    </section>
+
+    <section class="section" id="expedition-tariffs">
+      <h2>Тарифы Читательской экспедиции</h2>
+      <div class="hint">
+        Цены, срок доступа, число профилей и состав материалов хранятся в админке. В коде экспедиции их нет.
+      </div>
+      {% set exp_tariffs = expedition_tariffs.get('items', []) if expedition_tariffs is defined and expedition_tariffs else [] %}
+      <form class="panel" method="post" action="/admin/expedition-tariffs">
+        {% for item in exp_tariffs %}
+        <fieldset style="border:1px solid #f0ebe3;border-radius:12px;padding:16px;margin-bottom:16px">
+          <legend>{{ item.title }} · {{ item.code }}</legend>
+          <input type="hidden" name="id" value="{{ item.id }}">
+          <div class="form-grid">
+            <div class="field">
+              <label>Название</label>
+              <input name="title__{{ item.id }}" value="{{ item.title or '' }}">
+            </div>
+            <div class="field">
+              <label>Цена, ₽</label>
+              <input name="price_rub__{{ item.id }}" value="{{ item.price_rub if item.price_rub is not none else '' }}" placeholder="задать в админке">
+            </div>
+            <div class="field">
+              <label>Срок, дни</label>
+              <input name="period_days__{{ item.id }}" value="{{ item.period_days if item.period_days is not none else '' }}">
+            </div>
+            <div class="field">
+              <label>Профилей детей</label>
+              <input name="child_profiles__{{ item.id }}" value="{{ item.child_profiles or 1 }}">
+            </div>
+            <div class="field field--wide">
+              <label>Коротко о тарифе</label>
+              <input name="blurb__{{ item.id }}" value="{{ item.blurb or '' }}">
+            </div>
+            <div class="field">
+              <label>Регионы (через запятую или *)</label>
+              <input name="region_slugs__{{ item.id }}" value="{{ (item.region_slugs or [])|join(', ') }}">
+            </div>
+            <div class="field">
+              <label>Маршруты (через запятую или *)</label>
+              <input name="route_slugs__{{ item.id }}" value="{{ (item.route_slugs or [])|join(', ') }}">
+            </div>
+            <div class="field">
+              <label>Материалы</label>
+              <input name="materials__{{ item.id }}" value="{{ (item.materials or [])|join(', ') }}">
+            </div>
+            <div class="field--check">
+              <input type="checkbox" name="active__{{ item.id }}" {% if item.active %}checked{% endif %}>
+              <label>Показывать родителям</label>
+            </div>
+          </div>
+        </fieldset>
+        {% endfor %}
+        <button class="btn btn-primary" type="submit">Сохранить тарифы экспедиции</button>
+      </form>
     </section>
   </div>
   <script>

@@ -34,20 +34,23 @@
   var mark = function (ev) {
     if (!ev || !ev.target || !ev.target.closest) return;
     if (!ev.target.closest(sel)) return;
-    try { window.__chitQuizUserIntent = Date.now(); } catch (err) {}
+    try {
+      var now = Date.now();
+      window.__chitQuizUserIntent = now;
+      window.__chitQuizClickIntent = now;
+    } catch (err) {}
   };
   document.addEventListener('pointerdown', mark, true);
   document.addEventListener('click', mark, true);
-  document.addEventListener('touchend', mark, true);
   try { sessionStorage.removeItem('chit_open_quiz'); } catch (err) {}
 })();
 
-/** Safari-safe quiz loader: touchend + повторный клик после загрузки квиза. */
+/** Safari-safe quiz loader: клик + повтор после загрузки квиза. */
 (function chitInstallSafariQuizLoader() {
   if (window.__chitTrialLoaderBound) return;
   window.__chitTrialLoaderBound = true;
   var A = 'https://api.chitatelstvo.ru/assets/';
-  var V = '20260916p';
+  var V = '20260918e';
   var busy = 0;
   var done = 0;
   var q = [];
@@ -122,7 +125,7 @@
     var now = Date.now();
     if (now - last < 450) return;
     last = now;
-    try { window.__chitQuizUserIntent = now; } catch (err) {}
+    try { window.__chitQuizUserIntent = now; window.__chitQuizClickIntent = now; } catch (err) {}
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -140,10 +143,7 @@
     var t = trialTarget(e);
     if (t) openTrial(t, e);
   }, true);
-  document.addEventListener('touchend', function (e) {
-    var t = trialTarget(e);
-    if (t) openTrial(t, e);
-  }, { capture: true, passive: false });
+  // Не открываем квиз на touchend: после скролла палец часто оказывается над #quiz.
   // Не открываем квиз сами: только по клику. Сбрасываем старые триггеры.
   if (location.hash === '#quiz') {
     try {

@@ -11,28 +11,92 @@
   },
   "filters": {
     "ages": [
-      { "id": "6-8", "label": "6–8 лет" },
-      { "id": "9-11", "label": "9–11 лет" },
-      { "id": "family", "label": "Семейный" }
+      {
+        "id": "6-8",
+        "label": "6–8 лет"
+      },
+      {
+        "id": "9-11",
+        "label": "9–11 лет"
+      },
+      {
+        "id": "family",
+        "label": "Семейный"
+      }
     ],
     "themes": [
-      { "id": "heroes", "label": "Герои" },
-      { "id": "animals", "label": "Животные-помощники" },
-      { "id": "objects", "label": "Волшебные предметы" },
-      { "id": "travel", "label": "Путешествия" },
-      { "id": "mystery", "label": "Тайны" },
-      { "id": "local", "label": "Сказки края" }
+      {
+        "id": "heroes",
+        "label": "Герои"
+      },
+      {
+        "id": "animals",
+        "label": "Животные-помощники"
+      },
+      {
+        "id": "objects",
+        "label": "Волшебные предметы"
+      },
+      {
+        "id": "travel",
+        "label": "Путешествия"
+      },
+      {
+        "id": "mystery",
+        "label": "Тайны"
+      },
+      {
+        "id": "local",
+        "label": "Сказки края"
+      }
     ]
   },
   "badges": [
-    { "id": "seeker", "name": "Искатель сказок", "how": "Откройте первую историю экспедиции." },
-    { "id": "detective", "name": "Сыщик деталей", "how": "Найдите важную деталь в тексте." },
-    { "id": "keeper", "name": "Хранитель историй", "how": "Пройдите три истории." },
-    { "id": "friend", "name": "Друг героев", "how": "Ответьте на вопрос о поступке героя." },
-    { "id": "objects", "name": "Знаток волшебных предметов", "how": "Пройдите историю про волшебный предмет." },
-    { "id": "traveler", "name": "Путешественник по страницам", "how": "Отметьте два региона в паспорте." },
-    { "id": "listener", "name": "Слушатель голосов России", "how": "Прослушайте аудиофрагмент." },
-    { "id": "maker", "name": "Создатель продолжений", "how": "Оставьте творческий отклик." }
+    {
+      "id": "first-step",
+      "name": "Первый шаг",
+      "how": "Откройте Паспорт экспедитора."
+    },
+    {
+      "id": "reader",
+      "name": "Читатель",
+      "how": "Пройдите первую историю с миссией."
+    },
+    {
+      "id": "listener",
+      "name": "Слушатель",
+      "how": "Послушайте фрагмент истории."
+    },
+    {
+      "id": "tracker",
+      "name": "Следопыт",
+      "how": "Найдите важную деталь в тексте."
+    },
+    {
+      "id": "meaning",
+      "name": "Ловец смысла",
+      "how": "Объясните поступок героя."
+    },
+    {
+      "id": "retell",
+      "name": "Мастер пересказа",
+      "how": "Перескажите, что случилось с героем."
+    },
+    {
+      "id": "teller",
+      "name": "Сказочник",
+      "how": "Оставьте творческий отклик."
+    },
+    {
+      "id": "explorer",
+      "name": "Исследователь сказки",
+      "how": "Пройдите три истории экспедиции."
+    },
+    {
+      "id": "traveler",
+      "name": "Путешественник по сказке",
+      "how": "Откройте два региона в паспорте."
+    }
   ],
   "regions": [
     {
@@ -40,141 +104,364 @@
       "name": "Ярославская область",
       "short": "Центральная Россия, берега Волги, знакомые школьные сказки.",
       "status": "route",
-      "cx": 228, "cy": 248, "r": 20,
-      "stories": ["tsarevna-lyagushka", "alenushka"],
-      "heroes": ["vasilisa-premudraya", "alenushka-hero"],
-      "libraries": ["yaroslavl-central"],
-      "new": true
+      "pin": "Ярославль",
+      "r": 6,
+      "stories": [
+        "tsarevna-lyagushka",
+        "alenushka"
+      ],
+      "heroes": [
+        "vasilisa-premudraya",
+        "alenushka-hero"
+      ],
+      "libraries": [
+        "yaroslavl-central"
+      ],
+      "new": true,
+      "gx": 158,
+      "gy": 220,
+      "cx": 318,
+      "cy": 372,
+      "gly": 202,
+      "stamp": {
+        "poetic_title": "След волжской сказки",
+        "motif": "лягушка / корона / берег Волги",
+        "symbol": "frog",
+        "color": "#C4694A"
+      }
     },
     {
       "slug": "arkhangelskaya-oblast",
       "name": "Архангельская область",
       "short": "Поморье, зимний лес, северные сказки о доброте и стуже.",
       "status": "available",
-      "cx": 268, "cy": 152, "r": 22,
-      "stories": ["morozko"],
-      "heroes": ["morozko-hero"],
+      "pin": "Поморье",
+      "r": 6,
+      "stories": [
+        "morozko"
+      ],
+      "heroes": [
+        "morozko-hero"
+      ],
       "libraries": [],
-      "new": true
+      "new": true,
+      "gx": 228,
+      "gy": 168,
+      "cx": 218,
+      "cy": 148,
+      "gly": 148,
+      "stamp": {
+        "poetic_title": "След зимнего леса",
+        "motif": "иней / лапоть / северный ветер",
+        "symbol": "frost",
+        "color": "#5A7A6A"
+      }
     },
     {
       "slug": "kareliya",
       "name": "Республика Карелия",
       "short": "Озёра, сосны и история о чудесной мельнице.",
       "status": "route",
-      "cx": 198, "cy": 168, "r": 20,
-      "stories": ["sampo"],
-      "heroes": ["sampo-mill"],
+      "pin": "Карелия",
+      "r": 6,
+      "stories": [
+        "sampo"
+      ],
+      "heroes": [
+        "sampo-mill"
+      ],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 138,
+      "gy": 168,
+      "cx": 642,
+      "cy": 248,
+      "glx": 95,
+      "gly": 152,
+      "stamp": {
+        "poetic_title": "След озёрных историй",
+        "motif": "северная звезда / озеро / мельница",
+        "symbol": "star",
+        "color": "#3D4F7C"
+      }
     },
     {
       "slug": "tatarstan",
       "name": "Республика Татарстан",
       "short": "Лесной Шурале и внимательное чтение деталей.",
       "status": "route",
-      "cx": 292, "cy": 292, "r": 20,
-      "stories": ["shurale"],
-      "heroes": ["shurale-hero"],
+      "pin": "Татарстан",
+      "r": 6,
+      "stories": [
+        "shurale"
+      ],
+      "heroes": [
+        "shurale-hero"
+      ],
       "libraries": [],
-      "new": true
+      "new": true,
+      "gx": 255,
+      "gy": 275,
+      "cx": 392,
+      "cy": 298,
+      "gly": 295,
+      "glx": 300,
+      "stamp": {
+        "poetic_title": "След лесного Шурале",
+        "motif": "рог / сосна / лесная тропа",
+        "symbol": "horn",
+        "color": "#C6A15B"
+      }
     },
     {
       "slug": "bashkortostan",
       "name": "Республика Башкортостан",
       "short": "Уральские предгорья и сказка о коне-помощнике.",
       "status": "available",
-      "cx": 332, "cy": 312, "r": 18,
-      "stories": ["zolotaya-griva"],
-      "heroes": ["golden-mane"],
+      "pin": "Башкортостан",
+      "r": 6,
+      "stories": [
+        "zolotaya-griva"
+      ],
+      "heroes": [
+        "golden-mane"
+      ],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 318,
+      "gy": 288,
+      "cx": 428,
+      "cy": 348,
+      "glx": 385,
+      "gly": 275,
+      "stamp": {
+        "poetic_title": "След золотой гривы",
+        "motif": "конь / степь / грива",
+        "symbol": "horse",
+        "color": "#C6A15B"
+      }
     },
     {
       "slug": "chuvashiya",
       "name": "Чувашская Республика",
       "short": "Поволжье и история про солнце, которое можно попросить о помощи.",
       "status": "available",
-      "cx": 274, "cy": 276, "r": 14,
-      "stories": ["solnechnaya-devochka"],
-      "heroes": ["sun-girl"],
+      "pin": "Чувашия",
+      "r": 6,
+      "stories": [
+        "solnechnaya-devochka"
+      ],
+      "heroes": [
+        "sun-girl"
+      ],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 208,
+      "gy": 262,
+      "cx": 348,
+      "cy": 292,
+      "gly": 248,
+      "glx": 155,
+      "stamp": {
+        "poetic_title": "След солнечной девочки",
+        "motif": "солнце / колосок / нить",
+        "symbol": "sun",
+        "color": "#C4694A"
+      }
     },
     {
       "slug": "krasnodarskiy-kray",
       "name": "Краснодарский край",
       "short": "Кубанские степи и сказка о храбром коне.",
       "status": "available",
-      "cx": 188, "cy": 352, "r": 18,
-      "stories": ["kubanskiy-kon"],
-      "heroes": ["kuban-horse"],
+      "pin": "Кубань",
+      "r": 6,
+      "stories": [
+        "kubanskiy-kon"
+      ],
+      "heroes": [
+        "kuban-horse"
+      ],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 120,
+      "gy": 408,
+      "cx": 168,
+      "cy": 352,
+      "glx": 175,
+      "gly": 390,
+      "stamp": {
+        "poetic_title": "След кубанской дороги",
+        "motif": "конь / колосья / степной путь",
+        "symbol": "road",
+        "color": "#A45C5C"
+      }
     },
     {
       "slug": "altay",
       "name": "Республика Алтай",
       "short": "Горы, золотое озеро и легенда о бережном отношении к воде.",
       "status": "available",
-      "cx": 478, "cy": 358, "r": 20,
-      "stories": ["altyn-kol"],
-      "heroes": ["golden-lake"],
+      "pin": "Алтай",
+      "r": 6,
+      "stories": [
+        "altyn-kol"
+      ],
+      "heroes": [
+        "golden-lake"
+      ],
       "libraries": [],
-      "new": true
+      "new": true,
+      "gx": 452,
+      "gy": 442,
+      "cx": 828,
+      "cy": 122,
+      "gly": 460,
+      "stamp": {
+        "poetic_title": "След золотого озера",
+        "motif": "горы / озеро / бережный черпак",
+        "symbol": "lake",
+        "color": "#3D4F7C"
+      }
     },
     {
       "slug": "buryatiya",
       "name": "Республика Бурятия",
       "short": "Байкал и история о воде, которую нельзя обижать.",
       "status": "available",
-      "cx": 628, "cy": 348, "r": 18,
-      "stories": ["doch-baikala"],
-      "heroes": ["baikal-daughter"],
+      "pin": "Бурятия",
+      "r": 6,
+      "stories": [
+        "doch-baikala"
+      ],
+      "heroes": [
+        "baikal-daughter"
+      ],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 575,
+      "gy": 408,
+      "cx": 868,
+      "cy": 352,
+      "gly": 426,
+      "stamp": {
+        "poetic_title": "След байкальской воды",
+        "motif": "волна / камень / зеркало озера",
+        "symbol": "wave",
+        "color": "#3D4F7C"
+      }
     },
     {
       "slug": "sakha",
       "name": "Республика Саха (Якутия)",
       "short": "Широкая тайга и детская сказка о мальчике, который позвал солнце.",
       "status": "available",
-      "cx": 708, "cy": 212, "r": 28,
-      "stories": ["malchik-i-solntse"],
-      "heroes": ["sun-boy"],
+      "pin": "Якутия",
+      "r": 6,
+      "stories": [
+        "malchik-i-solntse"
+      ],
+      "heroes": [
+        "sun-boy"
+      ],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 720,
+      "gy": 210,
+      "cx": 708,
+      "cy": 118,
+      "gly": 192,
+      "stamp": {
+        "poetic_title": "След позванного солнца",
+        "motif": "солнце / тайга / зов",
+        "symbol": "sun",
+        "color": "#C6A15B"
+      }
     },
     {
       "slug": "komi",
       "name": "Республика Коми",
       "short": "Северные леса. История появится в следующей очереди наполнения.",
       "status": "empty",
-      "cx": 348, "cy": 168, "r": 16,
+      "pin": "Коми",
+      "r": 6,
       "stories": [],
       "heroes": [],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 305,
+      "gy": 188,
+      "cx": 522,
+      "cy": 128,
+      "gly": 168,
+      "stamp": {
+        "poetic_title": "След северного леса",
+        "motif": "ель / след / тишина",
+        "symbol": "pine",
+        "color": "#5A7A6A"
+      }
     },
     {
       "slug": "khakasiya",
       "name": "Республика Хакасия",
       "short": "Саянские предгорья. История появится в следующей очереди наполнения.",
       "status": "empty",
-      "cx": 518, "cy": 338, "r": 14,
+      "pin": "Хакасия",
+      "r": 6,
       "stories": [],
       "heroes": [],
       "libraries": [],
-      "new": false
+      "new": false,
+      "gx": 488,
+      "gy": 398,
+      "cx": 742,
+      "cy": 268,
+      "gly": 382,
+      "stamp": {
+        "poetic_title": "След саянских предгорий",
+        "motif": "камень / небо / тропа",
+        "symbol": "stone",
+        "color": "#6B6560"
+      }
     }
   ],
   "emptyPins": [
-    { "id": "murmansk", "name": "Мурманская область", "cx": 232, "cy": 108 },
-    { "id": "novosibirsk", "name": "Новосибирская область", "cx": 448, "cy": 318 },
-    { "id": "irkutsk", "name": "Иркутская область", "cx": 588, "cy": 328 },
-    { "id": "kamchatka", "name": "Камчатский край", "cx": 918, "cy": 248 },
-    { "id": "primorye", "name": "Приморский край", "cx": 848, "cy": 392 },
-    { "id": "tomsk", "name": "Томская область", "cx": 498, "cy": 268 }
+    {
+      "id": "murmansk",
+      "name": "Мурманская область",
+      "cx": 232,
+      "cy": 132
+    },
+    {
+      "id": "novosibirsk",
+      "name": "Новосибирская область",
+      "cx": 408,
+      "cy": 338
+    },
+    {
+      "id": "irkutsk",
+      "name": "Иркутская область",
+      "cx": 555,
+      "cy": 372
+    },
+    {
+      "id": "kamchatka",
+      "name": "Камчатский край",
+      "cx": 875,
+      "cy": 268
+    },
+    {
+      "id": "primorye",
+      "name": "Приморский край",
+      "cx": 798,
+      "cy": 408
+    },
+    {
+      "id": "tomsk",
+      "name": "Томская область",
+      "cx": 398,
+      "cy": 298
+    }
   ],
   "heroes": [
     {
@@ -273,8 +560,15 @@
       "region": "yaroslavskaya-oblast",
       "tradition": "русская народная сказка",
       "age": "6-8",
-      "ages": ["6-8", "family"],
-      "themes": ["heroes", "objects", "mystery"],
+      "ages": [
+        "6-8",
+        "family"
+      ],
+      "themes": [
+        "heroes",
+        "objects",
+        "mystery"
+      ],
       "minutes": 12,
       "image": "story-frog.png",
       "credibility": "verified",
@@ -291,24 +585,49 @@
         "type": "choice",
         "prompt": "Что Иван делает со лягушачьей кожей — и зачем?",
         "options": [
-          { "id": "a", "text": "Прячет, чтобы никто не узнал секрет." },
-          { "id": "b", "text": "Сжигает, чтобы Василиса больше не уходила.", "ok": true },
-          { "id": "c", "text": "Отдаёт Бабе-яге в обмен на клубок." }
+          {
+            "id": "a",
+            "text": "Прячет, чтобы никто не узнал секрет."
+          },
+          {
+            "id": "b",
+            "text": "Сжигает, чтобы Василиса больше не уходила.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Отдаёт Бабе-яге в обмен на клубок."
+          }
         ],
         "explain": "Он хочет удержать Василису рядом. После этого ей приходится уйти — и путь героя только начинается."
       },
       "creative": "Напишите Василисе короткое письмо: что бы вы сказали Ивану, прежде чем он бросит кожу в огонь?",
-      "badge": "seeker",
-      "similar": ["alenushka", "shurale", "sampo"],
+      "badge": "reader",
+      "similar": [
+        "alenushka",
+        "shurale",
+        "sampo"
+      ],
       "next": "alenushka",
       "books": [
-        { "title": "Народные русские сказки А. Н. Афанасьева", "age": "6–10" },
-        { "title": "Школьная программа 1 класса — «Царевна-лягушка»", "age": "6–8", "url": "https://chitatelstvo.ru/1-klass" }
+        {
+          "title": "Народные русские сказки А. Н. Афанасьева",
+          "age": "6–10"
+        },
+        {
+          "title": "Школьная программа 1 класса — «Царевна-лягушка»",
+          "age": "6–8",
+          "url": "https://chitatelstvo.ru/1-klass"
+        }
       ],
       "sources": [
         "Афанасьев А. Н. Народные русские сказки.",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "demo",
+      "learn": "Заметить решение героя и его цену.",
+      "stampUnlock": "След волжской сказки",
+      "badgeUnlock": "Читатель"
     },
     {
       "slug": "alenushka",
@@ -316,8 +635,14 @@
       "region": "yaroslavskaya-oblast",
       "tradition": "русская народная сказка",
       "age": "6-8",
-      "ages": ["6-8", "family"],
-      "themes": ["heroes", "animals"],
+      "ages": [
+        "6-8",
+        "family"
+      ],
+      "themes": [
+        "heroes",
+        "animals"
+      ],
       "minutes": 10,
       "image": "story-frog.png",
       "credibility": "verified",
@@ -334,23 +659,43 @@
         "type": "choice",
         "prompt": "Что делает Алёнушка, когда запрет уже нарушен?",
         "options": [
-          { "id": "a", "text": "Уходит одна, потому что брата не спасти." },
-          { "id": "b", "text": "Остаётся рядом и ищет, как помочь.", "ok": true },
-          { "id": "c", "text": "Прячет копытце, чтобы никто не видел." }
+          {
+            "id": "a",
+            "text": "Уходит одна, потому что брата не спасти."
+          },
+          {
+            "id": "b",
+            "text": "Остаётся рядом и ищет, как помочь.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Прячет копытце, чтобы никто не видел."
+          }
         ],
         "explain": "Забота здесь — не «не ошибись», а «останься рядом, когда ошибка уже случилась»."
       },
       "creative": "Нарисуйте или опишите дорогу Алёнушки: три места, где хочется остановиться, и одно место, где лучше пройти мимо.",
-      "badge": "friend",
-      "similar": ["tsarevna-lyagushka", "morozko"],
+      "badge": "meaning",
+      "similar": [
+        "tsarevna-lyagushka",
+        "morozko"
+      ],
       "next": "morozko",
       "books": [
-        { "title": "Народные русские сказки А. Н. Афанасьева", "age": "6–10" }
+        {
+          "title": "Народные русские сказки А. Н. Афанасьева",
+          "age": "6–10"
+        }
       ],
       "sources": [
         "Афанасьев А. Н. Народные русские сказки.",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "free",
+      "learn": "Услышать, как сестра бережёт брата.",
+      "stampUnlock": "След волжской сказки",
+      "badgeUnlock": "Следопыт"
     },
     {
       "slug": "morozko",
@@ -358,8 +703,14 @@
       "region": "arkhangelskaya-oblast",
       "tradition": "русская народная сказка",
       "age": "6-8",
-      "ages": ["6-8", "family"],
-      "themes": ["heroes", "mystery"],
+      "ages": [
+        "6-8",
+        "family"
+      ],
+      "themes": [
+        "heroes",
+        "mystery"
+      ],
       "minutes": 12,
       "image": "story-morozko.png",
       "credibility": "verified",
@@ -376,23 +727,43 @@
         "type": "choice",
         "prompt": "Почему Морозко дарит подарки первой девочке?",
         "options": [
-          { "id": "a", "text": "Потому что она громче всех звала на помощь." },
-          { "id": "b", "text": "Потому что она отвечает ласково даже в стуже.", "ok": true },
-          { "id": "c", "text": "Потому что у неё была волшебная шуба." }
+          {
+            "id": "a",
+            "text": "Потому что она громче всех звала на помощь."
+          },
+          {
+            "id": "b",
+            "text": "Потому что она отвечает ласково даже в стуже.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Потому что у неё была волшебная шуба."
+          }
         ],
         "explain": "Морозко проверяет не силу, а то, как человек держит слово, когда трудно."
       },
       "creative": "Придумайте третий ответ Морозке — короткий, честный и добрый.",
-      "badge": "friend",
-      "similar": ["tsarevna-lyagushka", "malchik-i-solntse"],
+      "badge": "meaning",
+      "similar": [
+        "tsarevna-lyagushka",
+        "malchik-i-solntse"
+      ],
       "next": "malchik-i-solntse",
       "books": [
-        { "title": "Народные русские сказки А. Н. Афанасьева", "age": "6–10" }
+        {
+          "title": "Народные русские сказки А. Н. Афанасьева",
+          "age": "6–10"
+        }
       ],
       "sources": [
         "Афанасьев А. Н. Народные русские сказки.",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Отличить доброту от страха перед стужей.",
+      "stampUnlock": "След зимнего леса",
+      "badgeUnlock": "Ловец смысла"
     },
     {
       "slug": "shurale",
@@ -400,8 +771,14 @@
       "region": "tatarstan",
       "tradition": "татарская народная традиция",
       "age": "9-11",
-      "ages": ["9-11"],
-      "themes": ["heroes", "mystery", "local"],
+      "ages": [
+        "9-11"
+      ],
+      "themes": [
+        "heroes",
+        "mystery",
+        "local"
+      ],
       "minutes": 15,
       "image": "story-shurale.png",
       "credibility": "tradition",
@@ -418,24 +795,48 @@
         "type": "choice",
         "prompt": "Какая деталь помогает герою выпутаться?",
         "options": [
-          { "id": "a", "text": "Он громче кричит и пугает лес." },
-          { "id": "b", "text": "Он замечает длинные пальцы и просит помочь с клином.", "ok": true },
-          { "id": "c", "text": "Он дарит Шурале ягоды и уходит." }
+          {
+            "id": "a",
+            "text": "Он громче кричит и пугает лес."
+          },
+          {
+            "id": "b",
+            "text": "Он замечает длинные пальцы и просит помочь с клином.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Он дарит Шурале ягоды и уходит."
+          }
         ],
         "explain": "Сказка учит смотреть: спасает не крик, а замеченная черта героя."
       },
       "creative": "Составьте «досье Шурале»: три черты внешности, одно желание, одна слабость.",
-      "badge": "detective",
-      "similar": ["sampo", "doch-baikala", "tsarevna-lyagushka"],
+      "badge": "tracker",
+      "similar": [
+        "sampo",
+        "doch-baikala",
+        "tsarevna-lyagushka"
+      ],
       "next": "sampo",
       "books": [
-        { "title": "Габдулла Тукай. «Шурале» (для чтения с взрослым)", "age": "9–12" },
-        { "title": "Татарские народные сказки", "age": "8–11" }
+        {
+          "title": "Габдулла Тукай. «Шурале» (для чтения с взрослым)",
+          "age": "9–12"
+        },
+        {
+          "title": "Татарские народные сказки",
+          "age": "8–11"
+        }
       ],
       "sources": [
         "Татарская фольклорная традиция; поэма Г. Тукая «Шурале».",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Найти деталь, которая выдаёт лесного героя.",
+      "stampUnlock": "След лесного Шурале",
+      "badgeUnlock": "Следопыт"
     },
     {
       "slug": "sampo",
@@ -443,8 +844,15 @@
       "region": "kareliya",
       "tradition": "карельская руническая традиция",
       "age": "family",
-      "ages": ["9-11", "family"],
-      "themes": ["objects", "travel", "local"],
+      "ages": [
+        "9-11",
+        "family"
+      ],
+      "themes": [
+        "objects",
+        "travel",
+        "local"
+      ],
       "minutes": 15,
       "image": "story-sampo.png",
       "credibility": "tradition",
@@ -461,24 +869,48 @@
         "type": "choice",
         "prompt": "Что меняет сюжет в истории про Сампо?",
         "options": [
-          { "id": "a", "text": "Цвет мельницы." },
-          { "id": "b", "text": "То, как люди обращаются с волшебным предметом.", "ok": true },
-          { "id": "c", "text": "Имя мастера." }
+          {
+            "id": "a",
+            "text": "Цвет мельницы."
+          },
+          {
+            "id": "b",
+            "text": "То, как люди обращаются с волшебным предметом.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Имя мастера."
+          }
         ],
         "explain": "Волшебный предмет работает, пока его берегут. Спор за обладание ломает дар."
       },
       "creative": "Нарисуйте свою мельницу: три «окна» — что доброго она даёт дому, лесу и гостям.",
-      "badge": "objects",
-      "similar": ["tsarevna-lyagushka", "altyn-kol", "zolotaya-griva"],
+      "badge": "reader",
+      "similar": [
+        "tsarevna-lyagushka",
+        "altyn-kol",
+        "zolotaya-griva"
+      ],
       "next": "altyn-kol",
       "books": [
-        { "title": "Карельские народные сказки", "age": "8–12" },
-        { "title": "Руны о Сампо — читать с педагогом или родителем", "age": "10–12" }
+        {
+          "title": "Карельские народные сказки",
+          "age": "8–12"
+        },
+        {
+          "title": "Руны о Сампо — читать с педагогом или родителем",
+          "age": "10–12"
+        }
       ],
       "sources": [
         "Карельская руническая традиция; учебный пересказ мотива Сампо.",
         "Литературная школа «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Понять, зачем берегут чудесную мельницу.",
+      "stampUnlock": "След озёрных историй",
+      "badgeUnlock": "Исследователь сказки"
     },
     {
       "slug": "altyn-kol",
@@ -486,8 +918,15 @@
       "region": "altay",
       "tradition": "алтайская региональная легенда",
       "age": "family",
-      "ages": ["9-11", "family"],
-      "themes": ["local", "mystery", "travel"],
+      "ages": [
+        "9-11",
+        "family"
+      ],
+      "themes": [
+        "local",
+        "mystery",
+        "travel"
+      ],
       "minutes": 12,
       "image": "story-altai.png",
       "credibility": "tradition",
@@ -504,23 +943,43 @@
         "type": "choice",
         "prompt": "Что просит легенда у путника?",
         "options": [
-          { "id": "a", "text": "Вычерпать золото быстрее других." },
-          { "id": "b", "text": "Отнестись к месту как к живому, а не как к добыче.", "ok": true },
-          { "id": "c", "text": "Назвать озеро новым именем." }
+          {
+            "id": "a",
+            "text": "Вычерпать золото быстрее других."
+          },
+          {
+            "id": "b",
+            "text": "Отнестись к месту как к живому, а не как к добыче.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Назвать озеро новым именем."
+          }
         ],
         "explain": "Легенда учит жесту бережности: место отвечает на то, с чем к нему приходят."
       },
       "creative": "Напишите правило для своей семьи у любой реки или озера — одно предложение.",
-      "badge": "keeper",
-      "similar": ["sampo", "doch-baikala"],
+      "badge": "explorer",
+      "similar": [
+        "sampo",
+        "doch-baikala"
+      ],
       "next": "doch-baikala",
       "books": [
-        { "title": "Алтайские народные сказки и предания", "age": "8–12" }
+        {
+          "title": "Алтайские народные сказки и предания",
+          "age": "8–12"
+        }
       ],
       "sources": [
         "Алтайская устная традиция о Телецком озере (Алтын-Кёль).",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Увидеть, как вода отвечает на бережность.",
+      "stampUnlock": "След золотого озера",
+      "badgeUnlock": "Ловец смысла"
     },
     {
       "slug": "malchik-i-solntse",
@@ -528,8 +987,14 @@
       "region": "sakha",
       "tradition": "якутская детская сказка",
       "age": "6-8",
-      "ages": ["6-8", "family"],
-      "themes": ["heroes", "local"],
+      "ages": [
+        "6-8",
+        "family"
+      ],
+      "themes": [
+        "heroes",
+        "local"
+      ],
       "minutes": 10,
       "image": "story-sun-boy.png",
       "credibility": "tradition",
@@ -546,23 +1011,43 @@
         "type": "choice",
         "prompt": "Как мальчик разговаривает с солнцем?",
         "options": [
-          { "id": "a", "text": "Приказывает светить сильнее." },
-          { "id": "b", "text": "Приглашает, как старшего друга.", "ok": true },
-          { "id": "c", "text": "Молча ждёт у окна." }
+          {
+            "id": "a",
+            "text": "Приказывает светить сильнее."
+          },
+          {
+            "id": "b",
+            "text": "Приглашает, как старшего друга.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Молча ждёт у окна."
+          }
         ],
         "explain": "Смелость здесь — в спокойном приглашении, а не в крике."
       },
       "creative": "Нарисуйте закладку-солнце и напишите одно приглашение свету.",
-      "badge": "seeker",
-      "similar": ["morozko", "solnechnaya-devochka"],
+      "badge": "reader",
+      "similar": [
+        "morozko",
+        "solnechnaya-devochka"
+      ],
       "next": "solnechnaya-devochka",
       "books": [
-        { "title": "Якутские народные сказки для детей", "age": "6–9" }
+        {
+          "title": "Якутские народные сказки для детей",
+          "age": "6–9"
+        }
       ],
       "sources": [
         "Детский фольклорный мотив саха о солнце и зиме.",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Услышать зов, которым зовут солнце.",
+      "stampUnlock": "След позванного солнца",
+      "badgeUnlock": "Слушатель"
     },
     {
       "slug": "zolotaya-griva",
@@ -570,8 +1055,14 @@
       "region": "bashkortostan",
       "tradition": "башкирская народная сказка",
       "age": "9-11",
-      "ages": ["9-11", "family"],
-      "themes": ["animals", "heroes"],
+      "ages": [
+        "9-11",
+        "family"
+      ],
+      "themes": [
+        "animals",
+        "heroes"
+      ],
       "minutes": 12,
       "image": "story-altai.png",
       "credibility": "tradition",
@@ -588,23 +1079,44 @@
         "type": "choice",
         "prompt": "Почему конь возвращается к юноше?",
         "options": [
-          { "id": "a", "text": "Потому что юноша оказался сильнее всех." },
-          { "id": "b", "text": "Потому что юноша отпустил его и сдержал слово.", "ok": true },
-          { "id": "c", "text": "Потому что гриву можно продать на базаре." }
+          {
+            "id": "a",
+            "text": "Потому что юноша оказался сильнее всех."
+          },
+          {
+            "id": "b",
+            "text": "Потому что юноша отпустил его и сдержал слово.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Потому что гриву можно продать на базаре."
+          }
         ],
         "explain": "Животное-помощник отвечает на жест свободы, а не на силу."
       },
       "creative": "Нарисуйте след коня на карте: от силков до перевала. Подпишите, что герой понял между этими точками.",
-      "badge": "friend",
-      "similar": ["sampo", "kubanskiy-kon", "tsarevna-lyagushka"],
+      "badge": "meaning",
+      "similar": [
+        "sampo",
+        "kubanskiy-kon",
+        "tsarevna-lyagushka"
+      ],
       "next": "kubanskiy-kon",
       "books": [
-        { "title": "Башкирские народные сказки", "age": "8–11" }
+        {
+          "title": "Башкирские народные сказки",
+          "age": "8–11"
+        }
       ],
       "sources": [
         "Башкирская сказочная традиция о коне-помощнике.",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Заметить, чем конь помогает герою.",
+      "stampUnlock": "След золотой гривы",
+      "badgeUnlock": "Читатель"
     },
     {
       "slug": "doch-baikala",
@@ -612,8 +1124,15 @@
       "region": "buryatiya",
       "tradition": "бурятская региональная легенда",
       "age": "9-11",
-      "ages": ["9-11", "family"],
-      "themes": ["local", "travel", "mystery"],
+      "ages": [
+        "9-11",
+        "family"
+      ],
+      "themes": [
+        "local",
+        "travel",
+        "mystery"
+      ],
       "minutes": 14,
       "image": "story-altai.png",
       "credibility": "interpretation",
@@ -630,23 +1149,43 @@
         "type": "choice",
         "prompt": "Какой конфликт держит эту историю?",
         "options": [
-          { "id": "a", "text": "Спор, кто сильнее: ветер или рыба." },
-          { "id": "b", "text": "Желание пути и любовь к родному берегу.", "ok": true },
-          { "id": "c", "text": "Поиск клада на дне." }
+          {
+            "id": "a",
+            "text": "Спор, кто сильнее: ветер или рыба."
+          },
+          {
+            "id": "b",
+            "text": "Желание пути и любовь к родному берегу.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Поиск клада на дне."
+          }
         ],
         "explain": "История про выбор между домом и дорогой — без «правильного» крика в чей-то адрес."
       },
       "creative": "Напишите две реплики: одну от берега, одну от реки. По 12 слов.",
-      "badge": "detective",
-      "similar": ["altyn-kol", "shurale"],
+      "badge": "tracker",
+      "similar": [
+        "altyn-kol",
+        "shurale"
+      ],
       "next": "shurale",
       "books": [
-        { "title": "Легенды и сказки Байкала (детские сборники)", "age": "9–12" }
+        {
+          "title": "Легенды и сказки Байкала (детские сборники)",
+          "age": "9–12"
+        }
       ],
       "sources": [
         "Культурные пересказы легенды о дочери Байкала / Ангаре.",
         "Учебная версия литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Понять, почему воду нельзя обижать.",
+      "stampUnlock": "След байкальской воды",
+      "badgeUnlock": "Ловец смысла"
     },
     {
       "slug": "solnechnaya-devochka",
@@ -654,8 +1193,14 @@
       "region": "chuvashiya",
       "tradition": "чувашская народная сказка",
       "age": "6-8",
-      "ages": ["6-8", "family"],
-      "themes": ["local", "heroes"],
+      "ages": [
+        "6-8",
+        "family"
+      ],
+      "themes": [
+        "local",
+        "heroes"
+      ],
       "minutes": 10,
       "image": "story-sun-boy.png",
       "credibility": "tradition",
@@ -672,23 +1217,43 @@
         "type": "choice",
         "prompt": "Чего сказка просит у ребёнка вместе с просьбой о помощи?",
         "options": [
-          { "id": "a", "text": "Громче топать, чтобы солнце услышало." },
-          { "id": "b", "text": "Поблагодарить, когда тепло пришло.", "ok": true },
-          { "id": "c", "text": "Спрятать лепёшку от брата." }
+          {
+            "id": "a",
+            "text": "Громче топать, чтобы солнце услышало."
+          },
+          {
+            "id": "b",
+            "text": "Поблагодарить, когда тепло пришло.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Спрятать лепёшку от брата."
+          }
         ],
         "explain": "Просьба и благодарность стоят рядом — как два шага одного маршрута."
       },
       "creative": "Нарисуйте подоконник с лепёшкой и напишите своё «спасибо» солнцу.",
-      "badge": "seeker",
-      "similar": ["malchik-i-solntse", "morozko"],
+      "badge": "reader",
+      "similar": [
+        "malchik-i-solntse",
+        "morozko"
+      ],
       "next": "malchik-i-solntse",
       "books": [
-        { "title": "Чувашские народные сказки", "age": "6–9" }
+        {
+          "title": "Чувашские народные сказки",
+          "age": "6–9"
+        }
       ],
       "sources": [
         "Чувашская детская сказочная традиция.",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Увидеть, как просят солнце о помощи.",
+      "stampUnlock": "След солнечной девочки",
+      "badgeUnlock": "Сказочник"
     },
     {
       "slug": "kubanskiy-kon",
@@ -696,8 +1261,15 @@
       "region": "krasnodarskiy-kray",
       "tradition": "кубанская казачья сказка",
       "age": "9-11",
-      "ages": ["9-11", "family"],
-      "themes": ["animals", "heroes", "local"],
+      "ages": [
+        "9-11",
+        "family"
+      ],
+      "themes": [
+        "animals",
+        "heroes",
+        "local"
+      ],
       "minutes": 12,
       "image": "story-morozko.png",
       "credibility": "tradition",
@@ -714,23 +1286,43 @@
         "type": "choice",
         "prompt": "В чём смелость коня?",
         "options": [
-          { "id": "a", "text": "Он скачет прямо через топь." },
-          { "id": "b", "text": "Он останавливается, хотя хозяин торопит.", "ok": true },
-          { "id": "c", "text": "Он прячется в стайке." }
+          {
+            "id": "a",
+            "text": "Он скачет прямо через топь."
+          },
+          {
+            "id": "b",
+            "text": "Он останавливается, хотя хозяин торопит.",
+            "ok": true
+          },
+          {
+            "id": "c",
+            "text": "Он прячется в стайке."
+          }
         ],
         "explain": "Смелость бывает тихой: остаться на верной дороге, когда все торопят."
       },
       "creative": "Напишите табличку у топи от имени коня — одно правило для путников.",
-      "badge": "friend",
-      "similar": ["zolotaya-griva", "morozko"],
+      "badge": "meaning",
+      "similar": [
+        "zolotaya-griva",
+        "morozko"
+      ],
       "next": "zolotaya-griva",
       "books": [
-        { "title": "Казачьи сказки Кубани", "age": "8–11" }
+        {
+          "title": "Казачьи сказки Кубани",
+          "age": "8–11"
+        }
       ],
       "sources": [
         "Кубанская устная сказочная традиция.",
         "Учебный пересказ литературной школы «Читательство»."
-      ]
+      ],
+      "access": "locked",
+      "learn": "Найти смелость в том, чтобы остановиться.",
+      "stampUnlock": "След кубанской дороги",
+      "badgeUnlock": "Путешественник по сказке"
     }
   ],
   "routes": [
@@ -741,7 +1333,11 @@
       "ageLabel": "6–8 лет",
       "time": "30–40 минут",
       "blurb": "Три короткие истории, аудио, одно задание на карточку и первый бейдж.",
-      "steps": ["tsarevna-lyagushka", "morozko", "malchik-i-solntse"],
+      "steps": [
+        "tsarevna-lyagushka",
+        "morozko",
+        "malchik-i-solntse"
+      ],
       "badge": "seeker"
     },
     {
@@ -751,7 +1347,11 @@
       "ageLabel": "9–11 лет",
       "time": "одно занятие",
       "blurb": "Ищем детали, мотивы и подсказки: Шурале, Сампо, дочь Байкала.",
-      "steps": ["shurale", "sampo", "doch-baikala"],
+      "steps": [
+        "shurale",
+        "sampo",
+        "doch-baikala"
+      ],
       "badge": "detective"
     },
     {
@@ -761,7 +1361,11 @@
       "ageLabel": "ребёнок + взрослый",
       "time": "20–30 минут",
       "blurb": "История, вопросы для разговора и домашняя игра у карты.",
-      "steps": ["tsarevna-lyagushka", "sampo", "altyn-kol"],
+      "steps": [
+        "tsarevna-lyagushka",
+        "sampo",
+        "altyn-kol"
+      ],
       "badge": "keeper"
     }
   ],
@@ -813,12 +1417,104 @@
     "age": "8–10 лет",
     "minutes": 60,
     "steps": [
-      { "m": 5, "t": "Открытие маршрута на карте" },
-      { "m": 10, "t": "Знакомство с регионом и аудиофрагмент" },
-      { "m": 15, "t": "Чтение и поиск деталей" },
-      { "m": 15, "t": "Задание «Досье героя»" },
-      { "m": 10, "t": "Творческий отклик" },
-      { "m": 5, "t": "Отметка в паспорте и выбор следующей истории" }
+      {
+        "m": 5,
+        "t": "Открытие маршрута на карте"
+      },
+      {
+        "m": 10,
+        "t": "Знакомство с регионом и аудиофрагмент"
+      },
+      {
+        "m": 15,
+        "t": "Чтение и поиск деталей"
+      },
+      {
+        "m": 15,
+        "t": "Задание «Досье героя»"
+      },
+      {
+        "m": 10,
+        "t": "Творческий отклик"
+      },
+      {
+        "m": 5,
+        "t": "Отметка в паспорте и выбор следующей истории"
+      }
     ]
-  }
+  },
+  "avatars": [
+    {
+      "id": "compass",
+      "label": "Компас"
+    },
+    {
+      "id": "book",
+      "label": "Книга"
+    },
+    {
+      "id": "star",
+      "label": "Северная звезда"
+    },
+    {
+      "id": "boat",
+      "label": "Лодка"
+    },
+    {
+      "id": "fox",
+      "label": "Лиса"
+    }
+  ],
+  "access": {
+    "demoStory": "tsarevna-lyagushka",
+    "freeRegisteredPerRegion": 2,
+    "startRegion": "yaroslavskaya-oblast",
+    "passportPrompt": "Откроем Паспорт экспедитора"
+  },
+  "tariffs": [
+    {
+      "id": "route",
+      "code": "route_purchase",
+      "title": "Маршрут",
+      "blurb": "Доступ к одному тематическому маршруту или региону.",
+      "price_rub": null,
+      "period_days": null,
+      "child_profiles": 1,
+      "audience": "parent",
+      "active": true
+    },
+    {
+      "id": "season",
+      "code": "expedition_subscription",
+      "title": "Сезон экспедиции",
+      "blurb": "Все истории и маршруты текущего сезона.",
+      "price_rub": null,
+      "period_days": 90,
+      "child_profiles": 1,
+      "audience": "parent",
+      "active": true
+    },
+    {
+      "id": "family",
+      "code": "family_passport",
+      "title": "Семейный паспорт",
+      "blurb": "Сезонный доступ, до трёх профилей детей и PDF-материалы.",
+      "price_rub": null,
+      "period_days": 90,
+      "child_profiles": 3,
+      "audience": "parent",
+      "active": true
+    },
+    {
+      "id": "library",
+      "code": "library_license",
+      "title": "Библиотечный доступ",
+      "blurb": "Лицензия для учреждения: занятия, QR и отчёт.",
+      "price_rub": null,
+      "period_days": 180,
+      "child_profiles": 0,
+      "audience": "library",
+      "active": true
+    }
+  ]
 }

@@ -15,6 +15,7 @@ data/quiz_leads.jsonl
 data/quiz_lead_status.json
 data/early_trial_leads.jsonl
 data/creative_uploads/
+data/expedition/cabinet/
 .DS_Store
 Thumbs.db
 mobile/node_modules/

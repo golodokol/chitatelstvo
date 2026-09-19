@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 from config.settings import PUBLIC_BASE_URL, ROOT
+from services import expedition_cabinet as cabinet
 
 router = APIRouter(tags=["expedition"])
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
@@ -37,8 +38,20 @@ PAGE_META = {
         "Готовые литературные маршруты для детей 6–8, 9–11 лет и семейного чтения.",
     ),
     "/passport": (
-        "Паспорт читателя — Читательская экспедиция",
-        "Пройденные регионы, истории и бейджи Читательской экспедиции школы «Читательство».",
+        "Паспорт экспедитора — Читательство",
+        "Цифровой паспорт Читательской экспедиции: штампы регионов, бейджи и открытия.",
+    ),
+    "/cabinet": (
+        "Моя экспедиция — Читательство",
+        "Текущая история, прогресс и следующая остановка Читательской экспедиции.",
+    ),
+    "/collection": (
+        "Коллекция историй — Читательская экспедиция",
+        "Завершённые и доступные истории Читательской экспедиции.",
+    ),
+    "/parents": (
+        "Родителям — Читательская экспедиция",
+        "Прогресс ребёнка, рекомендации и тарифы Читательской экспедиции.",
     ),
     "/libraries": (
         "Библиотекам — Читательская экспедиция «Читательства»",
@@ -130,6 +143,85 @@ def expedition_kit() -> FileResponse:
 @router.get("/expedition/api/data.json")
 def expedition_data() -> FileResponse:
     return FileResponse(DATA_PATH, media_type="application/json")
+
+
+@router.get("/expedition/api/tariffs")
+def expedition_tariffs() -> JSONResponse:
+    return JSONResponse({"ok": True, "items": cabinet.public_tariffs()})
+
+
+@router.get("/expedition/api/cabinet")
+def expedition_cabinet_state(request: Request) -> JSONResponse:
+    token = _bearer(request)
+    return JSONResponse(cabinet.session_state(token))
+
+
+@router.post("/expedition/api/cabinet/register")
+async def expedition_cabinet_register(request: Request) -> JSONResponse:
+    payload = await _json_body(request)
+    guest = payload.get("progress") if isinstance(payload.get("progress"), dict) else None
+    try:
+        age = payload.get("child_age")
+        age_int = int(age) if age not in (None, "") else None
+        result = cabinet.register_expedition(
+            child_name=str(payload.get("child_name") or ""),
+            parent_name=str(payload.get("parent_name") or ""),
+            email=str(payload.get("email") or ""),
+            child_age=age_int,
+            password=str(payload.get("password") or "") or None,
+            avatar=str(payload.get("avatar") or "compass"),
+            consent=bool(payload.get("consent") or payload.get("pd")),
+            guest_progress=guest,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse({"ok": True, **result})
+
+
+@router.post("/expedition/api/cabinet/login")
+async def expedition_cabinet_login(request: Request) -> JSONResponse:
+    payload = await _json_body(request)
+    try:
+        result = cabinet.login_expedition(
+            email=str(payload.get("email") or ""),
+            password=str(payload.get("password") or "") or None,
+            token=_bearer(request) or str(payload.get("token") or "") or None,
+        )
+    except ValueError as exc:
+        code = str(exc)
+        status = 401 if code in {"password", "session"} else 404 if code == "not_found" else 400
+        raise HTTPException(status_code=status, detail=code) from exc
+    return JSONResponse({"ok": True, **result})
+
+
+@router.post("/expedition/api/cabinet/progress")
+async def expedition_cabinet_progress(request: Request) -> JSONResponse:
+    token = _bearer(request)
+    if not token:
+        raise HTTPException(status_code=401, detail="session")
+    payload = await _json_body(request)
+    try:
+        profile = cabinet.save_progress(token, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+    return JSONResponse({"ok": True, "profile": profile})
+
+
+def _bearer(request: Request) -> str | None:
+    header = request.headers.get("authorization") or ""
+    if header.lower().startswith("bearer "):
+        return header[7:].strip() or None
+    return request.headers.get("x-expedition-token")
+
+
+async def _json_body(request: Request) -> dict:
+    try:
+        payload = await request.json()
+        if not isinstance(payload, dict):
+            raise ValueError("json")
+        return payload
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="invalid json") from exc
 
 
 @router.post("/expedition/api/{kind}")

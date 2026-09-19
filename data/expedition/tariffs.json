@@ -1,0 +1,62 @@
+{
+  "updated_at": "2026-09-18",
+  "note": "Цены и состав тарифов редактируются в админ-панели. В коде значений нет.",
+  "items": [
+    {
+      "id": "route",
+      "code": "route_purchase",
+      "title": "Маршрут",
+      "blurb": "Доступ к одному тематическому маршруту или региону.",
+      "price_rub": null,
+      "period_days": null,
+      "child_profiles": 1,
+      "region_slugs": [],
+      "route_slugs": [],
+      "materials": [],
+      "audience": "parent",
+      "active": true
+    },
+    {
+      "id": "season",
+      "code": "expedition_subscription",
+      "title": "Сезон экспедиции",
+      "blurb": "Все истории и маршруты текущего сезона.",
+      "price_rub": null,
+      "period_days": 90,
+      "child_profiles": 1,
+      "region_slugs": ["*"],
+      "route_slugs": ["*"],
+      "materials": [],
+      "audience": "parent",
+      "active": true
+    },
+    {
+      "id": "family",
+      "code": "family_passport",
+      "title": "Семейный паспорт",
+      "blurb": "Сезонный доступ, до трёх профилей детей и PDF-материалы.",
+      "price_rub": null,
+      "period_days": 90,
+      "child_profiles": 3,
+      "region_slugs": ["*"],
+      "route_slugs": ["*"],
+      "materials": ["pdf"],
+      "audience": "parent",
+      "active": true
+    },
+    {
+      "id": "library",
+      "code": "library_license",
+      "title": "Библиотечный доступ",
+      "blurb": "B2B-лицензия для учреждения: занятия, QR и отчёт.",
+      "price_rub": null,
+      "period_days": 180,
+      "child_profiles": 0,
+      "region_slugs": ["*"],
+      "route_slugs": ["*"],
+      "materials": ["kit", "qr"],
+      "audience": "library",
+      "active": true
+    }
+  ]
+}
