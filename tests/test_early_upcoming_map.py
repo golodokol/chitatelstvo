@@ -80,7 +80,12 @@ class UpcomingStaffPreviewTests(unittest.TestCase):
         self.assertEqual(program_map["pins"][0]["state"], "open")
         self.assertTrue(all(p["state"] == "open" for p in program_map["pins"]))
         self.assertEqual(program_map["pins"][3]["tip"], "left")
-        self.assertEqual(program_map["pins"][7]["x"], 15.1)
+        # 5 мокрый кот → ванная; 6 плед → спальня; 7 Словик → крыльцо; 8 дом → библиотека
+        self.assertEqual(program_map["pins"][4]["x"], 15.1)
+        self.assertEqual(program_map["pins"][4]["y"], 68.8)
+        self.assertEqual(program_map["pins"][5]["x"], 37.6)
+        self.assertEqual(program_map["pins"][6]["x"], 63.3)
+        self.assertEqual(program_map["pins"][7]["x"], 85.7)
 
     def test_stories_track_hides_lesson_cards_under_map(self):
         track = {
